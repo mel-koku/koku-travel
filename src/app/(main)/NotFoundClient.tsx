@@ -95,9 +95,9 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
           >
             <a
               href="/"
-              className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+              className="relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)]"
             >
-              <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+              <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
               <span className="relative">{content?.notFoundPrimaryCtaText ?? "Take Me Home"}</span>
             </a>
             <a

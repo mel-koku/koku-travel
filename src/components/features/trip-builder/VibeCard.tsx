@@ -39,7 +39,7 @@ export function VibeCard({
             }
           : undefined
       }
-      className={`group relative flex cursor-pointer flex-col items-center rounded-xl bg-card px-3 py-4 text-center transition-shadow ${
+      className={`group relative flex cursor-pointer flex-col items-center rounded-lg bg-card px-3 py-4 text-center transition-shadow ${
         isSelected
           ? "ring-2 ring-brand-primary shadow-[var(--shadow-elevated)]"
           : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)]"
@@ -59,7 +59,7 @@ export function VibeCard({
 
       {/* Icon */}
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
+        className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${
           isSelected
             ? "bg-brand-primary text-white"
             : "bg-surface text-brand-primary group-hover:bg-brand-primary/10"

@@ -75,7 +75,7 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
       {/* Combined instruction and selection status */}
       <div
         className={cn(
-          "mx-auto flex max-w-2xl items-center gap-3 rounded-xl px-5 py-4 text-center transition-colors",
+          "mx-auto flex max-w-2xl items-center gap-3 rounded-lg px-5 py-4 text-center transition-colors",
           hasSelection
             ? "bg-brand-primary/5 border border-brand-primary/20"
             : "bg-surface/50"
@@ -120,7 +120,7 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
 
       {/* Validation Message - only show when no selection */}
       {!hasSelection && (
-        <div className="rounded-xl border border-warning/30 bg-warning/10 px-5 py-4 text-center">
+        <div className="rounded-lg border border-warning/30 bg-warning/10 px-5 py-4 text-center">
           <p className="text-sm text-warning">
             Select at least one region to continue
           </p>

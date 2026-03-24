@@ -75,7 +75,7 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-xl bg-surface px-4 py-3">
+                <div className="rounded-lg bg-surface px-4 py-3">
                   <div className="flex items-center gap-1.5">
                     <div className="h-2 w-2 animate-bounce rounded-full bg-foreground-secondary [animation-delay:0ms]" />
                     <div className="h-2 w-2 animate-bounce rounded-full bg-foreground-secondary [animation-delay:150ms]" />
@@ -85,7 +85,7 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
               </div>
             )}
             {error && (
-              <div className="rounded-xl bg-error/10 px-4 py-2.5 text-sm text-error">
+              <div className="rounded-lg bg-error/10 px-4 py-2.5 text-sm text-error">
                 {error.message?.includes("quota") ||
                 error.message?.includes("503") ||
                 error.message?.includes("429")

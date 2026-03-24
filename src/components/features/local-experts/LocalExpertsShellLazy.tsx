@@ -15,7 +15,7 @@ const LocalExpertsShell = dynamic(
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="h-64 animate-pulse rounded-xl bg-surface"
+              className="h-64 animate-pulse rounded-lg bg-surface"
             />
           ))}
         </div>

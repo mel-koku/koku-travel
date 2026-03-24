@@ -117,7 +117,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
               aria-pressed={isSelected}
               aria-disabled={isDisabled}
               className={cn(
-                "group relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all",
+                "group relative flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                 isSelected
                   ? "border-brand-primary bg-brand-primary/5"

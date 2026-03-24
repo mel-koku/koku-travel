@@ -117,7 +117,7 @@ export function PackingChecklistCard({
   const checkedCount = checklist?.items.filter((i) => checked.has(i.id)).length ?? 0;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-4">
+    <div className="rounded-lg border border-border bg-surface p-4">
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-sm font-medium text-foreground">Packing Checklist</h4>

@@ -121,7 +121,7 @@ export function PlacesMapLayout({
 
           {/* Count badge */}
           <div className="pointer-events-none absolute top-3 left-3 z-10">
-            <span className="rounded-xl bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
+            <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
               {countLabel}
             </span>
           </div>
@@ -152,7 +152,7 @@ export function PlacesMapLayout({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: durationFast, ease: easeReveal }}
                 onClick={() => setMapExpanded(false)}
-                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-xl bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
+                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-lg bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
                 aria-label="Collapse map"
               >
                 <svg
@@ -210,7 +210,7 @@ export function PlacesMapLayout({
             ? "lg:top-[196px] lg:h-[calc(100dvh-212px)]"
             : "lg:top-[160px] lg:h-[calc(100dvh-176px)]"
         )}>
-          <div data-lenis-prevent className="relative h-full rounded-xl overflow-hidden border border-border">
+          <div data-lenis-prevent className="relative h-full rounded-lg overflow-hidden border border-border">
             <ErrorBoundary
               fallback={
                 <div className="flex h-full items-center justify-center text-sm text-stone">
@@ -229,7 +229,7 @@ export function PlacesMapLayout({
               />
             </ErrorBoundary>
             <div className="pointer-events-none absolute top-3 left-3 z-10">
-              <span className="rounded-xl bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
+              <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
                 {countLabel}
               </span>
             </div>
@@ -247,7 +247,7 @@ export function PlacesMapLayout({
               setMapExpanded(true);
               mobileMapRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-charcoal/90 px-4 py-2.5 text-sm font-medium text-white shadow-lg backdrop-blur-sm active:scale-[0.98]"
+            className="pointer-events-auto flex items-center gap-2 rounded-full bg-charcoal/90 px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-elevated)] backdrop-blur-sm active:scale-[0.98]"
             aria-label="Open map"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -272,7 +272,7 @@ export function PlacesMapLayout({
             />
             <motion.div
               data-lenis-prevent
-              className="fixed z-50 flex flex-col bg-background shadow-2xl
+              className="fixed z-50 flex flex-col bg-background shadow-[var(--shadow-elevated)]
                 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[480px] sm:max-w-[95vw] sm:border-l sm:border-border"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -284,7 +284,7 @@ export function PlacesMapLayout({
                 <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
                 <button
                   onClick={onChatClose}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
                   aria-label="Close chat"
                 >
                   <X className="h-5 w-5" />

@@ -444,7 +444,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
             "aria-expanded": isTipExpanded,
             onClick: () => setExpandedTipId(isTipExpanded ? null : tip.id),
           } : {})}
-          className={`flex items-start gap-2 rounded-xl bg-background/70 p-2 text-left${tip.content ? " cursor-pointer" : ""}`}
+          className={`flex items-start gap-2 rounded-lg bg-background/70 p-2 text-left${tip.content ? " cursor-pointer" : ""}`}
         >
           <span className="shrink-0 text-base">
             {tip.icon}
@@ -481,7 +481,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
   }
 
   return (
-    <div className={`rounded-xl border border-brand-primary/20 bg-brand-primary/5 ${className ?? ""}`}>
+    <div className={`rounded-lg border border-brand-primary/20 bg-brand-primary/5 ${className ?? ""}`}>
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}

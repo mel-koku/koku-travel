@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary } from "@/types/guide";
 import { staggerItem } from "@/lib/motion";
@@ -40,10 +41,10 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
             </p>
-            <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
+            <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
               {content?.featuredGuidesHeading ?? "The guides the locals wrote"}
             </h2>
-            <p className="mt-4 max-w-md text-base text-foreground-secondary">
+            <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
               {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries — written by people who live there."}
             </p>
           </div>
@@ -68,7 +69,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
         <div className="mt-10">
           <Link
             href="/guides"
-            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-brand-primary transition-colors hover:text-brand-primary/80"
           >
             {content?.featuredGuidesCtaText ?? "Browse guides"}
             <ArrowRightIcon />
@@ -94,7 +95,7 @@ function GuideCard({
   return (
     <Link
       href={`/guides/${guide.id}`}
-      className="group relative block h-full overflow-hidden rounded-xl transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+      className="group relative block h-full overflow-hidden rounded-lg border border-border transition-shadow duration-300 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)]"
     >
       <div
         className={cn(
@@ -125,7 +126,7 @@ function GuideCard({
 
         {/* Type badge */}
         <div className="absolute left-4 top-4">
-          <span className="inline-flex items-center rounded-xl bg-charcoal/70 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+          <span className="inline-flex items-center rounded-md bg-charcoal/70 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {typeLabel}
           </span>
         </div>
@@ -139,7 +140,7 @@ function GuideCard({
           )}
           <p
             className={cn(
-              "mt-1 font-serif text-white",
+              "mt-1 font-serif font-medium text-white",
               featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >

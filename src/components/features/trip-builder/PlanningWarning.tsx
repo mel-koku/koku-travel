@@ -36,7 +36,7 @@ export function PlanningWarningCard({ warning, className, onAction }: PlanningWa
   return (
     <div
       className={cn(
-        "rounded-xl border p-4",
+        "rounded-lg border p-4",
         styles.container,
         className
       )}
@@ -61,7 +61,7 @@ export function PlanningWarningCard({ warning, className, onAction }: PlanningWa
             <button
               type="button"
               onClick={() => onAction(warning)}
-              className="mt-2 h-9 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white active:scale-[0.98] transition-transform"
+              className="mt-2 h-9 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white active:scale-[0.98] transition-transform"
             >
               {warning.action}
             </button>

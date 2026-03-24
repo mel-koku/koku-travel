@@ -622,7 +622,7 @@ export const ItineraryShell = ({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: durationFast, ease: easeReveal }}
                 onClick={() => setMapExpanded(false)}
-                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-xl bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
+                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-lg bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
                 aria-label="Collapse map"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -665,7 +665,7 @@ export const ItineraryShell = ({
                 </h1>
                 <div className="flex shrink-0 items-center gap-2">
                   {!isReadOnly && (
-                    <div className="flex h-[42px] shrink-0 items-center rounded-xl border border-border bg-surface p-0.5">
+                    <div className="flex h-[42px] shrink-0 items-center rounded-lg border border-border bg-surface p-0.5">
                       {(
                         [
                           { key: "timeline", label: "Timeline" },
@@ -773,7 +773,7 @@ export const ItineraryShell = ({
 
           {/* Discover Panel */}
           {viewMode === "discover" && (
-            <div className="flex-1 overflow-hidden lg:rounded-xl lg:border lg:border-border">
+            <div className="flex-1 overflow-hidden lg:rounded-lg lg:border lg:border-border">
               <ItineraryDiscoverPanel
                 locations={discover.locations}
                 isLoading={discover.isLoading}
@@ -811,7 +811,7 @@ export const ItineraryShell = ({
           />
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-xl lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -892,14 +892,14 @@ export const ItineraryShell = ({
 
             {/* Planning status */}
             {isPlanning && (
-              <div className="mt-3 rounded-xl border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
+              <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
                 Updating travel times...
               </div>
             )}
 
             {/* Planning error */}
             {planningError && (
-              <div className="mt-3 rounded-xl border border-error/30 bg-error/10 p-2.5 text-xs text-error">
+              <div className="mt-3 rounded-lg border border-error/30 bg-error/10 p-2.5 text-xs text-error">
                 <p className="font-medium">Something went wrong</p>
                 <p className="mt-0.5 text-error/80">{planningError}</p>
                 <button
@@ -908,7 +908,7 @@ export const ItineraryShell = ({
                     setPlanningError(null);
                     scheduleUserPlanning(model);
                   }}
-                  className="mt-2 w-full rounded-xl bg-error px-3 py-1.5 text-xs font-medium text-white transition hover:bg-error/90"
+                  className="mt-2 w-full rounded-lg bg-error px-3 py-1.5 text-xs font-medium text-white transition hover:bg-error/90"
                 >
                   Retry
                 </button>
@@ -919,7 +919,7 @@ export const ItineraryShell = ({
 
         {/* Right: Sticky Map — desktop only (50%) */}
         <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100dvh-96px)] lg:w-1/2">
-          <div className="h-full lg:rounded-xl lg:overflow-hidden lg:border lg:border-border">
+          <div className="h-full lg:rounded-lg lg:overflow-hidden lg:border lg:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (
                 <DiscoverMap
@@ -1020,7 +1020,7 @@ function ConflictSummaryBanner({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="mx-4 mt-3 overflow-hidden rounded-xl border border-warning/20 bg-warning/5 px-4 py-3"
+      className="mx-4 mt-3 overflow-hidden rounded-lg border border-warning/20 bg-warning/5 px-4 py-3"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5">

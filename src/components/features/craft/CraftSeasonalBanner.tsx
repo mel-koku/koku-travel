@@ -30,7 +30,7 @@ export function CraftSeasonalBanner({ onSelectCraftType }: CraftSeasonalBannerPr
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: easeReveal, delay: i * 0.06 }}
             onClick={() => onSelectCraftType(h.craftType)}
-            className="group snap-start shrink-0 flex items-start gap-3 rounded-xl bg-surface border border-border p-4 text-left transition-colors hover:border-brand-primary/30 min-w-[260px] max-w-[320px]"
+            className="group snap-start shrink-0 flex items-start gap-3 rounded-lg bg-surface border border-border p-4 text-left transition-colors hover:border-brand-primary/30 min-w-[260px] max-w-[320px]"
           >
             <span
               className="mt-0.5 block h-2.5 w-2.5 shrink-0 rounded-full"

@@ -192,7 +192,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
       {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay */}
       <motion.div
         data-lenis-prevent
-        className="fixed z-50 bg-background shadow-2xl overflow-y-auto overscroll-contain
+        className="fixed z-50 bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
           inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[95vw] sm:border-l sm:border-border"
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
@@ -203,7 +203,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
+          className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
           aria-label="Close"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -243,7 +243,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
                 className={cn(
-                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-xl transition",
+                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
                   i === activePhotoIndex
                     ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
                     : "opacity-60 hover:opacity-100"
@@ -266,7 +266,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           <button
             type="button"
             onClick={handleToggleSave}
-            className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface shadow-sm transition-transform hover:scale-105 hover:bg-border/50"
+            className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface shadow-[var(--shadow-sm)] transition-transform hover:scale-105 hover:bg-border/50"
             aria-label={isSaved ? "Unsave" : "Save"}
           >
             <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
@@ -280,11 +280,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         <div className="space-y-6 p-6">
           {/* Category, rating, duration */}
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="rounded-xl bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
+            <span className="rounded-lg bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
               {location.category}
             </span>
             {location.jtaApproved && (
-              <span className="flex items-center gap-1.5 rounded-xl border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
+              <span className="flex items-center gap-1.5 rounded-lg border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
                 JTA Approved
               </span>
             )}
@@ -341,7 +341,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               {people.map((person) => (
                 <div
                   key={person.id}
-                  className="flex items-start gap-4 rounded-xl bg-surface p-4"
+                  className="flex items-start gap-4 rounded-lg bg-surface p-4"
                 >
                   {person.photo_url && (
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
@@ -402,7 +402,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 {tips.map((tip) => (
                   <div
                     key={tip.id}
-                    className="flex gap-2.5 rounded-xl bg-sage/5 border border-sage/10 p-3"
+                    className="flex gap-2.5 rounded-lg bg-sage/5 border border-sage/10 p-3"
                   >
                     {tip.icon && <span className="text-base shrink-0">{tip.icon}</span>}
                     <div className="min-w-0">
@@ -500,7 +500,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 {goodForPills.map((pill) => (
                   <span
                     key={pill.key}
-                    className="rounded-xl bg-surface px-3 py-1 text-sm text-foreground-secondary"
+                    className="rounded-lg bg-surface px-3 py-1 text-sm text-foreground-secondary"
                   >
                     {pill.label}
                   </span>
@@ -520,7 +520,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                   .filter((r) => r.text && r.text.length > 20)
                   .slice(0, 3)
                   .map((review, i) => (
-                    <div key={i} className="rounded-xl bg-surface p-3">
+                    <div key={i} className="rounded-lg bg-surface p-3">
                       <div className="flex items-center gap-2 mb-1.5">
                         {review.rating && (
                           <span className="flex items-center gap-0.5">

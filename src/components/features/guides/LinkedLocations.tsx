@@ -56,7 +56,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
               >
                 <Link
                   href={`/places?location=${location.id}`}
-                  className="group relative block h-full overflow-hidden rounded-xl"
+                  className="group relative block h-full overflow-hidden rounded-lg"
                 >
                   <div
                     className={`relative w-full ${

@@ -52,7 +52,7 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
     return (
       <div
         className={cn(
-          "flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface p-6 text-center",
+          "flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface p-6 text-center",
           className
         )}
       >

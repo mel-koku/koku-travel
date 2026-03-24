@@ -55,7 +55,7 @@ export function FilterBar({
     >
       <div
         className={cn(
-          "w-full rounded-xl border border-border bg-background/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
+          "w-full rounded-lg border border-border bg-background/90 backdrop-blur shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:shadow-[var(--shadow-elevated)]",
           isVertical
             ? "space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8 lg:max-h-[calc(100dvh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
             : "mx-auto max-w-5xl space-y-3 px-4 py-3 sm:space-y-4 sm:px-6 sm:py-4"
@@ -138,7 +138,7 @@ function FilterSelect({
       <span className="font-medium sm:text-base">{label}</span>
       <div className="relative">
         <select
-          className="min-h-[44px] w-full appearance-none rounded-full border border-border bg-background py-2.5 pl-4 pr-11 text-base text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 sm:py-3"
+          className="min-h-[44px] w-full appearance-none rounded-full border border-border bg-background py-2.5 pl-4 pr-11 text-base text-foreground shadow-[var(--shadow-sm)] transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 sm:py-3"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         >

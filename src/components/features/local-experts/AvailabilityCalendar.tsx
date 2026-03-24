@@ -137,7 +137,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div className="rounded-lg border border-border bg-surface p-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="eyebrow-editorial">Check availability</p>
@@ -245,7 +245,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   onClick={() => setSelectedSession(selectedSession === "morning" ? null : "morning")}
                   disabled={isSessionBooked(selectedDate, "morning")}
                   className={[
-                    "rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                    "rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
                     isSessionBooked(selectedDate, "morning")
                       ? "cursor-not-allowed border-border bg-canvas text-stone/50 line-through"
                       : selectedSession === "morning"
@@ -265,7 +265,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   onClick={() => setSelectedSession(selectedSession === "afternoon" ? null : "afternoon")}
                   disabled={isSessionBooked(selectedDate, "afternoon")}
                   className={[
-                    "rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                    "rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
                     isSessionBooked(selectedDate, "afternoon")
                       ? "cursor-not-allowed border-border bg-canvas text-stone/50 line-through"
                       : selectedSession === "afternoon"
@@ -304,7 +304,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                         selectedInterpreter === interp.id ? null : interp.id
                       )}
                       className={[
-                        "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors",
+                        "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",
                         selectedInterpreter === interp.id
                           ? "border-brand-primary bg-brand-primary/10"
                           : "border-border bg-canvas hover:border-brand-primary/40",
@@ -338,13 +338,13 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   max={price?.maxGroup ?? 10}
                   value={groupSize}
                   onChange={(e) => setGroupSize(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="mt-1 h-12 w-24 rounded-xl border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  className="mt-1 h-12 w-24 rounded-lg border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
 
               {/* Price display */}
               {price && (
-                <div className="rounded-xl bg-canvas px-4 py-3">
+                <div className="rounded-lg bg-canvas px-4 py-3">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs text-foreground-secondary">Base</span>
                     <span className="text-sm text-foreground">{formatPrice(price.basePrice, price.currency)}</span>
@@ -384,7 +384,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   placeholder={`Anything ${person.name.split(" ")[0]} should know`}
                   rows={2}
                   maxLength={2000}
-                  className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
             </div>
@@ -398,7 +398,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   <p className="text-sm text-foreground-secondary">Sign in to book.</p>
                   <a
                     href="/signin"
-                    className="mt-2 inline-flex h-11 items-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+                    className="mt-2 inline-flex h-11 items-center rounded-lg bg-brand-primary px-6 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
                   >
                     Sign in
                   </a>
@@ -407,7 +407,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(true)}
-                  className="h-11 w-full rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+                  className="h-11 w-full rounded-lg bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
                 >
                   Book {selectedDateLabel} · {selectedSession === "morning" ? "Morning" : "Afternoon"}
                 </button>
@@ -417,7 +417,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
 
           {/* Confirmation step */}
           {showConfirm && (
-            <div className="space-y-3 rounded-xl border border-success/30 bg-success/5 p-4">
+            <div className="space-y-3 rounded-lg border border-success/30 bg-success/5 p-4">
               <p className="text-sm font-semibold text-foreground">Confirm your booking</p>
               <div className="space-y-1 text-xs text-foreground-secondary">
                 <p>{person.name} — {person.type}</p>
@@ -430,7 +430,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(false)}
-                  className="h-11 flex-1 rounded-xl border border-border text-sm font-medium text-foreground-secondary hover:text-foreground"
+                  className="h-11 flex-1 rounded-lg border border-border text-sm font-medium text-foreground-secondary hover:text-foreground"
                 >
                   Back
                 </button>
@@ -438,7 +438,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
                   type="button"
                   onClick={handleBook}
                   disabled={createBooking.isPending}
-                  className="h-11 flex-1 rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+                  className="h-11 flex-1 rounded-lg bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
                 >
                   {createBooking.isPending ? "Booking…" : "Confirm Booking"}
                 </button>
@@ -448,7 +448,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
 
           {/* Success */}
           {createBooking.isSuccess && (
-            <div className="rounded-xl border border-success/30 bg-success/10 p-5 text-center">
+            <div className="rounded-lg border border-success/30 bg-success/10 p-5 text-center">
               <svg
                 className="mx-auto h-8 w-8 text-success"
                 fill="none"

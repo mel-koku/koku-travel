@@ -191,7 +191,7 @@ function DayCard({
       {/* Day content */}
       <div className="mt-2 ml-8">
         {!day.city ? (
-          <div className="rounded-xl border border-dashed border-border bg-surface px-3 py-2">
+          <div className="rounded-lg border border-dashed border-border bg-surface px-3 py-2">
             <p className="text-xs text-stone">No city assigned</p>
           </div>
         ) : (

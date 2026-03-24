@@ -107,7 +107,7 @@ export function AskKokuTripPlanCard({ data, onClose }: AskKokuTripPlanCardProps)
   }, [plan, pathname, router, onClose]);
 
   return (
-    <div className="mt-2 rounded-xl border border-sage/30 bg-sage/5 p-4">
+    <div className="mt-2 rounded-lg border border-sage/30 bg-sage/5 p-4">
       <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-brand-primary">
         Your Trip
       </p>
@@ -145,7 +145,7 @@ export function AskKokuTripPlanCard({ data, onClose }: AskKokuTripPlanCardProps)
       <button
         type="button"
         onClick={handleStartPlanning}
-        className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-brand-primary text-sm font-medium text-white transition-transform active:scale-[0.98]"
+        className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-brand-primary text-sm font-medium text-white transition-transform active:scale-[0.98]"
       >
         Build My Trip
       </button>

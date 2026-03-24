@@ -447,7 +447,7 @@ export function ItineraryMap({
       );
 
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-center text-sm text-foreground-secondary">
           {errorMessage}
         </p>
@@ -457,7 +457,7 @@ export function ItineraryMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-sm text-foreground-secondary text-center">{mapError}</p>
       </div>
     );
@@ -465,14 +465,14 @@ export function ItineraryMap({
 
   if (activityPoints.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-sm text-foreground-secondary text-center">No mappable activities.</p>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full w-full rounded-xl border border-transparent bg-surface">
+    <div className="relative h-full w-full rounded-lg border border-transparent bg-surface">
       {!mapReady && (
         <div className="absolute inset-0 flex items-center justify-center">
           <p className="text-sm text-foreground-secondary">Loading map…</p>
@@ -483,7 +483,7 @@ export function ItineraryMap({
         className="absolute inset-0 h-full w-full"
         aria-label="Map showing planned activities"
       />
-      <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl bg-background/80 px-3 py-2 text-xs text-foreground shadow-lg backdrop-blur-sm">
+      <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-background/80 px-3 py-2 text-xs text-foreground shadow-[var(--shadow-elevated)] backdrop-blur-sm">
         <p className="font-semibold">{day.dateLabel ?? "Planned day"}</p>
         <p className="text-foreground-secondary">{activityPoints.length} stop{activityPoints.length === 1 ? "" : "s"}</p>
       </div>

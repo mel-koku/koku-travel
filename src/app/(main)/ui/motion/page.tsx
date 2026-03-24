@@ -85,7 +85,7 @@ function EasingDemo() {
         {curves.map(({ name, css, description, values }) => (
           <div
             key={name}
-            className="rounded-xl border border-border bg-surface p-5"
+            className="rounded-lg border border-border bg-surface p-5"
           >
             <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <span className="font-mono text-sm text-brand-primary">
@@ -310,7 +310,7 @@ function HoverScaleDemo() {
         {hoverScales.map(({ name, value, usage }) => (
           <motion.div
             key={name}
-            className="flex cursor-default flex-col gap-3 rounded-xl border border-border bg-surface p-5"
+            className="flex cursor-default flex-col gap-3 rounded-lg border border-border bg-surface p-5"
             whileHover={{ scale: value }}
             transition={{
               duration: durationCinematic,
@@ -351,7 +351,7 @@ function SpringDemo() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         {/* Interaction spring */}
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5">
           <div className="flex items-baseline gap-3">
             <span className="font-mono text-sm text-brand-primary">
               springInteraction
@@ -366,7 +366,7 @@ function SpringDemo() {
           </p>
           <div className="flex items-center justify-center py-4">
             <motion.button
-              className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-background text-foreground"
+              className="flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-background text-foreground"
               animate={clicked ? { scale: 0.85 } : { scale: 1 }}
               transition={{ type: "spring", ...springInteraction }}
               onTap={() => {
@@ -392,7 +392,7 @@ function SpringDemo() {
         </div>
 
         {/* Navigation spring */}
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5">
           <div className="flex items-baseline gap-3">
             <span className="font-mono text-sm text-brand-primary">
               springNavigation
@@ -481,7 +481,7 @@ function ParallaxReference() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-surface">

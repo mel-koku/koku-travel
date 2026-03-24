@@ -166,7 +166,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       </div>
 
       {calculatedDuration !== null && calculatedDuration >= MIN_DURATION && calculatedDuration <= MAX_DURATION && (
-        <div className="rounded-xl border border-border bg-surface px-4 py-3">
+        <div className="rounded-lg border border-border bg-surface px-4 py-3">
           <p className="text-sm text-foreground-secondary">
             <Calendar className="mr-2 inline h-5 w-5" />
             <span className="font-medium text-foreground">

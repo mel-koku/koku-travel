@@ -18,17 +18,22 @@ export const easePageTransition = [0.76, 0, 0.24, 1] as const;
 /** Scroll indicator bounce loops (hero sections) */
 export const easeScrollIndicator = [0.45, 0, 0.55, 1] as const;
 
+/** Warm editorial: smooth, deliberate transitions */
+export const easeEditorial = [0.22, 1, 0.36, 1] as const;
+
 // Mutable tuple casts for framer-motion Variants (readonly tuples not accepted)
 type Ease4 = [number, number, number, number];
 export const easeRevealMut: Ease4 = [...easeReveal];
 export const easeCinematicMut: Ease4 = [...easeCinematic];
 export const easePageTransitionMut: Ease4 = [...easePageTransition];
 export const easeScrollIndicatorMut: Ease4 = [...easeScrollIndicator];
+export const easeEditorialMut: Ease4 = [...easeEditorial];
 
 // CSS string equivalents (for inline styles & Tailwind arbitrary values)
 export const easeRevealCSS = 'cubic-bezier(0.33, 1, 0.68, 1)';
 export const easeCinematicCSS = 'cubic-bezier(0.215, 0.61, 0.355, 1)';
 export const easePageTransitionCSS = 'cubic-bezier(0.76, 0, 0.24, 1)';
+export const easeEditorialCSS = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 // ── Duration Scale ───────────────────────────────────────
 
@@ -39,10 +44,10 @@ export const durationMicro = 0.15;
 export const durationFast = 0.3;
 
 /** SplitText, TextReveal, card viewport entries */
-export const durationBase = 0.6;
+export const durationBase = 0.4;
 
 /** ScrollReveal, hero title reveals, page clip-path enters */
-export const durationSlow = 0.8;
+export const durationSlow = 0.5;
 
 /** Image hovers, cinematic transitions, click-to-scroll */
 export const durationCinematic = 1.2;

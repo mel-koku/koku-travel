@@ -141,7 +141,7 @@ export function SignInClient({ content }: SignInClientProps) {
                 type="email"
                 required
                 disabled={!supabase}
-                className="mt-1.5 block w-full h-12 rounded-xl border border-border bg-surface px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="mt-1.5 block w-full h-12 rounded-lg border border-border bg-surface px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -151,9 +151,9 @@ export function SignInClient({ content }: SignInClientProps) {
             <button
               type="submit"
               disabled={!supabase}
-              className="relative w-full h-12 rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative w-full h-12 rounded-lg bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+              <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
               <span className="relative">{content?.signInSubmitText ?? "Send Sign-in Link"}</span>
             </button>
 

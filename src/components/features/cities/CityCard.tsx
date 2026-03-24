@@ -44,7 +44,7 @@ export const CityCard = memo(function CityCard({
     >
       <Link
         href={`/cities/${slug}`}
-        className="block w-full overflow-hidden rounded-xl bg-surface transition-all duration-300 border border-border hover:-translate-y-1"
+        className="block w-full overflow-hidden rounded-lg bg-surface transition-all duration-300 border border-border hover:-translate-y-1"
       >
         {/* Image — 16:9 landscape */}
         <div className="relative w-full overflow-hidden aspect-[16/9]">

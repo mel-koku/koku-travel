@@ -2,6 +2,8 @@
 
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type PhilosophyProps = {
@@ -22,7 +24,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
 
         {/* Heading */}
         <ScrollReveal delay={0.1}>
-          <h2 className="mx-auto mt-6 max-w-2xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-6 max-w-2xl leading-snug")}>
             {content?.philosophyHeading ??
               "From years of living here. Not a desk."}
           </h2>
@@ -35,9 +37,9 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
             <div className="flex items-baseline justify-center gap-1">
               <AnimatedNumber
                 value={locationCount}
-                className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none"
+                className={cn(typography({ intent: "utility-tabular" }), "text-3xl sm:text-4xl font-light leading-none")}
               />
-              <span className="text-xl sm:text-2xl font-mono font-light text-foreground">
+              <span className="text-xl sm:text-2xl font-mono font-light text-foreground leading-none">
                 +
               </span>
             </div>
@@ -47,7 +49,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
           </div>
 
           {/* Divider */}
-          <div className="hidden sm:block h-16 w-px bg-border/30" />
+          <div className="hidden sm:block h-16 w-px bg-border" />
 
           {/* Stat 2 — Prefectures */}
           <div className="text-center">
@@ -56,7 +58,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
                 const parsed = stats?.[1]?.value ? parseInt(stats[1].value, 10) : 629;
                 return isNaN(parsed) ? 629 : parsed;
               })()}
-              className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none"
+              className={cn(typography({ intent: "utility-tabular" }), "text-3xl sm:text-4xl font-light leading-none")}
             />
             <p className="eyebrow-mono mt-3">
               {stats?.[1]?.label ?? "People who know the ground"}
@@ -64,11 +66,11 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
           </div>
 
           {/* Divider */}
-          <div className="hidden sm:block h-16 w-px bg-border/30" />
+          <div className="hidden sm:block h-16 w-px bg-border" />
 
           {/* Stat 3 — Local */}
           <div className="text-center">
-            <span className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none">
+            <span className={cn(typography({ intent: "utility-tabular" }), "text-3xl sm:text-4xl font-light leading-none")}>
               {stats?.[2]?.value ?? "90"}
               {stats?.[2]?.suffix ?? "+"}
             </span>

@@ -115,10 +115,10 @@ function SortableCityItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`group flex items-center gap-2 rounded-xl px-3 py-2 transition-shadow ${
+      className={`group flex items-center gap-2 rounded-lg px-3 py-2 transition-shadow ${
         isDragging
           ? isA
-            ? "z-10 shadow-lg shadow-brand-primary/10 bg-surface border border-brand-primary/30"
+            ? "z-10 shadow-[var(--shadow-elevated)] bg-surface border border-brand-primary/30"
             : "z-10 shadow-[var(--shadow-elevated)] bg-white border border-[var(--primary)]/30"
           : isA
             ? "bg-surface/60 border border-border/50"
@@ -258,7 +258,7 @@ function PendingCityItem({
 
   return (
     <div
-      className={`flex items-center gap-2 rounded-xl px-3 py-2 ${
+      className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
         isA
           ? "opacity-40 bg-surface/30 border border-border/30"
           : "opacity-40 bg-white/60 border border-[var(--border)]/30"

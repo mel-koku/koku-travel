@@ -68,7 +68,7 @@ const ActivityPreviewCard = ({ activity }: { activity: ItineraryActivity }) => {
   const place = activity.kind === "place" ? activity : null;
 
   return (
-    <li className="rounded-xl border border-border bg-background p-4 shadow-sm transition hover:border-brand-primary/20 hover:shadow-md">
+    <li className="rounded-lg border border-border bg-background p-4 shadow-[var(--shadow-card)] transition hover:border-brand-primary/20 hover:shadow-[var(--shadow-elevated)]">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-1 flex-col gap-1">
           <p className="text-sm font-semibold text-foreground">{activity.title}</p>
@@ -145,7 +145,7 @@ export const DashboardItineraryPreview = ({
 
   return (
     <section className="mt-8">
-      <header className="flex flex-col gap-4 rounded-xl border border-border bg-background p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <header className="flex flex-col gap-4 rounded-lg border border-border bg-background p-6 shadow-[var(--shadow-card)] lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
@@ -170,7 +170,7 @@ export const DashboardItineraryPreview = ({
               <div className="relative w-full sm:w-auto">
                 <select
                   id="dashboard-trip-selector"
-                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
+                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-base font-medium text-foreground shadow-[var(--shadow-card)] transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
                   value={selectedTripId ?? trip.id}
                   onChange={handleTripChange}
                 >
@@ -197,21 +197,21 @@ export const DashboardItineraryPreview = ({
             <button
               type="button"
               onClick={handleDelete}
-              className="inline-flex items-center justify-center rounded-full bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive shadow-sm transition hover:bg-destructive/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-full bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive shadow-[var(--shadow-card)] transition hover:bg-destructive/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!onDeleteTrip}
             >
               Delete itinerary
             </button>
             <Link
               href={`/itinerary?trip=${trip.id}`}
-              className="inline-flex items-center justify-center rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             >
               View full plan
             </Link>
             {isCompleted && (
               <Link
                 href={`/dashboard/trip-review?trip=${trip.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10 px-4 py-2 text-sm font-semibold text-brand-primary shadow-sm transition hover:bg-brand-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                className="inline-flex items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10 px-4 py-2 text-sm font-semibold text-brand-primary shadow-[var(--shadow-card)] transition hover:bg-brand-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
               >
                 View trip review
               </Link>
@@ -220,7 +220,7 @@ export const DashboardItineraryPreview = ({
         </div>
       </header>
 
-      <div className="mt-4 rounded-xl border border-border bg-background p-6 shadow-sm">
+      <div className="mt-4 rounded-lg border border-border bg-background p-6 shadow-[var(--shadow-card)]">
         <div className="flex flex-col gap-6">
           <DaySelector
             totalDays={days.length}
@@ -240,7 +240,7 @@ export const DashboardItineraryPreview = ({
                 return (
                   <section
                     key={section}
-                    className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4"
+                    className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"
                   >
                     <header className="space-y-1">
                       <h3 className="text-base font-semibold text-foreground">
@@ -256,7 +256,7 @@ export const DashboardItineraryPreview = ({
                         ))}
                       </ul>
                     ) : (
-                      <p className="rounded-xl border border-dashed border-stone/30 bg-background p-4 text-sm text-stone">
+                      <p className="rounded-lg border border-dashed border-stone/30 bg-background p-4 text-sm text-stone">
                         Nothing planned yet.
                       </p>
                     )}
@@ -271,7 +271,7 @@ export const DashboardItineraryPreview = ({
               })}
             </div>
           ) : (
-            <p className="rounded-xl bg-surface p-6 text-sm text-foreground-secondary">
+            <p className="rounded-lg bg-surface p-6 text-sm text-foreground-secondary">
               Nothing planned for this day yet.
             </p>
           )}

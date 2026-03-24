@@ -247,7 +247,7 @@ export function CityList({ onCitySelect }: CityListProps) {
   );
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-background">
+    <div className="flex h-full flex-col rounded-lg border border-border bg-background">
       {/* Search */}
       <div className="border-b border-border p-3">
         <Input

@@ -122,7 +122,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
           }}
           onKeyDown={handleKeyDown}
           placeholder="Search any city in Japan..."
-          className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="h-11 w-full rounded-md border border-border bg-background pl-9 pr-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary"
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={showDropdown && filteredCities.length > 0}
@@ -138,7 +138,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
       {showDropdown && filteredCities.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-border bg-background shadow-lg"
+          className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]"
           role="listbox"
           id={listboxId}
         >
@@ -183,7 +183,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
 
       {/* No results */}
       {showDropdown && searchInput.trim().length > 0 && filteredCities.length === 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-stone">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-stone">
           No cities found matching &ldquo;{searchInput}&rdquo;
         </div>
       )}

@@ -56,7 +56,7 @@ export function SmartPromptsDrawer({
           className
         )}
       >
-        <div className="rounded-t-2xl border-t border-x border-border bg-background pb-[env(safe-area-inset-bottom)] shadow-lg">
+        <div className="rounded-t-lg border-t border-x border-border bg-background pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-elevated)]">
           {/* Handle */}
           <div
             role="button"
@@ -118,7 +118,7 @@ export function SmartPromptsDrawer({
       <div
         className={cn(
           "hidden lg:block fixed right-0 top-16 bottom-0 z-40 w-80 xl:w-96",
-          "border-l border-border bg-background shadow-lg",
+          "border-l border-border bg-background shadow-[var(--shadow-elevated)]",
           className
         )}
       >

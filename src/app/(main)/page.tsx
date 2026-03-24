@@ -12,6 +12,8 @@ import {
   FinalCTA,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
 import { getFeaturedExperiences, getExperiencesBySeason } from "@/lib/experiences/experienceService";
@@ -97,7 +99,7 @@ export default async function Home() {
         <section aria-label="Statement" className="relative bg-background">
           <div className="texture-grain pointer-events-none absolute inset-0" />
           <div className="relative flex min-h-[50vh] items-center justify-center px-6 py-24 text-center sm:min-h-[60vh] sm:py-32">
-            <p className="mx-auto max-w-3xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
+            <p className={cn(typography({ intent: "editorial-h1" }), "mx-auto max-w-3xl leading-snug")}>
               Every trip starts somewhere you didn&apos;t expect.
             </p>
           </div>
@@ -116,7 +118,7 @@ export default async function Home() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center">
               <p className="eyebrow-mono">Ask Koku</p>
-              <h2 className="mx-auto mt-4 max-w-xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
+              <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl leading-snug")}>
                 Questions? We know the answer. Or we&apos;ll find it.
               </h2>
             </div>
@@ -126,9 +128,9 @@ export default async function Home() {
                 { q: "Day trip from Osaka worth taking?", a: "Nara. 45 minutes by train, deer park, Todai-ji temple. Back by dinner." },
                 { q: "Cherry blossoms in Hokkaido, when?", a: "Early to mid-May. About a month after Tokyo peaks." },
               ].map((chat) => (
-                <div key={chat.q} className="rounded-xl border border-border/50 bg-surface p-5">
-                  <p className="text-sm font-medium text-foreground">{chat.q}</p>
-                  <p className="mt-3 text-sm text-foreground-secondary">{chat.a}</p>
+                <div key={chat.q} className="rounded-lg border border-border bg-white p-5 shadow-[var(--shadow-card)]">
+                  <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium")}>{chat.q}</p>
+                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-sm")}>{chat.a}</p>
                 </div>
               ))}
             </div>

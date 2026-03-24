@@ -116,7 +116,7 @@ export function CategoryBar({
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder="Search places..."
-                className="w-full h-10 rounded-xl border border-border bg-surface/50 pl-9 pr-12 text-sm text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition"
+                className="w-full h-10 rounded-lg border border-border bg-surface/50 pl-9 pr-12 text-sm text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition"
               />
               <button
                 type="submit"
@@ -131,7 +131,7 @@ export function CategoryBar({
 
             {/* Grid / Map toggle */}
             {mapAvailable && onViewModeChange && (
-              <div className="flex shrink-0 overflow-hidden rounded-xl border border-border h-10">
+              <div className="flex shrink-0 overflow-hidden rounded-lg border border-border h-10">
                 <button
                   type="button"
                   onClick={() => onViewModeChange("grid")}
@@ -174,7 +174,7 @@ export function CategoryBar({
               onClick={onFiltersClick}
               aria-label="Refine filters"
               className={cn(
-                "flex items-center gap-1.5 rounded-xl border h-10 px-3 text-sm font-medium transition shrink-0",
+                "flex items-center gap-1.5 rounded-lg border h-10 px-3 text-sm font-medium transition shrink-0",
                 activeFilterCount > 0
                   ? "border-brand-primary text-brand-primary"
                   : "border-border text-stone hover:border-brand-primary hover:text-foreground"
@@ -199,7 +199,7 @@ export function CategoryBar({
                 <button
                   key={`${filter.type}-${filter.value}-${index}`}
                   onClick={() => onRemoveFilter?.(filter)}
-                  className="inline-flex items-center gap-1 rounded-xl bg-surface px-2.5 py-1 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
+                  className="inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
                   aria-label={`Remove ${filter.label} filter`}
                 >
                   <span>{filter.label}</span>

@@ -27,7 +27,7 @@ export function ThemeToggle() {
       <button
         type="button"
         onClick={toggle}
-        className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       >
         <AnimatePresence mode="wait" initial={false}>

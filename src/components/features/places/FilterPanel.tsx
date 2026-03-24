@@ -191,7 +191,7 @@ export function FilterPanel({
           <motion.div
             ref={panelRef}
             data-lenis-prevent
-            className="fixed right-0 top-0 z-50 h-full w-[420px] max-w-[90vw] bg-background border-l border-border flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 z-50 h-full w-[420px] max-w-[90vw] bg-background border-l border-border flex flex-col shadow-[var(--shadow-elevated)]"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -247,7 +247,7 @@ export function FilterPanel({
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
                   placeholder="Search by name, city, or region..."
-                  className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {query && (
                   <button
@@ -592,7 +592,7 @@ function PanelChip({ label, isSelected, onClick, size = "default" }: PanelChipPr
     <button
       onClick={onClick}
       className={cn(
-        "rounded-xl border font-medium transition",
+        "rounded-lg border font-medium transition",
         size === "small" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm",
         isSelected
           ? "border-brand-primary bg-brand-primary text-white"
@@ -626,7 +626,7 @@ function ToggleOption({ label, description, checked, onChange }: ToggleOptionPro
           checked ? "bg-brand-primary" : "bg-surface group-hover:bg-border"
         )}>
           <div className={cn(
-            "absolute top-1 w-4 h-4 bg-background rounded-full transition-transform shadow-sm",
+            "absolute top-1 w-4 h-4 bg-background rounded-full transition-transform shadow-[var(--shadow-sm)]",
             checked ? "translate-x-5" : "translate-x-1"
           )} />
         </div>

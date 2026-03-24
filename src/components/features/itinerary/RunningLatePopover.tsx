@@ -56,7 +56,7 @@ export function RunningLatePopover({ onApplyDelay }: RunningLatePopoverProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-1.5 w-52 rounded-xl border border-border bg-surface p-3 shadow-lg">
+        <div className="absolute left-0 top-full z-30 mt-1.5 w-52 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-elevated)]">
           <p className="mb-2 text-xs font-medium text-foreground-secondary">
             Shift remaining activities
           </p>
@@ -66,7 +66,7 @@ export function RunningLatePopover({ onApplyDelay }: RunningLatePopoverProps) {
                 key={preset.value}
                 type="button"
                 onClick={() => applyPreset(preset.value)}
-                className="rounded-xl bg-background px-4 py-2.5 text-sm font-medium min-h-[44px] text-foreground transition-colors hover:bg-brand-primary/10 hover:text-brand-primary"
+                className="rounded-lg bg-background px-4 py-2.5 text-sm font-medium min-h-[44px] text-foreground transition-colors hover:bg-brand-primary/10 hover:text-brand-primary"
               >
                 {preset.label}
               </button>
@@ -81,13 +81,13 @@ export function RunningLatePopover({ onApplyDelay }: RunningLatePopoverProps) {
               value={customMinutes}
               onChange={(e) => setCustomMinutes(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applyCustom()}
-              className="h-11 w-20 rounded-xl border border-border bg-background px-2 text-center text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="h-11 w-20 rounded-lg border border-border bg-background px-2 text-center text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
             <button
               type="button"
               onClick={applyCustom}
               disabled={!customMinutes || parseInt(customMinutes, 10) < 1}
-              className="rounded-xl bg-brand-primary/10 px-4 py-2.5 text-sm font-medium min-h-[44px] text-brand-primary transition-colors hover:bg-brand-primary/20 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-lg bg-brand-primary/10 px-4 py-2.5 text-sm font-medium min-h-[44px] text-brand-primary transition-colors hover:bg-brand-primary/20 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Apply
             </button>

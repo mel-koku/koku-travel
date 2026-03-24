@@ -59,7 +59,7 @@ export default function IdentityBadge({
   }
 
   return (
-    <span className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 ${className}`}>
+    <span className={`inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 ${className}`}>
       {circle(initial)}
       <span className="text-sm font-medium text-foreground">{label}</span>
       {showChevron && (

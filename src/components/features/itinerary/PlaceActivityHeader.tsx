@@ -72,12 +72,12 @@ export function PlaceActivityHeader({
       {/* Tags + Status Row */}
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
         {placeLocation.category ? (
-          <span className="inline-block rounded-xl bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
+          <span className="inline-block rounded-md bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
             {placeLocation.category}
           </span>
         ) : null}
         {activity.tags?.includes("content-pick") ? (
-          <span className="inline-block rounded-xl bg-brand-primary/10 px-2 py-0.5 text-[11px] font-medium text-brand-primary">
+          <span className="inline-block rounded-md bg-brand-primary/10 px-2 py-0.5 text-[11px] font-medium text-brand-primary">
             Recommended
           </span>
         ) : null}

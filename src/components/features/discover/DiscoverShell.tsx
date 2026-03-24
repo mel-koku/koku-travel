@@ -135,7 +135,7 @@ export function DiscoverShell() {
 
       {/* Floating search + category chips */}
       <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 max-w-[calc(100%-4.5rem)]">
-        <div className="inline-flex items-center gap-2 rounded-xl bg-charcoal/90 backdrop-blur-md px-2.5 py-2 shadow-lg">
+        <div className="inline-flex items-center gap-2 rounded-lg bg-charcoal/90 backdrop-blur-md px-2.5 py-2 shadow-[var(--shadow-elevated)]">
           {/* Search input */}
           <div className="relative shrink-0">
             <svg
@@ -177,7 +177,7 @@ export function DiscoverShell() {
             <button
               key={chip.id}
               onClick={() => setDiscoverCategory(chip.id)}
-              className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition whitespace-nowrap ${
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition whitespace-nowrap ${
                 discoverCategory === chip.id
                   ? "bg-brand-primary text-white"
                   : "bg-white/10 text-white/80 border border-white/10 hover:bg-white/20"
@@ -192,7 +192,7 @@ export function DiscoverShell() {
       {/* Fallback banner */}
       {usingFallback && !isLocating && (
         <div className="absolute bottom-20 left-3 right-3 z-10">
-          <div className="mx-auto max-w-sm rounded-xl border border-white/10 bg-charcoal/90 backdrop-blur-md px-4 py-3 flex items-start gap-2.5 shadow-lg">
+          <div className="mx-auto max-w-sm rounded-lg border border-white/10 bg-charcoal/90 backdrop-blur-md px-4 py-3 flex items-start gap-2.5 shadow-[var(--shadow-elevated)]">
             <svg
               className="h-4 w-4 text-warning shrink-0 mt-0.5"
               viewBox="0 0 24 24"
@@ -223,7 +223,7 @@ export function DiscoverShell() {
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pb-[env(safe-area-inset-bottom)]">
           <button
             onClick={handleSurpriseMe}
-            className="flex items-center gap-2 rounded-full bg-charcoal/90 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-charcoal active:scale-[0.98] transition"
+            className="flex items-center gap-2 rounded-full bg-charcoal/90 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] hover:bg-charcoal active:scale-[0.98] transition"
           >
             <svg
               className="h-4 w-4"

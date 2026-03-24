@@ -87,7 +87,7 @@ export function SmartPromptPreview({
   ].filter((chip) => !chip.hidden);
 
   return (
-    <div className="rounded-xl border border-brand-primary/20 bg-surface p-3">
+    <div className="rounded-lg border border-brand-primary/20 bg-surface p-3">
       {/* Header */}
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-medium text-stone">
@@ -104,7 +104,7 @@ export function SmartPromptPreview({
       </div>
 
       {/* Recommendation Card */}
-      <div className="mb-3 rounded-xl bg-background p-3">
+      <div className="mb-3 rounded-lg bg-background p-3">
         <p className="text-sm font-medium text-foreground">
           {recommendation.name}
         </p>

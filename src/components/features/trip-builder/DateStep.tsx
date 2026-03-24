@@ -104,7 +104,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left half — Visual (hidden on mobile, shown on lg+) */}
-      <div className="relative hidden w-1/2 overflow-hidden rounded-xl lg:block">
+      <div className="relative hidden w-1/2 overflow-hidden rounded-lg lg:block">
         <motion.div
           className="absolute inset-0"
           animate={{ scale: [1, 1.05, 1] }}

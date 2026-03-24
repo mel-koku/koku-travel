@@ -158,7 +158,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             <button
               type="button"
               onClick={onStart}
-              className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
+              className="h-14 w-full cursor-pointer rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-card)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] sm:w-auto"
             >
               {ctaText}
             </button>
@@ -177,7 +177,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                     return !v;
                   });
                 }}
-                className="h-14 w-full cursor-pointer rounded-xl border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
+                className="h-14 w-full cursor-pointer rounded-lg border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
               >
                 Skip the Details
               </button>
@@ -199,7 +199,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                   transition={{ duration: 0.3, ease: easeReveal }}
                   className="overflow-hidden"
                 >
-                  <div className="rounded-xl border border-border bg-surface p-5 max-w-sm space-y-4">
+                  <div className="rounded-lg border border-border bg-surface p-5 max-w-sm space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-foreground">
                         Pick a length and go
@@ -207,7 +207,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                       <button
                         type="button"
                         onClick={() => setShowQuickPlan(false)}
-                        className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-background hover:text-foreground"
+                        className="flex h-11 w-11 items-center justify-center rounded-md text-foreground-secondary transition-colors hover:bg-background hover:text-foreground"
                         aria-label="Close quick plan"
                       >
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M1 1l12 12M13 1L1 13" /></svg>
@@ -224,7 +224,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                             type="button"
                             onClick={() => setQuickDuration(d)}
                             className={cn(
-                              "rounded-xl px-3 py-1.5 text-sm font-medium transition-colors",
+                              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                               d === quickDuration
                                 ? "bg-brand-primary text-white"
                                 : "bg-background text-foreground-secondary hover:text-foreground"
@@ -246,7 +246,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                             type="button"
                             onClick={() => setQuickPreset(p.id)}
                             className={cn(
-                              "rounded-xl px-3 py-1.5 text-sm font-medium transition-colors",
+                              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                               p.id === quickPreset
                                 ? "bg-brand-primary text-white"
                                 : "bg-background text-foreground-secondary hover:text-foreground"
@@ -262,7 +262,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                     <button
                       type="button"
                       onClick={handleQuickStart}
-                      className="h-11 w-full rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
+                      className="h-11 w-full rounded-lg bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
                     >
                       Go
                     </button>

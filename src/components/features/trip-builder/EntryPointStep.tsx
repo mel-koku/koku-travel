@@ -291,7 +291,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mt-6 rounded-xl border border-sage/30 bg-sage/5 p-4"
+                className="mt-6 rounded-lg border border-sage/30 bg-sage/5 p-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -306,7 +306,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="rounded-xl px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
+                    className="rounded-md px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
                   >
                     {sanityConfig?.entryPointChangeText ?? "Change"}
                   </button>
@@ -364,7 +364,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       type="button"
                       onClick={() => handleToggleSameAsEntry(true)}
                       className={cn(
-                        "flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all",
+                        "flex-1 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all",
                         sameAsEntry
                           ? "border-sage/30 bg-sage/5 text-sage"
                           : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
@@ -376,7 +376,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       type="button"
                       onClick={() => handleToggleSameAsEntry(false)}
                       className={cn(
-                        "flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all",
+                        "flex-1 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all",
                         !sameAsEntry
                           ? "border-sage/30 bg-sage/5 text-sage"
                           : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
@@ -397,7 +397,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                         className="overflow-hidden"
                       >
                         {data.exitPoint ? (
-                          <div className="mt-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4">
+                          <div className="mt-3 rounded-lg border border-brand-primary/20 bg-brand-primary/5 p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary/20 text-brand-primary">
@@ -411,7 +411,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                               <button
                                 type="button"
                                 onClick={handleClearExit}
-                                className="rounded-xl px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
+                                className="rounded-md px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
                               >
                                 Change
                               </button>
@@ -429,7 +429,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                                 value={exitSearchQuery}
                                 onChange={(e) => setExitSearchQuery(e.target.value)}
                                 placeholder="Search departure airport..."
-                                className="h-12 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                                className="h-12 w-full rounded-md border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                               />
                               {exitSearchQuery && (
                                 <button
@@ -452,7 +452,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                                   transition={{ duration: durationFast, ease: easeReveal }}
                                   className="overflow-hidden"
                                 >
-                                  <div className="mt-2 max-h-48 overflow-auto rounded-xl border border-border bg-background">
+                                  <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-border bg-background">
                                     {filteredExitAirports.map((airport) => (
                                       <button
                                         key={airport.id}
@@ -491,7 +491,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                                       type="button"
                                       onClick={() => handleSelectExitAirport(airport)}
                                       className={cn(
-                                        "group flex cursor-pointer flex-col rounded-xl border p-3 text-left transition-all",
+                                        "group flex cursor-pointer flex-col rounded-lg border p-3 text-left transition-all",
                                         "border-border bg-background hover:border-brand-primary/20 hover:bg-brand-primary/5",
                                       )}
                                     >
@@ -585,13 +585,13 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                           }}
                           placeholder={"e.g. NH203 NRT 14:30\nor: Landing Narita 2:30 PM, Departing KIX 18:00"}
                           rows={3}
-                          className="w-full resize-none rounded-xl border border-border bg-surface p-3 text-base text-foreground placeholder:text-stone focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
+                          className="w-full resize-none rounded-md border border-border bg-surface p-3 text-base text-foreground placeholder:text-stone focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
                         />
                         <button
                           type="button"
                           onClick={handleFlightParse}
                           disabled={!flightPasteText.trim()}
-                          className="mt-2 rounded-xl bg-sage/10 px-4 py-2 text-sm font-medium text-sage transition-colors hover:bg-sage/20 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="mt-2 rounded-md bg-sage/10 px-4 py-2 text-sm font-medium text-sage transition-colors hover:bg-sage/20 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           Auto-fill
                         </button>
@@ -631,7 +631,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={sanityConfig?.entryPointSearchPlaceholder ?? "Search by name, city, or code..."}
-                  className="h-12 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="h-12 w-full rounded-md border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {searchQuery && (
                   <button
@@ -654,7 +654,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     transition={{ duration: durationFast, ease: easeReveal }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-2 max-h-48 overflow-auto rounded-xl border border-border bg-background">
+                    <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-border bg-background">
                       {filteredAirports.map((airport) => (
                         <button
                           key={airport.id}
@@ -693,7 +693,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                         type="button"
                         onClick={() => handleSelectAirport(airport)}
                         className={cn(
-                          "group flex cursor-pointer flex-col rounded-xl border p-3 text-left transition-all",
+                          "group flex cursor-pointer flex-col rounded-lg border p-3 text-left transition-all",
                           "border-border bg-background hover:border-sage/30 hover:bg-sage/5"
                         )}
                       >

@@ -79,7 +79,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
           data-kind="note"
           data-activity-id={activity.id}
         >
-          <div className="flex items-center gap-2.5 rounded-xl border border-dashed border-sage/20 bg-sage/5 px-3 py-2">
+          <div className="flex items-center gap-2.5 rounded-lg border border-dashed border-sage/20 bg-sage/5 px-3 py-2">
             {/* Time */}
             <span className="w-12 shrink-0 text-right font-mono text-xs text-stone">
               {noteStartTime || "—"}
@@ -101,8 +101,8 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       <div
         ref={ref}
         style={dragStyles}
-        className={`rounded-xl border border-dashed border-sage/30 bg-sage/10 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
-          isDragging ? "ring-2 ring-sage/30 shadow-md" : ""
+        className={`rounded-lg border border-dashed border-sage/30 bg-sage/10 p-4 shadow-[var(--shadow-card)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+          isDragging ? "ring-2 ring-sage/30 shadow-[var(--shadow-elevated)]" : ""
         }`}
         data-kind="note"
         data-activity-id={activity.id}
@@ -147,7 +147,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               </p>
             ) : null
           ) : (
-            <div className="flex flex-col gap-2 rounded-xl bg-background/60 p-3 shadow-sm">
+            <div className="flex flex-col gap-2 rounded-lg bg-background/60 p-3 shadow-[var(--shadow-card)]">
               <span className="text-sm font-medium text-foreground-secondary">Time (optional)</span>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex flex-col gap-1">
@@ -157,7 +157,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                   <input
                     id={noteStartId}
                     type="time"
-                    className="h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    className="h-12 rounded-md border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     value={noteStartTime}
                     onChange={(event) => {
                       const value = event.target.value;
@@ -177,7 +177,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                   <input
                     id={noteEndId}
                     type="time"
-                    className="h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    className="h-12 rounded-md border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     value={noteEndTime}
                     onChange={(event) => {
                       const value = event.target.value;
@@ -215,7 +215,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               </label>
               <textarea
                 id={notesId}
-                className="w-full rounded-xl border border-border px-3 py-2 text-base text-foreground-secondary shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-md border border-border px-3 py-2 text-base text-foreground-secondary shadow-[var(--shadow-card)] focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                 rows={3}
                 value={notesValue}
                 onChange={handleNotesChange}

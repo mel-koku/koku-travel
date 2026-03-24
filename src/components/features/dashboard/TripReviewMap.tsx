@@ -42,7 +42,7 @@ export function TripReviewMap({ tripId }: { tripId: string }) {
       <h2 className="font-serif text-xl text-foreground">Your Route</h2>
       <div
         ref={mapContainer}
-        className="mt-4 h-[300px] w-full overflow-hidden rounded-xl border border-border sm:h-[400px]"
+        className="mt-4 h-[300px] w-full overflow-hidden rounded-lg border border-border sm:h-[400px]"
       />
     </div>
   );

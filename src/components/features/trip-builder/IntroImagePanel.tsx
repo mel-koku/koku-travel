@@ -21,7 +21,7 @@ export function IntroImagePanel({
     <div className="flex w-full flex-col gap-3">
       {/* Image container with clip-path reveal */}
       <motion.div
-        className="relative overflow-hidden rounded-xl aspect-[4/3] lg:aspect-[3/4] lg:max-h-[70vh]"
+        className="relative overflow-hidden rounded-lg aspect-[4/3] lg:aspect-[3/4] lg:max-h-[70vh]"
         initial={
           prefersReducedMotion
             ? { opacity: 1 }

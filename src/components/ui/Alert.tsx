@@ -89,7 +89,7 @@ const icons: Record<AlertTone, React.ReactElement> = {
 }
 
 const alertVariants = cva(
-  "relative w-full rounded-xl border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
+  "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
   {
     variants: {
       variant: {
@@ -141,7 +141,7 @@ function Alert({
       <div
         role="alert"
         className={cn(
-          "relative flex w-full gap-3 rounded-xl border-l-4 bg-card p-5 shadow-sm ring-1 ring-border",
+          "relative flex w-full gap-3 rounded-lg border-l-4 bg-card p-5 shadow-[var(--shadow-sm)] ring-1 ring-border",
           toneStyle.border,
           className
         )}

@@ -251,7 +251,7 @@ export function TimelineSection({
           strategy={verticalListSortingStrategy}
         >
           <ul ref={setNodeRef} className="space-y-3">
-            <li className="rounded-xl border-2 border-dashed border-border p-6 text-stone">
+            <li className="rounded-lg border-2 border-dashed border-border p-6 text-stone">
               <div className="flex flex-col items-start gap-3">
                 <p className="text-sm">
                   No activities for this time of day.

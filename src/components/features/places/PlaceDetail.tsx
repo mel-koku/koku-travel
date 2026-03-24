@@ -282,12 +282,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         {/* JTA + Hidden Gem badges */}
         <motion.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
           {location.jtaApproved && (
-            <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
               JTA Approved
             </span>
           )}
           {location.isHiddenGem && (
-            <span className="inline-flex items-center gap-1.5 rounded-xl border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
               Hidden Gem
             </span>
           )}
@@ -299,7 +299,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             type="button"
             onClick={handleToggleSave}
             className={cn(
-              "inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
+              "inline-flex h-11 items-center gap-2 rounded-lg px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
               isSaved
                 ? "bg-brand-primary text-white"
                 : "bg-surface text-foreground hover:bg-border/50"
@@ -321,7 +321,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
                 className={cn(
-                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-xl transition",
+                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
                   i === activePhotoIndex
                     ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
                     : "opacity-60 hover:opacity-100"
@@ -364,7 +364,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             {people.map((person) => (
               <div
                 key={person.id}
-                className="flex items-start gap-4 rounded-xl bg-surface p-4"
+                className="flex items-start gap-4 rounded-lg bg-surface p-4"
               >
                 {person.photo_url && (
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
@@ -423,7 +423,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               {tips.map((tip) => (
                 <div
                   key={tip.id}
-                  className="flex gap-2.5 rounded-xl bg-sage/5 border border-sage/10 p-3"
+                  className="flex gap-2.5 rounded-lg bg-sage/5 border border-sage/10 p-3"
                 >
                   {tip.icon && <span className="text-base shrink-0">{tip.icon}</span>}
                   <div className="min-w-0">
@@ -515,7 +515,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               {goodForPills.map((pill) => (
                 <span
                   key={pill.key}
-                  className="rounded-xl bg-surface px-3 py-1 text-sm text-foreground-secondary"
+                  className="rounded-lg bg-surface px-3 py-1 text-sm text-foreground-secondary"
                 >
                   {pill.label}
                 </span>
@@ -533,7 +533,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 .filter((r) => r.text && r.text.length > 20)
                 .slice(0, 3)
                 .map((review, i) => (
-                  <div key={i} className="rounded-xl bg-surface p-3">
+                  <div key={i} className="rounded-lg bg-surface p-3">
                     <div className="flex items-center gap-2 mb-1.5">
                       {review.rating && (
                         <span className="flex items-center gap-0.5">
@@ -625,7 +625,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </p>
           <a
             href={`/trip-builder?city=${encodeURIComponent(location.city)}`}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 h-11 text-sm font-medium text-white transition hover:brightness-110 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-medium text-white transition hover:brightness-110 active:scale-[0.98]"
           >
             Build a trip to {location.city}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

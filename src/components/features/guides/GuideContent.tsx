@@ -52,7 +52,7 @@ const markdownComponents = {
     const imgSrc = typeof src === "string" ? src : "";
     return (
       <ScrollReveal className="mx-auto max-w-5xl px-4 my-12" distance={40}>
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
           <Image
             src={imgSrc}
             alt={alt || ""}

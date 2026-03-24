@@ -96,7 +96,7 @@ export function AskKokuSuggestions({
           <button
             key={s}
             onClick={() => onSelect(s)}
-            className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground transition-colors hover:border-brand-primary/30 hover:text-brand-primary active:scale-[0.98]"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground transition-colors hover:border-brand-primary/30 hover:text-brand-primary active:scale-[0.98]"
           >
             {s}
           </button>

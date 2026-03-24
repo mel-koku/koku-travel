@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { durationBase, easeReveal } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
@@ -16,7 +18,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
     >
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
       {/* Solid brand-primary background */}
-      <div className="absolute inset-0 bg-brand-primary" />
+      <div className="absolute inset-0 bg-primary" />
 
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-6 py-24 sm:py-32 lg:py-40 text-center">
@@ -26,7 +28,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
-            className="font-serif text-2xl tracking-heading text-white sm:text-3xl"
+            className={cn(typography({ intent: "editorial-h2" }), "text-white")}
           >
             {content?.finalCtaHeading ?? "Your Japan starts with one place"}
           </motion.h2>
@@ -36,7 +38,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, delay: 0.5, ease: [...easeReveal] as [number, number, number, number] }}
-            className="mx-auto mt-8 max-w-md text-base text-white/90"
+            className={cn(typography({ intent: "utility-body" }), "mx-auto mt-8 max-w-md text-white/90")}
           >
             {content?.finalCtaDescription ?? "Tell us your dates. We'll build the days, route the trains, and find the right places along the way."}
           </motion.p>
@@ -50,7 +52,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
           >
             <a
               href="/trip-builder"
-              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg hover:bg-white/90 active:scale-[0.98]"
+              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-lg bg-white px-10 text-sm font-semibold uppercase tracking-wider text-primary shadow-[var(--shadow-elevated)] hover:bg-white/90 active:scale-[0.98]"
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>

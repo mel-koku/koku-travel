@@ -14,6 +14,7 @@ import {
 } from "@/lib/tripBuilder/regionScoring";
 import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import type { CityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -200,10 +201,16 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     }
   }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
 
-  // Validity
+  // City/day ratio validation
+  const cityDayValidation = useMemo(
+    () => validateCityDayRatio(selectedCities.size, data.duration ?? 0),
+    [selectedCities.size, data.duration],
+  );
+
+  // Validity: must have at least 1 city AND pass city/day ratio check
   useEffect(() => {
-    onValidityChange?.(selectedCities.size > 0);
-  }, [selectedCities.size, onValidityChange]);
+    onValidityChange?.(selectedCities.size > 0 && cityDayValidation.isValid);
+  }, [selectedCities.size, cityDayValidation.isValid, onValidityChange]);
 
   // Toggle a single city (known or dynamic) — auto-optimize order
   const toggleCity = useCallback(
@@ -403,6 +410,23 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
               Select at least one city
             </p>
           )}
+
+          {/* City/day ratio feedback */}
+          {cityDayValidation.message && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`mt-2 text-sm ${
+                cityDayValidation.severity === "error"
+                  ? "text-error"
+                  : "text-warning"
+              }`}
+              role="alert"
+            >
+              {cityDayValidation.message}
+            </motion.p>
+          )}
         </div>
 
         {/* Region rows */}
@@ -523,7 +547,7 @@ function MobileRegionDetail({
   return (
     <div className="border-b border-border/50 bg-foreground/[0.02] px-4 py-4">
       {/* Hero image */}
-      <div className="relative mb-3 aspect-[16/9] overflow-hidden rounded-xl">
+      <div className="relative mb-3 aspect-[16/9] overflow-hidden rounded-lg">
         <Image
           src={region.heroImage}
           alt={region.name}
@@ -552,7 +576,7 @@ function MobileRegionDetail({
               return (
                 <span
                   key={vibeId}
-                  className="rounded-xl bg-brand-primary/10 px-2.5 py-1 text-xs font-medium text-brand-primary"
+                  className="rounded-md bg-brand-primary/10 px-2.5 py-1 text-xs font-medium text-brand-primary"
                 >
                   {vibe.name}
                 </span>

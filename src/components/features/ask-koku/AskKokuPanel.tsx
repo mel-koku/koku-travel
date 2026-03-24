@@ -22,7 +22,7 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
       id="ask-koku-panel"
       role="dialog"
       aria-label="Ask Koku chat"
-      className="fixed inset-0 z-50 flex flex-col bg-background lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-xl lg:border lg:border-border lg:shadow-2xl"
+      className="fixed inset-0 z-50 flex flex-col bg-background lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-lg lg:border lg:border-border lg:shadow-2xl"
       data-lenis-prevent
     >
       {/* Header */}
@@ -30,7 +30,7 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
         <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
         <button
           onClick={onClose}
-          className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </button>
