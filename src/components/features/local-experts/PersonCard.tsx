@@ -71,7 +71,7 @@ export function PersonCard({ person, index, onClick }: Props) {
             className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(min-width:1280px) 300px, (min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/10 to-transparent" />
+          <div className="absolute inset-0 scrim-70" />
           {/* Category label overlay */}
           {category && (
             <div className="absolute left-3 top-3">

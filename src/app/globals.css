@@ -559,6 +559,125 @@ html.lenis-stopped {
   transform: translateX(100%);
 }
 
+/* Eased image scrim overlays
+   8-stop ease-out curve in oklab for smooth perceptual fade.
+   Eliminates the visible "knee" of linear Tailwind gradients.
+   Default direction: bottom to top. Override with .scrim-to-l, .scrim-to-b. */
+
+.scrim-90,
+.scrim-80,
+.scrim-70,
+.scrim-60,
+.scrim-50,
+.scrim-40,
+.scrim-20 {
+  --scrim-dir: to top;
+}
+
+.scrim-to-l {
+  --scrim-dir: to left;
+}
+.scrim-to-b {
+  --scrim-dir: to bottom;
+}
+
+.scrim-90 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 90%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 68%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 45%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 27%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 14%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 5%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 2%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-80 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 80%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 60%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 40%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 24%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 12%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 5%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 2%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-70 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 70%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 53%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 35%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 21%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 11%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 4%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 1%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-60 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 60%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 45%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 30%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 18%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 9%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 4%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 1%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-50 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 50%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 38%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 25%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 15%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 8%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 3%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 1%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-40 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 40%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 30%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 20%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 12%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 6%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 2%, transparent) 72%,
+    color-mix(in oklab, var(--charcoal) 1%, transparent) 88%,
+    transparent 100%
+  );
+}
+
+.scrim-20 {
+  background: linear-gradient(
+    var(--scrim-dir),
+    color-mix(in oklab, var(--charcoal) 20%, transparent) 0%,
+    color-mix(in oklab, var(--charcoal) 15%, transparent) 12%,
+    color-mix(in oklab, var(--charcoal) 10%, transparent) 25%,
+    color-mix(in oklab, var(--charcoal) 6%, transparent) 40%,
+    color-mix(in oklab, var(--charcoal) 3%, transparent) 55%,
+    color-mix(in oklab, var(--charcoal) 1%, transparent) 72%,
+    transparent 100%
+  );
+}
+
 /*
   Z-index stack (global):
   z-10/20  — Local overlays (textures, close buttons, content stacking)

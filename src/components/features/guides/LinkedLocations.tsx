@@ -79,7 +79,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       loading="lazy"
                     />
                     {/* Gradient overlay — recedes on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+                    <div className="absolute inset-0 scrim-60 transition-opacity duration-500 group-hover:opacity-50" />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
                   </div>
 

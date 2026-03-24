@@ -720,7 +720,7 @@ export const ItineraryShellB = ({
               className="absolute inset-0 z-10"
               aria-label="Expand map"
             >
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-charcoal/40 to-transparent pb-2.5 pt-8">
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center scrim-40 pb-2.5 pt-8">
                 <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-[var(--foreground)] shadow-[var(--shadow-sm)]">
                   Tap to expand map
                 </span>

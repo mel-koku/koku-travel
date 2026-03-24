@@ -186,7 +186,7 @@ export function LocalExpertsShell() {
                   className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
                   sizes="(min-width:1280px) 320px, (min-width:640px) 33vw, 50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
+                <div className="absolute inset-0 scrim-80" />
                 {!filters.activity && (
                   <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                 )}
@@ -230,7 +230,7 @@ export function LocalExpertsShell() {
                       className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
                       sizes="(min-width:1280px) 320px, (min-width:640px) 33vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
+                    <div className="absolute inset-0 scrim-80" />
                     {isActive && (
                       <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                     )}

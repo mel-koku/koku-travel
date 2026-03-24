@@ -58,7 +58,7 @@ export function MenuPanel() {
       </div>
 
       {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/40 to-transparent" />
+      <div className="absolute inset-0 scrim-70" />
 
       {/* Bottom-left content */}
       <div className="absolute bottom-12 left-8 right-8">
