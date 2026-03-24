@@ -115,7 +115,7 @@ function GuideCard({
           }
         />
         {/* Gradient overlay — recedes on hover to reveal more image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+        <div className="absolute inset-0 scrim-80 transition-opacity duration-500 group-hover:opacity-50" />
 
         {/* Index number */}
         <div className="absolute right-4 top-4">

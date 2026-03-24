@@ -44,7 +44,7 @@ export const LocationCard = ({
         className="object-cover"
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/10 to-transparent" />
+      <div className="absolute inset-0 scrim-60" />
 
       <div className="absolute inset-x-0 bottom-4 flex items-center justify-between px-6">
         <div>

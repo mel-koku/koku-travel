@@ -120,7 +120,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             sizes="50vw"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-l from-charcoal via-charcoal/60 to-transparent" />
+        <div className="absolute inset-0 scrim-90 scrim-to-l" />
       </div>
 
       {/* Right half — Form */}

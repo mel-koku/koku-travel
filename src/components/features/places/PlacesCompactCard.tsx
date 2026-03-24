@@ -84,7 +84,7 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
           </div>
 
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent" />
+          <div className="absolute inset-0 scrim-70" />
 
           {/* Bottom accent line on hover */}
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />

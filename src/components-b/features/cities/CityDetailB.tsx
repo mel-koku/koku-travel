@@ -55,7 +55,7 @@ export function CityDetailB({
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/30 to-transparent" />
+        <div className="absolute inset-0 scrim-70" />
         <div className="absolute inset-0 flex items-end">
           <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
             <div className="mx-auto max-w-7xl">

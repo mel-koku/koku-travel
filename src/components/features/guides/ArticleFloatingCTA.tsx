@@ -187,7 +187,7 @@ export function ArticleFloatingCTA({
                                   sizes="(min-width: 1280px) 25vw, 300px"
                                   loading="lazy"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent" />
+                                <div className="absolute inset-0 scrim-60" />
                               </div>
 
                               {/* Info */}

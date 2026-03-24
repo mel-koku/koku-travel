@@ -606,7 +606,7 @@ export const ItineraryShell = ({
               aria-label="Expand map"
             >
               {/* Bottom gradient hint */}
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-charcoal/60 to-transparent pb-2.5 pt-8">
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center scrim-60 pb-2.5 pt-8">
                 <span className="rounded-full bg-charcoal/80 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm">
                   Tap to expand map
                 </span>

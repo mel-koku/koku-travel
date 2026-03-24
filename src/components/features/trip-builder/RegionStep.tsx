@@ -557,7 +557,7 @@ function MobileRegionDetail({
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent" />
+        <div className="absolute inset-0 scrim-60" />
       </div>
 
       {/* Description */}

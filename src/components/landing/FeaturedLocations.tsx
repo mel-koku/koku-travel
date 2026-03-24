@@ -77,7 +77,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                         : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       }
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="absolute inset-0 scrim-40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   </div>
                   <div className="p-4 space-y-1">
                     <h3 className={cn(
