@@ -10,10 +10,9 @@ import {
   TestimonialTheater,
   FeaturedGuides,
   FinalCTA,
+  AskKokuPreview,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { typography } from "@/lib/typography-system";
-import { cn } from "@/lib/utils";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
 import { getFeaturedExperiences, getExperiencesBySeason } from "@/lib/experiences/experienceService";
@@ -95,15 +94,6 @@ export default async function Home() {
             content={landingContent ?? undefined}
           />
         </ErrorBoundary>
-        {/* Typographic break: a breath between content and social proof */}
-        <section aria-label="Statement" className="relative bg-background">
-          <div className="texture-grain pointer-events-none absolute inset-0" />
-          <div className="relative flex min-h-[50vh] items-center justify-center px-6 py-24 text-center sm:min-h-[60vh] sm:py-32">
-            <p className={cn(typography({ intent: "editorial-h1" }), "mx-auto max-w-3xl leading-snug")}>
-              Every trip starts somewhere you didn&apos;t expect.
-            </p>
-          </div>
-        </section>
         <ErrorBoundary fallback={null}>
           <TestimonialTheater content={landingContent ?? undefined} />
         </ErrorBoundary>
@@ -113,29 +103,9 @@ export default async function Home() {
             content={landingContent ?? undefined}
           />
         </ErrorBoundary>
-        {/* Ask Koku preview: demonstrate AI chat capability */}
-        <section aria-label="Ask Koku" className="bg-canvas py-12 sm:py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="text-center">
-              <p className="eyebrow-mono">Ask Koku</p>
-              <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl leading-snug")}>
-                Questions? We know the answer. Or we&apos;ll find it.
-              </h2>
-            </div>
-            <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-3">
-              {[
-                { q: "Best ramen near Shinjuku station?", a: "Fuunji, 3-minute walk from the south exit. Get the tsukemen." },
-                { q: "Day trip from Osaka worth taking?", a: "Nara. 45 minutes by train, deer park, Todai-ji temple. Back by dinner." },
-                { q: "Cherry blossoms in Hokkaido, when?", a: "Early to mid-May. About a month after Tokyo peaks." },
-              ].map((chat) => (
-                <div key={chat.q} className="rounded-lg border border-border bg-white p-5 shadow-[var(--shadow-card)]">
-                  <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium")}>{chat.q}</p>
-                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-sm")}>{chat.a}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ErrorBoundary fallback={null}>
+          <AskKokuPreview />
+        </ErrorBoundary>
         <ErrorBoundary fallback={null}>
           <FinalCTA content={landingContent ?? undefined} />
         </ErrorBoundary>

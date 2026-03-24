@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { SplitText } from "@/components/ui/SplitText";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
@@ -153,7 +154,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
   if (!featured) return null;
 
   return (
-    <section aria-label="Testimonials" className="bg-background py-12 sm:py-20 lg:py-28">
+    <section aria-label="Testimonials" className="bg-background">
       {/* Featured testimonial — full-bleed hero moment */}
       <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         {featured.image ? (
@@ -170,7 +171,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         )}
         <div className="absolute inset-0 bg-charcoal/60" />
 
-        <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-8">
+        <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28">
           <span className="mb-4 block select-none font-serif text-[4rem] leading-none text-white/15 sm:text-[6rem]">
             &ldquo;
           </span>
@@ -188,7 +189,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             </SplitText>
           </blockquote>
 
-          <div className="mt-8 text-left sm:text-center">
+          <div className="mt-8">
             <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium text-white")}>
               {featured.author}
             </p>
@@ -201,7 +202,8 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
 
       {/* Remaining testimonials — horizontal scroll with arrows */}
       {rest.length > 0 && (
-        <div className="pt-8 pb-12 sm:pt-12 lg:pt-16">
+        <ScrollReveal direction="up" distance={20} delay={0.1}>
+        <div className="py-12 sm:py-20 lg:py-28">
           <div
             ref={scrollRef}
             onScroll={updateScrollState}
@@ -210,7 +212,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             {rest.map((testimonial, i) => (
               <div
                 key={i}
-                className="w-[min(300px,80vw)] shrink-0 snap-start rounded-lg border border-border bg-white p-6 shadow-[var(--shadow-card)]"
+                className="w-[min(340px,85vw)] shrink-0 snap-start rounded-lg border border-border bg-white p-7 shadow-[var(--shadow-card)]"
               >
                 <blockquote>
                   <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>
@@ -253,6 +255,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             </button>
           </div>
         </div>
+        </ScrollReveal>
       )}
     </section>
   );
