@@ -13,10 +13,13 @@ import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
+import type { GeneratedGuide } from "@/types/llmConstraints";
+
 type PlanApiResponse = {
   trip: { id: string };
   itinerary: Itinerary;
   dayIntros?: Record<string, string>;
+  guideProse?: GeneratedGuide;
   validation: { valid: boolean; issues: string[] };
 };
 
@@ -77,6 +80,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         itinerary: result.itinerary,
         builderData: data as TripBuilderData,
         dayIntros: result.dayIntros,
+        guideProse: result.guideProse,
       });
 
       // Seed city accommodations from builder data so the itinerary page shows pre-filled hotels

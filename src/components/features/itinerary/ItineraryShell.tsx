@@ -17,6 +17,7 @@ import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
+import type { GeneratedGuide } from "@/types/llmConstraints";
 import { DaySelector } from "./DaySelector";
 import { LocationSearchBar } from "./LocationSearchBar";
 import { DayRefinementButtons } from "./DayRefinementButtons";
@@ -74,6 +75,7 @@ type ItineraryShellProps = {
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
   tripBuilderData?: TripBuilderData;
   dayIntros?: Record<string, string>;
+  guideProse?: GeneratedGuide;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -100,6 +102,7 @@ export const ItineraryShell = ({
   tripStartDate,
   tripBuilderData,
   dayIntros,
+  guideProse,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -409,7 +412,7 @@ export const ItineraryShell = ({
   }, [tripHealth]);
 
   // Guide hook — lazy-loads ~90KB of template data
-  const { currentDayGuide } = useItineraryGuide(model, tripBuilderData, dayIntros, currentDay?.id);
+  const { currentDayGuide } = useItineraryGuide(model, tripBuilderData, dayIntros, currentDay?.id, guideProse);
 
   // Get conflicts for the current day
   const currentDayConflicts = useMemo(() => {
