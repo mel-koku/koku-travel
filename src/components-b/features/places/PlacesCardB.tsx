@@ -136,7 +136,11 @@ export const PlacesCardB = memo(function PlacesCardB({
                   </span>
                 ) : null}
               </span>
-            ) : null}
+            ) : (
+              <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-[var(--success)]">
+                Curated
+              </span>
+            )}
           </div>
 
           {/* City */}
