@@ -17,6 +17,7 @@ const PUBLIC_API_ROUTES = [
   "/api/itinerary/plan",
   "/api/itinerary/schedule",
   "/api/itinerary/refine",
+  "/api/itinerary/replacements",
   "/api/itinerary/availability",
   "/api/routing",
   "/api/smart-prompts",
