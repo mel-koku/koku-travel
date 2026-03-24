@@ -14,6 +14,7 @@ import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
+import type { GeneratedGuide } from "@/types/llmConstraints";
 // Intentionally shared — ItineraryMapPanel is variant-agnostic (Mapbox wrapper)
 import { ItineraryMapPanel } from "@/components/features/itinerary/ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -89,6 +90,7 @@ type ItineraryShellBProps = {
   tripStartDate?: string;
   tripBuilderData?: TripBuilderData;
   dayIntros?: Record<string, string>;
+  guideProse?: GeneratedGuide;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -115,6 +117,7 @@ export const ItineraryShellB = ({
   tripStartDate,
   tripBuilderData,
   dayIntros,
+  guideProse,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -443,6 +446,7 @@ export const ItineraryShellB = ({
     tripBuilderData,
     dayIntros,
     currentDay?.id,
+    guideProse,
   );
 
   // Conflicts for the current day
