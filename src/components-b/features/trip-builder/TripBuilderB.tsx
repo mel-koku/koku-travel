@@ -10,6 +10,8 @@ import { RegionStepB } from "./RegionStepB";
 import { ReviewStepB } from "./ReviewStepB";
 import { StepShellB, StepNavBarB } from "./StepShellB";
 import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
+import { useTripBuilder } from "@/context/TripBuilderContext";
+import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -44,6 +46,7 @@ export type TripBuilderBProps = {
 
 export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { data } = useTripBuilder();
 
   const {
     currentStep,
@@ -146,7 +149,12 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
             currentStep === 3
               ? "Select at least one vibe to continue"
               : currentStep === 4
-                ? "Pick at least one region to continue"
+                ? (() => {
+                    const cityCount = data.cities?.length ?? 0;
+                    if (cityCount === 0) return "Pick at least one city to continue";
+                    const v = validateCityDayRatio(cityCount, data.duration ?? 0);
+                    return v.hint ?? "Pick at least one city to continue";
+                  })()
                 : undefined
           }
           currentStep={currentStep}

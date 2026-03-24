@@ -12,6 +12,7 @@ import {
 } from "@/lib/tripBuilder/regionScoring";
 import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import { CitySearchBar } from "@/components/features/trip-builder/CitySearchBar";
 import { RegionRowB, type RegionSelectionState } from "./RegionRowB";
 import { RegionDetailPanelB } from "./RegionDetailPanelB";
@@ -151,10 +152,16 @@ export function RegionStepB({
     }
   }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
 
-  // Validity
+  // City/day ratio validation
+  const cityDayValidation = useMemo(
+    () => validateCityDayRatio(selectedCities.size, data.duration ?? 0),
+    [selectedCities.size, data.duration],
+  );
+
+  // Validity: must have at least 1 city AND pass city/day ratio check
   useEffect(() => {
-    onValidityChange?.(selectedCities.size > 0);
-  }, [selectedCities.size, onValidityChange]);
+    onValidityChange?.(selectedCities.size > 0 && cityDayValidation.isValid);
+  }, [selectedCities.size, cityDayValidation.isValid, onValidityChange]);
 
   const toggleCity = useCallback(
     (cityId: CityId) => {
@@ -317,6 +324,23 @@ export function RegionStepB({
           <p className="mt-3 text-sm text-[var(--warning)]">
             Select at least one city
           </p>
+        )}
+
+        {/* City/day ratio feedback */}
+        {cityDayValidation.message && (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`mt-2 text-center text-sm ${
+              cityDayValidation.severity === "error"
+                ? "text-[var(--destructive)]"
+                : "text-[var(--warning)]"
+            }`}
+            role="alert"
+          >
+            {cityDayValidation.message}
+          </motion.p>
         )}
       </div>
 
