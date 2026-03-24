@@ -45,7 +45,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, delay: 0.1, ease: [...easeReveal] as [number, number, number, number] }}
-            className="mt-4 text-base text-white/60"
+            className="mt-4 text-base text-white/80"
           >
             Pick your dates. We&apos;ll handle the rest.
           </motion.p>

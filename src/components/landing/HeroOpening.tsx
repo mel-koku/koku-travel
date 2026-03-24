@@ -100,7 +100,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <h1 className={cn(typography({ intent: "editorial-hero" }), "leading-[1.05] tracking-tight text-white")}>
               {headline}
             </h1>
-            <p className="mt-5 max-w-lg text-base text-white/70 sm:text-lg">
+            <p className="mt-5 max-w-lg text-base text-white/80 sm:text-lg">
               {description}
             </p>
             <div className="mt-8">
@@ -194,7 +194,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             initial={{ opacity: 0.005, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.4, ease: easeReveal }}
-            className="mt-5 max-w-lg text-base text-white/70 sm:text-lg"
+            className="mt-5 max-w-lg text-base text-white/80 sm:text-lg"
           >
             {description}
           </motion.p>

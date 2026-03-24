@@ -193,7 +193,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium text-white")}>
               {featured.author}
             </p>
-            <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5 text-white/60")}>
+            <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5 text-white/70")}>
               {featured.location}
             </p>
           </div>
