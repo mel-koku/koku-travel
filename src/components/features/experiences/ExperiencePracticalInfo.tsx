@@ -1,6 +1,8 @@
 "use client";
 
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 type ExperiencePracticalInfoProps = {
   whatsIncluded?: string[];
@@ -29,7 +31,7 @@ export function ExperiencePracticalInfo({
   return (
     <section className="py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-2xl px-6">
-        <h2 className="font-serif text-2xl text-foreground mb-8 sm:text-3xl">
+        <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-8")}>
           Practical Information
         </h2>
 

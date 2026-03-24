@@ -5,6 +5,8 @@ import type { FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import IdentityBadge from "@/components/ui/IdentityBadge";
 import { env } from "@/lib/env";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 type AccountSectionProps = {
   isAuthenticated: boolean;
@@ -37,7 +39,7 @@ export function AccountSection({
         </div>
       )}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="font-serif text-lg text-foreground">Account</h2>
+        <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>Account</h2>
         {isAuthenticated && supabase && (
           <button
             onClick={async () => {

@@ -6,6 +6,7 @@ import type { ChangeEvent } from "react";
 
 import type { StoredTrip } from "@/state/AppState";
 import type { ItineraryActivity } from "@/types/itinerary";
+import { typography } from "@/lib/typography-system";
 import { DaySelector } from "./DaySelector";
 
 type DashboardItineraryPreviewProps = {
@@ -150,7 +151,7 @@ export const DashboardItineraryPreview = ({
           <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
           </p>
-          <h2 className="font-serif text-xl text-foreground">{trip.name}</h2>
+          <h2 className={typography({ intent: "editorial-h3" })}>{trip.name}</h2>
           {createdLabel ? (
             <p className="font-mono text-xs text-stone">
               Saved {createdLabel}

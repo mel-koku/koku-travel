@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { PortableText, type PortableTextComponents, type PortableTextBlock } from "@portabletext/react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { urlFor } from "@/sanity/image";
 import { TipCalloutBlock } from "./blocks/TipCalloutBlock";
 import { LocationEmbedBlock } from "./blocks/LocationEmbedBlock";
@@ -17,14 +19,14 @@ const components: PortableTextComponents = {
   block: {
     h2: ({ children }) => (
       <ScrollReveal className="mx-auto max-w-3xl px-6" distance={30}>
-        <h2 className="font-serif text-2xl text-foreground mt-20 mb-6 sm:text-3xl">
+        <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-20 mb-6")}>
           {children}
         </h2>
       </ScrollReveal>
     ),
     h3: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <h3 className="font-serif text-xl text-foreground mt-12 mb-4">
+        <h3 className={cn(typography({ intent: "editorial-h3" }), "mt-12 mb-4")}>
           {children}
         </h3>
       </div>

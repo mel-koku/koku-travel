@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { SanityAuthorFull } from "@/types/sanityGuide";
 import type { GuideType } from "@/types/guide";
 
@@ -48,7 +50,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
               )}
 
               <div>
-                <h1 className="font-serif text-3xl text-foreground sm:text-4xl">
+                <h1 className={typography({ intent: "editorial-h1" })}>
                   {author.name}
                 </h1>
                 {author.city && (
@@ -108,7 +110,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
         <section className="pb-12 sm:pb-20 lg:pb-28">
           <div className="mx-auto max-w-5xl px-6">
             <ScrollReveal distance={20}>
-              <h2 className="font-serif text-2xl text-foreground mb-8">
+              <h2 className={cn(typography({ intent: "editorial-h2" }), "md:text-2xl mb-8")}>
                 Published Guides
               </h2>
             </ScrollReveal>

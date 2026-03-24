@@ -6,6 +6,7 @@ import Link from "next/link";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { staggerItem } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
 import type { Location } from "@/types/location";
 
 type LinkedLocationsProps = {
@@ -28,7 +29,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
           <p className="mb-2 eyebrow-editorial">
             Featured in this guide
           </p>
-          <h2 className="font-serif text-2xl text-foreground sm:text-3xl">
+          <h2 className={typography({ intent: "editorial-h2" })}>
             Places to Visit
           </h2>
         </ScrollReveal>

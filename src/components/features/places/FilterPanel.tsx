@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { Button } from "@/components/ui/Button";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
@@ -203,7 +204,7 @@ export function FilterPanel({
             {/* Header */}
             <div className="flex items-start justify-between border-b border-border px-6 py-4 shrink-0">
               <div>
-                <h2 id="filter-panel-title" className="font-serif text-xl text-foreground">
+                <h2 id="filter-panel-title" className={typography({ intent: "editorial-h3" })}>
                   Refine
                 </h2>
                 <p className="mt-0.5 text-xs text-foreground-secondary">

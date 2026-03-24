@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { mapboxService } from "@/lib/mapbox/mapService";
+import { typography } from "@/lib/typography-system";
 
 const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
 
@@ -39,7 +40,7 @@ export function TripReviewMap({ tripId }: { tripId: string }) {
 
   return (
     <div>
-      <h2 className="font-serif text-xl text-foreground">Your Route</h2>
+      <h2 className={typography({ intent: "editorial-h3" })}>Your Route</h2>
       <div
         ref={mapContainer}
         className="mt-4 h-[300px] w-full overflow-hidden rounded-lg border border-border sm:h-[400px]"

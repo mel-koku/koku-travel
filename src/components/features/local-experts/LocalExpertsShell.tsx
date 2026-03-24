@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { easeReveal } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import { useAllPeople } from "@/hooks/usePeopleQuery";
 import { usePeopleFilters } from "@/hooks/usePeopleFilters";
 import {
@@ -147,7 +149,7 @@ export function LocalExpertsShell() {
               delay: 0.1,
               ease: [...easeReveal] as [number, number, number, number],
             }}
-            className="mt-4 font-serif text-4xl text-foreground sm:text-5xl lg:text-6xl"
+            className={`mt-4 ${cn(typography({ intent: "editorial-hero" }), "text-4xl sm:text-5xl lg:text-6xl")}`}
           >
             Learn Japan from the people who live it
           </motion.h1>

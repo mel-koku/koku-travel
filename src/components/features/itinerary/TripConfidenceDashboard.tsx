@@ -8,6 +8,7 @@ import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
 import { REGIONS } from "@/data/regions";
+import { typography } from "@/lib/typography-system";
 import {
   calculateTripHealth,
   getHealthLevel,
@@ -179,7 +180,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-xl text-foreground">Trip Overview</h2>
+        <h2 className={typography({ intent: "editorial-h3" })}>Trip Overview</h2>
         <button
           onClick={onClose}
           className="rounded-lg p-1.5 text-stone hover:text-foreground hover:bg-surface transition"

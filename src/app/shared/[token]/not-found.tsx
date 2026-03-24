@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 export default function SharedNotFound() {
   return (
@@ -7,7 +9,7 @@ export default function SharedNotFound() {
         <Link href="/" className="font-serif text-2xl text-foreground hover:text-brand-primary transition">
           KOKU
         </Link>
-        <h1 className="mt-8 font-serif text-3xl text-foreground sm:text-4xl">
+        <h1 className={cn(typography({ intent: "editorial-h1" }), "mt-8")}>
           Link no longer active
         </h1>
         <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
