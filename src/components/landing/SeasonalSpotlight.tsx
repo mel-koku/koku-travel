@@ -70,7 +70,7 @@ export function SeasonalSpotlight({
     <section className="bg-background py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <ScrollReveal direction="up" distance={20} duration={0.6}>
+        <ScrollReveal direction="up">
           <div>
             <div>
               <p className="eyebrow-editorial text-brand-secondary">
@@ -91,9 +91,6 @@ export function SeasonalSpotlight({
           {cards.map((card, idx) => (
             <ScrollReveal
               key={card.id}
-              direction="up"
-              distance={20}
-              duration={0.6}
               delay={idx * 0.08}
             >
               <SpotlightCard card={card} idx={idx} />

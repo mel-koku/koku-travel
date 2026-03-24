@@ -179,7 +179,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
           <blockquote className="-mt-12 sm:-mt-16">
             <SplitText
               as="p"
-              className={cn(typography({ intent: "editorial-h2" }), "text-xl leading-relaxed text-white sm:text-2xl lg:text-3xl")}
+              className={cn(typography({ intent: "editorial-h2" }), "text-white")}
               splitBy="word"
               animation="fadeUp"
               staggerDelay={staggerWord}
@@ -202,7 +202,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
 
       {/* Remaining testimonials — horizontal scroll with arrows */}
       {rest.length > 0 && (
-        <ScrollReveal direction="up" distance={20} delay={0.1}>
+        <ScrollReveal delay={0.1}>
         <div className="py-12 sm:py-20 lg:py-28">
           <div
             ref={scrollRef}
