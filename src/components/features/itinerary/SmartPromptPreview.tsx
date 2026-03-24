@@ -4,6 +4,7 @@ import { MapPin, Star, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import type { PreviewRecommendation, RefinementFilters } from "@/hooks/useSmartPromptActions";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const MAX_SHOWS = 3;
 
@@ -128,9 +129,7 @@ export function SmartPromptPreview({
           )}
         </div>
         {recommendation.shortDescription && (
-          <p className="mt-1.5 text-xs leading-relaxed text-foreground-secondary line-clamp-2">
-            {recommendation.shortDescription}
-          </p>
+          <ExpandableText text={recommendation.shortDescription} className="mt-1.5 text-xs leading-relaxed text-foreground-secondary" />
         )}
       </div>
 

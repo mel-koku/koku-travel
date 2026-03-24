@@ -4,6 +4,7 @@ import type {
   PointerEvent,
   TouchEvent,
 } from "react";
+import type { ActivityColorScheme } from "@/lib/itinerary/activityColors";
 
 type DragHandleListeners = {
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void;
@@ -21,6 +22,12 @@ type DragHandleProps = {
   isDragging?: boolean;
   attributes?: Record<string, unknown>;
   listeners?: Record<string, unknown>;
+  /** Stop number/label to display (place variant only) */
+  displayLabel?: string | number;
+  /** Color scheme for the stop number */
+  colorScheme?: ActivityColorScheme;
+  /** Whether this activity is selected */
+  isSelected?: boolean;
 };
 
 export function DragHandle({
@@ -29,6 +36,9 @@ export function DragHandle({
   isDragging,
   attributes,
   listeners,
+  displayLabel,
+  colorScheme: _colorScheme,
+  isSelected,
 }: DragHandleProps) {
   const dragAttributeProps = (attributes ?? {}) as Record<string, unknown>;
   const dragHandleListeners = (() => {
@@ -78,6 +88,42 @@ export function DragHandle({
 
   const isPlace = variant === "place";
 
+  // Place variant with stop number: large monospace number + grip icon on hover
+  if (isPlace && displayLabel !== undefined) {
+    return (
+      <button
+        type="button"
+        aria-label={label}
+        data-dragging={isDragging}
+        className={`group/drag flex flex-col items-center gap-0.5 transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.95] active:scale-[0.97]`}
+        {...dragAttributeProps}
+        {...dragHandleListeners}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <span className={`font-mono text-xl font-bold ${
+          isSelected ? "text-sage" : "text-foreground/20 group-hover/drag:text-foreground/40"
+        }`}>
+          {String(displayLabel).padStart(2, "0")}
+        </span>
+        <svg
+          className="h-3.5 w-3.5 text-stone/0 transition-colors group-hover:text-stone/30"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+        >
+          <circle cx="5.5" cy="4" r="1.3" />
+          <circle cx="10.5" cy="4" r="1.3" />
+          <circle cx="5.5" cy="8.5" r="1.3" />
+          <circle cx="10.5" cy="8.5" r="1.3" />
+          <circle cx="5.5" cy="13" r="1.3" />
+          <circle cx="10.5" cy="13" r="1.3" />
+        </svg>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -85,8 +131,8 @@ export function DragHandle({
       data-dragging={isDragging}
       className={
         isPlace
-          ? "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-full bg-white/85 px-3 py-1.5 text-charcoal/80 shadow-[var(--shadow-card)] backdrop-blur-md transition-all cursor-grab hover:bg-white/95 hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
-          : "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-lg px-2 py-1 text-sage transition-all cursor-grab hover:bg-sage/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
+          ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-stone/60 transition-all cursor-grab hover:bg-sand/50 hover:text-stone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
+          : "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-sage/60 transition-all cursor-grab hover:bg-sage/15 hover:text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
       }
       {...dragAttributeProps}
       {...dragHandleListeners}
@@ -95,8 +141,14 @@ export function DragHandle({
         event.stopPropagation();
       }}
     >
-      Drag to reorder
+      <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+        <circle cx="5.5" cy="3.5" r="1.5" />
+        <circle cx="10.5" cy="3.5" r="1.5" />
+        <circle cx="5.5" cy="8" r="1.5" />
+        <circle cx="10.5" cy="8" r="1.5" />
+        <circle cx="5.5" cy="12.5" r="1.5" />
+        <circle cx="10.5" cy="12.5" r="1.5" />
+      </svg>
     </button>
   );
 }
-

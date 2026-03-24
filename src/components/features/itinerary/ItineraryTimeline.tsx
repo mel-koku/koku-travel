@@ -932,12 +932,7 @@ export const ItineraryTimeline = ({
                 const guideBeforeElement = !activeId && guideSegmentsBefore.length > 0 ? (
                   <div className="space-y-2">
                     {guideSegmentsBefore.map((seg) => (
-                      <div key={seg.id} className="flex gap-3">
-                        <div className="w-16 shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <GuideSegmentCard segment={seg} />
-                        </div>
-                      </div>
+                      <GuideSegmentCard key={seg.id} segment={seg} />
                     ))}
                   </div>
                 ) : undefined;
@@ -968,12 +963,7 @@ export const ItineraryTimeline = ({
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (
                       <li key={seg.id} className="list-none">
-                        <div className="flex gap-3">
-                          <div className="w-16 shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <GuideSegmentCard segment={seg} />
-                          </div>
-                        </div>
+                        <GuideSegmentCard segment={seg} />
                       </li>
                     ))}
                     {/* Inline accommodation bookend after arrival anchor */}

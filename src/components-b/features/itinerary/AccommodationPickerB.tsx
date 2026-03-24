@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MapPin, Flag, X, Pencil, ChevronUp } from "lucide-react";
+import { MapPin, Flag, X, Pencil } from "lucide-react";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import type { EntryPoint } from "@/types/trip";
 
@@ -106,38 +106,26 @@ export function AccommodationPickerB({
 
   return (
     <div ref={containerRef}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+      <div className="flex items-start gap-2">
         <LocationFieldB
-          label="Starting location"
           icon={<MapPin className="h-3.5 w-3.5" />}
           value={startLocation}
           onChange={onStartChange}
-          placeholder="Search hotel, address..."
+          placeholder="Start: hotel, address..."
         />
         <LocationFieldB
-          label="Ending location"
           icon={<Flag className="h-3.5 w-3.5" />}
           value={endLocation}
           onChange={onEndChange}
-          placeholder={startLocation ? "Same as start" : "Search hotel, address..."}
+          placeholder={startLocation ? `End: same as start` : "End: hotel, address..."}
           linkedValue={startLocation}
         />
       </div>
-      <button
-        type="button"
-        onClick={() => setExpanded(false)}
-        className="mt-1.5 flex w-full items-center justify-center gap-1 rounded-lg py-1 text-xs font-medium transition-colors hover:bg-[var(--surface)]"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        <ChevronUp className="h-3.5 w-3.5" />
-        Done
-      </button>
     </div>
   );
 }
 
 type LocationFieldBProps = {
-  label: string;
   icon: React.ReactNode;
   value?: EntryPoint;
   onChange: (location: EntryPoint | undefined) => void;
@@ -146,7 +134,6 @@ type LocationFieldBProps = {
 };
 
 function LocationFieldB({
-  label,
   icon,
   value,
   onChange,
@@ -204,22 +191,15 @@ function LocationFieldB({
 
   return (
     <div ref={ref} className="relative min-w-0 flex-1">
-      <label
-        className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.15em]"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        {icon}
-        {label}
-      </label>
-
       {value ? (
         <div
-          className="flex h-11 items-center gap-2 rounded-xl border px-3"
+          className="flex h-9 items-center gap-1.5 rounded-xl border px-2.5"
           style={{
             borderColor: "var(--border)",
             backgroundColor: "var(--background)",
           }}
         >
+          <span className="shrink-0" style={{ color: "var(--muted-foreground)" }}>{icon}</span>
           <span
             className="flex-1 truncate text-sm"
             style={{ color: "var(--foreground)" }}
@@ -229,7 +209,7 @@ function LocationFieldB({
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-[var(--surface)]"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-[var(--surface)]"
             style={{ color: "var(--muted-foreground)" }}
             aria-label="Clear"
           >
@@ -237,22 +217,27 @@ function LocationFieldB({
           </button>
         </div>
       ) : (
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          placeholder={
-            isSameAsLinked ? `Same as start · ${linkedValue.name}` : placeholder
-          }
-          className="h-11 w-full rounded-xl border px-3 text-base transition-colors focus:outline-none focus:ring-2"
+        <div
+          className="flex h-9 items-center gap-1.5 rounded-xl border px-2.5"
           style={{
             borderColor: "var(--border)",
-            color: "var(--foreground)",
             backgroundColor: "var(--background)",
           }}
-        />
+        >
+          <span className="shrink-0" style={{ color: "var(--muted-foreground)" }}>{icon}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setFocused(true)}
+            placeholder={
+              isSameAsLinked ? `Same as start` : placeholder
+            }
+            className="h-full min-w-0 flex-1 bg-transparent text-sm focus:outline-none"
+            style={{ color: "var(--foreground)" }}
+          />
+        </div>
       )}
 
       {showDropdown && (

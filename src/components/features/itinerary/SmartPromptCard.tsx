@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
@@ -192,7 +193,7 @@ export function SmartPromptCard({
             Day {gap.dayIndex + 1}
           </span>
         </div>
-        <p className="mt-0.5 text-xs text-stone line-clamp-2">{gap.description}</p>
+        <ExpandableText text={gap.description} className="mt-0.5 text-xs text-stone" />
 
         {/* Reservation alert: show location list */}
         {gap.action.type === "acknowledge_reservation" && (

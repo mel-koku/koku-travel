@@ -133,7 +133,7 @@ export function DayHeader({
 
   return (
     <div className="mb-2">
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {/* Compact date/city/pace line */}
         <div className="flex items-center justify-between border-b border-border pb-2">
           <h2 className="text-xs font-medium uppercase tracking-[0.15em] text-foreground-secondary">
