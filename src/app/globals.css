@@ -341,9 +341,9 @@
   --color-vermilion-hover: var(--vermilion-hover);
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans), "system-ui", "sans-serif";
+  --font-sans: var(--font-plus-jakarta), "system-ui", "sans-serif";
   --font-mono: var(--font-geist-mono), "ui-monospace", "monospace";
-  --font-serif: var(--font-newsreader), "Georgia", "serif";
+  --font-serif: var(--font-cormorant), "Georgia", "serif";
 
   /* Letter-spacing (tracking) tokens */
   --tracking-display: -0.04em;
@@ -362,7 +362,7 @@
 }
 
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
 /* Typography tiers */
