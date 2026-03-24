@@ -224,7 +224,14 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-background">
-      {viewMode === "grid" && <PlacesIntro totalCount={total} content={content} />}
+      {viewMode === "grid" && (
+        <PlacesIntro totalCount={total} content={content}>
+          <SeasonalBanner
+            locations={locations}
+            onFilterSeasonal={handleFilterSeasonal}
+          />
+        </PlacesIntro>
+      )}
 
       {/* Error state */}
       {error ? (
@@ -263,14 +270,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onViewModeChange={setViewMode}
         mapAvailable={mapAvailable}
       />
-
-      {/* Seasonal banner (grid mode only) */}
-      {viewMode === "grid" && (
-        <SeasonalBanner
-          locations={locations}
-          onFilterSeasonal={handleFilterSeasonal}
-        />
-      )}
 
       {/* Koku filter banner */}
       {kokuIds.length > 0 && (

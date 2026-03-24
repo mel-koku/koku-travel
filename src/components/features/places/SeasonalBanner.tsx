@@ -31,30 +31,21 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="mx-auto max-w-2xl px-4 sm:px-6 py-1"
+        className="text-sm text-foreground-secondary"
       >
-        <div className="flex items-center gap-3 rounded-lg bg-brand-primary/[0.06] px-4 py-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">
-              {highlight.label}
-            </p>
-            <p className="text-xs text-foreground-secondary mt-0.5">
-              {highlight.description} — {matchCount.toLocaleString()} {matchCount === 1 ? "place" : "places"} to explore
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onFilterSeasonal}
-            className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand-primary hover:text-brand-primary active:scale-[0.98] transition-colors"
-          >
-            View
-          </button>
-        </div>
-      </motion.div>
+        {highlight.description} — {matchCount.toLocaleString()} {matchCount === 1 ? "place" : "places"} to explore.{" "}
+        <button
+          type="button"
+          onClick={onFilterSeasonal}
+          className="font-medium text-brand-primary hover:underline underline-offset-2 active:scale-[0.98] transition-colors"
+        >
+          View
+        </button>
+      </motion.p>
     </AnimatePresence>
   );
 }

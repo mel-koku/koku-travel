@@ -213,7 +213,7 @@ export default function Header() {
       </a>
 
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-sm border-b border-border"
+        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/95 backdrop-blur-xl"
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
