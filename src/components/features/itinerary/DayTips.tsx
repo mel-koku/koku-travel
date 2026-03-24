@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
@@ -13,6 +13,25 @@ import { getFestivalsForDay } from "@/data/festivalCalendar";
 import { getEkibenForCity } from "@/data/ekibenGuide";
 import { getOmiyageForCity } from "@/data/omiyageGuide";
 import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+
+const DISMISSED_TIPS_KEY = "koku-dismissed-tips";
+
+function getDismissedTips(): Set<string> {
+  try {
+    const stored = localStorage.getItem(DISMISSED_TIPS_KEY);
+    return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function persistDismissedTips(ids: Set<string>) {
+  try {
+    localStorage.setItem(DISMISSED_TIPS_KEY, JSON.stringify([...ids]));
+  } catch {
+    // Silently fail
+  }
+}
 
 type DayTipsProps = {
   day: ItineraryDay;
@@ -83,6 +102,16 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => getDismissedTips());
+
+  const handleDismiss = useCallback((tipId: string) => {
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(tipId);
+      persistDismissedTips(next);
+      return next;
+    });
+  }, []);
 
   // Extract unique location categories from the day's activities
   const dayCategories = useMemo(() => {
@@ -393,7 +422,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     return tips;
   }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories]);
 
-  // Combined display list — dedup DB tips that overlap with active pro tips
+  // Combined display list — dedup DB tips that overlap with active pro tips, filter dismissed
   const allTips = useMemo<DisplayTip[]>(() => {
     const activeProIds = new Set(proTips.map((p) => p.id));
     const dedupedDb = dbTips.filter((tip) => {
@@ -407,8 +436,9 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       }
       return true;
     });
-    return [...proTips, ...dedupedDb.map(toDisplayTip)];
-  }, [proTips, dbTips]);
+    const combined = [...proTips, ...dedupedDb.map(toDisplayTip)];
+    return combined.filter((tip) => !dismissedIds.has(tip.id));
+  }, [proTips, dbTips, dismissedIds]);
 
   // Report tip count to parent
   useEffect(() => {
@@ -435,24 +465,42 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     }
     return allTips.map((tip) => {
       const isTipExpanded = expandedTipId === tip.id;
-      const Wrapper = tip.content ? "button" : "div";
       return (
-        <Wrapper
+        <div
           key={tip.id}
-          {...(tip.content ? {
-            type: "button" as const,
-            "aria-expanded": isTipExpanded,
-            onClick: () => setExpandedTipId(isTipExpanded ? null : tip.id),
-          } : {})}
-          className={`flex items-start gap-2 rounded-lg bg-background/70 p-2 text-left${tip.content ? " cursor-pointer" : ""}`}
+          className="flex items-start gap-2 rounded-lg bg-background/70 p-2 text-left"
         >
           <span className="shrink-0 text-base">
             {tip.icon}
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-foreground">
-              {tip.title}
-            </p>
+          <div
+            className={`min-w-0 flex-1${tip.content ? " cursor-pointer" : ""}`}
+            {...(tip.content ? {
+              role: "button",
+              tabIndex: 0,
+              "aria-expanded": isTipExpanded,
+              onClick: () => setExpandedTipId(isTipExpanded ? null : tip.id),
+              onKeyDown: (e: React.KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setExpandedTipId(isTipExpanded ? null : tip.id);
+                }
+              },
+            } : {})}
+          >
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold text-foreground">
+                {tip.title}
+              </p>
+              {tip.content && (
+                <svg
+                  className={`h-3 w-3 shrink-0 text-foreground-secondary/50 transition-transform ${isTipExpanded ? "rotate-180" : ""}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+            </div>
             <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
               {tip.summary}
             </p>
@@ -462,15 +510,14 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
               </p>
             )}
           </div>
-          {tip.content && (
-            <svg
-              className={`mt-0.5 h-3 w-3 shrink-0 text-foreground-secondary/50 transition-transform ${isTipExpanded ? "rotate-180" : ""}`}
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          )}
-        </Wrapper>
+          <button
+            type="button"
+            onClick={() => handleDismiss(tip.id)}
+            className="shrink-0 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
+          >
+            Got it
+          </button>
+        </div>
       );
     });
   };

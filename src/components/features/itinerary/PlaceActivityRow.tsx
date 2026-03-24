@@ -550,23 +550,34 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           data-kind="place"
           data-activity-id={activity.id}
         >
-          <div className="flex gap-3">
-            {/* Left: Time Column */}
-            <div className="flex w-16 shrink-0 flex-col items-center pt-3">
-              <span className="font-mono text-sm font-bold text-foreground">
-                {displayArrivalTime ?? activity.timeOfDay ?? "—"}
-              </span>
-            </div>
+          <div className="group relative cursor-default rounded-lg bg-background shadow-[var(--shadow-card)]">
+            <div className="flex items-start gap-3 p-3">
+              {/* Left column: stop number + time (matches PlaceActivityRow layout) */}
+              <div className="flex w-10 shrink-0 flex-col items-center pt-0.5">
+                {displayLabel !== undefined && (
+                  <span className="font-mono text-xl font-bold text-foreground/20">
+                    {String(displayLabel).padStart(2, "0")}
+                  </span>
+                )}
+                <div className="mt-1 flex flex-col items-center">
+                  <span className="font-mono text-[11px] font-semibold text-foreground-secondary">
+                    {displayArrivalTime ?? activity.timeOfDay ?? "—"}
+                  </span>
+                  {schedule?.departureTime && (
+                    <span className="font-mono text-[10px] text-stone">
+                      {schedule.departureTime}
+                    </span>
+                  )}
+                </div>
+              </div>
 
-            {/* Right: Anchor Card */}
-            <div className="flex flex-1 items-center gap-3 rounded-lg bg-background p-3 shadow-[var(--shadow-card)]">
               {/* Plane icon circle */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
                 <PlaneIcon className="h-5 w-5 text-brand-primary" />
               </div>
 
               {/* Title + duration */}
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 pt-0.5">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {activity.title}
                 </p>
