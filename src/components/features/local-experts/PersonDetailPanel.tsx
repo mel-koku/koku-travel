@@ -109,7 +109,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:text-foreground"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:text-foreground"
                 aria-label="Close"
               >
                 <svg
@@ -189,7 +189,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                       {specificSpecialties.map((s) => (
                         <span
                           key={s}
-                          className="rounded-xl bg-canvas px-3 py-1.5 text-sm text-foreground"
+                          className="rounded-lg bg-canvas px-3 py-1.5 text-sm text-foreground"
                         >
                           {s}
                         </span>

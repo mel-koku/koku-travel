@@ -21,7 +21,7 @@ export default function SavedShell() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(saved.length, 8) }).map((_, i) => (
               <div key={i} className="space-y-3">
-                <div className="h-64 animate-pulse rounded-xl bg-surface/50" />
+                <div className="h-64 animate-pulse rounded-lg bg-surface/50" />
                 <div className="h-10 animate-pulse rounded bg-surface/50" />
               </div>
             ))}
@@ -58,7 +58,7 @@ export default function SavedShell() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {savedLocations.length === 0 ? (
           /* Atmospheric empty state */
-          <div className="relative overflow-hidden rounded-xl">
+          <div className="relative overflow-hidden rounded-lg">
             {/* Background image */}
             <div className="absolute inset-0">
               <Image
@@ -104,9 +104,9 @@ export default function SavedShell() {
               <ScrollReveal delay={0.5} distance={10}>
                 <Link
                   href="/places"
-                  className="relative mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                  className="relative mt-8 inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                 >
-                  <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                  <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
                   <span className="relative">Start exploring</span>
                 </Link>
               </ScrollReveal>

@@ -170,7 +170,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] rounded-xl px-4 py-2.5 ${
+        className={`max-w-[85%] rounded-lg px-4 py-2.5 ${
           isUser
             ? "bg-brand-primary text-white"
             : "bg-surface text-foreground"
@@ -245,7 +245,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
                 {viewAllUrl && (
                   <a
                     href={viewAllUrl}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-primary/30 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/10"
+                    className="flex items-center justify-center gap-1.5 rounded-lg border border-brand-primary/30 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/10"
                   >
                     View these {locations.length} in Places
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -256,7 +256,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
                 {browseUrl && (
                   <a
                     href={browseUrl}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-border/50 py-2 text-xs font-medium text-foreground-secondary transition-colors hover:border-brand-primary/30 hover:text-brand-primary"
+                    className="flex items-center justify-center gap-1.5 rounded-lg border border-border/50 py-2 text-xs font-medium text-foreground-secondary transition-colors hover:border-brand-primary/30 hover:text-brand-primary"
                   >
                     {browseLabel}
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

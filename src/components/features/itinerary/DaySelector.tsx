@@ -274,7 +274,7 @@ export const DaySelector = ({
                 aria-label={`${label}${isToday ? " (Today)" : ""}`}
                 onClick={() => onChange(index)}
                 className={cn(
-                  "relative flex-shrink-0 snap-start rounded-xl px-2.5 text-xs font-medium whitespace-nowrap transition-colors duration-200",
+                  "relative flex-shrink-0 snap-start rounded-lg px-2.5 text-xs font-medium whitespace-nowrap transition-colors duration-200",
                   "min-h-[36px] flex items-center justify-center",
                   "active:scale-[0.98]",
                   isActive

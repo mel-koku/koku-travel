@@ -36,12 +36,12 @@ export function AskKokuInput({
           onKeyDown={handleKeyDown}
           placeholder="Ask about Japan..."
           disabled={isLoading}
-          className="h-12 flex-1 rounded-xl border border-border bg-surface px-4 text-base text-foreground placeholder:text-foreground-secondary focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
+          className="h-12 flex-1 rounded-lg border border-border bg-surface px-4 text-base text-foreground placeholder:text-foreground-secondary focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
         />
         <button
           onClick={onSubmit}
           disabled={isLoading || !value.trim()}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-primary text-white transition-opacity hover:bg-brand-primary/90 active:scale-[0.98] disabled:opacity-40"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-brand-primary text-white transition-opacity hover:bg-brand-primary/90 active:scale-[0.98] disabled:opacity-40"
         >
           {isLoading ? (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />

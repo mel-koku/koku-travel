@@ -483,7 +483,7 @@ export function PlacesMap({
 
   if (!accessToken || !mapboxEnabled) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-center text-sm text-foreground-secondary">
           Map requires a Mapbox token.
         </p>
@@ -493,7 +493,7 @@ export function PlacesMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-sm text-foreground-secondary text-center">
           {mapError}
         </p>
@@ -504,7 +504,7 @@ export function PlacesMap({
   return (
     <div className="h-full w-full bg-surface" style={{ position: "relative" }}>
       {!mapReady && (
-        <div className="flex items-center justify-center bg-surface rounded-xl" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+        <div className="flex items-center justify-center bg-surface rounded-lg" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
           <p className="text-sm text-foreground-secondary">Loading map...</p>
         </div>
       )}
@@ -518,7 +518,7 @@ export function PlacesMap({
         <button
           type="button"
           onClick={resetToJapan}
-          className="flex items-center gap-1.5 rounded-xl bg-charcoal/80 px-3.5 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-lg transition-colors hover:bg-charcoal active:scale-[0.98]"
+          className="flex items-center gap-1.5 rounded-lg bg-charcoal/80 px-3.5 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-[var(--shadow-elevated)] transition-colors hover:bg-charcoal active:scale-[0.98]"
           style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}
           aria-label="Reset map view to Japan"
         >

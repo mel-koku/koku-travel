@@ -59,7 +59,7 @@ export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
   const platform = data.videoMetadata?.platform;
 
   return (
-    <div className="mt-2 rounded-xl border border-sage/30 bg-sage/5 p-4">
+    <div className="mt-2 rounded-lg border border-sage/30 bg-sage/5 p-4">
       <div className="mb-3 flex items-center gap-2">
         {platform && <PlatformIcon platform={platform} className="h-4 w-4" />}
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-sage">
@@ -69,9 +69,9 @@ export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
 
       <Link
         href={`/places?location=${loc.id}`}
-        className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-2.5 transition-colors hover:border-brand-primary/30"
+        className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-2.5 transition-colors hover:border-brand-primary/30"
       >
-        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
           <Image
             src={imageSrc}
             alt={loc.name}
@@ -117,7 +117,7 @@ export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
         <button
           type="button"
           onClick={() => toggleSave(loc.id)}
-          className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-transform active:scale-[0.98] ${
+          className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-lg text-sm font-medium transition-transform active:scale-[0.98] ${
             isSavedPlace
               ? "border border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
               : "bg-brand-primary text-white"

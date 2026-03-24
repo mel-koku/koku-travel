@@ -118,7 +118,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                 <ScrollReveal key={guide._id} distance={30} delay={i * 0.08}>
                   <Link
                     href={`/guides/${guide.slug}`}
-                    className="group block overflow-hidden rounded-xl border border-border/50 bg-surface transition-all hover:border-brand-primary/30 hover:shadow-lg"
+                    className="group block overflow-hidden rounded-lg border border-border/50 bg-surface transition-all hover:border-brand-primary/30 hover:shadow-[var(--shadow-elevated)]"
                   >
                     {guide.featuredImage && (
                       <div className="relative aspect-[16/9] overflow-hidden">

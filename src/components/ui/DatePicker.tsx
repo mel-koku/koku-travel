@@ -91,7 +91,7 @@ export function DatePicker({
             type="button"
             disabled={disabled}
             className={cn(
-              "flex h-12 w-full items-center rounded-xl border border-input bg-transparent px-4 text-left text-base shadow-sm transition-colors",
+              "flex h-12 w-full items-center rounded-md border border-input bg-transparent px-4 text-left text-base shadow-[var(--shadow-sm)] transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               "disabled:cursor-not-allowed disabled:opacity-50",
               error && "border-destructive focus-visible:ring-destructive",
@@ -111,7 +111,7 @@ export function DatePicker({
             align="start"
             sideOffset={6}
             className={cn(
-              "z-50 rounded-xl border border-border bg-popover p-3 shadow-lg",
+              "z-50 rounded-lg border border-border bg-popover p-3 shadow-[var(--shadow-elevated)]",
               "animate-in fade-in-0 zoom-in-95",
               "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
             )}

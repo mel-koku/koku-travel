@@ -566,7 +566,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
           <p className={isB ? "text-xs" : "text-xs text-stone/70"} style={isB ? { color: "var(--muted-foreground)", opacity: 0.7 } : undefined}>Ending at {endPoint.name}</p>
         )}
       </header>
-      <div className={isB ? "relative flex-1 w-full overflow-hidden rounded-2xl" : "relative flex-1 w-full overflow-hidden rounded-xl border border-border bg-surface"} style={isB ? { border: "1px solid var(--border)", background: "var(--card)" } : undefined}>
+      <div className={isB ? "relative flex-1 w-full overflow-hidden rounded-lg" : "relative flex-1 w-full overflow-hidden rounded-lg border border-border bg-surface"} style={isB ? { border: "1px solid var(--border)", background: "var(--card)" } : undefined}>
         {useMapbox ? (
           <ItineraryMap
             day={{ id: `day-${day}`, dateLabel: `Day ${day + 1}`, activities: activities ?? [] } as ItineraryDay}
@@ -604,7 +604,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
         )}
         {isPlanning ? (
           <div className="pointer-events-none absolute inset-0 flex items-end justify-end p-3">
-            <div className="rounded-xl bg-brand-primary/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+            <div className="rounded-lg bg-brand-primary/90 px-3 py-1 text-xs font-semibold text-white shadow-[var(--shadow-elevated)]">
               Updating schedule…
             </div>
           </div>

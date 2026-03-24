@@ -417,7 +417,7 @@ export function DiscoverMap({
 
   if (!accessToken || !mapboxEnabled) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-center text-sm text-foreground-secondary">
           Map requires a Mapbox token.
         </p>
@@ -427,7 +427,7 @@ export function DiscoverMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
         <p className="text-sm text-foreground-secondary text-center">
           {mapError}
         </p>
@@ -459,7 +459,7 @@ export function DiscoverMap({
           className="flex items-center justify-center"
           style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none" }}
         >
-          <div className="rounded-xl bg-charcoal/70 backdrop-blur-sm px-4 py-3 flex items-center gap-2">
+          <div className="rounded-lg bg-charcoal/70 backdrop-blur-sm px-4 py-3 flex items-center gap-2">
             <div className="h-4 w-4 rounded-full border-2 border-sage border-t-transparent animate-spin" />
             <span className="text-xs text-foreground-secondary">
               Finding places...
@@ -473,7 +473,7 @@ export function DiscoverMap({
         <button
           type="button"
           onClick={recenterOnUser}
-          className="flex items-center gap-1.5 rounded-xl bg-charcoal/80 px-3 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-lg transition-colors hover:bg-charcoal active:scale-[0.98]"
+          className="flex items-center gap-1.5 rounded-lg bg-charcoal/80 px-3 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-[var(--shadow-elevated)] transition-colors hover:bg-charcoal active:scale-[0.98]"
           style={{
             position: "absolute",
             bottom: 16,

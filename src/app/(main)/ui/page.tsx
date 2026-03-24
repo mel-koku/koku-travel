@@ -62,7 +62,7 @@ export default function DesignSystemHub() {
           <Link
             key={path}
             href={path}
-            className="group flex flex-col gap-2 rounded-xl border border-border bg-surface p-5 transition-colors hover:border-foreground-secondary/30"
+            className="group flex flex-col gap-2 rounded-lg border border-border bg-surface p-5 transition-colors hover:border-foreground-secondary/30"
           >
             <h2 className="text-base font-medium text-foreground transition-colors group-hover:text-brand-primary">
               {title}

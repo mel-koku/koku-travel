@@ -32,7 +32,7 @@ function BookingCard({ booking, onCancel, isCancelling }: {
 
   return (
     <div className={[
-      "rounded-xl border p-4 transition-colors",
+      "rounded-lg border p-4 transition-colors",
       isCancelled ? "border-border/50 bg-canvas/50 opacity-60" : "border-border bg-canvas",
     ].join(" ")}>
       <div className="flex items-start gap-4">
@@ -138,7 +138,7 @@ export function BookingsSection() {
     return (
       <div className="space-y-3">
         {[1, 2].map(i => (
-          <div key={i} className="h-24 animate-pulse rounded-xl bg-canvas" />
+          <div key={i} className="h-24 animate-pulse rounded-lg bg-canvas" />
         ))}
       </div>
     );
@@ -146,7 +146,7 @@ export function BookingsSection() {
 
   if (upcoming.length === 0 && past.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-canvas/50 p-8 text-center">
+      <div className="rounded-lg border border-dashed border-border bg-canvas/50 p-8 text-center">
         <p className="text-sm text-foreground-secondary">No bookings yet.</p>
         <p className="mt-1 text-xs text-stone">
           Browse{" "}

@@ -44,11 +44,11 @@ export function RegionCard({
       whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
       layout
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border-2 bg-background transition-all duration-200",
+        "group relative flex flex-col overflow-hidden rounded-lg border-2 bg-background transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
         isSelected
-          ? "border-brand-primary shadow-lg ring-1 ring-brand-primary/20"
-          : "border-transparent shadow-md hover:shadow-xl"
+          ? "border-brand-primary shadow-[var(--shadow-elevated)] ring-1 ring-brand-primary/20"
+          : "border-transparent shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)]"
       )}
     >
       {/* Hero Image */}
@@ -73,7 +73,7 @@ export function RegionCard({
         )}
 
         {/* Match Score Badge - Top Right */}
-        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold shadow-sm backdrop-blur-sm">
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold shadow-[var(--shadow-sm)] backdrop-blur-sm">
           <span className="text-brand-primary">{matchScore}%</span>
           <span className="text-stone">match</span>
         </div>
@@ -81,13 +81,13 @@ export function RegionCard({
         {/* Badges - Top Left */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {isEntryPointRegion && (
-            <div className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-white shadow-md">
+            <div className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-white shadow-[var(--shadow-card)]">
               <Plane className="h-3 w-3" />
               <span>Nearest to arrival</span>
             </div>
           )}
           {isRecommended && (
-            <div className="flex items-center gap-1 rounded-full bg-brand-primary px-2.5 py-1 text-xs font-medium text-white shadow-md">
+            <div className="flex items-center gap-1 rounded-full bg-brand-primary px-2.5 py-1 text-xs font-medium text-white shadow-[var(--shadow-card)]">
               <Star className="h-3 w-3 fill-current" />
               <span>Top Pick</span>
             </div>
@@ -100,7 +100,7 @@ export function RegionCard({
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", ...springInteraction }}
-            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-brand-primary text-white shadow-lg"
+            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-brand-primary text-white shadow-[var(--shadow-elevated)]"
           >
             <Check className="h-5 w-5" strokeWidth={3} />
           </motion.div>
@@ -139,13 +139,13 @@ export function RegionCard({
           {bestForVibes.slice(0, 3).map((vibe) => (
             <span
               key={vibe!.id}
-              className="rounded-xl bg-surface/70 px-2 py-0.5 text-xs font-medium text-foreground-secondary"
+              className="rounded-md bg-surface/70 px-2 py-0.5 text-xs font-medium text-foreground-secondary"
             >
               {vibe!.name}
             </span>
           ))}
           {bestForVibes.length > 3 && (
-            <span className="rounded-xl bg-surface/70 px-2 py-0.5 text-xs font-medium text-stone">
+            <span className="rounded-md bg-surface/70 px-2 py-0.5 text-xs font-medium text-stone">
               +{bestForVibes.length - 3}
             </span>
           )}

@@ -182,7 +182,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         <h2 className="font-serif text-xl text-foreground">Trip Overview</h2>
         <button
           onClick={onClose}
-          className="rounded-xl p-1.5 text-stone hover:text-foreground hover:bg-surface transition"
+          className="rounded-lg p-1.5 text-stone hover:text-foreground hover:bg-surface transition"
           aria-label="Close overview"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -197,7 +197,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           <h3 className="eyebrow-editorial">
             Before You Go
           </h3>
-          <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
+          <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
             {health.checklist.map((item) => (
               <ChecklistRow
                 key={item.id}
@@ -224,7 +224,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       />
 
       {/* Overall Health */}
-      <div className="rounded-xl border border-border bg-surface/40 p-4">
+      <div className="rounded-lg border border-border bg-surface/40 p-4">
         <div className="flex items-center gap-3">
           <HealthDot level={level} size="lg" />
           <div>
@@ -279,7 +279,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       {tripBudget && (
         <div className="space-y-2">
           <h3 className="eyebrow-editorial">Estimated Cost</h3>
-          <div className="rounded-xl border border-border bg-surface/40 p-4">
+          <div className="rounded-lg border border-border bg-surface/40 p-4">
             <p className="text-lg font-semibold text-foreground">{formatCostRange(tripBudget)}</p>
             <p className="mt-0.5 text-xs text-stone">Activity & transit costs · excluding accommodation</p>
             {budgetTotal != null && budgetStatus && (
@@ -331,7 +331,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           <h3 className="eyebrow-editorial">
             Accessibility
           </h3>
-          <div className="rounded-xl border border-border bg-surface/30 p-3 space-y-2">
+          <div className="rounded-lg border border-border bg-surface/30 p-3 space-y-2">
             <p className="text-sm text-foreground">
               {accessibility.accessibleCount} of {accessibility.totalActivities} activities
               have confirmed wheelchair access
@@ -353,7 +353,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             )}
           </div>
           {accessibility.checklist.length > 0 && (
-            <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
+            <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
               {accessibility.checklist.map((item) => (
                 <ChecklistRow
                   key={item.id}
@@ -375,7 +375,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 rounded-xl border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
           >
             {copiedToast ? (
               <>
@@ -396,7 +396,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </button>
           <button
             onClick={handleCSV}
-            className="flex items-center gap-1.5 rounded-xl border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -405,7 +405,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 rounded-xl border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -502,7 +502,7 @@ function DayOverviewCard({
       : null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface/30 overflow-hidden">
+    <div className="rounded-lg border border-border bg-surface/30 overflow-hidden">
       <button
         onClick={onToggle}
         className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface/50 transition"
@@ -566,7 +566,7 @@ function DayOverviewCard({
                           onActivityClick?.(activity.id);
                         }}
                         disabled={!hasLocation}
-                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-xl py-0.5 -mx-1 px-1 transition ${
+                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
                           hasLocation
                             ? "cursor-pointer hover:bg-surface/60 active:bg-surface/80"
                             : "cursor-default"

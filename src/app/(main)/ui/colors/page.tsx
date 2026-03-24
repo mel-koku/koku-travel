@@ -10,7 +10,7 @@ type SwatchProps = {
 function Swatch({ name, token, hex, cssVar, className, textClass = "text-white" }: SwatchProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <div className={`flex h-20 items-end rounded-xl p-3 shadow-card ${className}`}>
+      <div className={`flex h-20 items-end rounded-lg p-3 shadow-card ${className}`}>
         <span className={`text-xs font-semibold ${textClass}`}>{hex}</span>
       </div>
       <div>
@@ -32,7 +32,7 @@ type CategoryRowProps = {
 
 function CategoryRow({ categories, color, hex, swatchClass, rationale }: CategoryRowProps) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-border/40 bg-background/60 px-4 py-3">
+    <div className="flex items-center gap-4 rounded-lg border border-border/40 bg-background/60 px-4 py-3">
       <div className={`h-8 w-8 shrink-0 rounded-lg ${swatchClass}`} />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-charcoal">{categories}</p>
@@ -71,7 +71,7 @@ export default function ColorsDemoPage() {
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-border/40 bg-surface/60 p-5">
+          <div className="rounded-lg border border-border/40 bg-surface/60 p-5">
             <p className="font-mono text-3xl font-bold text-charcoal">60%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Atmosphere</p>
             <p className="mt-2 text-xs text-warm-gray">
@@ -79,7 +79,7 @@ export default function ColorsDemoPage() {
               calm, inviting tone.
             </p>
           </div>
-          <div className="rounded-2xl border border-brand-primary/20 bg-brand-primary/5 p-5">
+          <div className="rounded-lg border border-brand-primary/20 bg-brand-primary/5 p-5">
             <p className="font-mono text-3xl font-bold text-brand-primary">30%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Structure</p>
             <p className="mt-2 text-xs text-warm-gray">
@@ -87,7 +87,7 @@ export default function ColorsDemoPage() {
               interactive elements.
             </p>
           </div>
-          <div className="rounded-2xl border border-sage/20 bg-sage/5 p-5">
+          <div className="rounded-lg border border-sage/20 bg-sage/5 p-5">
             <p className="font-mono text-3xl font-bold text-sage">10%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Accent</p>
             <p className="mt-2 text-xs text-warm-gray">
@@ -379,7 +379,7 @@ export default function ColorsDemoPage() {
             Exception: transport-mode functional colors in TravelModeSelector.
           </p>
         </div>
-        <div className="overflow-x-auto rounded-xl border border-border/40">
+        <div className="overflow-x-auto rounded-lg border border-border/40">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border/40 bg-surface/50">
@@ -459,22 +459,22 @@ export default function ColorsDemoPage() {
           </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-border/30 bg-background p-6">
-            <div className="h-16 w-full rounded-xl bg-background shadow-card" />
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-border/30 bg-background p-6">
+            <div className="h-16 w-full rounded-lg bg-background shadow-card" />
             <div className="text-center">
               <p className="text-sm font-medium text-charcoal">shadow-card</p>
               <p className="font-mono text-xs text-stone">Cards, badges</p>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-border/30 bg-background p-6">
-            <div className="h-16 w-full rounded-xl bg-background shadow-soft" />
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-border/30 bg-background p-6">
+            <div className="h-16 w-full rounded-lg bg-background shadow-soft" />
             <div className="text-center">
               <p className="text-sm font-medium text-charcoal">shadow-soft</p>
               <p className="font-mono text-xs text-stone">Modals, popovers</p>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-border/30 bg-background p-6">
-            <div className="h-16 w-full rounded-xl bg-background shadow-depth" />
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-border/30 bg-background p-6">
+            <div className="h-16 w-full rounded-lg bg-background shadow-depth" />
             <div className="text-center">
               <p className="text-sm font-medium text-charcoal">shadow-depth</p>
               <p className="font-mono text-xs text-stone">Hero sections, elevated</p>
@@ -492,7 +492,7 @@ export default function ColorsDemoPage() {
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="flex items-center gap-4 rounded-xl bg-background px-5 py-4 shadow-card">
+          <div className="flex items-center gap-4 rounded-lg bg-background px-5 py-4 shadow-card">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-charcoal text-xs font-bold text-background">
               Aa
             </div>
@@ -501,7 +501,7 @@ export default function ColorsDemoPage() {
               <p className="font-mono text-xs text-stone">#1f1a14 / #faf5ef &mdash; 15.5:1</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 rounded-xl bg-brand-primary px-5 py-4 shadow-card">
+          <div className="flex items-center gap-4 rounded-lg bg-brand-primary px-5 py-4 shadow-card">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-xs font-bold text-brand-primary">
               Aa
             </div>
@@ -510,7 +510,7 @@ export default function ColorsDemoPage() {
               <p className="font-mono text-xs text-white/70">#ffffff / #8c2f2f &mdash; 6.5:1</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 rounded-xl bg-sage px-5 py-4 shadow-card">
+          <div className="flex items-center gap-4 rounded-lg bg-sage px-5 py-4 shadow-card">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-xs font-bold text-sage">
               Aa
             </div>
@@ -519,7 +519,7 @@ export default function ColorsDemoPage() {
               <p className="font-mono text-xs text-white/70">#ffffff / #2d7a6f &mdash; 4.8:1</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 rounded-xl bg-background px-5 py-4 shadow-card">
+          <div className="flex items-center gap-4 rounded-lg bg-background px-5 py-4 shadow-card">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning text-xs font-bold text-white">
               Aa
             </div>

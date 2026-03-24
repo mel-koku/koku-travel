@@ -21,10 +21,10 @@ const PlacesShell = dynamic(
           <div className="flex flex-col lg:flex-row lg:gap-4">
             <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
+                <div key={i} className="aspect-[4/3] rounded-lg shimmer" />
               ))}
             </div>
-            <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-xl shimmer" />
+            <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-lg shimmer" />
           </div>
         </div>
       </div>

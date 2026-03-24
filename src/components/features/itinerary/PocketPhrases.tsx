@@ -31,7 +31,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
           e.stopPropagation();
           setOpen((prev) => !prev);
         }}
-        className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-brand-primary/5 hover:text-foreground"
+        className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-brand-primary/5 hover:text-foreground"
       >
         <span>{"🗣️"}</span>
         <span>Say this:</span>
@@ -55,7 +55,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
             transition={{ duration: 0.2, ease: [...easeReveal] as [number, number, number, number] }}
             className="overflow-hidden"
           >
-            <div className="mt-1.5 space-y-2 rounded-xl bg-brand-primary/5 p-3">
+            <div className="mt-1.5 space-y-2 rounded-lg bg-brand-primary/5 p-3">
               {phrases.map((phrase, index) => (
                 <div key={index} className="space-y-0.5">
                   <p className="text-sm font-medium text-foreground" lang="ja">

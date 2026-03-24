@@ -76,7 +76,7 @@ export function PlacesCardPanel({
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 lg:px-0">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
+            <div key={i} className="aspect-[4/3] rounded-lg shimmer" />
           ))}
         </div>
       ) : locations.length === 0 ? (

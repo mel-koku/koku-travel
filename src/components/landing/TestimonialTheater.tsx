@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { SplitText } from "@/components/ui/SplitText";
 import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -170,14 +171,14 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         <div className="absolute inset-0 bg-charcoal/60" />
 
         <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-8">
-          <span className="mb-4 block select-none font-serif text-[4rem] leading-none text-white/10 sm:text-[6rem]">
+          <span className="mb-4 block select-none font-serif text-[4rem] leading-none text-white/15 sm:text-[6rem]">
             &ldquo;
           </span>
 
           <blockquote className="-mt-12 sm:-mt-16">
             <SplitText
               as="p"
-              className="font-serif text-xl leading-relaxed text-white sm:text-2xl lg:text-3xl"
+              className={cn(typography({ intent: "editorial-h2" }), "text-xl leading-relaxed text-white sm:text-2xl lg:text-3xl")}
               splitBy="word"
               animation="fadeUp"
               staggerDelay={staggerWord}
@@ -188,10 +189,10 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
           </blockquote>
 
           <div className="mt-8 text-left sm:text-center">
-            <p className="text-sm font-medium text-white">
+            <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium text-white")}>
               {featured.author}
             </p>
-            <p className="mt-0.5 text-xs text-white/50">
+            <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5 text-white/60")}>
               {featured.location}
             </p>
           </div>
@@ -209,18 +210,18 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             {rest.map((testimonial, i) => (
               <div
                 key={i}
-                className="w-[min(300px,80vw)] shrink-0 snap-start rounded-xl border border-border/50 bg-surface p-6"
+                className="w-[min(300px,80vw)] shrink-0 snap-start rounded-lg border border-border bg-white p-6 shadow-[var(--shadow-card)]"
               >
                 <blockquote>
-                  <p className="font-serif text-base leading-relaxed text-foreground-secondary">
+                  <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>
                     &ldquo;{testimonial.quote}&rdquo;
                   </p>
                 </blockquote>
                 <div className="mt-4">
-                  <p className="text-xs font-medium text-foreground-secondary">
+                  <p className={cn(typography({ intent: "utility-meta" }), "font-medium text-foreground")}>
                     {testimonial.author}
                   </p>
-                  <p className="mt-0.5 text-xs text-foreground-secondary">
+                  <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5")}>
                     {testimonial.location}
                   </p>
                 </div>
@@ -234,7 +235,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
               aria-label="Scroll left"
               onClick={() => scroll("left")}
               className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-foreground-secondary shadow-[var(--shadow-card)] transition-all hover:text-foreground",
                 canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"
               )}
             >
@@ -244,7 +245,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
               aria-label="Scroll right"
               onClick={() => scroll("right")}
               className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-foreground-secondary shadow-[var(--shadow-card)] transition-all hover:text-foreground",
                 canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"
               )}
             >

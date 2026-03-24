@@ -103,7 +103,7 @@ export function ExperiencePracticalInfo({
 
             {/* Meeting point & station */}
             {(meetingPoint || nearestStation) && (
-              <div className="rounded-xl border border-border/50 bg-surface p-6 space-y-4">
+              <div className="rounded-lg border border-border/50 bg-surface p-6 space-y-4">
                 {meetingPoint && (
                   <div>
                     <h3 className="eyebrow-editorial mb-1">
@@ -133,7 +133,7 @@ export function ExperiencePracticalInfo({
                 href={bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-brand-primary/90"
+                className="inline-flex w-full sm:w-auto items-center gap-2 rounded-lg bg-brand-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-brand-primary/90"
               >
                 Book This Experience
                 <svg

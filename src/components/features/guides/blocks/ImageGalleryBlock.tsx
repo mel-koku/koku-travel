@@ -40,7 +40,7 @@ export function ImageGalleryBlock({ value }: ImageGalleryProps) {
           if (layout === "masonry") {
             return (
               <div key={image._key || i} className="break-inside-avoid">
-                <div className="overflow-hidden rounded-xl">
+                <div className="overflow-hidden rounded-lg">
                   <Image
                     src={src}
                     alt={image.alt}
@@ -61,7 +61,7 @@ export function ImageGalleryBlock({ value }: ImageGalleryProps) {
 
           return (
             <div key={image._key || i}>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <Image
                   src={src}
                   alt={image.alt}

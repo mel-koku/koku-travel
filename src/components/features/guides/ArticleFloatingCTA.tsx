@@ -176,7 +176,7 @@ export function ArticleFloatingCTA({
                           className="overflow-hidden"
                         >
                           <div className="pb-3">
-                            <div className="overflow-hidden rounded-xl bg-background shadow-sm">
+                            <div className="overflow-hidden rounded-lg bg-background shadow-[var(--shadow-sm)]">
                               {/* Image */}
                               <div className="relative aspect-video">
                                 <Image
@@ -195,12 +195,12 @@ export function ArticleFloatingCTA({
                                 {/* Category + duration badges */}
                                 <div className="flex flex-wrap items-center gap-1.5">
                                   <span
-                                    className={`inline-block rounded-xl px-2 py-0.5 text-[11px] font-medium capitalize ${colors.badge} ${colors.badgeText}`}
+                                    className={`inline-block rounded-lg px-2 py-0.5 text-[11px] font-medium capitalize ${colors.badge} ${colors.badgeText}`}
                                   >
                                     {loc.category}
                                   </span>
                                   {loc.estimatedDuration && (
-                                    <span className="inline-block rounded-xl bg-sage/10 px-2 py-0.5 font-mono text-[11px] font-medium text-sage">
+                                    <span className="inline-block rounded-lg bg-sage/10 px-2 py-0.5 font-mono text-[11px] font-medium text-sage">
                                       {loc.estimatedDuration}
                                     </span>
                                   )}
@@ -247,7 +247,7 @@ export function ArticleFloatingCTA({
           <button
             type="button"
             onClick={handleClick}
-            className="mt-5 w-full rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
+            className="mt-5 w-full rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
           >
             Build My Trip
           </button>
@@ -268,7 +268,7 @@ export function ArticleFloatingCTA({
             }
           >
             <div className="mx-4 mr-20 pb-4 pb-[env(safe-area-inset-bottom)]">
-              <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-surface/95 px-4 py-3 shadow-lg backdrop-blur-sm">
+              <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-surface/95 px-4 py-3 shadow-[var(--shadow-elevated)] backdrop-blur-sm">
                 {pillLocations.length > 0 && (
                   <div className="flex shrink-0 -space-x-2">
                     {pillLocations.map((loc) => {
@@ -307,7 +307,7 @@ export function ArticleFloatingCTA({
                 <button
                   type="button"
                   onClick={handleClick}
-                  className="shrink-0 rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary/90 active:scale-[0.98]"
+                  className="shrink-0 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary/90 active:scale-[0.98]"
                 >
                   Plan
                 </button>

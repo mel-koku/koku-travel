@@ -11,7 +11,7 @@ export function SeasonalBadge({ tags }: SeasonalBadgeProps) {
   if (!label) return null;
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-xl bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-sm">
+    <span className="inline-flex items-center gap-1 rounded-lg bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-[var(--shadow-sm)]">
       {label}
     </span>
   );

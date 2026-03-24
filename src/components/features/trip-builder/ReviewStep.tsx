@@ -220,7 +220,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         {/* Right — Settings, preferences, warnings */}
         <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
           {/* Toggles */}
-          <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
             <div>
               <p className="text-sm font-medium text-foreground">First time in Japan?</p>
               <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
@@ -240,14 +240,14 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             >
               <span
                 className={cn(
-                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
                   data.isFirstTimeVisitor && "translate-x-5"
                 )}
               />
             </button>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
             <div>
               <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
               <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
@@ -267,7 +267,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             >
               <span
                 className={cn(
-                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
                   data.collectGoshuin && "translate-x-5"
                 )}
               />
@@ -275,7 +275,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </div>
 
           {/* Pace — segmented control */}
-          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Gauge className="h-4 w-4 text-stone" />
@@ -294,7 +294,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                         className={cn(
                           "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
                           field.value === option.value
-                            ? "bg-brand-primary text-white shadow-sm"
+                            ? "bg-brand-primary text-white shadow-[var(--shadow-sm)]"
                             : "text-stone hover:text-foreground"
                         )}
                       >
@@ -318,7 +318,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </div>
 
           {/* Group — segmented type + inline size */}
-          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-stone" />
@@ -337,7 +337,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                         className={cn(
                           "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
                           field.value === option.value
-                            ? "bg-brand-primary text-white shadow-sm"
+                            ? "bg-brand-primary text-white shadow-[var(--shadow-sm)]"
                             : "text-stone hover:text-foreground"
                         )}
                       >
@@ -378,7 +378,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </div>
 
           {/* Access — mobility toggle + dietary pills */}
-          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Accessibility className="h-4 w-4 text-stone" />
@@ -394,7 +394,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               >
                 <span
                   className={cn(
-                    "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                    "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
                     formValues.mobilityAssistance && "translate-x-5"
                   )}
                 />
@@ -462,7 +462,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           {durationWarning && (
             <div
               className={cn(
-                "flex items-start gap-3 rounded-xl border px-4 py-3",
+                "flex items-start gap-3 rounded-lg border px-4 py-3",
                 durationWarning.severity === "warning"
                   ? "border-warning/30 bg-warning/5"
                   : "border-sage/30 bg-sage/5"
@@ -502,7 +502,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               <textarea
                 id="additional-notes"
                 placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."}
-                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 rows={4}
                 {...register("additionalNotes")}
               />

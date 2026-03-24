@@ -56,7 +56,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       transition={{ duration: durationBase, ease: easeReveal }}
     >
       {/* Unified Card Container */}
-      <div className={`overflow-hidden rounded-xl border border-border/50 bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
+      <div className={`overflow-hidden rounded-lg border border-border/50 bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
         {/* Image Area */}
         <div className="relative">
           {/* Clickable image area */}
@@ -94,7 +94,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className="pointer-events-auto flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
+              className="pointer-events-auto flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
               <span className="text-xs font-medium text-foreground">
@@ -134,11 +134,11 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
             {/* Category Pill, Duration, JTA Badge */}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
-              <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-xl">
+              <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-lg">
                 {location.category}
               </span>
               {location.jtaApproved && (
-                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-2 py-0.5 rounded-xl">
+                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-2 py-0.5 rounded-lg">
                   JTA Approved
                 </span>
               )}

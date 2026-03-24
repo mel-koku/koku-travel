@@ -21,7 +21,7 @@ type ToastProps = {
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
   success: "bg-success text-white ring-1 ring-white/10",
-  info: "bg-[#2e2720] text-white ring-1 ring-white/10",
+  info: "bg-canvas text-white ring-1 ring-white/10",
   error: "bg-error text-white ring-1 ring-white/10",
 };
 
@@ -56,7 +56,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       role="alert"
       className={cn(
-        "flex items-center gap-2 rounded-xl px-4 py-2 font-sans shadow-[var(--shadow-elevated)] transition-all duration-300",
+        "flex items-center gap-2 rounded-lg px-4 py-2 font-sans shadow-[var(--shadow-elevated)] transition-all duration-300",
         VARIANT_STYLES[toast.variant],
         isVisible
           ? "translate-y-0 opacity-100"

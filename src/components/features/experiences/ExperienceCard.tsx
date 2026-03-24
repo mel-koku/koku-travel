@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
 import { getCraftTypeById } from "@/data/craftTypes";
 
@@ -38,10 +40,10 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
     <Wrapper {...wrapperProps}>
       <Link
         href={`/guides/${experience.slug}`}
-        className="group block"
+        className="group block overflow-hidden rounded-lg border border-border bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
+        <div className="relative aspect-[4/3] w-full overflow-hidden">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -59,38 +61,40 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         </div>
 
-        {/* Meta line */}
-        <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-stone">
-          {metaParts.join(" \u00b7 ")}
-        </p>
-
-        {/* Title */}
-        <p className="mt-1.5 font-serif text-lg text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
-          {experience.title}
-        </p>
-
-        {/* Summary */}
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground-secondary">
-          {experience.summary}
-        </p>
-
-        {/* Craft type badge */}
-        {experience.craftType && (() => {
-          const ct = getCraftTypeById(experience.craftType as never);
-          return ct ? (
-            <p className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ct.color }} />
-              {ct.label}
-            </p>
-          ) : null;
-        })()}
-
-        {/* Cost badge */}
-        {experience.estimatedCost && (
-          <p className="mt-3 inline-flex items-center rounded-xl border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
-            {experience.estimatedCost}
+        <div className="p-4">
+          {/* Meta line */}
+          <p className={cn(typography({ intent: "utility-meta" }), "uppercase tracking-ultra text-stone")}>
+            {metaParts.join(" \u00b7 ")}
           </p>
-        )}
+
+          {/* Title */}
+          <p className="mt-1.5 font-serif text-lg text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
+            {experience.title}
+          </p>
+
+          {/* Summary */}
+          <p className={cn(typography({ intent: "utility-meta" }), "mt-2 line-clamp-2 leading-relaxed")}>
+            {experience.summary}
+          </p>
+
+          {/* Craft type badge */}
+          {experience.craftType && (() => {
+            const ct = getCraftTypeById(experience.craftType as never);
+            return ct ? (
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ct.color }} />
+                {ct.label}
+              </p>
+            ) : null;
+          })()}
+
+          {/* Cost badge */}
+          {experience.estimatedCost && (
+            <p className="mt-3 inline-flex items-center rounded-md border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
+              {experience.estimatedCost}
+            </p>
+          )}
+        </div>
       </Link>
     </Wrapper>
   );

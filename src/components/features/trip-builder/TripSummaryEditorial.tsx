@@ -401,7 +401,7 @@ function InlineAccommodationInput({
         )}
       </div>
       {suggestions.length > 0 && (
-        <div className="mt-1 max-h-32 overflow-auto rounded-lg border border-border bg-background shadow-sm">
+        <div className="mt-1 max-h-32 overflow-auto rounded-lg border border-border bg-background shadow-[var(--shadow-card)]">
           {suggestions.map((s) => (
             <button
               key={s.mapbox_id}

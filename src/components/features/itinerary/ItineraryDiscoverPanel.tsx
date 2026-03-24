@@ -66,7 +66,7 @@ export function ItineraryDiscoverPanel({
               key={chip.id}
               type="button"
               onClick={() => onCategoryChange(chip.id as DiscoverCategoryId)}
-              className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 category === chip.id
                   ? "bg-brand-primary text-white"
                   : "bg-surface text-stone hover:text-foreground"
@@ -95,13 +95,13 @@ export function ItineraryDiscoverPanel({
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
               placeholder="Search nearby..."
-              className="h-9 w-full rounded-xl border border-border bg-surface pl-8 pr-3 text-sm text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none"
+              className="h-9 w-full rounded-lg border border-border bg-surface pl-8 pr-3 text-sm text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none"
             />
           </div>
           <button
             type="button"
             onClick={() => onOpenNowChange(!openNow)}
-            className={`flex h-9 shrink-0 items-center gap-1 rounded-xl border px-2.5 text-xs font-medium transition-colors ${
+            className={`flex h-9 shrink-0 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-colors ${
               openNow
                 ? "border-sage bg-sage/10 text-sage"
                 : "border-border text-stone hover:text-foreground"
@@ -118,7 +118,7 @@ export function ItineraryDiscoverPanel({
             type="button"
             onClick={onRequestGeolocation}
             disabled={geoLoading}
-            className="flex w-full items-center gap-2 rounded-xl bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
+            className="flex w-full items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
           >
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
               <circle cx="8" cy="8" r="3" />
@@ -150,7 +150,7 @@ export function ItineraryDiscoverPanel({
                   layout
                   onMouseEnter={() => onHighlightChange(loc.id)}
                   onMouseLeave={() => onHighlightChange(null)}
-                  className={`group relative cursor-pointer rounded-xl border p-3 transition-colors ${
+                  className={`group relative cursor-pointer rounded-lg border p-3 transition-colors ${
                     isHighlighted
                       ? "border-brand-primary/40 bg-brand-primary/5"
                       : "border-border bg-surface hover:border-brand-primary/20"

@@ -50,7 +50,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
           </p>
           <Link
             href={`/guides/${relatedGuide.id}`}
-            className="group relative block overflow-hidden rounded-xl"
+            className="group relative block overflow-hidden rounded-lg"
           >
             <div className="relative aspect-[16/9] w-full sm:aspect-[5/2]">
               <Image

@@ -149,7 +149,7 @@ export function TravelSegment({
 
   return (
     <div>
-      <div className="flex items-center justify-center py-3.5 px-4 border border-sage/25 rounded-xl bg-sage/5 shadow-sm">
+      <div className="flex items-center justify-center py-3.5 px-4 border border-sage/25 rounded-lg bg-sage/5 shadow-[var(--shadow-card)]">
         <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
           {isLoading && (
             <span className="flex items-center gap-1 text-xs text-stone">
@@ -254,7 +254,7 @@ export function TravelSegment({
 
       {/* Expanded transit steps */}
       {isExpanded && hasTransitSteps && (
-        <div className="mt-2 mx-4 rounded-xl border border-sage/20 bg-background/70 px-4 py-2">
+        <div className="mt-2 mx-4 rounded-lg border border-sage/20 bg-background/70 px-4 py-2">
           <div className="relative space-y-0">
             {/* Vertical connector line */}
             <div className="absolute left-[8px] top-3 bottom-3 w-px bg-sage/30" />

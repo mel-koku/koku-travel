@@ -3,6 +3,8 @@
 import Link from "next/link";
 
 import { ExperienceCard } from "@/components/features/experiences/ExperienceCard";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { ExperienceSummary } from "@/types/experience";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
@@ -28,10 +30,10 @@ export function FeaturedExperiences({
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredExperiencesEyebrow ?? "Experiences"}
             </p>
-            <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
+            <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
               {content?.featuredExperiencesHeading ?? "Go beyond sightseeing"}
             </h2>
-            <p className="mt-4 max-w-md text-base text-foreground-secondary">
+            <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
               {content?.featuredExperiencesDescription ??
                 "Ceramics, sake brewing, and hands-on traditions. You're a participant, not a tourist."}
             </p>

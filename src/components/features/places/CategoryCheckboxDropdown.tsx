@@ -79,7 +79,7 @@ export function CategoryCheckboxDropdown({
           type="button"
           id={triggerId}
           className={cn(
-            "w-full appearance-none rounded-xl border border-border bg-background py-2 pl-4 pr-11 text-left text-sm text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 lg:py-3 lg:text-base",
+            "w-full appearance-none rounded-lg border border-border bg-background py-2 pl-4 pr-11 text-left text-sm text-foreground shadow-[var(--shadow-sm)] transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 lg:py-3 lg:text-base",
             selectedValues.length > 0 && "font-medium",
           )}
           aria-haspopup="listbox"
@@ -107,7 +107,7 @@ export function CategoryCheckboxDropdown({
             id={menuId}
             role="listbox"
             aria-labelledby={triggerId}
-            className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-background p-2 shadow-lg ring-1 ring-charcoal/10 focus:outline-none max-h-[min(20rem,60vh)] overflow-y-auto"
+            className="absolute z-50 mt-2 w-full rounded-lg border border-border bg-background p-2 shadow-[var(--shadow-elevated)] ring-1 ring-charcoal/10 focus:outline-none max-h-[min(20rem,60vh)] overflow-y-auto"
             tabIndex={-1}
           >
             <div className="py-1 space-y-1">
@@ -118,7 +118,7 @@ export function CategoryCheckboxDropdown({
                     key={option.value}
                     role="option"
                     aria-selected={isChecked}
-                    className="rounded-xl transition hover:bg-surface"
+                    className="rounded-lg transition hover:bg-surface"
                   >
                     <Checkbox
                       label={option.label}

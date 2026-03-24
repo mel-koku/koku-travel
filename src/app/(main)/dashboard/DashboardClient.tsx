@@ -263,14 +263,14 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
       {/* Guest sign-in prompt */}
       {!isAuthenticated && (
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mt-6 flex items-center gap-4 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-5 py-4">
+          <div className="mt-6 flex items-center gap-4 rounded-lg border border-brand-primary/20 bg-brand-primary/5 px-5 py-4">
             <svg className="h-5 w-5 shrink-0 text-brand-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" /></svg>
             <p className="flex-1 text-sm text-foreground-secondary">
               Sign in to save your trips across devices.
             </p>
             <Link
               href="/signin"
-              className="shrink-0 rounded-xl bg-brand-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-brand-primary/90"
+              className="shrink-0 rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-brand-primary/90"
             >
               Sign in
             </Link>
@@ -393,7 +393,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
             ) : (
               <ScrollReveal delay={0.1} distance={20}>
                 {/* Atmospheric empty state */}
-                <div className="relative overflow-hidden rounded-xl">
+                <div className="relative overflow-hidden rounded-lg">
                   <div className="absolute inset-0">
                     <Image
                       src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80"
@@ -433,9 +433,9 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                     <ScrollReveal delay={0.5} distance={10}>
                       <Link
                         href="/trip-builder"
-                        className="btn-koku relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                        className="btn-koku relative mt-6 inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                       >
-                        <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                        <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
                         <span className="relative">{content?.dashboardPlanButton ?? "Build My First Trip"}</span>
                       </Link>
                     </ScrollReveal>
@@ -529,7 +529,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
       {pendingUndo ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
-          <div className="pointer-events-auto flex flex-col gap-3 rounded-xl border border-border bg-background p-4 shadow-lg shadow-[0_0_20px_rgba(196,80,79,0.15)] ring-1 ring-brand-primary/20" role="alert">
+          <div className="pointer-events-auto flex flex-col gap-3 rounded-lg border border-border bg-background p-4 shadow-[var(--shadow-elevated)] ring-1 ring-brand-primary/20" role="alert">
             <div>
               <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Trip removed"}</p>
               <p className="text-xs text-foreground-secondary">
@@ -540,7 +540,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
               <button
                 type="button"
                 onClick={handleUndo}
-                className="rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                className="rounded-lg bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-[var(--shadow-sm)] transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
               >
                 {content?.dashboardUndoButton ?? "Undo"}
               </button>

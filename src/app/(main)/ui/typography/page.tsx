@@ -165,7 +165,7 @@ export default function TypographyPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-stone">
                 Display / Headlines
@@ -179,7 +179,7 @@ export default function TypographyPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-stone">
                 Body / UI
@@ -194,7 +194,7 @@ export default function TypographyPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-stone">
                 Data / Code
@@ -271,7 +271,7 @@ export default function TypographyPage() {
             ({ token, value, className, description }) => (
               <div
                 key={token}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5"
+                className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
               >
                 <div className="flex items-baseline gap-3">
                   <span className="font-mono text-xs text-brand-primary">
@@ -310,7 +310,7 @@ export default function TypographyPage() {
             ({ name, font, fontClass, size, tracking, sample, extraClass }) => (
               <div
                 key={name}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5"
+                className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
               >
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <span className="text-sm font-medium text-foreground">

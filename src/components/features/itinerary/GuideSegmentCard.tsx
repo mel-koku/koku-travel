@@ -81,7 +81,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
 
   return (
     <div
-      className={`rounded-xl border ${style.border} ${style.bg} transition-all ${className}`}
+      className={`rounded-lg border ${style.border} ${style.bg} transition-all ${className}`}
     >
       <button
         type="button"
@@ -89,7 +89,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
         className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left"
       >
         <span
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl ${style.iconBg} text-sm`}
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${style.iconBg} text-sm`}
         >
           {icon}
         </span>

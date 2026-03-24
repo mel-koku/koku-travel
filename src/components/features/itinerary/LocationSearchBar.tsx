@@ -116,7 +116,7 @@ export function LocationSearchBar({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [...easeReveal] as [number, number, number, number] }}
             onClick={() => setIsExpanded(true)}
-            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border text-sm font-medium text-stone transition-colors hover:border-sage hover:text-foreground-secondary active:scale-[0.98]"
+            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border text-sm font-medium text-stone transition-colors hover:border-sage hover:text-foreground-secondary active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             <span>Add a place</span>
@@ -129,7 +129,7 @@ export function LocationSearchBar({
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15, ease: [...easeReveal] as [number, number, number, number] }}
           >
-            <div className="flex h-12 items-center gap-2 rounded-xl border border-sage bg-surface px-3">
+            <div className="flex h-12 items-center gap-2 rounded-lg border border-sage bg-surface px-3">
               <Search className="h-4 w-4 shrink-0 text-stone" />
               <input
                 ref={inputRef}
@@ -161,7 +161,7 @@ export function LocationSearchBar({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.12, ease: [...easeReveal] as [number, number, number, number] }}
-                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-xl border border-border bg-surface shadow-lg"
+                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-lg border border-border bg-surface shadow-[var(--shadow-elevated)]"
                 >
                   {isNotFound && (
                     <div className="px-3 py-4 text-center text-sm text-stone">
@@ -179,7 +179,7 @@ export function LocationSearchBar({
                         type="button"
                         disabled={!!fetchingId}
                         onClick={() => handleSelect(result)}
-                        className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-foreground transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-canvas disabled:opacity-60"
+                        className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-foreground transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-canvas disabled:opacity-60"
                       >
                         {/* Thumbnail */}
                         {result.image ? (

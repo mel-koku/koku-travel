@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const defaultActs = [
@@ -78,7 +80,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
             <ScrollReveal key={act.number} delay={0.05}>
               {isLast ? (
                 /* Last act: wide cinematic image with text overlay */
-                <div className="relative aspect-[16/7] overflow-hidden rounded-xl">
+                <div className="relative aspect-[16/7] overflow-hidden rounded-lg">
                   <Image
                     src={act.image}
                     alt={act.alt}
@@ -91,7 +93,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                   <div className="absolute inset-0 flex items-center px-10 lg:px-16">
                     <div className="max-w-lg">
                       <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
-                      <h2 className="mt-4 font-serif text-2xl tracking-heading text-white sm:text-3xl">
+                      <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
                         {act.title}
                       </h2>
                       <p className="mt-5 text-base leading-relaxed text-white/80">
@@ -107,7 +109,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                     imageLeft ? "lg:grid-cols-[5fr_4fr]" : "lg:grid-cols-[4fr_5fr]"
                   }`}
                 >
-                  <div className={`relative aspect-[4/3] overflow-hidden rounded-xl ${!imageLeft ? "lg:order-2" : ""}`}>
+                  <div className={`relative aspect-[4/3] overflow-hidden rounded-lg ${!imageLeft ? "lg:order-2" : ""}`}>
                     <Image
                       src={act.image}
                       alt={act.alt}
@@ -119,10 +121,10 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                   </div>
                   <div className={`max-w-md ${!imageLeft ? "lg:order-1" : ""}`}>
                     <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
-                    <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
+                    <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
                       {act.title}
                     </h2>
-                    <p className="mt-5 text-base leading-relaxed text-foreground-secondary">
+                    <p className={cn(typography({ intent: "utility-body-muted" }), "mt-5 leading-relaxed")}>
                       {act.description}
                     </p>
                   </div>

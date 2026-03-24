@@ -351,7 +351,7 @@ export function Dropdown({
         id={triggerId}
         suppressHydrationWarning
         className={cn(
-          "inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2 text-sm font-semibold text-foreground transition duration-300 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+          "inline-flex items-center gap-2 rounded-lg bg-background px-4 py-2 text-sm font-semibold text-foreground transition duration-300 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
           triggerClassName
         )}
         aria-haspopup="menu"
@@ -391,7 +391,7 @@ export function Dropdown({
           onMouseLeave={startHoverTimeout}
           className={cn(
             // Always use fixed positioning when portaled to avoid overflow clipping
-            "fixed z-[60] w-[min(16rem,90vw)] rounded-xl bg-background p-2 focus:outline-none",
+            "fixed z-[60] w-[min(16rem,90vw)] rounded-lg bg-background p-2 focus:outline-none",
             // Only apply alignment classes if we're not using custom positioning
             Object.keys(menuStyle).length === 0 ? alignmentClasses : "",
             // Always add overflow handling if maxHeight is set
@@ -414,7 +414,7 @@ export function Dropdown({
                 aria-disabled={disabled}
                 disabled={disabled}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                  "flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm text-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                   activeIndex === index && "bg-brand-primary/10 text-brand-primary",
                   disabled
                     ? "cursor-not-allowed opacity-50"

@@ -27,7 +27,7 @@ export function SeasonalBanner({ highlight }: SeasonalBannerProps) {
   const emoji = SEASONAL_EMOJI[highlight.id] ?? "🗾";
 
   return (
-    <div className="mx-4 mb-3 flex items-center gap-3 rounded-xl bg-brand-secondary/5 px-4 py-2.5">
+    <div className="mx-4 mb-3 flex items-center gap-3 rounded-lg bg-brand-secondary/5 px-4 py-2.5">
       <span className="shrink-0 text-lg">{emoji}</span>
       <div className="min-w-0 flex-1">
         <p className="text-xs font-medium uppercase tracking-[0.15em] text-brand-secondary">

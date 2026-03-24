@@ -48,7 +48,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
 
   if (!isSignedIn) {
     return (
-      <div className="rounded-xl border border-border bg-canvas p-5 text-center">
+      <div className="rounded-lg border border-border bg-canvas p-5 text-center">
         <p className="text-sm font-medium text-foreground">
           Request a booking with {person.name.split(" ")[0]}
         </p>
@@ -57,7 +57,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
         </p>
         <a
           href="/signin"
-          className="mt-4 inline-flex h-11 items-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+          className="mt-4 inline-flex h-11 items-center rounded-lg bg-brand-primary px-6 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
         >
           Sign in
         </a>
@@ -67,7 +67,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
 
   if (submitted) {
     return (
-      <div className="rounded-xl border border-success/30 bg-success/10 p-5 text-center">
+      <div className="rounded-lg border border-success/30 bg-success/10 p-5 text-center">
         <svg
           className="mx-auto h-8 w-8 text-success"
           fill="none"
@@ -91,7 +91,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-canvas p-5">
+    <div className="rounded-lg border border-border bg-canvas p-5">
       <p className="text-sm font-semibold text-foreground">
         Request a booking
       </p>
@@ -108,7 +108,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            className="mt-1 h-12 w-full rounded-lg border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
           />
         </div>
 
@@ -120,7 +120,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
             placeholder={`Tell ${person.name.split(" ")[0]} what you have in mind`}
             rows={3}
             maxLength={2000}
-            className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
           />
         </div>
 
@@ -155,7 +155,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  className="mt-1 h-12 w-full rounded-lg border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
               <div>
@@ -164,7 +164,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                  className="mt-1 h-12 w-full rounded-lg border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
             </div>
@@ -177,7 +177,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
                 value={groupSize}
                 onChange={(e) => setGroupSize(e.target.value)}
                 placeholder="1"
-                className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                className="mt-1 h-12 w-full rounded-lg border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
         <button
           type="submit"
           disabled={mutation.isPending || !email}
-          className="h-11 w-full rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+          className="h-11 w-full rounded-lg bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
         >
           {mutation.isPending ? "Sending…" : "Send Inquiry"}
         </button>

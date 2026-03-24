@@ -137,7 +137,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             value={value?.amount?.toLocaleString("ja-JP") ?? ""}
             onChange={handleAmountChange}
             className={cn(
-              "block w-full rounded-xl border border-border bg-background text-base text-foreground placeholder:text-stone shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+              "block w-full rounded-md border border-border bg-background text-base text-foreground placeholder:text-stone shadow-[var(--shadow-card)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               "h-12 pl-9 pr-4",
               !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
             )}
@@ -161,7 +161,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
         {/* Mode toggle */}
         <div
           className={cn(
-            "flex h-12 shrink-0 overflow-hidden rounded-xl border border-border",
+            "flex h-12 shrink-0 overflow-hidden rounded-md border border-border",
             !hasDuration && "cursor-not-allowed opacity-80"
           )}
           role="radiogroup"
