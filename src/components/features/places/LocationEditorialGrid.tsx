@@ -149,7 +149,7 @@ const PlacesCard = memo(function PlacesCard({
         <div className="p-3.5 space-y-1.5">
           {/* Name + rating */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-brand-primary transition-colors">
+            <h3 className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-brand-primary transition-colors">
               {location.name}
             </h3>
             {location.rating ? (
