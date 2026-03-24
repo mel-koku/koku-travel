@@ -641,10 +641,10 @@ export const ItineraryShell = ({
 
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
-        <div className="flex flex-col lg:w-1/2">
+        <div className="flex flex-col lg:w-1/2 lg:sticky lg:top-[80px] lg:h-[calc(100dvh-96px)]">
           {/* Header bar */}
           <div
-            className="sticky top-0 z-30 border-b border-border bg-background px-4 pb-3 lg:px-6"
+            className="sticky top-0 z-30 lg:relative border-b border-border bg-background px-4 pb-3 lg:px-6"
             style={{
               paddingTop: headerCollapsed ? "0.5rem" : "1rem",
               transition: "padding-top 0.25s ease",
@@ -816,7 +816,7 @@ export const ItineraryShell = ({
           />
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+          <div data-itinerary-activities data-lenis-prevent className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
