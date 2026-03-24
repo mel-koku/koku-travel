@@ -316,3 +316,9 @@ for (const [region, prefectures] of Object.entries(PREFECTURE_DATA)) {
 export function getRegionForPrefecture(prefecture: string): string | undefined {
   return _prefectureToRegion.get(prefecture);
 }
+
+/** City display name -> prefecture name. Exposed for search query parsing. */
+export const cityToPrefectureMap: ReadonlyMap<string, string> = _cityToPrefecture;
+
+/** Prefecture name -> region name. Exposed for search query parsing. */
+export const prefectureToRegionMap: ReadonlyMap<string, string> = _prefectureToRegion;

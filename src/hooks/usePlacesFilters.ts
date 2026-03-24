@@ -8,6 +8,7 @@ import { VIBES, type VibeId } from "@/data/vibes";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
+import { parseSearchQuery } from "@/lib/search/queryParser";
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -191,6 +192,7 @@ export function usePlacesFilters(
     }
 
     const normalizedQuery = query.trim().toLowerCase();
+    const parsed = parseSearchQuery(query);
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
@@ -205,18 +207,55 @@ export function usePlacesFilters(
         .trim();
     };
 
+    const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
+
     return enhancedLocations.filter((location) => {
-      const matchesQuery =
-        !normalizedQuery ||
-        location.name.toLowerCase().includes(normalizedQuery) ||
-        location.city.toLowerCase().includes(normalizedQuery) ||
-        location.prefecture?.toLowerCase().includes(normalizedQuery) ||
-        location.region.toLowerCase().includes(normalizedQuery) ||
-        location.category.toLowerCase().includes(normalizedQuery) ||
-        location.tags?.some((t) => t.toLowerCase().includes(normalizedQuery)) ||
-        location.cuisineType?.toLowerCase().includes(normalizedQuery) ||
-        location.shortDescription?.toLowerCase().includes(normalizedQuery) ||
-        location.insiderTip?.toLowerCase().includes(normalizedQuery);
+      let matchesQuery: boolean;
+
+      if (parsed.hasStructuredIntent) {
+        // Structured matching: geography AND category/cuisine AND free text
+        const matchesGeo =
+          parsed.geoTerms.length === 0 ||
+          parsed.geoTerms.some((g) => {
+            const normPref = normalizePrefecture(location.prefecture).toLowerCase();
+            return (
+              location.city.toLowerCase() === g ||
+              location.region.toLowerCase() === g ||
+              normPref === g
+            );
+          });
+
+        const hasCategories = parsed.categories.length > 0;
+        const hasCuisine = parsed.cuisineTerms.length > 0;
+        const isFoodLocation = FOOD_CATEGORIES.has(location.category);
+
+        const matchesWhat =
+          !hasCategories && !hasCuisine
+            ? true
+            : ((!hasCategories || parsed.categories.includes(location.category)) &&
+               (!hasCuisine || !isFoodLocation ||
+                 parsed.cuisineTerms.some(
+                   (ct) =>
+                     location.cuisineType?.toLowerCase().includes(ct) ||
+                     location.name.toLowerCase().includes(ct),
+                 )));
+
+        const matchesFreeText =
+          !parsed.freeText ||
+          location.name.toLowerCase().includes(parsed.freeText);
+
+        matchesQuery = matchesGeo && matchesWhat && matchesFreeText;
+      } else if (normalizedQuery) {
+        // Fallback: text search on structured fields only (no description/tips)
+        matchesQuery =
+          location.name.toLowerCase().includes(normalizedQuery) ||
+          location.city.toLowerCase().includes(normalizedQuery) ||
+          location.region.toLowerCase().includes(normalizedQuery) ||
+          location.category.toLowerCase().includes(normalizedQuery) ||
+          (location.cuisineType?.toLowerCase().includes(normalizedQuery) ?? false);
+      } else {
+        matchesQuery = true;
+      }
 
       const matchesPrefecture = selectedPrefectures.length === 0
         ? true
