@@ -106,7 +106,7 @@ const PlacesCard = memo(function PlacesCard({
       <Link
         href={`/places/${location.id}`}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-        className="block w-full overflow-hidden rounded-lg bg-card transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+        className="block w-full overflow-hidden rounded-lg border border-border bg-white transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative w-full overflow-hidden aspect-[4/3]">
@@ -115,7 +115,7 @@ const PlacesCard = memo(function PlacesCard({
             alt={location.name}
             fill
             priority={eager}
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
           />
 
@@ -181,7 +181,7 @@ const PlacesCard = memo(function PlacesCard({
 
           {/* Category + duration */}
           <div className="flex items-center gap-2 pt-0.5 flex-wrap">
-            <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-lg">
+            <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-md">
               {location.category}
             </span>
             {location.estimatedDuration && (

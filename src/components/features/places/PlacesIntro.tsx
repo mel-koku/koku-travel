@@ -23,7 +23,7 @@ export function PlacesIntro({ totalCount, content }: PlacesIntroProps) {
 
       <ScrollReveal delay={0.2} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mx-auto mt-6 leading-relaxed">
-          {content?.placesSubtitle ?? "Temples, restaurants, hidden gems \u2014 searched, filtered, and saved for your trip."}
+          {content?.placesSubtitle ?? "Temples, restaurants, local favorites. Searched, filtered, and saved for your trip."}
         </p>
       </ScrollReveal>
     </section>
