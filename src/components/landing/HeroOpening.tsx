@@ -12,8 +12,6 @@ import { SplitText } from "@/components/ui/SplitText";
 import {
   easeReveal,
   easeCinematic,
-  durationEpic,
-  easeScrollIndicator,
   staggerWord,
 } from "@/lib/motion";
 import { urlFor } from "@/sanity/image";
@@ -39,7 +37,6 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
     "Days planned around how you actually travel. {locationCount}+ places we'd stake our name on."
   ).replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
-  const secondaryCta = content?.heroSecondaryCtaText ?? "Start Browsing";
 
   // Sanity image with hotspot support
   const heroImage = content?.heroImage;
@@ -97,31 +94,24 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         </div>
 
         {/* Content — bottom-left editorial */}
-        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-12">
+        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left">
+          <div className="mx-auto w-full max-w-7xl">
           <div className="max-w-2xl">
-            <p className="font-mono text-sm uppercase tracking-wider text-white/50">
-              {locationCount.toLocaleString()}+ places
-            </p>
-            <h1 className={cn(typography({ intent: "editorial-hero" }), "mt-3 leading-[1.1] text-white")}>
+            <h1 className={cn(typography({ intent: "editorial-hero" }), "leading-[1.05] tracking-tight text-white")}>
               {headline}
             </h1>
             <p className="mt-5 max-w-lg text-base text-white/70 sm:text-lg">
               {description}
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8">
               <a
                 href="/trip-builder"
-                className="btn-koku inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
+                className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
               >
                 {primaryCta}
               </a>
-              <a
-                href="/places"
-                className="inline-flex h-14 items-center justify-center rounded-lg border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
-              >
-                {secondaryCta}
-              </a>
             </div>
+          </div>
           </div>
         </div>
       </section>
@@ -177,27 +167,19 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
 
       {/* Content layer: bottom-left editorial, fades out on scroll */}
       <motion.div
-        className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-12"
+        className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left"
         style={{
           opacity: contentOpacity,
           y: contentY,
           willChange: "opacity, transform",
         }}
       >
+        <div className="mx-auto w-full max-w-7xl">
         <div className="max-w-2xl">
-          {/* Mono data callout */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: easeReveal }}
-            className="font-mono text-sm uppercase tracking-wider text-white/50"
-          >
-            {locationCount.toLocaleString()}+ places
-          </motion.p>
           {/* Statement headline — word-by-word clip reveal */}
           <SplitText
             as="h1"
-            className={cn(typography({ intent: "editorial-hero" }), "mt-3 leading-[1.1] text-white")}
+            className={cn(typography({ intent: "editorial-hero" }), "leading-[1.05] tracking-tight text-white")}
             splitBy="word"
             trigger="load"
             animation="clipY"
@@ -217,12 +199,12 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             {description}
           </motion.p>
 
-          {/* CTAs */}
+          {/* CTA */}
           <motion.div
             initial={{ opacity: 0.005, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.6, ease: easeReveal }}
-            className="mt-8 flex flex-wrap gap-4"
+            className="mt-8"
           >
             <a
               href="/trip-builder"
@@ -230,44 +212,10 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             >
               {primaryCta}
             </a>
-            <a
-              href="/places"
-              className="inline-flex h-14 w-full items-center justify-center rounded-lg border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
-            >
-              {secondaryCta}
-            </a>
           </motion.div>
         </div>
+        </div>
       </motion.div>
-
-      {/* Scroll indicator — centered at bottom, fades with content */}
-      <div
-        className="absolute bottom-8 left-1/2 z-10 hidden pb-[env(safe-area-inset-bottom)] lg:block"
-        style={{ transform: "translateX(-50%)" }}
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1.6 }}
-          style={{ opacity: contentOpacity }}
-          className="flex flex-col items-center gap-3"
-        >
-          <span className="text-[11px] uppercase tracking-ultra text-white/40">
-            Scroll
-          </span>
-          <div className="relative h-10 w-px overflow-hidden">
-            <motion.div
-              animate={{ y: [0, 40, 0] }}
-              transition={{
-                duration: durationEpic,
-                repeat: Infinity,
-                ease: easeScrollIndicator,
-              }}
-              className="absolute h-3 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"
-            />
-          </div>
-        </motion.div>
-      </div>
     </section>
   );
 }

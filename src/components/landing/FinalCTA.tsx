@@ -17,8 +17,15 @@ export function FinalCTA({ content }: FinalCTAProps) {
       className="relative overflow-hidden"
     >
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
-      {/* Solid brand-primary background */}
-      <div className="absolute inset-0 bg-primary" />
+      {/* Charcoal background */}
+      <div className="absolute inset-0 bg-charcoal" />
+      {/* Radial vignette for depth */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)",
+        }}
+      />
 
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-6 py-24 sm:py-32 lg:py-40 text-center">
@@ -30,49 +37,33 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
             className={cn(typography({ intent: "editorial-h2" }), "text-white")}
           >
-            {content?.finalCtaHeading ?? "Your Japan starts with one place"}
+            {content?.finalCtaHeading ?? "Your Japan is waiting"}
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 0.5, ease: [...easeReveal] as [number, number, number, number] }}
-            className={cn(typography({ intent: "utility-body" }), "mx-auto mt-8 max-w-md text-white/90")}
+            transition={{ duration: durationBase, delay: 0.1, ease: [...easeReveal] as [number, number, number, number] }}
+            className="mt-4 text-base text-white/60"
           >
-            {content?.finalCtaDescription ?? "Tell us your dates. We'll build the days, route the trains, and find the right places along the way."}
+            Pick your dates. We&apos;ll handle the rest.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 0.7, ease: [...easeReveal] as [number, number, number, number] }}
-            className="mt-12 flex flex-col items-center"
+            transition={{ duration: durationBase, delay: 0.2, ease: [...easeReveal] as [number, number, number, number] }}
+            className="mt-10"
           >
             <a
               href="/trip-builder"
-              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-lg bg-white px-10 text-sm font-semibold uppercase tracking-wider text-primary shadow-[var(--shadow-elevated)] hover:bg-white/90 active:scale-[0.98]"
+              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
-            <a
-              href="/places"
-              className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:text-white/90"
-            >
-              {content?.finalCtaSecondaryText ?? "See What\u2019s Out There"}
-            </a>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 1, ease: [...easeReveal] as [number, number, number, number] }}
-            className="mt-10 text-sm uppercase tracking-wide text-white/70"
-          >
-            {content?.finalCtaSubtext ?? "Free to use. No account required."}
-          </motion.p>
         </div>
       </div>
     </section>
