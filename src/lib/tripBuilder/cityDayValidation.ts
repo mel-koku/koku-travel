@@ -102,5 +102,14 @@ export function validateCityDayRatio(
     };
   }
 
+  // Gentle nudge: single city with many days
+  if (cityCount === 1 && duration >= 5) {
+    return {
+      isValid: true,
+      message: `${duration} days in one city gives you plenty of depth. If you want more variety, consider adding a day trip or a second base.`,
+      severity: "info",
+    };
+  }
+
   return { isValid: true };
 }
