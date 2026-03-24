@@ -35,7 +35,7 @@ function LocationCard({ location, eager }: { location: Location; eager?: boolean
   return (
     <Link
       href={`/places/${location.id}`}
-      className="group block overflow-hidden rounded-xl bg-surface border border-border transition-all hover:-translate-y-1"
+      className="group block overflow-hidden rounded-lg bg-surface border border-border transition-all hover:-translate-y-1"
     >
       <div className="relative w-full overflow-hidden aspect-[4/3]">
         <Image
@@ -164,7 +164,7 @@ export function CityDetail({
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-2 rounded-xl bg-surface border border-border px-4 py-2.5"
+                className="flex items-center gap-2 rounded-lg bg-surface border border-border px-4 py-2.5"
               >
                 <span className="text-xs text-stone">{item.label}</span>
                 <span className="text-sm font-medium capitalize text-foreground">{item.value}</span>
@@ -262,7 +262,7 @@ export function CityDetail({
                 <Link
                   key={nc.id}
                   href={`/cities/${nc.id}`}
-                  className="flex items-center gap-2 rounded-xl bg-surface border border-border px-4 py-3 transition-all hover:-translate-y-1 active:scale-[0.98]"
+                  className="flex items-center gap-2 rounded-lg bg-surface border border-border px-4 py-3 transition-all hover:-translate-y-1 active:scale-[0.98]"
                 >
                   <span className="text-sm font-medium text-foreground">{nc.name}</span>
                   <span className="text-xs text-stone">{nc.locationCount} places</span>
@@ -285,7 +285,7 @@ export function CityDetail({
           <div className="mt-8">
             <Link
               href="/trip-builder"
-              className="inline-flex h-12 items-center rounded-xl bg-brand-primary px-8 text-sm font-medium text-white transition-all hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 text-sm font-medium text-white transition-all hover:brightness-110 active:scale-[0.98]"
             >
               Start planning
             </Link>

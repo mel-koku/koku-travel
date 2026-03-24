@@ -60,7 +60,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
         </p>
         <a
           href="/places"
-          className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
+          className="mt-6 inline-flex h-12 items-center justify-center rounded-lg bg-brand-primary px-6 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
         >
           Browse places
         </a>

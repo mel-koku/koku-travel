@@ -66,7 +66,7 @@ function SaveCopyButton({ token }: { token: string }) {
       type="button"
       onClick={handleCopy}
       disabled={state === "loading" || state === "done"}
-      className="inline-flex items-center rounded-xl border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-surface/80 active:scale-[0.98] disabled:opacity-60"
+      className="inline-flex items-center rounded-lg border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-surface/80 active:scale-[0.98] disabled:opacity-60"
     >
       {state === "idle" && "Save a Copy"}
       {state === "loading" && "Saving\u2026"}
@@ -140,7 +140,7 @@ export function SharedClient({ trip, token }: SharedClientProps) {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/trip-builder"
-              className="inline-flex items-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
+              className="inline-flex items-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
             >
               Build My Trip
             </Link>

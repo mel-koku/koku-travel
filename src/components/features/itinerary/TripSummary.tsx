@@ -64,7 +64,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
 
   return (
     <div className={cn(
-      "rounded-xl border border-border backdrop-blur-sm",
+      "rounded-lg border border-border backdrop-blur-sm",
       isDark ? "bg-surface/50" : "bg-background/80",
       className,
     )}>
@@ -133,7 +133,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
                 {tripData.vibes?.slice(0, 3).map((vibe) => (
                   <span
                     key={vibe}
-                    className="inline-block rounded-xl bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary"
+                    className="inline-block rounded-lg bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary"
                   >
                     {vibeLabels.get(vibe) ?? vibe}
                   </span>
@@ -153,7 +153,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
                 {tripData.regions?.slice(0, 2).map((region) => (
                   <span
                     key={region}
-                    className="inline-block rounded-xl bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage"
+                    className="inline-block rounded-lg bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage"
                   >
                     {regionLabels.get(region) ?? region}
                   </span>

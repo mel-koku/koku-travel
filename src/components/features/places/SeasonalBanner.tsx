@@ -37,7 +37,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
         transition={{ duration: 0.3 }}
         className="mx-auto max-w-2xl px-4 sm:px-6 py-1"
       >
-        <div className="flex items-center gap-3 rounded-xl bg-brand-primary/[0.06] px-4 py-3">
+        <div className="flex items-center gap-3 rounded-lg bg-brand-primary/[0.06] px-4 py-3">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground">
               {highlight.label}
@@ -49,7 +49,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
           <button
             type="button"
             onClick={onFilterSeasonal}
-            className="shrink-0 rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand-primary hover:text-brand-primary transition-colors"
+            className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand-primary hover:text-brand-primary transition-colors"
           >
             View
           </button>

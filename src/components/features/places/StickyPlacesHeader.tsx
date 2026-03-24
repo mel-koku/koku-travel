@@ -67,7 +67,7 @@ export function StickyPlacesHeader({
   );
 
   const buttonClassName = cn(
-    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary shadow-sm transition-all hover:bg-surface hover:shadow-md"
+    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary shadow-[var(--shadow-sm)] transition-all hover:bg-surface hover:shadow-[var(--shadow-card)]"
   );
 
   return (
@@ -84,7 +84,7 @@ export function StickyPlacesHeader({
           </button>
           <Link
             href="/dashboard"
-            className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-foreground-secondary shadow-sm transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-md"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-foreground-secondary shadow-[var(--shadow-sm)] transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-[var(--shadow-card)]"
           >
             Dashboard
           </Link>

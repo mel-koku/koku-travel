@@ -51,7 +51,7 @@ export function ExperienceHighlightBlock({ value }: ExperienceHighlightProps) {
   return (
     <div className="mx-auto my-12 max-w-2xl px-6">
       <div
-        className={`rounded-xl border ${config.borderColor} ${config.bgColor} p-6`}
+        className={`rounded-lg border ${config.borderColor} ${config.bgColor} p-6`}
       >
         <div className="flex items-center gap-2 mb-3">
           <span className={config.iconColor}>{config.icon}</span>

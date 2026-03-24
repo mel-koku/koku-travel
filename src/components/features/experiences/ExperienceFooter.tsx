@@ -57,7 +57,7 @@ export function ExperienceFooter({
               <Link
                 key={related._id}
                 href={`/guides/${related.slug}`}
-                className="group relative block overflow-hidden rounded-xl"
+                className="group relative block overflow-hidden rounded-lg"
               >
                 <div className="relative aspect-[4/3] w-full bg-charcoal">
                   {related.featuredImage?.url && (

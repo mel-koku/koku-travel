@@ -68,7 +68,7 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
   }, [data.budget]);
 
   return (
-    <div className="rounded-xl border border-border bg-background">
+    <div className="rounded-lg border border-border bg-background">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="text-sm font-medium text-foreground">Your Trip Summary</h3>
         {onEdit && (

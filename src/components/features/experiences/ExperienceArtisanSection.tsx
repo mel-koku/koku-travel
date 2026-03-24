@@ -45,7 +45,7 @@ export function ExperienceArtisanSection({ people, experienceSlug }: Props) {
         >
           {people.map((person, i) => (
             <ScrollReveal key={person.id} delay={i * 0.1}>
-              <div className="flex flex-col items-start gap-5 rounded-xl bg-surface p-6 sm:flex-row sm:items-center">
+              <div className="flex flex-col items-start gap-5 rounded-lg bg-surface p-6 sm:flex-row sm:items-center">
                 {person.photo_url && (
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full">
                     <Image

@@ -59,7 +59,7 @@ export function PersonCard({ person, index, onClick }: Props) {
         ease: [...easeReveal] as [number, number, number, number],
       }}
       onClick={onClick}
-      className="group flex w-full flex-col overflow-hidden rounded-xl bg-surface text-left transition-transform hover:-translate-y-1"
+      className="group flex w-full flex-col overflow-hidden rounded-lg bg-surface text-left transition-transform hover:-translate-y-1"
     >
       {/* Editorial header — photo if available, typography otherwise */}
       {hasPhoto ? (

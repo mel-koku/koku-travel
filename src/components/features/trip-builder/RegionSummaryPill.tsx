@@ -36,7 +36,7 @@ export function RegionSummaryPill({
               duration: durationFast,
               ease: easeCinematicMut,
             }}
-            className="max-w-[90vw] truncate rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
+            className="max-w-[90vw] truncate rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-[var(--shadow-elevated)] backdrop-blur-xl"
           >
             <span className="font-medium text-foreground">
               {cityLabel}</span>
@@ -70,7 +70,7 @@ export function RegionSummaryPill({
               duration: durationFast,
               ease: easeCinematicMut,
             }}
-            className="flex items-start gap-2 rounded-xl border border-brand-secondary/20 bg-background/90 px-4 py-2.5 text-xs shadow-lg backdrop-blur-xl"
+            className="flex items-start gap-2 rounded-lg border border-brand-secondary/20 bg-background/90 px-4 py-2.5 text-xs shadow-[var(--shadow-elevated)] backdrop-blur-xl"
           >
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-secondary" />
             <div>

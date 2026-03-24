@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
  */
 function ActivityCardSkeleton() {
   return (
-    <div className="rounded-xl border border-border bg-background p-3 shadow-sm">
+    <div className="rounded-lg border border-border bg-background p-3 shadow-[var(--shadow-card)]">
       <div className="space-y-2">
         {/* Header with drag handle, number, title */}
         <div className="flex items-start gap-2">
@@ -60,7 +60,7 @@ function DaySelectorSkeleton() {
   return (
     <div className="flex gap-2 overflow-hidden">
       {[1, 2, 3, 4, 5].map((i) => (
-        <Skeleton key={i} className="h-10 w-16 shrink-0 rounded-xl" />
+        <Skeleton key={i} className="h-10 w-16 shrink-0 rounded-lg" />
       ))}
     </div>
   );
@@ -71,13 +71,13 @@ function DaySelectorSkeleton() {
  */
 function MapSkeleton() {
   return (
-    <div className="h-full w-full rounded-xl bg-surface">
+    <div className="h-full w-full rounded-lg bg-surface">
       <div className="flex h-full flex-col p-4">
         <div className="mb-4 space-y-2">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
         </div>
-        <div className="relative flex-1 rounded-xl border border-border bg-surface/30">
+        <div className="relative flex-1 rounded-lg border border-border bg-surface/30">
           <div className="absolute inset-0 flex items-center justify-center">
             <Skeleton className="h-8 w-8 rounded-full" />
           </div>
@@ -98,7 +98,7 @@ export function ItinerarySkeleton() {
           {/* Left column: Header + Map panel */}
           <div className="order-2 flex flex-col gap-4 xl:order-1">
             {/* Header section */}
-            <div className="rounded-xl border border-border bg-background p-3 shadow-sm sm:p-4">
+            <div className="rounded-lg border border-border bg-background p-3 shadow-[var(--shadow-card)] sm:p-4">
               <div className="space-y-3">
                 <Skeleton className="h-8 w-48 sm:h-9" />
                 <Skeleton className="h-4 w-64" />
@@ -112,22 +112,22 @@ export function ItinerarySkeleton() {
               </div>
             </div>
             {/* Map panel */}
-            <div className="sticky h-[400px] rounded-xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100dvh-280px)] xl:min-h-[400px]">
+            <div className="sticky h-[400px] rounded-lg border border-border bg-background shadow-[var(--shadow-card)] sm:h-[500px] xl:h-[calc(100dvh-280px)] xl:min-h-[400px]">
               <MapSkeleton />
             </div>
           </div>
 
           {/* Timeline panel */}
-          <div className="order-1 flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm xl:order-2">
+          <div className="order-1 flex flex-col overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-card)] xl:order-2">
             <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
               {/* Day header skeleton */}
-              <div className="mb-6 rounded-xl border border-border bg-surface p-4">
+              <div className="mb-6 rounded-lg border border-border bg-surface p-4">
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-32" />
                   <Skeleton className="h-4 w-48" />
                   <div className="flex gap-2">
-                    <Skeleton className="h-8 w-24 rounded-xl" />
-                    <Skeleton className="h-8 w-24 rounded-xl" />
+                    <Skeleton className="h-8 w-24 rounded-lg" />
+                    <Skeleton className="h-8 w-24 rounded-lg" />
                   </div>
                 </div>
               </div>

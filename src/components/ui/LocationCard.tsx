@@ -74,7 +74,7 @@ export const LocationCard = ({
       )}
 
       {metrics.length > 0 && (
-        <dl className="grid gap-4 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground-secondary sm:grid-cols-3">
+        <dl className="grid gap-4 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-foreground-secondary sm:grid-cols-3">
           {metrics.map(({ label, value }) => (
             <div key={label} className="flex flex-col">
               <dt className="text-xs uppercase tracking-wide text-stone">{label}</dt>

@@ -99,7 +99,7 @@ export function CraftFilterPanel({
               <h2 className="text-base font-semibold text-foreground">Refine</h2>
               <button
                 onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-foreground-secondary hover:bg-surface transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground-secondary hover:bg-surface transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -112,7 +112,7 @@ export function CraftFilterPanel({
                   <select
                     value={selectedSort}
                     onChange={(e) => onSortChange(e.target.value as CraftSortOptionId)}
-                    className="w-full appearance-none rounded-xl border border-border bg-background px-3 py-2.5 pr-8 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2.5 pr-8 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   >
                     {sortOptions.map((opt) => (
                       <option key={opt.id} value={opt.id}>{opt.label}</option>
@@ -176,7 +176,7 @@ export function CraftFilterPanel({
               </button>
               <button
                 onClick={onClose}
-                className="h-11 rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition-transform active:scale-[0.98]"
+                className="h-11 rounded-lg bg-brand-primary px-6 text-sm font-semibold text-white transition-transform active:scale-[0.98]"
               >
                 Show {resultsCount} {resultsCount === 1 ? "workshop" : "workshops"}
               </button>
@@ -236,7 +236,7 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-colors",
+        "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors",
         selected
           ? "bg-brand-primary text-white font-medium"
           : "border border-border text-foreground hover:border-brand-primary/40"

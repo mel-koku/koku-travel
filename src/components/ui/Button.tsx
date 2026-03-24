@@ -6,7 +6,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -15,20 +15,20 @@ const buttonVariants = cva(
         primary:
           "btn-koku bg-primary text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground shadow-[var(--shadow-sm)] hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-secondary hover:text-secondary-foreground hover:shadow-md",
+          "border border-input bg-background shadow-[var(--shadow-sm)] hover:bg-secondary hover:text-secondary-foreground hover:shadow-[var(--shadow-card)]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground shadow-[var(--shadow-sm)] hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         "brand-ghost": "border border-border text-stone transition hover:bg-surface",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "min-h-[44px] h-10 px-4 py-2",
-        sm: "min-h-[44px] h-9 rounded-xl px-3 text-sm",
+        sm: "min-h-[44px] h-9 rounded-lg px-3 text-sm",
         md: "min-h-[44px] h-10 px-4 py-2",
-        lg: "min-h-[44px] h-12 rounded-xl px-6",
+        lg: "min-h-[44px] h-12 rounded-lg px-6",
         icon: "h-11 w-11",
         chip: "min-h-0 h-auto rounded-full px-3 py-1.5 text-xs font-medium",
         chipTiny: "min-h-0 h-auto rounded-full px-2 py-0.5 text-[10px] font-semibold",

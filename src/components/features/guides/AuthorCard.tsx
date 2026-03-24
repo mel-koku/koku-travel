@@ -12,7 +12,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
   return (
     <Link
       href={`/guides/authors/${author.slug}`}
-      className="group flex items-center gap-4 rounded-xl border border-border/50 bg-surface p-5 transition-all hover:border-brand-primary/30 hover:shadow-lg"
+      className="group flex items-center gap-4 rounded-lg border border-border/50 bg-surface p-5 transition-all hover:border-brand-primary/30 hover:shadow-[var(--shadow-elevated)]"
     >
       {/* Avatar */}
       {author.photo?.url ? (

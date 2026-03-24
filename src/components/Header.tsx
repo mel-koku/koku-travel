@@ -207,13 +207,13 @@ export default function Header() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9998] focus:rounded-xl focus:bg-brand-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9998] focus:rounded-md focus:bg-brand-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
       >
         Skip to main content
       </a>
 
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-sm border-b border-border/30"
+        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-sm border-b border-border"
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
@@ -272,7 +272,7 @@ export default function Header() {
             <Link
               href="/trip-builder"
 
-              className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
+              className="hidden h-10 items-center rounded-lg bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
             >
               Build My Trip
             </Link>

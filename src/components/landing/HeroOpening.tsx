@@ -18,6 +18,8 @@ import {
 } from "@/lib/motion";
 import { urlFor } from "@/sanity/image";
 import { mapColors } from "@/lib/mapColors";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type HeroOpeningProps = {
@@ -100,7 +102,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <p className="font-mono text-sm uppercase tracking-wider text-white/50">
               {locationCount.toLocaleString()}+ places
             </p>
-            <h1 className="mt-3 font-serif text-3xl leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
+            <h1 className={cn(typography({ intent: "editorial-hero" }), "mt-3 leading-[1.1] text-white")}>
               {headline}
             </h1>
             <p className="mt-5 max-w-lg text-base text-white/70 sm:text-lg">
@@ -109,13 +111,13 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <div className="mt-8 flex flex-wrap gap-4">
               <a
                 href="/trip-builder"
-                className="btn-koku inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg hover:bg-brand-primary/90 active:scale-[0.98]"
+                className="btn-koku inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
               >
                 {primaryCta}
               </a>
               <a
                 href="/places"
-                className="inline-flex h-14 items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
+                className="inline-flex h-14 items-center justify-center rounded-lg border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
               >
                 {secondaryCta}
               </a>
@@ -187,7 +189,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, ease: easeReveal }}
+            transition={{ duration: 0.35, ease: easeReveal }}
             className="font-mono text-sm uppercase tracking-wider text-white/50"
           >
             {locationCount.toLocaleString()}+ places
@@ -195,7 +197,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           {/* Statement headline — word-by-word clip reveal */}
           <SplitText
             as="h1"
-            className="mt-3 font-serif text-3xl leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl"
+            className={cn(typography({ intent: "editorial-hero" }), "mt-3 leading-[1.1] text-white")}
             splitBy="word"
             trigger="load"
             animation="clipY"
@@ -209,7 +211,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           <motion.p
             initial={{ opacity: 0.005, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4, ease: easeReveal }}
+            transition={{ duration: 0.45, delay: 0.4, ease: easeReveal }}
             className="mt-5 max-w-lg text-base text-white/70 sm:text-lg"
           >
             {description}
@@ -219,18 +221,18 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           <motion.div
             initial={{ opacity: 0.005, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
+            transition={{ duration: 0.35, delay: 0.6, ease: easeReveal }}
             className="mt-8 flex flex-wrap gap-4"
           >
             <a
               href="/trip-builder"
-              className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
+              className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
             >
               {primaryCta}
             </a>
             <a
               href="/places"
-              className="inline-flex h-14 w-full items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
+              className="inline-flex h-14 w-full items-center justify-center rounded-lg border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
             >
               {secondaryCta}
             </a>

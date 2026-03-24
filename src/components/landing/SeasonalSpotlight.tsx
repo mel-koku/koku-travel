@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import type { Season } from "@/lib/utils/seasonUtils";
 import type { GuideSummary } from "@/types/guide";
 import type { ExperienceSummary } from "@/types/experience";
@@ -74,10 +76,10 @@ export function SeasonalSpotlight({
               <p className="eyebrow-editorial text-brand-secondary">
                 {content?.seasonalSpotlightEyebrow ?? "What's in season"}
               </p>
-              <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
+              <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
                 {heading}
               </h2>
-              <p className="mt-4 max-w-md text-base text-foreground-secondary">
+              <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
                 {content?.seasonalSpotlightDescription ?? "Places, guides, and experiences at their best right now."}
               </p>
             </div>
@@ -103,7 +105,7 @@ export function SeasonalSpotlight({
         <div className="mt-10">
           <Link
             href="/places?category=in_season"
-            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-secondary"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
             {content?.seasonalSpotlightCtaText ?? "See all seasonal picks"}
             <svg
@@ -150,9 +152,9 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
   return (
     <Link
       href={card.href}
-      className={`group relative block text-foreground rounded-xl transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)] ${idx >= 2 ? "hidden sm:block" : ""}`}
+      className={`group relative block text-foreground overflow-hidden rounded-lg border border-border shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)] ${idx >= 2 ? "hidden sm:block" : ""}`}
     >
-      <div className="relative w-full overflow-hidden rounded-xl aspect-[4/3]">
+      <div className="relative w-full overflow-hidden aspect-[4/3]">
         <Image
           src={imageSrc || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}
           alt={card.title}
@@ -164,7 +166,7 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
 
         {/* Type badge */}
         <div className="absolute top-2.5 left-2.5 z-10">
-          <span className="inline-flex items-center rounded-xl bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-sm">
+          <span className="inline-flex items-center rounded-md bg-warning/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-[var(--shadow-sm)]">
             {TYPE_LABELS[card.type]}
           </span>
         </div>

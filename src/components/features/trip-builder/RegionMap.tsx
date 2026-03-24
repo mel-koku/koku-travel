@@ -187,7 +187,7 @@ export function RegionMap() {
             .map((region) => (
               <span
                 key={region.id}
-                className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-brand-primary shadow-sm"
+                className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-brand-primary shadow-[var(--shadow-sm)]"
               >
                 <span className="h-2 w-2 rounded-full bg-brand-primary" />
                 {region.name}

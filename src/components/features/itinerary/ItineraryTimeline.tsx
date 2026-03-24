@@ -757,7 +757,7 @@ export const ItineraryTimeline = ({
 
         {/* City Transition Display */}
         {day.cityTransition && (
-          <div className="rounded-xl border-2 border-dashed border-sage/30 bg-sage/10 p-4">
+          <div className="rounded-lg border-2 border-dashed border-sage/30 bg-sage/10 p-4">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
                 <svg
@@ -1035,7 +1035,7 @@ export const ItineraryTimeline = ({
           })()}
           </>
         ) : (
-          <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
+          <div className="rounded-lg border-2 border-dashed border-border p-6 text-center text-stone">
             <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open. Add a note to get started."}</p>
             {!isReadOnly && (
               <button
@@ -1055,10 +1055,10 @@ export const ItineraryTimeline = ({
       <DragOverlay dropAnimation={{ duration: 250, easing: easeCinematicCSS }}>
         {activeActivity && activeActivity.kind === "place" && (
           <div className="pointer-events-none w-[320px] max-w-[90vw]">
-            <div className="rounded-xl border-2 border-brand-primary/50 bg-background p-3 shadow-2xl ring-4 ring-brand-primary/20 backdrop-blur-sm">
+            <div className="rounded-lg border-2 border-brand-primary/50 bg-background p-3 shadow-[var(--shadow-elevated)] ring-4 ring-brand-primary/20 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 {/* Drag indicator */}
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10">
                   <svg className="h-5 w-5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                   </svg>

@@ -30,9 +30,9 @@ export function AccountSection({
   onClearLocalData,
 }: AccountSectionProps) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-6 space-y-6">
+    <div className="rounded-lg border border-border bg-surface p-6 space-y-6">
       {supabaseUnavailable && (
-        <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
+        <div className="rounded-lg border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
           Cloud sync is unavailable. Your data is saved locally on this device.
         </div>
       )}
@@ -48,7 +48,7 @@ export function AccountSection({
               }
               onClearLocalData();
             }}
-            className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
+            className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
           >
             Sign out
           </button>
@@ -61,7 +61,7 @@ export function AccountSection({
           <label className="text-sm text-foreground-secondary block">
             Display name
             <input
-              className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
               value={displayName}
               onChange={(e) => onNameChange(e.target.value)}
             />
@@ -81,7 +81,7 @@ export function AccountSection({
             <button
               onClick={onClearLocalData}
               disabled={isLoadingProfile || isLoadingRefresh}
-              className="h-10 rounded-xl border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Clear local data
             </button>
@@ -143,7 +143,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
           type="email"
           required
           disabled={supabaseUnavailable}
-          className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
           placeholder="name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -152,7 +152,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
       <button
         type="submit"
         disabled={supabaseUnavailable}
-        className="h-10 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
+        className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
       >
         Send sign-in link
       </button>

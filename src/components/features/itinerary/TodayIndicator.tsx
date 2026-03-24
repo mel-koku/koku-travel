@@ -53,7 +53,7 @@ export function TodayIndicator({
   return (
     <div className={cn("relative flex items-center gap-2 py-2", className)}>
       {/* Time pill */}
-      <div className="flex items-center gap-1.5 rounded-full bg-brand-primary px-2.5 py-1 shadow-sm">
+      <div className="flex items-center gap-1.5 rounded-full bg-brand-primary px-2.5 py-1 shadow-[var(--shadow-card)]">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/75 opacity-75"></span>
           <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground"></span>
@@ -140,7 +140,7 @@ export function TimeStateIndicator({ state, className }: TimeStateIndicatorProps
 
   const stateStyles = {
     past: "opacity-60",
-    current: "ring-2 ring-brand-primary shadow-lg",
+    current: "ring-2 ring-brand-primary shadow-[var(--shadow-elevated)]",
     future: "",
   };
 

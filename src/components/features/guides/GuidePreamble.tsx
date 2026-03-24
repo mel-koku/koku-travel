@@ -89,7 +89,7 @@ export function GuidePreamble({
             type="button"
             onClick={onToggleBookmark}
             disabled={isToggling || !user}
-            className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all ${
+            className={`flex h-11 w-11 items-center justify-center rounded-lg border transition-all ${
               bookmarked
                 ? "border-sage/50 text-sage"
                 : "border-border/50 text-stone hover:border-sage/50 hover:text-sage"
@@ -131,7 +131,7 @@ export function GuidePreamble({
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center rounded-xl border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone"
+                className="inline-flex items-center rounded-lg border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone"
               >
                 {tag}
               </span>

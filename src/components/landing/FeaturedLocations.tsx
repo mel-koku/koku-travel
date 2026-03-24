@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 
 import type { Location } from "@/types/location";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -36,10 +38,10 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
             </p>
-            <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
+            <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
               {content?.featuredLocationsHeading ?? "Places that stay with you"}
             </h2>
-            <p className="mt-3 max-w-md text-base text-foreground-secondary">
+            <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 max-w-md")}>
               {content?.featuredLocationsDescription ?? "Backstreet temples. Neighborhood staples. Places worth the detour."}
             </p>
           </div>
@@ -62,11 +64,11 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                 y: -4,
                 transition: { type: "spring", stiffness: 300, damping: 25 },
               }}
-              className="h-full rounded-xl transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
+              className="h-full rounded-lg border border-border bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]"
             >
               <Link
                 href={`/places?location=${location.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-xl bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+                className="group flex h-full flex-col overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
@@ -98,14 +100,14 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-xs text-stone">
+                  <p className={cn(typography({ intent: "utility-meta" }), "text-stone")}>
                     {location.city}, {location.region}
                   </p>
-                  <p className="text-xs text-foreground-secondary line-clamp-2 leading-relaxed">
+                  <p className={cn(typography({ intent: "utility-meta" }), "line-clamp-2 leading-relaxed")}>
                     {getSummary(location)}
                   </p>
                   <div className="flex items-center gap-2 pt-0.5 flex-wrap">
-                    <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-lg">
+                    <span className="text-[11px] font-medium capitalize bg-background text-stone px-2 py-0.5 rounded-md">
                       {location.category}
                     </span>
                     {location.estimatedDuration && (

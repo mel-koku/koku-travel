@@ -57,7 +57,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
       <label
         htmlFor={inputId}
         className={cn(
-          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition",
+          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-lg border border-transparent px-4 py-3 transition",
           disabled ? "cursor-not-allowed opacity-50" : "hover:bg-secondary",
           containerClassName
         )}

@@ -44,7 +44,7 @@ export function VideoImportResult({
     FALLBACK_IMAGE;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-4">
+    <div className="rounded-lg border border-border bg-surface p-4">
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <PlatformIcon platform={platform} className="h-4 w-4 text-foreground-secondary" />
@@ -61,7 +61,7 @@ export function VideoImportResult({
         href={`/places?location=${location.id}`}
         className="group block"
       >
-        <div className="relative mb-3 aspect-[16/10] overflow-hidden rounded-xl">
+        <div className="relative mb-3 aspect-[16/10] overflow-hidden rounded-lg">
           <Image
             src={imageSrc}
             alt={location.name}
@@ -103,7 +103,7 @@ export function VideoImportResult({
         <button
           type="button"
           onClick={() => toggleSave(location.id)}
-          className={`flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition active:scale-[0.98] ${
+          className={`flex h-11 flex-1 items-center justify-center gap-2 rounded-lg text-sm font-medium transition active:scale-[0.98] ${
             isSavedPlace
               ? "border border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
               : "bg-brand-primary text-white hover:bg-brand-primary/90"
@@ -114,7 +114,7 @@ export function VideoImportResult({
         </button>
         <Link
           href={`/places?location=${location.id}`}
-          className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border px-4 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition"
+          className="flex h-11 items-center justify-center gap-1.5 rounded-lg border border-border px-4 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition"
         >
           <ExternalLink className="h-4 w-4" />
           View

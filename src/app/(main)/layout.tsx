@@ -1,11 +1,11 @@
-import { Geist_Mono, DM_Sans, Playfair_Display } from "next/font/google";
+import { Geist_Mono, Geist, Newsreader } from "next/font/google";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { WebVitals } from "@/components/WebVitals";
 import { VariantProvider } from "@/lib/variant/VariantContext";
 import { getSiteSettings } from "@/lib/sanity/contentService";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const playfairDisplay = Playfair_Display({
-  variable: "--font-playfair-display",
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
   display: "swap",
 });
@@ -33,7 +33,7 @@ export default async function VariantALayout({
     <VariantProvider variant="a">
       <div
         data-variant="a"
-        className={`${dmSans.variable} ${geistMono.variable} ${playfairDisplay.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
       >
         <WebVitals />
         <LayoutWrapper siteSettings={siteSettings ?? undefined}>

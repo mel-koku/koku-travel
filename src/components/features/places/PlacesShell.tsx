@@ -230,7 +230,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {error ? (
         <div className="flex-1 flex items-center justify-center py-20">
           <div className="mx-auto max-w-md px-4 text-center">
-            <div className="rounded-xl border border-error/30 bg-error/10 p-4 sm:p-8">
+            <div className="rounded-lg border border-error/30 bg-error/10 p-4 sm:p-8">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-error/20">
                 <svg className="h-6 w-6 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -240,7 +240,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
               <p className="text-sm text-error mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
+                className="rounded-lg bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
               >
                 {content?.placesRetryText ?? "Try again"}
               </button>
@@ -275,7 +275,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {/* Koku filter banner */}
       {kokuIds.length > 0 && (
         <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/10 px-4 py-2.5 text-sm">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-brand-primary/30 bg-brand-primary/10 px-4 py-2.5 text-sm">
             <div className="flex items-center gap-2">
               <span className="font-medium text-brand-primary">Koku suggested</span>
               <span className="text-foreground-secondary">· Showing {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""}</span>
@@ -308,7 +308,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-8 sm:pb-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {Array.from({ length: 12 }).map((_, index) => (
-              <div key={index} className="rounded-xl bg-surface animate-pulse">
+              <div key={index} className="rounded-lg bg-surface animate-pulse">
                 <div className="aspect-[4/3]" />
                 <div className="p-3.5 space-y-2">
                   <div className="h-4 w-3/4 rounded bg-border" />

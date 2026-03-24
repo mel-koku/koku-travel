@@ -140,7 +140,7 @@ export function WhatsNextCard({
     return (
       <div
         className={cn(
-          "rounded-xl border border-sage/30 bg-sage/10 p-4",
+          "rounded-lg border border-sage/30 bg-sage/10 p-4",
           className
         )}
       >
@@ -180,7 +180,7 @@ export function WhatsNextCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-brand-primary/30 bg-brand-primary/5 p-4",
+        "rounded-lg border border-brand-primary/30 bg-brand-primary/5 p-4",
         className
       )}
     >

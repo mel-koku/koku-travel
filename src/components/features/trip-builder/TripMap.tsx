@@ -240,7 +240,7 @@ export function TripMap() {
           {cityCoordinates.slice(0, 5).map((c, i) => (
             <span
               key={c.city}
-              className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-foreground-secondary shadow-sm"
+              className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-foreground-secondary shadow-[var(--shadow-sm)]"
             >
               <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-primary text-[8px] text-white">
                 {i + 1}
@@ -249,7 +249,7 @@ export function TripMap() {
             </span>
           ))}
           {cityCoordinates.length > 5 && (
-            <span className="inline-flex items-center rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-medium text-stone shadow-sm">
+            <span className="inline-flex items-center rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-medium text-stone shadow-[var(--shadow-sm)]">
               +{cityCoordinates.length - 5} more
             </span>
           )}

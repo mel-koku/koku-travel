@@ -18,8 +18,8 @@ export default function CapsuleHeader({
       className="
         flex items-center justify-between
         w-full max-w-4xl
-        bg-surface rounded-xl border border-border
-        shadow-sm backdrop-blur
+        bg-surface rounded-lg border border-border
+        shadow-[var(--shadow-sm)] backdrop-blur
         px-8 py-4 mx-auto
       "
     >

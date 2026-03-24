@@ -12,6 +12,8 @@ import { ReviewStep } from "./ReviewStep";
 import { STEP_LABELS } from "./StepProgressTrack";
 import { ArrowLineCTA } from "./ArrowLineCTA";
 import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
+import { useTripBuilder } from "@/context/TripBuilderContext";
+import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import { easePageTransition, durationSlow } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
@@ -44,6 +46,7 @@ const reducedMotionVariants: Variants = {
 
 export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) {
   const prefersReducedMotion = useReducedMotion();
+  const { data } = useTripBuilder();
 
   const {
     currentStep,
@@ -65,6 +68,14 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
   } = useTripBuilderNavigation({ onComplete, sanityConfig });
 
   const variants = prefersReducedMotion ? reducedMotionVariants : stepVariants;
+
+  // Dynamic disabled hint for the region step
+  const regionDisabledHint = (() => {
+    const cityCount = data.cities?.length ?? 0;
+    if (cityCount === 0) return "Pick at least one city to continue";
+    const v = validateCityDayRatio(cityCount, data.duration ?? 0);
+    return v.hint ?? "Pick at least one region to continue";
+  })();
 
   return (
     <div className="relative bg-background">
@@ -146,7 +157,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
-              disabledHint="Pick at least one region to continue"
+              disabledHint={regionDisabledHint}
               fullBleed
               currentStep={currentStep}
               totalSteps={stepCount}
@@ -249,7 +260,7 @@ function StepDots({
             {/* Tooltip — shows on hover */}
             {canClick && (
               <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-                <span className="rounded-xl bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-md">
+                <span className="rounded-md bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-[var(--shadow-card)]">
                   {STEP_LABELS[step]}
                 </span>
               </div>
@@ -370,7 +381,7 @@ function StepShell({
             type="button"
             onClick={nextDisabled ? handleDisabledClick : onNext}
             className={cn(
-              "h-12 flex-1 rounded-xl text-sm font-medium uppercase tracking-wider transition",
+              "h-12 flex-1 rounded-lg text-sm font-medium uppercase tracking-wider transition",
               nextDisabled
                 ? "bg-surface text-stone"
                 : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98]"

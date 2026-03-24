@@ -501,7 +501,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           data-kind="place"
           data-activity-id={activity.id}
         >
-          <div className="flex items-center gap-2.5 rounded-xl bg-background px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-2.5 rounded-lg bg-background px-3 py-2 shadow-[var(--shadow-card)]">
             {/* Time */}
             <span className="w-12 shrink-0 text-right font-mono text-xs font-medium text-foreground-secondary">
               {displayArrivalTime ?? activity.timeOfDay ?? "—"}
@@ -562,7 +562,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             </div>
 
             {/* Right: Anchor Card */}
-            <div className="flex flex-1 items-center gap-3 rounded-xl bg-background p-3 shadow-sm">
+            <div className="flex flex-1 items-center gap-3 rounded-lg bg-background p-3 shadow-[var(--shadow-card)]">
               {/* Plane icon circle */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
                 <PlaneIcon className="h-5 w-5 text-brand-primary" />
@@ -654,7 +654,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             {showTimePicker && (
               <div
                 ref={timePickerRef}
-                className="absolute left-0 top-full z-50 mt-1 rounded-xl border border-border bg-background p-3 shadow-lg"
+                className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-[var(--shadow-elevated)]"
                 onClick={(e) => e.stopPropagation()}
               >
                 <p className="mb-2 text-xs font-medium text-foreground-secondary">Set time</p>
@@ -690,12 +690,12 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <motion.div
             layout={!prefersReducedMotion && !isDragging}
             transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
-            className={`group relative flex-1 overflow-hidden rounded-xl bg-background transition-shadow duration-200 cursor-pointer ${
+            className={`group relative flex-1 overflow-hidden rounded-lg bg-background transition-shadow duration-200 cursor-pointer ${
               isDragging
-                ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
+                ? "ring-2 ring-sage/30 shadow-[var(--shadow-elevated)] rotate-1 scale-[1.02]"
                 : isSelected
-                  ? "shadow-lg"
-                  : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+                  ? "shadow-[var(--shadow-elevated)]"
+                  : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] hover:-translate-y-0.5"
             }`}
             style={isSelected && !isDragging ? { outline: "2px solid var(--color-sage)", outlineOffset: "-2px" } : undefined}
             tabIndex={0}
@@ -818,7 +818,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   alt={activity.title}
                   fill
                   sizes="96px"
-                  className={`object-cover transition-opacity duration-200 rounded-r-xl ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                  className={`object-cover transition-opacity duration-200 rounded-r-lg ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                   onLoad={() => setImageLoaded(true)}
                   onError={() => {
                     setImageError(true);
@@ -828,7 +828,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 {/* Number badge */}
                 {placeNumber !== undefined && (
                   <div
-                    className={`absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-sm transition-colors ${
+                    className={`absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-[var(--shadow-card)] transition-colors ${
                       isSelected
                         ? "bg-sage text-white"
                         : `${colorScheme.badge} ${colorScheme.badgeText}`
@@ -849,7 +849,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-xl border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-[var(--shadow-card)] placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

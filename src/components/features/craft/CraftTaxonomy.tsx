@@ -42,7 +42,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
               transition={{ duration: 0.4, ease: easeReveal, delay: i * 0.04 }}
               whileHover={{ scale: 1.02 }}
               onClick={() => onSelect(ct.id)}
-              className="group rounded-xl bg-surface border border-border text-left overflow-hidden transition-colors hover:border-brand-primary/30"
+              className="group rounded-lg bg-surface border border-border text-left overflow-hidden transition-colors hover:border-brand-primary/30"
             >
               {/* Image or fallback */}
               <div className="relative w-full overflow-hidden aspect-[16/9]">
@@ -109,7 +109,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: easeReveal, delay: i * 0.04 }}
               onClick={() => onSelect(ct.id)}
-              className="group snap-start shrink-0 rounded-xl bg-surface border border-border text-left overflow-hidden transition-colors hover:border-brand-primary/30 min-w-[200px]"
+              className="group snap-start shrink-0 rounded-lg bg-surface border border-border text-left overflow-hidden transition-colors hover:border-brand-primary/30 min-w-[200px]"
             >
               {/* Image or fallback */}
               <div className="relative w-full overflow-hidden aspect-[16/9]">

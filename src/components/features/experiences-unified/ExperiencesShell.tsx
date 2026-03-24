@@ -232,12 +232,12 @@ export function ExperiencesShell() {
       {isError ? (
         <div className="flex-1 flex items-center justify-center py-20">
           <div className="mx-auto max-w-md px-4 text-center">
-            <div className="rounded-xl border border-error/30 bg-error/10 p-4 sm:p-8">
+            <div className="rounded-lg border border-error/30 bg-error/10 p-4 sm:p-8">
               <p className="text-base font-semibold text-error mb-2">Something went wrong loading experiences</p>
               <p className="text-sm text-error mb-6">{error ?? "Please try again."}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
+                className="rounded-lg bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
               >
                 Try again
               </button>
@@ -289,10 +289,10 @@ export function ExperiencesShell() {
           ) : isLoading ? (
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
               <div className="space-y-10">
-                <div className="aspect-[16/9] rounded-xl shimmer" />
+                <div className="aspect-[16/9] rounded-lg shimmer" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
+                    <div key={index} className="aspect-[3/4] rounded-lg shimmer" />
                   ))}
                 </div>
               </div>

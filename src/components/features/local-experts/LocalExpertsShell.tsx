@@ -174,9 +174,9 @@ export function LocalExpertsShell() {
             <button
               type="button"
               onClick={() => handleActivitySelect(null)}
-              className="group relative col-span-2 overflow-hidden rounded-xl sm:col-span-1"
+              className="group relative col-span-2 overflow-hidden rounded-lg sm:col-span-1"
             >
-              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl">
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
                 <Image
                   src={ALL_EXPERTS_IMAGE}
                   alt="All experts"
@@ -186,7 +186,7 @@ export function LocalExpertsShell() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
                 {!filters.activity && (
-                  <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
+                  <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 p-4">
                   <h3 className="font-serif text-lg leading-tight text-white">
@@ -218,9 +218,9 @@ export function LocalExpertsShell() {
                     delay: (i % 4) * 0.05,
                     ease: [...easeReveal] as [number, number, number, number],
                   }}
-                  className="group relative overflow-hidden rounded-xl"
+                  className="group relative overflow-hidden rounded-lg"
                 >
-                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl">
+                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
                     <Image
                       src={cat.image}
                       alt={cat.label}
@@ -230,7 +230,7 @@ export function LocalExpertsShell() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
                     {isActive && (
-                      <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
+                      <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                     )}
                     <div className="absolute inset-x-0 bottom-0 p-4">
                       <h3 className="font-serif text-lg leading-tight text-white transition-colors group-hover:text-brand-primary/90">
@@ -290,7 +290,7 @@ export function LocalExpertsShell() {
               value={filters.query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name or city"
-              className="h-9 w-44 rounded-xl border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-52"
+              className="h-9 w-44 rounded-lg border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-52"
             />
           </div>
         </div>
@@ -316,7 +316,7 @@ export function LocalExpertsShell() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="h-56 animate-pulse rounded-xl bg-surface"
+                className="h-56 animate-pulse rounded-lg bg-surface"
               />
             ))}
           </div>

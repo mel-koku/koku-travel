@@ -158,7 +158,7 @@ function LocationField({
 
       {value ? (
         // Set state: show the selected location as a chip
-        <div className="flex h-9 items-center gap-2 rounded-xl border border-border bg-background px-3">
+        <div className="flex h-9 items-center gap-2 rounded-lg border border-border bg-background px-3">
           <span className="flex-1 truncate text-sm text-foreground">{value.name}</span>
           <button
             type="button"
@@ -180,13 +180,13 @@ function LocationField({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
           placeholder={isSameAsLinked ? `Same as start · ${linkedValue.name}` : placeholder}
-          className="h-11 w-full rounded-xl border border-border bg-background px-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
+          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
         />
       )}
 
       {/* Suggestions dropdown */}
       {showDropdown && (
-        <div className="absolute left-0 top-full z-30 mt-1 w-full rounded-xl border border-border bg-surface p-1.5 shadow-lg">
+        <div className="absolute left-0 top-full z-30 mt-1 w-full rounded-lg border border-border bg-surface p-1.5 shadow-[var(--shadow-elevated)]">
           {(isLoading || isDebouncing) && (
             <p className="px-2.5 py-2 text-xs text-stone">Searching...</p>
           )}
@@ -197,7 +197,7 @@ function LocationField({
                   <button
                     type="button"
                     onClick={() => handleSelect(s)}
-                    className="w-full rounded-xl px-2.5 py-2 text-left text-sm transition-colors hover:bg-brand-primary/10"
+                    className="w-full rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-brand-primary/10"
                   >
                     <span className="block font-medium text-foreground">{s.name}</span>
                     {(s.full_address || s.place_formatted) && (
@@ -213,7 +213,7 @@ function LocationField({
         </div>
       )}
       {showNoResults && (
-        <div className="absolute left-0 top-full z-30 mt-1 w-full rounded-xl border border-border bg-surface p-2.5 shadow-lg">
+        <div className="absolute left-0 top-full z-30 mt-1 w-full rounded-lg border border-border bg-surface p-2.5 shadow-[var(--shadow-elevated)]">
           <p className="text-xs text-stone">No results found</p>
         </div>
       )}

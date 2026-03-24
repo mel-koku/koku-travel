@@ -150,7 +150,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
               onPaste={handlePaste}
               placeholder="Paste a video or post URL..."
               disabled={state.status === "extracting"}
-              className="w-full rounded-xl border border-border bg-surface/50 py-2.5 pl-9 pr-12 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition disabled:opacity-60"
+              className="w-full rounded-lg border border-border bg-surface/50 py-2.5 pl-9 pr-12 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition disabled:opacity-60"
             />
             {state.status === "extracting" ? (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -189,13 +189,13 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
               onKeyDown={(e) => { if (e.key === "Enter") handleRetryWithHint(); }}
               placeholder="e.g. ramen shop in Shibuya"
               maxLength={200}
-              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
+              className="flex-1 rounded-lg border border-border bg-surface/50 px-3 py-2 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
             />
             <button
               type="button"
               onClick={handleRetryWithHint}
               disabled={!hintValue.trim()}
-              className="shrink-0 rounded-xl bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="shrink-0 rounded-lg bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Retry
             </button>
@@ -223,7 +223,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
           <button
             type="button"
             onClick={handleReset}
-            className="mt-3 w-full rounded-xl border border-border py-2.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition active:scale-[0.98]"
+            className="mt-3 w-full rounded-lg border border-border py-2.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition active:scale-[0.98]"
           >
             Import Another
           </button>
