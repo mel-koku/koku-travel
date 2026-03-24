@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapPin, Target } from "lucide-react";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
-import { RunningLatePopoverB } from "./RunningLatePopoverB";
 import {
   isToday,
   parseTimeToMinutes,
@@ -17,7 +16,6 @@ export type WhatsNextCardBProps = {
   dayIndex: number;
   className?: string;
   onActivityClick?: (activityId: string) => void;
-  onDelayRemaining?: (delayMinutes: number) => void;
 };
 
 function getActivityStatus(
@@ -70,7 +68,6 @@ export function WhatsNextCardB({
   dayIndex,
   className,
   onActivityClick,
-  onDelayRemaining,
 }: WhatsNextCardBProps) {
   // Live-updating current time (60s interval)
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
@@ -220,11 +217,6 @@ export function WhatsNextCardB({
             </a>
           ) : null;
         })()}
-        {onDelayRemaining && (
-          <div className="ml-auto">
-            <RunningLatePopoverB onApplyDelay={onDelayRemaining} />
-          </div>
-        )}
       </div>
     </div>
   );
