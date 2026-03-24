@@ -122,13 +122,21 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         .map((s) => parseInt(s.trim(), 10))
         .filter((n) => !isNaN(n)) ?? [];
 
+    const groupType = formValues.groupType
+      ? (formValues.groupType as "solo" | "couple" | "family" | "friends" | "business")
+      : undefined;
+
+    // Solo and couple have fixed sizes; family/friends use the input
+    const groupSize =
+      groupType === "solo" ? 1
+        : groupType === "couple" ? 2
+        : formValues.groupSize;
+
     setData((prev) => ({
       ...prev,
       group: {
-        size: formValues.groupSize,
-        type: formValues.groupType
-          ? (formValues.groupType as "solo" | "couple" | "family" | "friends" | "business")
-          : undefined,
+        size: groupSize,
+        type: groupType,
         childrenAges: childrenAges.length > 0 ? childrenAges : undefined,
       },
       style: formValues.travelStyle ? (formValues.travelStyle as TripStyle) : undefined,
@@ -221,7 +229,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         {/* Right — Settings, preferences, warnings */}
         <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
           {/* Toggles */}
-          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div>
               <p className="text-sm font-medium text-foreground">First time in Japan?</p>
               <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
@@ -248,7 +256,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             </button>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div>
               <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
               <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
@@ -276,7 +284,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </div>
 
           {/* Pace — segmented control */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Gauge className="h-4 w-4 text-stone" />
@@ -319,7 +327,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </div>
 
           {/* Group — segmented type + inline size */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-stone" />
@@ -349,10 +357,10 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                 )}
               />
             </div>
-            {formValues.groupType && formValues.groupType !== "solo" && (
+            {(formValues.groupType === "family" || formValues.groupType === "friends") && (
               <div className="mt-2 flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="group-size-inline" className="text-xs text-stone">Size</label>
+                  <label htmlFor="group-size-inline" className="text-xs text-stone">Adults</label>
                   <Input
                     id="group-size-inline"
                     type="number"
@@ -363,23 +371,21 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                     {...register("groupSize", { valueAsNumber: true })}
                   />
                 </div>
-                {formValues.groupType === "family" && (
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="children-ages-inline" className="text-xs text-stone">Kids</label>
-                    <Input
-                      id="children-ages-inline"
-                      placeholder="5, 8"
-                      className="h-8 w-24 min-h-0 text-xs"
-                      {...register("childrenAges")}
-                    />
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <label htmlFor="children-ages-inline" className="text-xs text-stone whitespace-nowrap">Kids ages</label>
+                  <Input
+                    id="children-ages-inline"
+                    placeholder="5, 8"
+                    className="h-8 w-24 min-h-0 text-xs"
+                    {...register("childrenAges")}
+                  />
+                </div>
               </div>
             )}
           </div>
 
           {/* Access — mobility toggle + dietary pills */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Accessibility className="h-4 w-4 text-stone" />
