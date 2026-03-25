@@ -56,7 +56,8 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                 distance={30}
               >
                 <Link
-                  href={`/places?location=${location.id}`}
+                  href={`/places/${location.id}`}
+                  data-location-id={location.id}
                   className="group relative block h-full overflow-hidden rounded-lg"
                 >
                   <div
