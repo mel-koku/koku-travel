@@ -326,6 +326,9 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 ### Location Scoring (`src/lib/scoring/locationScoring.ts`)
 11-factor system: interest match (30), rating (25), logistical fit (-100 to 20, **hard -100 for >50km**), budget (10), accessibility (10), diversity (-5 to +5), neighborhood diversity (-5 to +5), weather (-10 to +10), time-of-day (-5 to +10), group fit (-8 to +8), dietary fit (-5 to +5, food categories only, uses `servesVegetarianFood`). Optional LLM-derived `categoryWeights` multiplier on interest match score.
 
+- **Contextual Distance Threshold**: The 50km hard cutoff extends to 75km when ALL of: (`nature_adventure` or `local_secrets` vibe) + `relaxed` pace + nature-ish category (nature, park, beach, viewpoint, onsen, craft). The 50-75km band scores at -25 (steep penalty, survives `>= -50` post-filter but loses to closer alternatives).
+- **Hidden Gem Rating Floor**: `isHiddenGem + null rating` scores 15/20 (4.0-star equivalent) instead of neutral 10/20. Editorial curation overrides Google data gaps.
+- **Hidden Gem Scoring**: Two layers: unconditional +5 for `local_secrets` vibe + conditional +8 for 2+ tag matches. Max combined: +13.
 - **Diversity**: Max 2 consecutive same-category or same-neighborhood activities
 - **Weather**: OpenWeatherMap 5-day forecast, all 17 cities. Outdoor penalized in rain.
 - **Preference Learning**: localStorage-based. favorite +2, unfavorite -0.5, replace -1, skip -0.5.
@@ -367,7 +370,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 
 ## Data
 
-- **Locations**: 6,139 active in Supabase (99 hidden JTA artifacts via `is_active = false`). 100% with coords + `planning_city`. 35 `planning_city` values (coordinate-snapped KnownCityId). `is_hidden_gem`, `jta_approved`, `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
+- **Locations**: 6,298 active in Supabase (271 hidden via `is_active = false`). 100% with coords + `planning_city`. 36 `planning_city` values (coordinate-snapped KnownCityId, includes `ishigaki` for Yaeyama Islands). `is_hidden_gem` (1,012), `jta_approved`, `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
 - **Google Places fields**: `place_id`, `rating`, `review_count`, `operating_hours`, `primary_photo_url`, `google_maps_uri`, `website_uri`, `phone_number`, `google_primary_type`, `google_types`, `business_status`, `price_level`, `editorial_summary`, `accessibility_options`, `good_for_children`, `good_for_groups`, `outdoor_seating`, `reservable`, `dietary_options`, `service_options`, `meal_options`
 - **Gemini-enriched fields**: `name_japanese`, `nearest_station`, `cash_only`, `reservation_info`, `insider_tip`, `tags` (9-dimension)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, garden, onsen, entertainment, market, wellness, viewpoint, bar, aquarium, beach, cafe, castle, historic_site, theater, zoo, craft
@@ -375,7 +378,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Tag Dimensions** (9): env (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day), seasonal, atmo (quiet/lively/contemplative/neutral), tourist (iconic/popular/local-favorite/hidden), time (morning/afternoon/sunset/evening/late-night/anytime), exp (scenic/hands-on/tasting/learning/spiritual/adrenaline/relaxation/photo-op), for (solo/couples/families/groups), char (traditional-japan/modern-japan/quirky-japan/zen-japan/pop-culture)
 - **Experiences**: 56 in Sanity (separate from locations/itinerary)
 - **Guides**: ~90 in Sanity
-- **DQ Health**: 99/100 (`npm run dq audit|fix|report`)
+- **DQ Health**: 89/100 (`npm run dq audit|fix|report`). Drop from 99 reflects new pipeline-awareness checks (coord-city alignment, missing neighborhood/hours/accessibility). Enrichment script `scripts/enrich-locations.js` ready to fill gaps.
 
 ---
 

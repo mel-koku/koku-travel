@@ -237,7 +237,15 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
     },
   ],
   // Okinawa
-  naha: [],
+  naha: [
+    {
+      cityId: "ishigaki",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 3,
+      description: "Yaeyama coral islands and tropical beaches",
+    },
+  ],
+  ishigaki: [],
 };
 
 /**

@@ -118,6 +118,19 @@ export interface LocationScoringCriteria {
    * Each overlapping tag = +2, capped at +8.
    */
   preferredTags?: string[];
+  /**
+   * Whether the user selected the "local_secrets" vibe.
+   * Gives all hidden gems a flat bonus regardless of tag match,
+   * because the vibe selection itself is intent signal enough.
+   */
+  hasLocalSecretsVibe?: boolean;
+  /**
+   * Whether the user selected the "nature_adventure" vibe.
+   * Combined with relaxed pace and nature-ish categories,
+   * extends the distance threshold from 50km to 75km so rural
+   * waterfalls, coastal hikes, and remote onsen can appear.
+   */
+  hasNatureAdventureVibe?: boolean;
 }
 
 /**
@@ -268,6 +281,17 @@ function scoreRatingQuality(
     ? googleRating * 0.7 + communityRating * 0.3
     : googleRating;
 
+  // Hidden gem rating floor: if we curated it as a hidden gem, trust our
+  // editorial judgment over a Google data gap. Treat null-rated hidden gems
+  // as 4.0-star equivalents (score ~15) instead of neutral 10.
+  // This prevents Kurokawa Onsen from losing to a random souvenir shop.
+  if (rating === 0 && reviewCount === 0 && location.isHiddenGem) {
+    return {
+      score: 15,
+      reasoning: "Curated hidden gem — editorial quality floor (no Google rating)",
+    };
+  }
+
   // If no rating data, give neutral score
   if (rating === 0 && reviewCount === 0) {
     return {
@@ -325,13 +349,25 @@ function scoreLogisticalFit(
   if (criteria.currentLocation && location.coordinates) {
     const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
 
+    // Contextual distance threshold: nature/outdoor locations get extended
+    // range when the traveler selected nature_adventure or local_secrets vibes
+    // with a relaxed pace. A guide wouldn't skip Shirakami Sanchi (60km from
+    // Aomori) for a nature lover with time to spare.
+    const EXTENDED_RANGE_CATEGORIES = new Set(["nature", "park", "beach", "viewpoint", "onsen", "craft"]);
+    const useExtendedRange =
+      (criteria.hasNatureAdventureVibe || criteria.hasLocalSecretsVibe) &&
+      criteria.travelStyle === "relaxed" &&
+      location.category != null &&
+      EXTENDED_RANGE_CATEGORIES.has(location.category);
+    const hardCutoffKm = useExtendedRange ? 75 : 50;
+
     // CRITICAL: Hard cutoff for locations way too far away
     // This catches data corruption where locations have wrong city assignments
-    if (distanceKm > 50) {
+    if (distanceKm > hardCutoffKm) {
       // Return immediately with hard penalty - this location should not be selected
       return {
         score: -100,
-        reasoning: `Location is ${distanceKm.toFixed(1)}km away - outside acceptable range (max 50km). May indicate incorrect city assignment.`,
+        reasoning: `Location is ${distanceKm.toFixed(1)}km away - outside acceptable range (max ${hardCutoffKm}km).${useExtendedRange ? "" : " May indicate incorrect city assignment."}`,
       };
     }
 
@@ -354,6 +390,11 @@ function scoreLogisticalFit(
     } else if (distanceKm < 50) {
       score -= 15;
       reasons.push(`Very far (${distanceKm.toFixed(1)}km) - significant travel required`);
+    } else if (distanceKm < 75) {
+      // Extended range band: steep penalty so closer alternatives still win,
+      // but the location can survive if interest/rating/tag scores are strong
+      score -= 25;
+      reasons.push(`Extended range (${distanceKm.toFixed(1)}km) - nature/adventure day trip`);
     }
   } else {
     reasons.push("No distance data available");
@@ -1139,13 +1180,20 @@ export function scoreLocation(
   // Tag match scoring (AI intent preferred tags)
   const tagMatchResult = scoreTagMatch(location, criteria.preferredTags);
 
-  // Hidden gem preference bonus: when user wants off-the-beaten-path experiences
-  // and a hidden gem also matches their tag preferences, reward the alignment.
-  // This ensures "local_secrets" vibe actually surfaces hidden gems over popular spots.
-  const hiddenGemBonus = (
+  // Hidden gem scoring: two layers
+  // 1. Unconditional +5 when user selected "local_secrets" vibe — the vibe
+  //    selection itself is intent signal. A guide doesn't need tag overlap
+  //    to recommend a special place to someone who asked for discoveries.
+  // 2. Additional +8 when the gem also matches 2+ preferred tags — rewards
+  //    alignment between the hidden gem and specific user preferences.
+  const localSecretsBonus = (
+    location.isHiddenGem && criteria.hasLocalSecretsVibe
+  ) ? 5 : 0;
+  const hiddenGemTagBonus = (
     location.isHiddenGem &&
     tagMatchResult.score >= 10 // At least 2 matching tags
   ) ? 8 : 0;
+  const hiddenGemBonus = localSecretsBonus + hiddenGemTagBonus;
 
   // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
   const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
@@ -1216,7 +1264,8 @@ export function scoreLocation(
     ...(photoResult.reasoning ? [photoResult.reasoning] : []),
     ...(tagMatchResult.reasoning ? [tagMatchResult.reasoning] : []),
     ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
-    ...(hiddenGemBonus > 0 ? [`Hidden gem + preference match: +${hiddenGemBonus}`] : []),
+    ...(localSecretsBonus > 0 ? [`Hidden gem + local_secrets vibe: +${localSecretsBonus}`] : []),
+    ...(hiddenGemTagBonus > 0 ? [`Hidden gem + tag preference match: +${hiddenGemTagBonus}`] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 

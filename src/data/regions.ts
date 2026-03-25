@@ -108,6 +108,7 @@ export const REGIONS: readonly Region[] = [
     name: "Okinawa",
     cities: [
       { id: "naha", name: "Naha" },
+      { id: "ishigaki", name: "Ishigaki" },
     ],
   },
 ] as const;

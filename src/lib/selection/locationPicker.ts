@@ -92,6 +92,8 @@ export function pickLocationForTimeSlot(
   isWeekend?: boolean,
   accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix",
   preferredTags?: string[],
+  hasLocalSecretsVibe?: boolean,
+  hasNatureAdventureVibe?: boolean,
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -181,6 +183,8 @@ export function pickLocationForTimeSlot(
     isWeekend,
     accommodationStyle,
     preferredTags,
+    hasLocalSecretsVibe,
+    hasNatureAdventureVibe,
   };
 
   const scored = candidates

@@ -43,7 +43,7 @@ export type KnownCityId =
   | "sendai" | "morioka" | "aomori" | "akita"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori"  // Chugoku
   | "matsuyama" | "takamatsu" | "tokushima" | "kochi"  // Shikoku
-  | "naha";                               // Okinawa
+  | "naha" | "ishigaki";                  // Okinawa
 
 /**
  * City ID type that accepts both known static cities and dynamic database cities.
