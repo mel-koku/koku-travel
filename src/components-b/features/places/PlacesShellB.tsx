@@ -191,6 +191,13 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     setQuery(inputValue);
   }, [inputValue, setQuery]);
 
+  // Unified clear that resets both hook state and local shell state
+  const handleClearAll = useCallback(() => {
+    clearAllFilters();
+    setSelectedCategory(null);
+    setInputValue("");
+  }, [clearAllFilters]);
+
   const handleInputChange = (value: string) => {
     setInputValue(value);
   };
@@ -376,7 +383,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                 locations={categoryFilteredLocations}
                 totalCount={total}
                 isLoading={isLoading}
-                onClearFilters={() => { clearAllFilters(); setSelectedCategory(null); }}
+                onClearFilters={handleClearAll}
                 onSelectLocation={handleSelectLocation}
               />
             </>
@@ -433,7 +440,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             featuredOnly={featuredOnly}
             onFeaturedOnlyChange={setFeaturedOnly}
             resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
-            onClearAll={clearAllFilters}
+            onClearAll={handleClearAll}
             sortOptions={SORT_OPTIONS}
             selectedSort={selectedSort}
             onSortChange={setSelectedSort}

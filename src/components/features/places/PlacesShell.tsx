@@ -105,6 +105,12 @@ export function PlacesShell({ content }: PlacesShellProps) {
   // ── Search input state ──
   const [inputValue, setInputValue] = useState("");
 
+  // Unified clear that resets both hook state and local shell state
+  const handleClearAll = useCallback(() => {
+    clearAllFilters();
+    setInputValue("");
+  }, [clearAllFilters]);
+
   // Sync input → search query
   useEffect(() => {
     setQuery(inputValue);
@@ -321,7 +327,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         activeFilterCount={activeFilterCount}
         activeFilters={activeFilters}
         onRemoveFilter={removeFilter}
-        onClearAllFilters={clearAllFilters}
+        onClearAllFilters={handleClearAll}
         inputValue={inputValue}
         onInputChange={handleInputChange}
         onInputSubmit={handleInputSubmit}
@@ -395,7 +401,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
             onSelect={handleSelectLocation}
             totalCount={total}
             activeCategory={activeCategory}
-            onClearFilters={activeFilterCount > 0 ? clearAllFilters : undefined}
+            onClearFilters={activeFilterCount > 0 ? handleClearAll : undefined}
           />
 
           {hasMore && (
@@ -443,7 +449,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         featuredOnly={featuredOnly}
         onFeaturedToggle={setFeaturedOnly}
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
-        onClearAll={clearAllFilters}
+        onClearAll={handleClearAll}
         sortOptions={SORT_OPTIONS}
         selectedSort={selectedSort}
         onSortChange={setSelectedSort}
