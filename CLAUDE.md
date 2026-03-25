@@ -370,7 +370,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 
 ## Data
 
-- **Locations**: 6,298 active in Supabase (271 hidden via `is_active = false`). 100% with coords + `planning_city`. 36 `planning_city` values (coordinate-snapped KnownCityId, includes `ishigaki` for Yaeyama Islands). `is_hidden_gem` (1,012), `jta_approved`, `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
+- **Locations**: 6,193 active in Supabase (376 hidden via `is_active = false`). 100% with coords + `planning_city`. 36 `planning_city` values (coordinate-snapped KnownCityId, includes `ishigaki` for Yaeyama Islands). `is_hidden_gem` (1,012), `jta_approved`, `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
 - **Google Places fields**: `place_id`, `rating`, `review_count`, `operating_hours`, `primary_photo_url`, `google_maps_uri`, `website_uri`, `phone_number`, `google_primary_type`, `google_types`, `business_status`, `price_level`, `editorial_summary`, `accessibility_options`, `good_for_children`, `good_for_groups`, `outdoor_seating`, `reservable`, `dietary_options`, `service_options`, `meal_options`
 - **Gemini-enriched fields**: `name_japanese`, `nearest_station`, `cash_only`, `reservation_info`, `insider_tip`, `tags` (9-dimension)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, garden, onsen, entertainment, market, wellness, viewpoint, bar, aquarium, beach, cafe, castle, historic_site, theater, zoo, craft
@@ -378,7 +378,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Tag Dimensions** (9): env (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day), seasonal, atmo (quiet/lively/contemplative/neutral), tourist (iconic/popular/local-favorite/hidden), time (morning/afternoon/sunset/evening/late-night/anytime), exp (scenic/hands-on/tasting/learning/spiritual/adrenaline/relaxation/photo-op), for (solo/couples/families/groups), char (traditional-japan/modern-japan/quirky-japan/zen-japan/pop-culture)
 - **Experiences**: 56 in Sanity (separate from locations/itinerary)
 - **Guides**: ~90 in Sanity
-- **DQ Health**: 89/100 (`npm run dq audit|fix|report`). Drop from 99 reflects new pipeline-awareness checks (coord-city alignment, missing neighborhood/hours/accessibility). Enrichment script `scripts/enrich-locations.js` ready to fill gaps.
+- **DQ Health**: 90/100 (`npm run dq audit|fix|report`). Drop from 99 reflects pipeline-awareness checks (coord-city alignment, missing neighborhood/hours/accessibility). Duplicate rules now include `DUPLICATE_PLACE_ID` and `DUPLICATE_JAPANESE_NAME` detection. Enrichment script `scripts/enrich-locations.js` ready to fill gaps.
 
 ---
 
