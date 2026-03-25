@@ -16,7 +16,6 @@ import { sanitizeString } from "@/lib/api/sanitization";
 import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
 import { AccountSection } from "./components/AccountSection";
-import { BookingsSection } from "./components/BookingsSection";
 import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
 import { StatsSection } from "./components/StatsSection";
 import { typography } from "@/lib/typography-system";
@@ -467,20 +466,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         </div>
       </section>
 
-      {/* Bookings Section — only for authenticated users */}
-      {isAuthenticated && (
-        <section className="bg-background py-12 sm:py-16 lg:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ScrollReveal>
-              <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Bookings</p>
-              <h2 className={`mt-2 ${typography({ intent: "editorial-h3" })}`}>Your Bookings</h2>
-            </ScrollReveal>
-            <div className="mt-8 max-w-3xl">
-              <BookingsSection />
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Bookings Section — hidden until Local Experts feature launches */}
 
       {/* Discover from Video */}
       <section className="bg-background py-12 sm:py-16 lg:py-20">

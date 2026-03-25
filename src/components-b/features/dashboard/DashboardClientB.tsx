@@ -16,7 +16,6 @@ import type { PagesContent } from "@/types/sanitySiteContent";
 import { DashboardHeaderB } from "./DashboardHeaderB";
 import { StatsSectionB } from "./StatsSectionB";
 import { TripsSectionB } from "./TripsSectionB";
-import { BookingsSectionB } from "./BookingsSectionB";
 import { AccountSectionB } from "./AccountSectionB";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -273,29 +272,7 @@ export function DashboardClientB({ initialAuthUser, content }: DashboardClientBP
         onDeleteTrip={handleDeleteTrip}
       />
 
-      {/* Bookings — only for authenticated users */}
-      {isAuthenticated && (
-        <section className="py-8 sm:py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, ease: bEase }}
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
-                Bookings
-              </p>
-              <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-2xl">
-                Your Bookings
-              </h2>
-            </motion.div>
-            <div className="mt-6 max-w-3xl">
-              <BookingsSectionB />
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Bookings — hidden until Local Experts feature launches */}
 
       {/* Account */}
       {shouldShowAccountSection && (
