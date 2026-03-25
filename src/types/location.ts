@@ -366,6 +366,12 @@ export type Location = {
   isHiddenGem?: boolean;
 
   /**
+   * Whether this location is a UNESCO World Heritage Site.
+   * Used for badge display and itinerary scoring.
+   */
+  isUnescoSite?: boolean;
+
+  /**
    * Multi-dimensional tags: environment (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day),
    * seasonal (cherry-blossom/autumn-foliage/year-round), atmosphere (quiet/lively/contemplative).
    */

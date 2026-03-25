@@ -48,6 +48,9 @@ type FilterPanelProps = {
   // Featured filter
   featuredOnly: boolean;
   onFeaturedToggle: (value: boolean) => void;
+  // UNESCO filter
+  unescoOnly: boolean;
+  onUnescoToggle: (value: boolean) => void;
   // Results count
   resultsCount: number;
   // Clear all
@@ -93,6 +96,8 @@ export function FilterPanel({
   onVegetarianFriendlyChange,
   featuredOnly,
   onFeaturedToggle,
+  unescoOnly,
+  onUnescoToggle,
   resultsCount,
   onClearAll,
   sortOptions,
@@ -112,6 +117,7 @@ export function FilterPanel({
     sort: true,
     where: false,
     what: true,
+    highlights: true,
     duration: false,
     price: false,
     availability: false,
@@ -128,7 +134,8 @@ export function FilterPanel({
   const whatActiveCount = selectedVibes.length + (selectedCategory === "in_season" ? 1 : 0);
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const availabilityActiveCount = (featuredOnly ? 1 : 0) + (openNow ? 1 : 0);
+  const highlightsActiveCount = (unescoOnly ? 1 : 0) + (featuredOnly ? 1 : 0);
+  const availabilityActiveCount = openNow ? 1 : 0;
   const dietaryActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key + focus management
@@ -181,6 +188,7 @@ export function FilterPanel({
     wheelchairAccessible ||
     vegetarianFriendly ||
     featuredOnly ||
+    unescoOnly ||
     selectedSort !== "recommended";
 
   return (
@@ -307,6 +315,31 @@ export function FilterPanel({
                 />
               </FilterSection>
 
+              {/* Highlights */}
+              <FilterSection
+                label="Highlights"
+                activeCount={highlightsActiveCount}
+                isExpanded={expandedSections.highlights}
+                onToggle={() => toggleSection("highlights")}
+                onClear={highlightsActiveCount > 0 ? () => { onUnescoToggle(false); onFeaturedToggle(false); } : undefined}
+              >
+                <div className="space-y-4">
+                  <ToggleOption
+                    label="UNESCO World Heritage"
+                    description="Sites inscribed on the UNESCO World Heritage List"
+                    checked={unescoOnly}
+                    onChange={onUnescoToggle}
+                  />
+
+                  <ToggleOption
+                    label="Featured"
+                    description="Handpicked places worth the trip"
+                    checked={featuredOnly}
+                    onChange={onFeaturedToggle}
+                  />
+                </div>
+              </FilterSection>
+
               {/* Vibe */}
               <FilterSection
                 label="Vibe"
@@ -396,16 +429,9 @@ export function FilterPanel({
                 activeCount={availabilityActiveCount}
                 isExpanded={expandedSections.availability}
                 onToggle={() => toggleSection("availability")}
-                onClear={availabilityActiveCount > 0 ? () => { onFeaturedToggle(false); onOpenNowChange(false); } : undefined}
+                onClear={availabilityActiveCount > 0 ? () => { onOpenNowChange(false); } : undefined}
               >
                 <div className="space-y-4">
-                  <ToggleOption
-                    label="Featured only"
-                    description="Handpicked places worth the trip"
-                    checked={featuredOnly}
-                    onChange={onFeaturedToggle}
-                  />
-
                   <ToggleOption
                     label="Open now"
                     description="Only show places currently open"
