@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useGuideLocations } from "../GuideLocationsContext";
+import { LocationBreakoutCard } from "../LocationBreakoutCard";
 
 type LocationEmbedProps = {
   value: {
@@ -10,6 +12,22 @@ type LocationEmbedProps = {
 };
 
 export function LocationEmbedBlock({ value }: LocationEmbedProps) {
+  const { getLocationById, nextIndex } = useGuideLocations();
+  const location = getLocationById(value.locationId);
+
+  // Rich breakout card when location data is available
+  if (location) {
+    const idx = nextIndex();
+    return (
+      <LocationBreakoutCard
+        location={location}
+        layout={idx % 2 === 0 ? "left" : "right"}
+        index={idx}
+      />
+    );
+  }
+
+  // Fallback: minimal link row (no location data available)
   return (
     <div className="mx-auto my-8 max-w-2xl px-6">
       <Link
