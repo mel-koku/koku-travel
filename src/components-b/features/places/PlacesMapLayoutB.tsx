@@ -62,15 +62,20 @@ export function PlacesMapLayoutB({
     [onSelectLocation],
   );
 
+  // In map view, only show locations that have a pin on the map
+  const mappableLocations = useMemo(
+    () => sortedLocations.filter((loc) => loc.coordinates?.lat != null && loc.coordinates?.lng != null),
+    [sortedLocations],
+  );
+
   const boundsFilteredLocations = useMemo(() => {
-    if (!mapBounds) return sortedLocations;
+    if (!mapBounds) return mappableLocations;
     const { north, south, east, west } = mapBounds;
-    return sortedLocations.filter((loc) => {
-      if (!loc.coordinates) return true; // no coords → show in list, no map pin
-      const { lat, lng } = loc.coordinates;
+    return mappableLocations.filter((loc) => {
+      const { lat, lng } = loc.coordinates!;
       return lat >= south && lat <= north && lng >= west && lng <= east;
     });
-  }, [sortedLocations, mapBounds]);
+  }, [mappableLocations, mapBounds]);
 
   const visibleLocations = useMemo(
     () => boundsFilteredLocations.slice(0, page * PAGE_SIZE),
@@ -99,10 +104,8 @@ export function PlacesMapLayoutB({
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [hoveredLocationId]);
 
-  const mappedCount = mapBounds
-    ? boundsFilteredLocations.filter((loc) => loc.coordinates).length
-    : sortedLocations.filter((loc) => loc.coordinates).length;
-  const showResetButton = mapBounds !== null && mappedCount === 0 && sortedLocations.filter((loc) => loc.coordinates).length > 0;
+  const mappedCount = mapBounds ? boundsFilteredLocations.length : mappableLocations.length;
+  const showResetButton = mapBounds !== null && mappedCount === 0 && mappableLocations.length > 0;
 
   const setCardRef = useCallback(
     (locationId: string) => (el: HTMLDivElement | null) => {
@@ -163,7 +166,7 @@ export function PlacesMapLayoutB({
             <div className="mb-1.5 pointer-events-auto">
               <span className="inline-block rounded-lg bg-white px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]" style={{ boxShadow: "var(--shadow-sm)" }}>
                 {boundsFilteredLocations.length.toLocaleString()} places
-                {mapBounds && mappedCount <= 10 && mappedCount < sortedLocations.filter((l) => l.coordinates).length && (
+                {mapBounds && mappedCount <= 10 && mappedCount < mappableLocations.length && (
                   <span className="font-normal"> · Zoom out for more</span>
                 )}
               </span>
