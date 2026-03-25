@@ -526,6 +526,22 @@ html.lenis-stopped {
   transform-origin: left;
 }
 
+/* Places map: highlight popup tooltip */
+.places-highlight-popup {
+  pointer-events: none;
+}
+.places-highlight-popup .mapboxgl-popup-content {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.places-highlight-popup .mapboxgl-popup-tip {
+  border-top-color: #fff;
+}
+
 /* Signature CTA: vermilion glow on hover */
 .btn-koku {
   position: relative;
