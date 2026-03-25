@@ -56,6 +56,10 @@ type FilterPanelProps = {
   sortOptions: readonly SortOption[];
   selectedSort: SortOptionId;
   onSortChange: (sort: SortOptionId) => void;
+  // Seasonal filter
+  selectedCategory?: string | null;
+  onCategoryChange?: (category: string | null) => void;
+  seasonalHighlight?: { label: string } | null;
 };
 
 const PRICE_OPTIONS = [
@@ -94,6 +98,9 @@ export function FilterPanel({
   sortOptions,
   selectedSort,
   onSortChange,
+  selectedCategory,
+  onCategoryChange,
+  seasonalHighlight,
 }: FilterPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
@@ -107,7 +114,8 @@ export function FilterPanel({
     what: true,
     duration: false,
     price: false,
-    toggles: false,
+    availability: false,
+    dietary: false,
   });
 
   const toggleSection = (key: keyof typeof expandedSections) => {
@@ -117,10 +125,11 @@ export function FilterPanel({
   // Active filter counts for badges
   const sortActiveCount = selectedSort !== "recommended" ? 1 : 0;
   const whereActiveCount = selectedPrefectures.length;
-  const whatActiveCount = selectedVibes.length;
+  const whatActiveCount = selectedVibes.length + (selectedCategory === "in_season" ? 1 : 0);
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0) + (featuredOnly ? 1 : 0);
+  const availabilityActiveCount = (featuredOnly ? 1 : 0) + (openNow ? 1 : 0);
+  const dietaryActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key + focus management
   useEffect(() => {
@@ -269,6 +278,7 @@ export function FilterPanel({
                 activeCount={sortActiveCount}
                 isExpanded={expandedSections.sort}
                 onToggle={() => toggleSection("sort")}
+                onClear={sortActiveCount > 0 ? () => onSortChange("recommended") : undefined}
               >
                 <div className="flex flex-wrap gap-2">
                   {sortOptions.map((option) => (
@@ -303,6 +313,7 @@ export function FilterPanel({
                 activeCount={whatActiveCount}
                 isExpanded={expandedSections.what}
                 onToggle={() => toggleSection("what")}
+                onClear={whatActiveCount > 0 ? () => { onVibesChange([]); if (onCategoryChange) onCategoryChange(null); } : undefined}
               >
                 <div className="flex flex-wrap gap-2">
                   {VIBES.filter((v) => v.id !== "in_season").map((vibe) => (
@@ -314,6 +325,15 @@ export function FilterPanel({
                     />
                   ))}
                 </div>
+                {seasonalHighlight && onCategoryChange && (
+                  <div className="mt-3 pt-3 border-t border-border/30">
+                    <PanelChip
+                      label={`In Season: ${seasonalHighlight.label}`}
+                      isSelected={selectedCategory === "in_season"}
+                      onClick={() => onCategoryChange(selectedCategory === "in_season" ? null : "in_season")}
+                    />
+                  </div>
+                )}
               </FilterSection>
 
               {/* Duration */}
@@ -322,6 +342,7 @@ export function FilterPanel({
                 activeCount={durationActiveCount}
                 isExpanded={expandedSections.duration}
                 onToggle={() => toggleSection("duration")}
+                onClear={durationActiveCount > 0 ? () => onDurationChange(null) : undefined}
               >
                 <div className="flex flex-wrap gap-2">
                   <PanelChip
@@ -348,6 +369,7 @@ export function FilterPanel({
                 activeCount={priceActiveCount}
                 isExpanded={expandedSections.price}
                 onToggle={() => toggleSection("price")}
+                onClear={priceActiveCount > 0 ? () => onPriceLevelChange(null) : undefined}
               >
                 <div className="flex flex-wrap gap-2">
                   <PanelChip
@@ -368,12 +390,13 @@ export function FilterPanel({
                 </div>
               </FilterSection>
 
-              {/* Toggles */}
+              {/* Availability */}
               <FilterSection
-                label="Accessibility"
-                activeCount={togglesActiveCount}
-                isExpanded={expandedSections.toggles}
-                onToggle={() => toggleSection("toggles")}
+                label="Availability"
+                activeCount={availabilityActiveCount}
+                isExpanded={expandedSections.availability}
+                onToggle={() => toggleSection("availability")}
+                onClear={availabilityActiveCount > 0 ? () => { onFeaturedToggle(false); onOpenNowChange(false); } : undefined}
               >
                 <div className="space-y-4">
                   <ToggleOption
@@ -389,7 +412,18 @@ export function FilterPanel({
                     checked={openNow}
                     onChange={onOpenNowChange}
                   />
+                </div>
+              </FilterSection>
 
+              {/* Accessibility & Dietary */}
+              <FilterSection
+                label="Accessibility & Dietary"
+                activeCount={dietaryActiveCount}
+                isExpanded={expandedSections.dietary}
+                onToggle={() => toggleSection("dietary")}
+                onClear={dietaryActiveCount > 0 ? () => { onWheelchairAccessibleChange(false); onVegetarianFriendlyChange(false); } : undefined}
+              >
+                <div className="space-y-4">
                   <ToggleOption
                     label="Wheelchair accessible"
                     description="Places with a wheelchair-accessible entrance"
