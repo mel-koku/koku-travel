@@ -722,7 +722,15 @@ export const ItineraryShell = ({
                 totalDays={days.length}
                 selected={safeSelectedDay}
                 onChange={handleSelectDayChange}
-                labels={days.map((day) => day.dateLabel ?? "")}
+                labels={days.map((day) => {
+                  const label = day.dateLabel ?? "";
+                  // Ensure city is present in label for DaySelector display
+                  if (label && !label.includes("(") && day.cityId) {
+                    const city = day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
+                    return `${label} (${city})`;
+                  }
+                  return label;
+                })}
                 tripStartDate={tripStartDate}
                 dayHealthLevels={dayHealthLevels}
               />

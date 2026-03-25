@@ -4,6 +4,29 @@ import { useMemo, useEffect, useRef, useState, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 
+/** Track whether the scrollable list can scroll further down */
+function useCanScrollDown(ref: React.RefObject<HTMLDivElement | null>, open: boolean) {
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!open || !el) {
+      setCanScroll(false);
+      return;
+    }
+
+    const check = () => {
+      setCanScroll(el.scrollHeight - el.scrollTop - el.clientHeight > 4);
+    };
+
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    return () => el.removeEventListener("scroll", check);
+  }, [ref, open]);
+
+  return canScroll;
+}
+
 type DayHealthLevel = "good" | "fair" | "poor";
 
 type DaySelectorProps = {
@@ -128,6 +151,8 @@ export const DaySelector = ({
 
   // Scroll selected item into view when dropdown opens
   const listRef = useRef<HTMLDivElement>(null);
+  const canScrollDown = useCanScrollDown(listRef, open);
+
   useEffect(() => {
     if (open && listRef.current) {
       const activeEl = listRef.current.querySelector("[data-active='true']");
@@ -214,50 +239,64 @@ export const DaySelector = ({
       </button>
 
       {open && (
-        <div
-          ref={listRef}
-          role="listbox"
-          aria-label="Day selector"
-          className="absolute left-0 top-full z-30 mt-1 max-h-64 w-56 overflow-y-auto overscroll-contain rounded-lg border border-border bg-surface py-1 shadow-[var(--shadow-elevated)]"
-          onKeyDown={handleKeyDown}
-        >
-          {days.map(({ index, label, isToday }) => {
-            const isActive = index === selected;
-            const healthLevel = dayHealthLevels?.[index];
-            return (
-              <button
-                key={index}
-                type="button"
-                role="option"
-                aria-selected={isActive}
-                data-active={isActive}
-                onClick={() => handleSelect(index)}
-                className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors",
-                  isActive
-                    ? "bg-brand-primary/10 font-medium text-brand-primary"
-                    : "text-foreground hover:bg-background"
-                )}
-              >
-                <span className="min-w-0 flex-1">
-                  {label}
-                  {isToday && (
-                    <span className={cn("ml-1 text-[10px] font-semibold", isActive ? "text-brand-primary/70" : "text-sage")}>
-                      (Today)
-                    </span>
+        <div className="absolute left-0 top-full z-30 mt-1 w-56 rounded-lg border border-border bg-surface shadow-[var(--shadow-elevated)]">
+          <div
+            ref={listRef}
+            role="listbox"
+            aria-label="Day selector"
+            data-lenis-prevent
+            className="max-h-64 overflow-y-auto overscroll-contain py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            onKeyDown={handleKeyDown}
+          >
+            {days.map(({ index, label, isToday }) => {
+              const isActive = index === selected;
+              const healthLevel = dayHealthLevels?.[index];
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  data-active={isActive}
+                  onClick={() => handleSelect(index)}
+                  className={cn(
+                    "flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors",
+                    isActive
+                      ? "bg-brand-primary/10 font-medium text-brand-primary"
+                      : "text-foreground hover:bg-background"
                   )}
-                </span>
-                {healthLevel && healthLevel !== "good" && (
-                  <span
-                    className={cn(
-                      "h-2 w-2 shrink-0 rounded-full",
-                      healthLevel === "fair" ? "bg-warning" : "bg-error"
+                >
+                  <span className="min-w-0 flex-1">
+                    {label}
+                    {isToday && (
+                      <span className={cn("ml-1 text-[10px] font-semibold", isActive ? "text-brand-primary/70" : "text-sage")}>
+                        (Today)
+                      </span>
                     )}
-                  />
-                )}
-              </button>
-            );
-          })}
+                  </span>
+                  {healthLevel && healthLevel !== "good" && (
+                    <span
+                      className={cn(
+                        "h-2 w-2 shrink-0 rounded-full",
+                        healthLevel === "fair" ? "bg-warning" : "bg-error"
+                      )}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* "More below" arrow indicator */}
+          {canScrollDown && (
+            <div
+              className="flex justify-center border-t border-border/60 py-1 text-stone"
+              aria-hidden
+              onClick={() => listRef.current?.scrollBy({ top: 120, behavior: "smooth" })}
+            >
+              <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
+            </div>
+          )}
         </div>
       )}
     </div>
