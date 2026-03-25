@@ -94,6 +94,7 @@ const CLUSTER_LAYER = "places-clusters";
 const CLUSTER_COUNT_LAYER = "places-cluster-count";
 const UNCLUSTERED_LAYER = "places-unclustered-point";
 const UNCLUSTERED_LABEL_LAYER = "places-unclustered-label";
+const HIGHLIGHT_RING_LAYER = "places-highlight-ring";
 
 export function PlacesMapB({
   locations,
@@ -115,6 +116,7 @@ export function PlacesMapB({
   const prevHighlightRef = useRef<number | null>(null);
   const locationLookupRef = useRef<Map<number, Location>>(new Map());
   const featureCollectionRef = useRef<GeoJSON.FeatureCollection>({ type: "FeatureCollection", features: [] });
+  const popupRef = useRef<InstanceType<MapboxModule["Popup"]> | null>(null);
 
   // Stable refs for callbacks — prevents map reinitialization when parent re-renders
   const onBoundsChangeRef = useRef(onBoundsChange);
@@ -238,6 +240,29 @@ export function PlacesMapB({
         },
       });
 
+      // Highlight ring — soft halo behind hovered pin
+      map.addLayer({
+        id: HIGHLIGHT_RING_LAYER,
+        type: "circle",
+        source: SOURCE_ID,
+        filter: ["!", ["has", "point_count"]],
+        paint: {
+          "circle-radius": [
+            "case",
+            ["boolean", ["feature-state", "highlighted"], false],
+            20,
+            7,
+          ],
+          "circle-color": ["get", "color"],
+          "circle-opacity": [
+            "case",
+            ["boolean", ["feature-state", "highlighted"], false],
+            0.2,
+            0,
+          ],
+        },
+      });
+
       // Individual points
       map.addLayer({
         id: UNCLUSTERED_LAYER,
@@ -252,8 +277,13 @@ export function PlacesMapB({
             11,
             7,
           ],
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "rgba(255,255,255,0.8)",
+          "circle-stroke-width": [
+            "case",
+            ["boolean", ["feature-state", "highlighted"], false],
+            2.5,
+            2,
+          ],
+          "circle-stroke-color": "rgba(255,255,255,0.9)",
           "circle-opacity": 0.9,
         },
       });
@@ -341,6 +371,8 @@ export function PlacesMapB({
     mapInstanceRef.current = map;
 
     return () => {
+      popupRef.current?.remove();
+      popupRef.current = null;
       map.remove();
       mapInstanceRef.current = null;
       setMapReady(false);
@@ -400,8 +432,26 @@ export function PlacesMapB({
       } catch {
         prevHighlightRef.current = null;
       }
+
+      // Show name tooltip above pin
+      const loc = locationLookupRef.current.get(numId);
+      if (loc?.coordinates && mapboxModuleRef.current) {
+        if (!popupRef.current) {
+          popupRef.current = new mapboxModuleRef.current.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            offset: 14,
+            className: "places-highlight-popup",
+          });
+        }
+        popupRef.current
+          .setLngLat([loc.coordinates.lng, loc.coordinates.lat])
+          .setText(loc.name)
+          .addTo(map);
+      }
     } else {
       prevHighlightRef.current = null;
+      popupRef.current?.remove();
     }
   }, [highlightedLocationId, mapReady]);
 
