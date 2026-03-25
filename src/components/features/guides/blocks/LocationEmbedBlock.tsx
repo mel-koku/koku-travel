@@ -27,11 +27,11 @@ export function LocationEmbedBlock({ value }: LocationEmbedProps) {
     );
   }
 
-  // Fallback: minimal link row (no location data available)
+  // Fallback: minimal link row (no location data available, navigate to places)
   return (
     <div className="mx-auto my-8 max-w-2xl px-6">
       <Link
-        href={`/places?location=${value.locationId}`}
+        href={`/places/${value.locationId}`}
         className="group flex items-center gap-3 rounded-lg border border-border/50 bg-surface p-4 transition-all hover:border-brand-primary/30 hover:shadow-[var(--shadow-elevated)]"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10">

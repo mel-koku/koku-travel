@@ -1,12 +1,16 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { getCategoryColorScheme } from "@/lib/itinerary/activityColors";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
+import { useSaved } from "@/context/SavedContext";
+import { HeartIcon } from "@/components/features/places/LocationCard";
+import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
+import { useGuideLocations } from "./GuideLocationsContext";
 import type { Location } from "@/types/location";
 
 type LocationBreakoutCardProps = {
@@ -41,6 +45,22 @@ export function LocationBreakoutCard({
   const colors = getCategoryColorScheme(location.category);
   const isRight = layout === "right";
 
+  const { onSelectLocation } = useGuideLocations();
+  const { isInSaved, toggleSave } = useSaved();
+  const active = isInSaved(location.id);
+  const [heartAnimating, setHeartAnimating] = useState(false);
+  const wasSaved = useRef(active);
+  const showFirstSaveToast = useFirstSaveToast();
+
+  useEffect(() => {
+    if (active && !wasSaved.current) {
+      setHeartAnimating(true);
+      const timer = setTimeout(() => setHeartAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+    wasSaved.current = active;
+  }, [active]);
+
   return (
     <div data-location-id={location.id}>
       <ScrollReveal
@@ -48,9 +68,10 @@ export function LocationBreakoutCard({
         distance={30}
         delay={0.05}
       >
-        <Link
-        href={`/places/${location.id}`}
-        className="group block overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
+        <button
+        type="button"
+        onClick={() => onSelectLocation(location)}
+        className="group block w-full overflow-hidden rounded-lg bg-surface text-left shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
       >
         <div
           className={cn(
@@ -69,6 +90,24 @@ export function LocationBreakoutCard({
               loading="lazy"
             />
             <div className="absolute inset-0 scrim-20 transition-opacity duration-500 group-hover:opacity-0" />
+
+            {/* Save button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!active) showFirstSaveToast();
+                toggleSave(location.id);
+              }}
+              aria-label={active ? "Unsave" : "Save for trip"}
+              className="pointer-events-auto absolute right-3 top-3 flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 shadow-[var(--shadow-elevated)] backdrop-blur-md transition-all hover:bg-surface hover:scale-105 active:scale-[0.98] opacity-0 group-hover:opacity-100"
+            >
+              <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
+              <span className="text-xs font-medium text-foreground">
+                {active ? "Saved" : "Save"}
+              </span>
+            </button>
           </div>
 
           {/* Content */}
@@ -140,7 +179,7 @@ export function LocationBreakoutCard({
             </p>
           </div>
         </div>
-        </Link>
+        </button>
       </ScrollReveal>
     </div>
   );
