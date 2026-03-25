@@ -13,13 +13,15 @@ import {
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { JRPassCard } from "./JRPassCard";
-
+import { PlanningWarningsList } from "./PlanningWarning";
 
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
+import { detectPlanningWarnings, type PlanningWarning } from "@/lib/planning/tripWarnings";
+import { computeDefaultCityDays } from "@/lib/tripBuilder/cityDayAllocation";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -180,6 +182,40 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
   const durationWarning = useMemo(
     () => validateDurationRegionFit(data.duration ?? 0, data.regions ?? [], data.cities ?? []),
     [data.duration, data.regions, data.cities],
+  );
+
+  const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
+
+  const handleWarningAction = useCallback(
+    (warning: PlanningWarning) => {
+      if (warning.type !== "return_to_airport") return;
+      const returnCityId = warning.actionData?.returnCityId as string | undefined;
+      if (!returnCityId) return;
+
+      setData((prev) => {
+        const cities = prev.cities ?? [];
+        if (cities.length === 0) return prev;
+
+        const duration = prev.duration ?? cities.length;
+        const currentDays = prev.cityDays ?? computeDefaultCityDays(cities, duration);
+        const lastDays = currentDays[currentDays.length - 1] ?? 1;
+
+        if (lastDays < 2) return prev;
+
+        const newCities = [...cities, returnCityId];
+        const newDays = [...currentDays];
+        newDays[newDays.length - 1] = lastDays - 1;
+        newDays.push(1);
+
+        return {
+          ...prev,
+          cities: newCities,
+          cityDays: newDays,
+          customCityOrder: true,
+        };
+      });
+    },
+    [setData],
   );
 
   // Navigation handlers (flat steps: 1=dates, 2=entry, 3=vibes, 4=regions)
@@ -481,6 +517,9 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
             </div>
           )}
+
+          {/* Planning Warnings (return-to-airport, pacing, seasonal, etc.) */}
+          {warnings.length > 0 && <PlanningWarningsList warnings={warnings} onAction={handleWarningAction} />}
 
           {/* Budget & Notes */}
           <PreferenceCard
