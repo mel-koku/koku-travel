@@ -34,7 +34,7 @@ const PAGE_SIZE = 24;
 export type CraftSortOptionId = "recommended" | "highest_rated" | "most_reviews" | "duration_short";
 
 export const CRAFT_SORT_OPTIONS = [
-  { id: "recommended" as const, label: "Recommended" },
+  { id: "recommended" as const, label: "Popular" },
   { id: "highest_rated" as const, label: "Highest Rated" },
   { id: "most_reviews" as const, label: "Most Reviews" },
   { id: "duration_short" as const, label: "Duration (Short to Long)" },

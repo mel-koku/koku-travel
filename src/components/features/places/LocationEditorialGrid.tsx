@@ -18,6 +18,7 @@ type LocationEditorialGridProps = {
   onSelect?: (location: Location) => void;
   totalCount?: number;
   activeCategory?: string | null;
+  onClearFilters?: () => void;
 };
 
 function getSummary(location: Location): string {
@@ -33,6 +34,7 @@ function getSummary(location: Location): string {
 export function LocationEditorialGrid({
   locations,
   onSelect,
+  onClearFilters,
 }: LocationEditorialGridProps) {
   if (locations.length === 0) {
     return (
@@ -46,6 +48,15 @@ export function LocationEditorialGrid({
         <p className="text-sm text-stone text-center max-w-sm">
           Try removing a filter or searching for something else.
         </p>
+        {onClearFilters && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="mt-4 text-sm font-medium text-brand-primary hover:underline underline-offset-2 transition-colors"
+          >
+            Clear all filters
+          </button>
+        )}
       </div>
     );
   }
@@ -167,7 +178,11 @@ const PlacesCard = memo(function PlacesCard({
                   </span>
                 ) : null}
               </span>
-            ) : null}
+            ) : (
+              <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-sage">
+                Curated
+              </span>
+            )}
           </div>
 
           {/* City */}

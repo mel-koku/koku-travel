@@ -25,12 +25,13 @@ type LocationExpandedProps = {
 
 export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const { pause, resume } = useLenis();
-  const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
+  const { status, details, fetchedLocation, errorMessage, retry } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
   const people = useExperiencePeople(locationWithDetails.sanitySlug, locationWithDetails.id);
   const { isInSaved, toggleSave } = useSaved();
   const showFirstSaveToast = useFirstSaveToast();
   const [heartAnimating, setHeartAnimating] = useState(false);
+  const [isLongLoading, setIsLongLoading] = useState(false);
 
   const isSaved = isInSaved(location.id);
   const wasSaved = useRef(isSaved);
@@ -40,6 +41,16 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   useEffect(() => {
     setActivePhotoIndex(0);
   }, [location.id]);
+
+  // Track long-loading state (10s timeout)
+  useEffect(() => {
+    if (status !== "loading") {
+      setIsLongLoading(false);
+      return;
+    }
+    const timer = setTimeout(() => setIsLongLoading(true), 10000);
+    return () => clearTimeout(timer);
+  }, [status, location.id]);
 
   // Build deduplicated photo list: hero first, then details photos
   const allPhotos = useMemo(() => {
@@ -549,7 +560,43 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {status === "loading" && (
             <div className="flex items-center gap-2 text-sm text-stone">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone/30 border-t-stone" />
-              Loading details...
+              {isLongLoading ? (
+                <div className="flex flex-col gap-1">
+                  <span>Taking longer than expected...</span>
+                  <button
+                    type="button"
+                    onClick={retry}
+                    className="text-brand-primary hover:underline underline-offset-2 text-left text-sm"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : (
+                <span>Loading details...</span>
+              )}
+            </div>
+          )}
+
+          {/* Error state */}
+          {status === "error" && (
+            <div className="flex items-start gap-2.5 rounded-lg border border-error/30 bg-error/5 p-4">
+              <svg className="h-5 w-5 shrink-0 text-error mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" d="M12 8v4m0 4h.01" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-error">Could not load details</p>
+                {errorMessage && (
+                  <p className="text-xs text-foreground-secondary mt-0.5">{errorMessage}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={retry}
+                  className="mt-2 text-sm font-medium text-brand-primary hover:underline underline-offset-2"
+                >
+                  Try again
+                </button>
+              </div>
             </div>
           )}
 
