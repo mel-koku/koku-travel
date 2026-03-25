@@ -43,6 +43,53 @@ const sectionReveal = {
 };
 
 
+const DESC_CLAMP_THRESHOLD = 120; // words — only clamp if over this
+
+function OverviewSection({
+  summary,
+  description,
+  sectionReveal,
+}: {
+  summary?: string;
+  description?: string;
+  sectionReveal: Record<string, unknown>;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const needsClamp =
+    !!description && description.trim().split(/\s+/).length > DESC_CLAMP_THRESHOLD;
+
+  return (
+    <motion.section {...sectionReveal} className="space-y-2">
+      <h2 className="eyebrow-editorial">Overview</h2>
+      {summary && (
+        <p className="text-sm font-medium leading-relaxed text-foreground">
+          {summary}
+        </p>
+      )}
+      {description && (
+        <div>
+          <p
+            className={cn(
+              "text-base leading-relaxed text-foreground-secondary",
+              needsClamp && !expanded && "line-clamp-5"
+            )}
+          >
+            {description}
+          </p>
+          {needsClamp && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-1 text-sm font-medium text-brand-primary hover:underline"
+            >
+              {expanded ? "Show less" : "Read more"}
+            </button>
+          )}
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
 type PlaceDetailProps = {
   initialLocation: Location;
 };
@@ -292,6 +339,11 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               Hidden Gem
             </span>
           )}
+          {location.isUnescoSite && (
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent border border-accent/30 px-3 py-1 rounded-md">
+              UNESCO World Heritage Site
+            </span>
+          )}
         </motion.div>
 
         {/* Save button */}
@@ -345,15 +397,11 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       <div className="mx-auto max-w-3xl px-6 space-y-8 pb-8">
         {/* Description */}
         {(summary || description) && (
-          <motion.section {...sectionReveal} className="space-y-2">
-            <h2 className="eyebrow-editorial">Overview</h2>
-            {summary && (
-              <p className="text-sm font-medium leading-relaxed text-foreground">{summary}</p>
-            )}
-            {description && (
-              <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
-            )}
-          </motion.section>
+          <OverviewSection
+            summary={summary}
+            description={description}
+            sectionReveal={sectionReveal}
+          />
         )}
 
         {/* Artisan / Guide profile */}

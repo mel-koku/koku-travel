@@ -164,6 +164,7 @@ export function usePlacesFilters(
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [jtaApprovedOnly, setJtaApprovedOnly] = useState(false);
+  const [unescoOnly, setUnescoOnly] = useState(false);
 
   // Sort + pagination
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
@@ -188,6 +189,7 @@ export function usePlacesFilters(
     selectedCity,
     selectedCategory,
     jtaApprovedOnly,
+    unescoOnly,
     selectedSort,
   ]);
 
@@ -335,6 +337,10 @@ export function usePlacesFilters(
         ? true
         : location.jtaApproved === true;
 
+      const matchesUnesco = !unescoOnly
+        ? true
+        : location.isUnescoSite === true;
+
       return (
         matchesQuery &&
         matchesPrefecture &&
@@ -347,10 +353,11 @@ export function usePlacesFilters(
         matchesFeatured &&
         matchesCity &&
         matchesCategory &&
-        matchesJta
+        matchesJta &&
+        matchesUnesco
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, kokuIds, selectedCity, selectedCategory, jtaApprovedOnly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, kokuIds, selectedCity, selectedCategory, jtaApprovedOnly, unescoOnly]);
 
   // Sort
   const sortedLocations = useMemo(() => {
@@ -481,6 +488,10 @@ export function usePlacesFilters(
       filters.push({ type: "jta", value: "true", label: "JTA Approved" });
     }
 
+    if (unescoOnly) {
+      filters.push({ type: "unesco", value: "true", label: "UNESCO World Heritage" });
+    }
+
     return filters;
   }, [
     query,
@@ -496,6 +507,7 @@ export function usePlacesFilters(
     selectedCity,
     selectedCategory,
     jtaApprovedOnly,
+    unescoOnly,
   ]);
 
   const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
@@ -538,6 +550,9 @@ export function usePlacesFilters(
       case "jta":
         setJtaApprovedOnly(false);
         break;
+      case "unesco":
+        setUnescoOnly(false);
+        break;
     }
   }, []);
 
@@ -555,6 +570,7 @@ export function usePlacesFilters(
     setSelectedCity(null);
     setSelectedCategory(null);
     setJtaApprovedOnly(false);
+    setUnescoOnly(false);
     setSelectedSort("recommended");
   }, []);
 
@@ -577,6 +593,7 @@ export function usePlacesFilters(
     selectedCity, setSelectedCity,
     selectedCategory, setSelectedCategory,
     jtaApprovedOnly, setJtaApprovedOnly,
+    unescoOnly, setUnescoOnly,
     // Sort
     selectedSort, setSelectedSort,
     // Pagination

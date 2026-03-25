@@ -81,6 +81,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     selectedCity, setSelectedCity,
     selectedCategory, setSelectedCategory,
     jtaApprovedOnly, setJtaApprovedOnly,
+    unescoOnly, setUnescoOnly,
     selectedSort, setSelectedSort,
     setPage, hasMore, filterVersion,
     filteredLocations,
@@ -164,6 +165,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     if (searchParams.get("wheelchair") === "true") setWheelchairAccessible(true);
     if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
     if (searchParams.get("featured") === "true") setFeaturedOnly(true);
+    if (searchParams.get("unesco") === "true") setUnescoOnly(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
@@ -275,6 +277,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       if (wheelchairAccessible) params.set("wheelchair", "true");
       if (vegetarianFriendly) params.set("vegetarian", "true");
       if (featuredOnly) params.set("featured", "true");
+      if (unescoOnly) params.set("unesco", "true");
       if (kokuIds.length > 0) params.set("koku", kokuIds.join(","));
       if (locationParam) params.set("location", locationParam);
       const qs = params.toString();
@@ -285,7 +288,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewMode, query, selectedCity, selectedCategory, jtaApprovedOnly,
     selectedSort, selectedPrefectures, selectedVibes, selectedPriceLevel,
     selectedDuration, openNow, wheelchairAccessible, vegetarianFriendly,
-    featuredOnly, kokuIds, locationParam, router,
+    featuredOnly, unescoOnly, kokuIds, locationParam, router,
   ]);
 
   return (
@@ -448,6 +451,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onVegetarianFriendlyChange={setVegetarianFriendly}
         featuredOnly={featuredOnly}
         onFeaturedToggle={setFeaturedOnly}
+        unescoOnly={unescoOnly}
+        onUnescoToggle={setUnescoOnly}
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onClearAll={handleClearAll}
         sortOptions={SORT_OPTIONS}

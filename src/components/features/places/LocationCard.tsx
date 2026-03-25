@@ -146,6 +146,11 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                   JTA Approved
                 </span>
               )}
+              {location.isUnescoSite && (
+                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-accent border border-accent/40 px-2 py-0.5 rounded-md">
+                  UNESCO
+                </span>
+              )}
               {estimatedDuration ? (
                 <>
                   <span className="text-border">·</span>

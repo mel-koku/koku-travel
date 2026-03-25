@@ -94,6 +94,7 @@ export function pickLocationForTimeSlot(
   preferredTags?: string[],
   hasLocalSecretsVibe?: boolean,
   hasNatureAdventureVibe?: boolean,
+  hasHeritageVibe?: boolean,
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -185,6 +186,7 @@ export function pickLocationForTimeSlot(
     preferredTags,
     hasLocalSecretsVibe,
     hasNatureAdventureVibe,
+    hasHeritageVibe,
   };
 
   const scored = candidates
