@@ -21,6 +21,20 @@ type LocationEditorialGridProps = {
   onClearFilters?: () => void;
 };
 
+function formatDuration(raw?: string): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  // Already human-readable (contains "hour", "min", "day", or a dash like "2-3 hours")
+  if (/[a-zA-Z-]/.test(trimmed)) return trimmed;
+  // Plain number = minutes
+  const mins = parseInt(trimmed, 10);
+  if (isNaN(mins)) return trimmed;
+  if (mins < 60) return `${mins} mins`;
+  const hours = mins / 60;
+  if (hours === Math.floor(hours)) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  return `${hours.toFixed(1)} hours`;
+}
+
 function getSummary(location: Location): string {
   const editorial = LOCATION_EDITORIAL_SUMMARIES[location.id]?.trim();
   if (editorial) return editorial;
@@ -185,9 +199,15 @@ const PlacesCard = memo(function PlacesCard({
             )}
           </div>
 
-          {/* City */}
+          {/* City + duration */}
           <p className="text-xs text-stone">
             {location.city}, {location.region}
+            {formatDuration(location.estimatedDuration) && (
+              <>
+                <span className="text-border"> &middot; </span>
+                <span>{formatDuration(location.estimatedDuration)}</span>
+              </>
+            )}
           </p>
 
           {/* Summary */}
@@ -195,22 +215,20 @@ const PlacesCard = memo(function PlacesCard({
             {summary}
           </p>
 
-          {/* Category + duration */}
+          {/* Category + badges + duration */}
           <div className="flex items-center gap-2 pt-0.5 mt-auto flex-wrap">
             <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-md">
               {location.category}
             </span>
-            {location.estimatedDuration && (
-              <>
-                <span className="text-border">&middot;</span>
-                <span className="flex items-center gap-1 text-[11px] text-stone">
-                  <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <circle cx="12" cy="12" r="10" />
-                    <path strokeLinecap="round" d="M12 6v6l4 2" />
-                  </svg>
-                  {location.estimatedDuration}
-                </span>
-              </>
+            {location.jtaApproved && (
+              <span className="text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-1.5 py-0.5 rounded-md">
+                JTA
+              </span>
+            )}
+            {location.isUnescoSite && (
+              <span className="text-[10px] font-medium uppercase tracking-wide text-accent border border-accent/40 px-1.5 py-0.5 rounded-md">
+                UNESCO
+              </span>
             )}
           </div>
         </div>
