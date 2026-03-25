@@ -157,6 +157,7 @@ export const GET = withApiHandler(
       tags: row.tags ?? undefined,
       cuisineType: row.cuisine_type ?? undefined,
       craftType: row.craft_type ?? undefined,
+      isUnescoSite: row.is_unesco_site ?? undefined,
     }));
 
     // Cache the result in-memory

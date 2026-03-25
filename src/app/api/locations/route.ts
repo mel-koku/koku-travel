@@ -122,6 +122,7 @@ export const GET = withApiHandler(
         coordinates: row.coordinates ?? undefined,
         isFeatured: row.is_featured ?? undefined,
         jtaApproved: row.jta_approved ?? undefined,
+        isUnescoSite: row.is_unesco_site ?? undefined,
       }));
 
     // Create paginated response

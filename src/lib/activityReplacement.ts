@@ -114,6 +114,7 @@ export async function findReplacementCandidates(
     hasPhotographyVibe: tripData.interests?.includes("photography"),
     hasLocalSecretsVibe: tripData.vibes?.includes("local_secrets"),
     hasNatureAdventureVibe: tripData.vibes?.includes("nature_adventure"),
+    hasHeritageVibe: tripData.vibes?.includes("history_buff") || tripData.vibes?.includes("temples_tradition"),
     accommodationStyle: tripData.accommodationStyle,
   };
 

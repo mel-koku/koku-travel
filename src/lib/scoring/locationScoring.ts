@@ -131,6 +131,11 @@ export interface LocationScoringCriteria {
    * waterfalls, coastal hikes, and remote onsen can appear.
    */
   hasNatureAdventureVibe?: boolean;
+  /**
+   * Whether the user selected the "history_buff" or "temples_tradition" vibe.
+   * UNESCO World Heritage Sites get a scoring boost when these vibes are active.
+   */
+  hasHeritageVibe?: boolean;
 }
 
 /**
@@ -155,6 +160,8 @@ export interface ScoreBreakdown {
   tagMatch: number;
   goshuinFit: number;
   accommodationBonus: number;
+  /** UNESCO World Heritage Site bonus (0-10) */
+  unescoBonus: number;
 }
 
 /**
@@ -1203,6 +1210,13 @@ export function scoreLocation(
     RYOKAN_BONUS_CATEGORIES.has(location.category)
   ) ? 5 : 0;
 
+  // UNESCO World Heritage Site bonus
+  // Unconditional +3 for all UNESCO sites (baseline cultural significance).
+  // Additional +7 when the user selected history_buff or temples_tradition vibes.
+  const unescoBaseBonus = location.isUnescoSite ? 3 : 0;
+  const unescoVibeBonus = (location.isUnescoSite && criteria.hasHeritageVibe) ? 7 : 0;
+  const unescoBonus = unescoBaseBonus + unescoVibeBonus;
+
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
     ratingQuality: ratingResult.score,
@@ -1222,6 +1236,7 @@ export function scoreLocation(
     tagMatch: tagMatchResult.score,
     goshuinFit: goshuinResult.score,
     accommodationBonus,
+    unescoBonus,
   };
 
   const totalScore =
@@ -1243,7 +1258,8 @@ export function scoreLocation(
     breakdown.tagMatch +
     breakdown.goshuinFit +
     accommodationBonus +
-    hiddenGemBonus;
+    hiddenGemBonus +
+    unescoBonus;
 
   const reasoning = [
     interestResult.reasoning,
@@ -1266,6 +1282,8 @@ export function scoreLocation(
     ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
     ...(localSecretsBonus > 0 ? [`Hidden gem + local_secrets vibe: +${localSecretsBonus}`] : []),
     ...(hiddenGemTagBonus > 0 ? [`Hidden gem + tag preference match: +${hiddenGemTagBonus}`] : []),
+    ...(unescoBaseBonus > 0 ? [`UNESCO World Heritage Site: +${unescoBaseBonus}`] : []),
+    ...(unescoVibeBonus > 0 ? [`UNESCO + heritage vibe: +${unescoVibeBonus}`] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 

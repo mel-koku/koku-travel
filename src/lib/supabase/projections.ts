@@ -69,6 +69,7 @@ export type LocationDbRow = {
   is_featured: boolean | null;
   is_hidden_gem: boolean | null;
   jta_approved: boolean | null;
+  is_unesco_site: boolean | null;
   // Enhanced enrichment fields
   good_for_children: boolean | null;
   good_for_groups: boolean | null;
@@ -127,7 +128,8 @@ export const LOCATION_LISTING_COLUMNS = `
   nearest_station,
   insider_tip,
   is_featured,
-  jta_approved
+  jta_approved,
+  is_unesco_site
 `.replace(/\s+/g, "");
 
 /**
@@ -168,7 +170,8 @@ export const LOCATION_EXPLORE_COLUMNS = `
   cuisine_type,
   craft_type,
   insider_tip,
-  jta_approved
+  jta_approved,
+  is_unesco_site
 `.replace(/\s+/g, "");
 
 /**
@@ -194,7 +197,8 @@ export const LOCATION_DETAIL_COLUMNS = `
   timezone,
   place_id,
   preferred_transit_modes,
-  jta_approved
+  jta_approved,
+  is_unesco_site
 `.replace(/\s+/g, "");
 
 /**
@@ -239,7 +243,8 @@ export const LOCATION_ITINERARY_COLUMNS = `
   tags,
   cuisine_type,
   insider_tip,
-  tattoo_policy
+  tattoo_policy,
+  is_unesco_site
 `.replace(/\s+/g, "");
 
 /**
@@ -299,6 +304,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "craft_type"
   | "insider_tip"
   | "jta_approved"
+  | "is_unesco_site"
 >;
 
 /**
@@ -363,7 +369,8 @@ export const LOCATION_CHAT_COLUMNS = `
   coordinates,
   primary_photo_url,
   business_status,
-  jta_approved
+  jta_approved,
+  is_unesco_site
 `.replace(/\s+/g, "");
 
 /**
@@ -389,6 +396,7 @@ export type LocationChatDbRow = Pick<LocationDbRow,
   | "primary_photo_url"
   | "business_status"
   | "jta_approved"
+  | "is_unesco_site"
 >;
 
 export type LocationListingDbRow = Pick<LocationDbRow,
@@ -420,4 +428,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "insider_tip"
   | "is_featured"
   | "jta_approved"
+  | "is_unesco_site"
 >;

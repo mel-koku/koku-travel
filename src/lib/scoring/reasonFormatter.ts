@@ -48,6 +48,7 @@ const FACTOR_META: Record<
   tagMatch: { label: "Tag match", maxMagnitude: 8 },
   goshuinFit: { label: "Goshuin", maxMagnitude: 5 },
   accommodationBonus: { label: "Accommodation style", maxMagnitude: 5 },
+  unescoBonus: { label: "UNESCO World Heritage", maxMagnitude: 10 },
 };
 
 // ---------------------------------------------------------------------------
@@ -121,6 +122,11 @@ function humanizeFactor(
 
     case "contentFit":
       if (score >= 15) return "Featured in editorial content";
+      return "";
+
+    case "unescoBonus":
+      if (score >= 8) return "UNESCO World Heritage Site matching your vibes";
+      if (score > 0) return "UNESCO World Heritage Site";
       return "";
 
     case "dietaryFit":
