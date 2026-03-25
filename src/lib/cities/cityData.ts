@@ -378,6 +378,16 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Explore Naha's Shuri Castle, Kokusai-dori, and Ryukyuan culture. Your gateway to Okinawa's tropical paradise.",
   },
+  ishigaki: {
+    id: "ishigaki",
+    name: "Ishigaki",
+    nameJapanese: "石垣",
+    tagline: "Coral reefs, mangroves, and island time",
+    description:
+      "Gateway to the Yaeyama archipelago, Ishigaki sits closer to Taipei than Tokyo. Crystal waters surround coral reefs teeming with life. Day boats connect to Taketomi's star-sand beaches and Iriomote's jungle rivers. On the island itself, Kabira Bay glows an impossible blue.",
+    ogDescription:
+      "Discover Ishigaki's coral reefs, Kabira Bay, and the Yaeyama island chain. Plan your tropical Japan escape.",
+  },
 };
 
 export function getCityPageData(slug: string): CityPageData | null {

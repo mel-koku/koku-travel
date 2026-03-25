@@ -50,7 +50,8 @@ const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
   tokushima: { kochi: 120 },
   kochi: {},
   // Okinawa (flight-only — all times are flight + transfer)
-  naha: { tokyo: 180, osaka: 165, fukuoka: 120, nagoya: 170, sapporo: 240, sendai: 200, nagasaki: 135, kagoshima: 90 },
+  naha: { tokyo: 180, osaka: 165, fukuoka: 120, nagoya: 170, sapporo: 240, sendai: 200, nagasaki: 135, kagoshima: 90, ishigaki: 90 },
+  ishigaki: {},
   // Hokuriku
   kanazawa: { hiroshima: 210, fukuoka: 240, sendai: 230 },
 };

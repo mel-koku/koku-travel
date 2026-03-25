@@ -273,6 +273,8 @@ export async function generateItinerary(
 
   // Pre-compute trip-level scoring criteria (constant across all days/slots)
   const hasPhotographyVibe = data.interests?.includes("photography") || undefined;
+  const hasLocalSecretsVibe = data.vibes?.includes("local_secrets") || undefined;
+  const hasNatureAdventureVibe = data.vibes?.includes("nature_adventure") || undefined;
   const collectGoshuin = data.collectGoshuin || undefined;
   const accommodationStyle = data.accommodationStyle;
 
@@ -741,7 +743,7 @@ export async function generateItinerary(
         const dietaryRestrictions = data.accessibility?.dietary;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -749,13 +751,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult
