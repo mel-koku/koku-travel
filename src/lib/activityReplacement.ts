@@ -112,6 +112,8 @@ export async function findReplacementCandidates(
     group: tripData.group,
     collectGoshuin: tripData.collectGoshuin,
     hasPhotographyVibe: tripData.interests?.includes("photography"),
+    hasLocalSecretsVibe: tripData.vibes?.includes("local_secrets"),
+    hasNatureAdventureVibe: tripData.vibes?.includes("nature_adventure"),
     accommodationStyle: tripData.accommodationStyle,
   };
 

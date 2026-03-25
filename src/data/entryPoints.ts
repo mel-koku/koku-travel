@@ -63,6 +63,7 @@ export function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: nu
     kochi: { lat: 33.5597, lng: 133.5311 },
     // Okinawa
     naha: { lat: 26.2124, lng: 127.6792 },
+    ishigaki: { lat: 24.3344, lng: 124.1841 },
   };
   return centers[cityId] ?? { lat: 35.0, lng: 135.0 };
 }
