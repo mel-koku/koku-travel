@@ -87,6 +87,61 @@ function calculatePopularityScore(rating: number | null, reviewCount: number | n
   return score + reviewBoost;
 }
 
+// ── Category diversity interleaving ───────────────────────
+// Prevents dining-heavy clusters in the default "recommended" sort
+// by ensuring no more than 2 consecutive items share a diversity group.
+
+const DINING_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
+
+function getDiversityGroup(category: string): string {
+  return DINING_CATEGORIES.has(category) ? "dining" : category;
+}
+
+function interleaveForDiversity<T extends { category: string }>(
+  sorted: T[],
+  maxConsecutive: number = 2
+): T[] {
+  if (sorted.length <= maxConsecutive) return sorted;
+
+  const result: T[] = [];
+  const remaining = [...sorted];
+
+  while (remaining.length > 0) {
+    // Count trailing items that share the same diversity group
+    let consecutive = 0;
+    let trailingGroup: string | null = null;
+    const lastItem = result[result.length - 1];
+    if (lastItem) {
+      trailingGroup = getDiversityGroup(lastItem.category);
+      for (let i = result.length - 1; i >= 0; i--) {
+        const item = result[i]!;
+        if (getDiversityGroup(item.category) === trailingGroup) {
+          consecutive++;
+        } else break;
+      }
+    }
+
+    if (consecutive < maxConsecutive) {
+      // Safe to take the next highest-scored item
+      result.push(remaining.shift()!);
+    } else {
+      // Break the streak: pull the next different-group item forward
+      const idx = remaining.findIndex(
+        (item) => getDiversityGroup(item.category) !== trailingGroup
+      );
+      if (idx === -1) {
+        // Only same-group items left, append them all
+        result.push(...remaining);
+        break;
+      }
+      const [pulled] = remaining.splice(idx, 1);
+      result.push(pulled!);
+    }
+  }
+
+  return result;
+}
+
 // ── Hook ───────────────────────────────────────────────────
 
 export function usePlacesFilters(
@@ -302,12 +357,13 @@ export function usePlacesFilters(
     const sorted = [...filteredLocations];
     switch (selectedSort) {
       case "recommended":
-        return sorted.sort((a, b) => {
+        sorted.sort((a, b) => {
           const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
           const scoreB = calculatePopularityScore(b.ratingValue, b.reviewCount);
           if (scoreA === scoreB) return a.name.localeCompare(b.name);
           return scoreB - scoreA;
         });
+        return interleaveForDiversity(sorted);
       case "highest_rated":
         return sorted.sort((a, b) => {
           if (a.ratingValue === b.ratingValue) return a.name.localeCompare(b.name);
