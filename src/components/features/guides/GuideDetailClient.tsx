@@ -9,8 +9,10 @@ import type { Location } from "@/types/location";
 
 import { GuideHero } from "./GuideHero";
 import { GuidePreamble } from "./GuidePreamble";
-import { GuideContent } from "./GuideContent";
+import { LocationStripTOC } from "./LocationStripTOC";
+import { GuideLocationsProvider } from "./GuideLocationsContext";
 import { PortableTextBody } from "./PortableTextBody";
+import { GuideContentWithLocations } from "./GuideContentWithLocations";
 import { LinkedLocations } from "./LinkedLocations";
 import { GuidePlanCTA } from "./GuidePlanCTA";
 import { ArticleFloatingCTA } from "./ArticleFloatingCTA";
@@ -83,39 +85,25 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
         onToggleBookmark={() => toggleBookmark(guideId)}
       />
 
-      {/* Article body + sidebar grid (2fr / 1fr on xl+) */}
-      <div className="xl:mx-auto xl:grid xl:max-w-[1400px] xl:grid-cols-[2fr_1fr] xl:gap-10 xl:px-8 xl:pb-16">
-        <div className="xl:[&>*+*]:-mt-12">
-          <div ref={contentRef}>
-            {isSanity ? (
-              <PortableTextBody body={sg!.body} />
-            ) : (
-              <GuideContent body={g!.body} />
-            )}
-          </div>
+      {/* Visual table of contents: horizontal location strip */}
+      {locations.length > 0 && <LocationStripTOC locations={locations} />}
 
-          {/* Hidden on xl+ where sidebar shows locations */}
-          <div className="xl:hidden">
-            <LinkedLocations locations={locations} />
-          </div>
+      {/* Single-column article with inline location cards */}
+      <GuideLocationsProvider locations={locations}>
+        <div ref={contentRef}>
+          {isSanity ? (
+            <PortableTextBody body={sg!.body} />
+          ) : (
+            <GuideContentWithLocations body={g!.body} locations={locations} />
+          )}
         </div>
+      </GuideLocationsProvider>
 
-        {locationIds.length > 0 && (
-          <ArticleFloatingCTA
-            contentType="guide"
-            slug={slug}
-            title={title}
-            locationIds={locationIds}
-            locations={locations}
-            city={city}
-            region={region}
-            contentRef={contentRef}
-            bottomCtaRef={bottomCtaRef}
-          />
-        )}
-      </div>
+      {/* All locations as a visual recap grid */}
+      <LinkedLocations locations={locations} />
 
-      <div ref={bottomCtaRef} className="xl:hidden">
+      {/* Plan CTA */}
+      <div ref={bottomCtaRef}>
         <GuidePlanCTA
           guideSlug={slug}
           guideTitle={title}
@@ -124,6 +112,21 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
           region={region}
         />
       </div>
+
+      {/* Floating pill CTA while reading */}
+      {locationIds.length > 0 && (
+        <ArticleFloatingCTA
+          contentType="guide"
+          slug={slug}
+          title={title}
+          locationIds={locationIds}
+          locations={locations}
+          city={city}
+          region={region}
+          contentRef={contentRef}
+          bottomCtaRef={bottomCtaRef}
+        />
+      )}
 
       <GuideFooter
         authorName={authorName}
