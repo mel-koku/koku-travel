@@ -389,6 +389,6 @@ npm run seed-cache       # Pre-populate file cache from Supabase
 npm run dq audit         # Data quality audit
 ```
 
-- `seed-cache` pre-populates `/tmp/koku-travel-cache/` so first request is instant
+- `seed-cache` pre-populates `/tmp/koku-travel-cache/` so first request is instant. Must mirror the same filters as the API route (e.g., `is_active = true`) or deactivated locations leak into dev.
 - Image optimization disabled in dev (avoids Turbopack timeout cascades)
 - Sanity fetches have 4s timeout + file cache (prevents Turbopack event-loop hangs)
