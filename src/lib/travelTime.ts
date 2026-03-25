@@ -68,7 +68,9 @@ export function travelMinutes(a: CityId, b: CityId): number | undefined {
 
 /**
  * Estimate travel time from an entry point to a city in minutes.
- * Uses distance-based estimation with mode-specific speeds.
+ * Prefers the known travel matrix (via the nearest city) over raw distance,
+ * since crow-flies distance dramatically underestimates for mountain/inland
+ * cities like Nikko and Nagano.
  */
 export function travelTimeFromEntryPoint(
   entryPoint: EntryPoint,
@@ -79,24 +81,26 @@ export function travelTimeFromEntryPoint(
     return 0;
   }
 
+  const airportBuffer = entryPoint.type === "airport" ? 30 : 0;
+
+  // Prefer the travel matrix when we know the nearest city
+  if (entryPoint.cityId) {
+    const matrixTime = travelMinutes(entryPoint.cityId, cityId);
+    if (matrixTime !== undefined) {
+      return matrixTime + airportBuffer;
+    }
+  }
+
+  // Fallback: distance-based estimation
   const cityCoords = getCityCenterCoordinates(cityId);
   const distanceMeters = calculateDistanceMeters(entryPoint.coordinates, cityCoords);
 
-  // Estimate travel time based on distance
-  // Airports: assume train/bus (average 60 km/h for inter-city)
-  // For very long distances (inter-region), use faster shinkansen speed
   const averageSpeedKmh = distanceMeters > 100000 ? 200 : 60;
-
   const distanceKm = distanceMeters / 1000;
   const hours = distanceKm / averageSpeedKmh;
   const minutes = Math.round(hours * 60);
 
-  // Add buffer time for airport transfers (check-in, security, etc.)
-  if (entryPoint.type === "airport") {
-    return minutes + 30; // Add 30 minutes for airport transfer
-  }
-
-  return minutes;
+  return minutes + airportBuffer;
 }
 
 /**
