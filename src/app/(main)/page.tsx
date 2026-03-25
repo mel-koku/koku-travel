@@ -5,7 +5,6 @@ import {
   Philosophy,
   ImmersiveShowcase,
   FeaturedLocations,
-  FeaturedExperiences,
   SeasonalSpotlight,
   TestimonialTheater,
   FeaturedGuides,
@@ -15,7 +14,6 @@ import {
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
-import { getFeaturedExperiences, getExperiencesBySeason } from "@/lib/experiences/experienceService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 import { urlFor } from "@/sanity/image";
 import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
@@ -40,15 +38,13 @@ export default async function Home() {
   const currentMonth = getCurrentMonth();
   const sanitySeason = seasonToSanityBestSeason(currentSeason);
 
-  const [featuredLocations, locationCount, featuredGuides, featuredExperiences, landingContent, seasonalGuides, seasonalExperiences, seasonalLocations] =
+  const [featuredLocations, locationCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
       getFeaturedGuides(3),
-      getFeaturedExperiences(3),
       getLandingPageContent(),
       getGuidesBySeason(sanitySeason, 3),
-      getExperiencesBySeason(sanitySeason, 3),
       fetchSeasonalLocations(currentMonth, 6),
     ]);
 
@@ -83,14 +79,8 @@ export default async function Home() {
           <SeasonalSpotlight
             season={currentSeason}
             guides={seasonalGuides}
-            experiences={seasonalExperiences}
+            experiences={[]}
             locations={seasonalLocations}
-            content={landingContent ?? undefined}
-          />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <FeaturedExperiences
-            experiences={featuredExperiences}
             content={landingContent ?? undefined}
           />
         </ErrorBoundary>
