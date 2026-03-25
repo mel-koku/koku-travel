@@ -43,9 +43,14 @@ export function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: nu
     kumamoto: { lat: 32.8032, lng: 130.7079 },
     kagoshima: { lat: 31.5966, lng: 130.5571 },
     oita: { lat: 33.2382, lng: 131.6126 },
+    yakushima: { lat: 30.3569, lng: 130.5058 },
     // Hokkaido
     sapporo: { lat: 43.0618, lng: 141.3545 },
     hakodate: { lat: 41.7686, lng: 140.7288 },
+    asahikawa: { lat: 43.7709, lng: 142.3649 },
+    kushiro: { lat: 42.9849, lng: 144.3820 },
+    abashiri: { lat: 44.0206, lng: 144.2734 },
+    wakkanai: { lat: 45.4156, lng: 141.6728 },
     // Tohoku
     sendai: { lat: 38.2682, lng: 140.8694 },
     morioka: { lat: 39.7036, lng: 141.1527 },
@@ -64,6 +69,8 @@ export function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: nu
     // Okinawa
     naha: { lat: 26.2124, lng: 127.6792 },
     ishigaki: { lat: 24.3344, lng: 124.1841 },
+    miyako: { lat: 24.7940, lng: 125.2790 },
+    amami: { lat: 28.3766, lng: 129.4913 },
   };
   return centers[cityId] ?? { lat: 35.0, lng: 135.0 };
 }

@@ -63,6 +63,7 @@ export const REGIONS: readonly Region[] = [
       { id: "kumamoto", name: "Kumamoto" },
       { id: "kagoshima", name: "Kagoshima" },
       { id: "oita", name: "Ōita" },
+      { id: "yakushima", name: "Yakushima" },
     ],
   },
   {
@@ -71,6 +72,10 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "sapporo", name: "Sapporo" },
       { id: "hakodate", name: "Hakodate" },
+      { id: "asahikawa", name: "Asahikawa" },
+      { id: "kushiro", name: "Kushiro" },
+      { id: "abashiri", name: "Abashiri" },
+      { id: "wakkanai", name: "Wakkanai" },
     ],
   },
   {
@@ -109,6 +114,8 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "naha", name: "Naha" },
       { id: "ishigaki", name: "Ishigaki" },
+      { id: "miyako", name: "Miyako" },
+      { id: "amami", name: "Amami" },
     ],
   },
 ] as const;
