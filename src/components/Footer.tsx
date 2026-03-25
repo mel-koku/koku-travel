@@ -9,7 +9,6 @@ const defaultNavColumns = [
     links: [
       { label: "Places", href: "/places" },
       { label: "Guides", href: "/guides" },
-      { label: "Local Experts", href: "/local-experts" },
     ],
   },
   {

@@ -80,7 +80,7 @@ export function SeasonalSpotlight({
                 {heading}
               </h2>
               <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
-                {content?.seasonalSpotlightDescription ?? "Places, guides, and experiences at their best right now."}
+                {content?.seasonalSpotlightDescription ?? "Places and guides at their best right now."}
               </p>
             </div>
           </div>

@@ -5,7 +5,6 @@ import {
   StatsB,
   ShowcaseB,
   FeaturedLocationsB,
-  FeaturedExperiencesB,
   TestimonialsB,
   FeaturedGuidesB,
   FinalCtaB,
@@ -13,12 +12,11 @@ import {
 import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 import { getFeaturedGuides } from "@/lib/guides/guideService";
-import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
 
 export const metadata: Metadata = {
   title: "Koku Travel - Discover Japan with Local Experts",
   description:
-    "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    "Discover curated travel guides, itineraries, and inspiration for Japan. Plan your perfect trip with personalized recommendations.",
   alternates: {
     canonical: "/",
   },
@@ -27,13 +25,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function VariantBHome() {
-  const [featuredLocations, locationCount, landingContent, guides, experiences] =
+  const [featuredLocations, locationCount, landingContent, guides] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
       getLandingPageContent(),
       getFeaturedGuides(3),
-      getFeaturedExperiences(3),
     ]);
 
   return (
@@ -51,7 +48,6 @@ export default async function VariantBHome() {
         locations={featuredLocations}
         content={landingContent ?? undefined}
       />
-      <FeaturedExperiencesB experiences={experiences} />
       <TestimonialsB content={landingContent ?? undefined} />
       <FeaturedGuidesB guides={guides} />
       <FinalCtaB content={landingContent ?? undefined} />
