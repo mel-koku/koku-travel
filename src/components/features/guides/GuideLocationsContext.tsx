@@ -8,19 +8,24 @@ type GuideLocationsContextType = {
   getLocationById: (id: string) => Location | undefined;
   /** Tracks rendering order for alternating layout */
   nextIndex: () => number;
+  /** Opens the slide-out detail panel for a location */
+  onSelectLocation: (location: Location) => void;
 };
 
 const GuideLocationsContext = createContext<GuideLocationsContextType>({
   locations: [],
   getLocationById: () => undefined,
   nextIndex: () => 0,
+  onSelectLocation: () => {},
 });
 
 export function GuideLocationsProvider({
   locations,
+  onSelectLocation,
   children,
 }: {
   locations: Location[];
+  onSelectLocation: (location: Location) => void;
   children: React.ReactNode;
 }) {
   let counter = 0;
@@ -34,9 +39,10 @@ export function GuideLocationsProvider({
       locations,
       getLocationById: (id: string) => map.get(id),
       nextIndex: () => counter++,
+      onSelectLocation,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations]);
+  }, [locations, onSelectLocation]);
 
   return (
     <GuideLocationsContext.Provider value={value}>

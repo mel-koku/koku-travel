@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { durationFast, easeReveal } from "@/lib/motion";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { cn } from "@/lib/cn";
+import { useSaved } from "@/context/SavedContext";
+import { HeartIcon } from "@/components/features/places/LocationCard";
+import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import type { Location } from "@/types/location";
 
 type ArticleFloatingCTAProps = {
@@ -40,6 +44,23 @@ export function ArticleFloatingCTA({
   const prefersReduced = useReducedMotion();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isBottomCtaVisible, setIsBottomCtaVisible] = useState(false);
+
+  const { isInSaved, toggleSave } = useSaved();
+  const showFirstSaveToast = useFirstSaveToast();
+
+  const unsavedIds = useMemo(
+    () => locationIds.filter((id) => !isInSaved(id)),
+    [locationIds, isInSaved]
+  );
+  const allSaved = unsavedIds.length === 0 && locationIds.length > 0;
+
+  function handleSaveAll() {
+    if (allSaved) return;
+    if (unsavedIds.length === locationIds.length) showFirstSaveToast();
+    for (const id of unsavedIds) {
+      toggleSave(id);
+    }
+  }
 
   useEffect(() => {
     const contentEl = contentRef.current;
@@ -135,6 +156,25 @@ export function ArticleFloatingCTA({
                   </p>
                 )}
               </div>
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={allSaved}
+                aria-label={allSaved ? "All places saved" : "Save all places"}
+                className={cn(
+                  "flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition active:scale-[0.98]",
+                  allSaved
+                    ? "border-sage/30 text-sage"
+                    : "border-border/50 text-foreground hover:border-sage/50 hover:text-sage"
+                )}
+              >
+                <HeartIcon
+                  active={allSaved}
+                  className="h-4 w-4"
+                  variant="inline"
+                />
+                {allSaved ? "Saved" : "Save All"}
+              </button>
               <button
                 type="button"
                 onClick={handleClick}

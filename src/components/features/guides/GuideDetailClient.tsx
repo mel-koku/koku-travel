@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
 import type { Guide, GuideSummary } from "@/types/guide";
@@ -18,6 +18,7 @@ import { GuidePlanCTA } from "./GuidePlanCTA";
 import { ArticleFloatingCTA } from "./ArticleFloatingCTA";
 import { GuideFooter } from "./GuideFooter";
 import { GuideProgressBar } from "./GuideProgressBar";
+import { LocationExpanded } from "@/components/features/places/LocationExpanded";
 
 type GuideDetailClientProps =
   | {
@@ -41,6 +42,15 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks(user?.id);
   const contentRef = useRef<HTMLDivElement>(null);
   const bottomCtaRef = useRef<HTMLDivElement>(null);
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+
+  const handleSelectLocation = useCallback((location: Location) => {
+    setExpandedLocation(location);
+  }, []);
+
+  const handleCloseExpanded = useCallback(() => {
+    setExpandedLocation(null);
+  }, []);
 
   const isSanity = source === "sanity";
   const sg = isSanity ? props.sanityGuide : undefined;
@@ -89,7 +99,7 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
       {locations.length > 0 && <LocationStripTOC locations={locations} />}
 
       {/* Single-column article with inline location cards */}
-      <GuideLocationsProvider locations={locations}>
+      <GuideLocationsProvider locations={locations} onSelectLocation={handleSelectLocation}>
         <div ref={contentRef}>
           {isSanity ? (
             <PortableTextBody body={sg!.body} />
@@ -135,6 +145,13 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
       />
 
       <GuideProgressBar contentRef={contentRef} />
+
+      {expandedLocation && (
+        <LocationExpanded
+          location={expandedLocation}
+          onClose={handleCloseExpanded}
+        />
+      )}
     </article>
   );
 }
