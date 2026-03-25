@@ -120,7 +120,6 @@ export function FilterPanel({
     highlights: true,
     duration: false,
     price: false,
-    availability: false,
     dietary: false,
   });
 
@@ -135,7 +134,6 @@ export function FilterPanel({
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
   const highlightsActiveCount = (unescoOnly ? 1 : 0) + (featuredOnly ? 1 : 0);
-  const availabilityActiveCount = openNow ? 1 : 0;
   const dietaryActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key + focus management
@@ -420,24 +418,6 @@ export function FilterPanel({
                       size="small"
                     />
                   ))}
-                </div>
-              </FilterSection>
-
-              {/* Availability */}
-              <FilterSection
-                label="Availability"
-                activeCount={availabilityActiveCount}
-                isExpanded={expandedSections.availability}
-                onToggle={() => toggleSection("availability")}
-                onClear={availabilityActiveCount > 0 ? () => { onOpenNowChange(false); } : undefined}
-              >
-                <div className="space-y-4">
-                  <ToggleOption
-                    label="Open now"
-                    description="Only show places currently open"
-                    checked={openNow}
-                    onChange={onOpenNowChange}
-                  />
                 </div>
               </FilterSection>
 
