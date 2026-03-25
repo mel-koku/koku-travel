@@ -35,7 +35,7 @@ const PAGE_SIZE = 24;
 export type ExperienceSortOptionId = "recommended" | "highest_rated" | "most_reviews" | "newest";
 
 export const EXPERIENCE_SORT_OPTIONS = [
-  { id: "recommended" as const, label: "Recommended" },
+  { id: "recommended" as const, label: "Popular" },
   { id: "highest_rated" as const, label: "Highest Rated" },
   { id: "most_reviews" as const, label: "Most Reviews" },
   { id: "newest" as const, label: "Newest" },

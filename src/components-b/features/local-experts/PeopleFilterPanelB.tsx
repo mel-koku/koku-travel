@@ -32,7 +32,7 @@ type Props = {
 };
 
 const SORT_OPTIONS: { label: string; value: PeopleSortOption }[] = [
-  { label: "Recommended", value: "recommended" },
+  { label: "Popular", value: "recommended" },
   { label: "Most experienced", value: "experience" },
   { label: "Name A-Z", value: "name" },
 ];

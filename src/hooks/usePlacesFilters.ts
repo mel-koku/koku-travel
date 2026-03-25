@@ -38,7 +38,7 @@ const PAGE_SIZE = 24;
 export type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
 export const SORT_OPTIONS = [
-  { id: "recommended" as const, label: "Recommended" },
+  { id: "recommended" as const, label: "Popular" },
   { id: "highest_rated" as const, label: "Highest Rated" },
   { id: "most_reviews" as const, label: "Most Reviews" },
   { id: "price_low" as const, label: "Price (Low to High)" },
@@ -76,15 +76,6 @@ function parseDuration(value?: string): number | null {
   return null;
 }
 
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
 function calculatePopularityScore(rating: number | null, reviewCount: number | null): number {
   const r = rating ?? 0;
   const v = reviewCount ?? 0;
@@ -94,16 +85,6 @@ function calculatePopularityScore(rating: number | null, reviewCount: number | n
   const score = (v / (v + m)) * r + (m / (v + m)) * C;
   const reviewBoost = Math.log10(v + 1) / 10;
   return score + reviewBoost;
-}
-
-function generateFallbackRating(locationId: string): number {
-  const hash = hashString(locationId);
-  return 3.9 + (hash % 18) / 20;
-}
-
-function generateFallbackReviewCount(locationId: string): number {
-  const hash = hashString(locationId + "-reviews");
-  return 50 + (hash % 450);
 }
 
 // ── Hook ───────────────────────────────────────────────────
@@ -133,9 +114,11 @@ export function usePlacesFilters(
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [page, setPage] = useState(1);
 
-  // Reset page on filter/sort change
+  // Track filter changes for scroll-to-top and page reset
+  const [filterVersion, setFilterVersion] = useState(0);
   useEffect(() => {
     setPage(1);
+    setFilterVersion((v) => v + 1);
   }, [
     query,
     selectedPrefectures,
@@ -164,17 +147,11 @@ export function usePlacesFilters(
   // Enhance with parsed duration and rating fallbacks
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
     return mergedLocations.map((location) => {
-      const ratingValue = (typeof location.rating === "number" && Number.isFinite(location.rating))
-        ? location.rating
-        : generateFallbackRating(location.id);
-      const reviewCountValue = (typeof location.reviewCount === "number" && location.reviewCount > 0)
-        ? location.reviewCount
-        : generateFallbackReviewCount(location.id);
       return {
         ...location,
         durationMinutes: parseDuration(location.estimatedDuration),
-        ratingValue,
-        reviewCount: reviewCountValue,
+        ratingValue: location.rating ?? 0,
+        reviewCount: location.reviewCount ?? 0,
       };
     });
   }, [mergedLocations]);
@@ -547,7 +524,7 @@ export function usePlacesFilters(
     // Sort
     selectedSort, setSelectedSort,
     // Pagination
-    page, setPage, hasMore,
+    page, setPage, hasMore, filterVersion,
     // Computed
     filteredLocations,
     sortedLocations,

@@ -11,6 +11,7 @@ import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePla
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 import { SeasonalBanner } from "./SeasonalBanner";
+import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
  * Heavy components are code-split so Turbopack compiles them in
@@ -77,11 +78,11 @@ export function PlacesShell({ content }: PlacesShellProps) {
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
     kokuIds, setKokuIds, clearKokuFilter,
-    setSelectedCity,
-    setSelectedCategory,
-    setJtaApprovedOnly,
+    selectedCity, setSelectedCity,
+    selectedCategory, setSelectedCategory,
+    jtaApprovedOnly, setJtaApprovedOnly,
     selectedSort, setSelectedSort,
-    setPage, hasMore,
+    setPage, hasMore, filterVersion,
     filteredLocations,
     sortedLocations,
     visibleLocations,
@@ -95,6 +96,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const handleFilterSeasonal = useCallback(() => {
     setSelectedCategory("in_season");
   }, [setSelectedCategory]);
+
+  const seasonalHighlight = useMemo(() => getActiveSeasonalHighlight(), []);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
@@ -120,16 +123,16 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
 
-  // Read Koku-generated URL params once on mount
-  const kokuParam = searchParams.get("koku");
-  const cityParam = searchParams.get("city");
-  const categoryParam = searchParams.get("category");
-  const qParam = searchParams.get("q");
-  const jtaParam = searchParams.get("jta");
-  const didApplyKokuRef = useRef(false);
+  // Read URL params once on mount
+  const didApplyParamsRef = useRef(false);
   useEffect(() => {
-    if (didApplyKokuRef.current) return;
-    didApplyKokuRef.current = true;
+    if (didApplyParamsRef.current) return;
+    didApplyParamsRef.current = true;
+    const kokuParam = searchParams.get("koku");
+    const cityParam = searchParams.get("city");
+    const categoryParam = searchParams.get("category");
+    const qParam = searchParams.get("q");
+    const jtaParam = searchParams.get("jta");
     if (kokuParam) {
       const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
       if (ids.length > 0) setKokuIds(ids);
@@ -138,6 +141,23 @@ export function PlacesShell({ content }: PlacesShellProps) {
     if (categoryParam) setSelectedCategory(categoryParam);
     if (qParam) setInputValue(qParam);
     if (jtaParam === "true") setJtaApprovedOnly(true);
+    // New filter params
+    const sortParam = searchParams.get("sort");
+    if (sortParam && ["recommended", "highest_rated", "most_reviews", "price_low", "duration_short"].includes(sortParam)) {
+      setSelectedSort(sortParam as typeof selectedSort);
+    }
+    const prefParam = searchParams.get("prefectures");
+    if (prefParam) setSelectedPrefectures(prefParam.split(",").filter(Boolean));
+    const vibesParam = searchParams.get("vibes");
+    if (vibesParam) setSelectedVibes(vibesParam.split(",").filter(Boolean) as typeof selectedVibes);
+    const priceParam = searchParams.get("price");
+    if (priceParam !== null && priceParam !== "") setSelectedPriceLevel(Number(priceParam));
+    const durParam = searchParams.get("duration");
+    if (durParam) setSelectedDuration(durParam);
+    if (searchParams.get("openNow") === "true") setOpenNow(true);
+    if (searchParams.get("wheelchair") === "true") setWheelchairAccessible(true);
+    if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
+    if (searchParams.get("featured") === "true") setFeaturedOnly(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
@@ -207,20 +227,60 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewParam === "map" && mapAvailable ? "map" : "grid",
   );
 
+  // Scroll to top when filters change (skip initial mount)
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (viewMode === "grid") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [filterVersion, viewMode]);
+
   const setViewMode = useCallback(
     (mode: "grid" | "map") => {
       setViewModeState(mode);
-      const params = new URLSearchParams(searchParams.toString());
-      if (mode === "map") {
-        params.set("view", "map");
-      } else {
-        params.delete("view");
-      }
+    },
+    [],
+  );
+
+  // Sync all filter state to URL params (debounced)
+  const isUrlInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!isUrlInitializedRef.current) {
+      isUrlInitializedRef.current = true;
+      return;
+    }
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (viewMode === "map") params.set("view", "map");
+      if (query) params.set("q", query);
+      if (selectedCity) params.set("city", selectedCity);
+      if (selectedCategory) params.set("category", selectedCategory);
+      if (jtaApprovedOnly) params.set("jta", "true");
+      if (selectedSort !== "recommended") params.set("sort", selectedSort);
+      if (selectedPrefectures.length > 0) params.set("prefectures", selectedPrefectures.join(","));
+      if (selectedVibes.length > 0) params.set("vibes", selectedVibes.join(","));
+      if (selectedPriceLevel !== null) params.set("price", String(selectedPriceLevel));
+      if (selectedDuration) params.set("duration", selectedDuration);
+      if (openNow) params.set("openNow", "true");
+      if (wheelchairAccessible) params.set("wheelchair", "true");
+      if (vegetarianFriendly) params.set("vegetarian", "true");
+      if (featuredOnly) params.set("featured", "true");
+      if (kokuIds.length > 0) params.set("koku", kokuIds.join(","));
+      if (locationParam) params.set("location", locationParam);
       const qs = params.toString();
       router.replace(`/places${qs ? `?${qs}` : ""}`, { scroll: false });
-    },
-    [router, searchParams],
-  );
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [
+    viewMode, query, selectedCity, selectedCategory, jtaApprovedOnly,
+    selectedSort, selectedPrefectures, selectedVibes, selectedPriceLevel,
+    selectedDuration, openNow, wheelchairAccessible, vegetarianFriendly,
+    featuredOnly, kokuIds, locationParam, router,
+  ]);
 
   return (
     <div className="min-h-[100dvh] bg-background">
@@ -265,7 +325,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         inputValue={inputValue}
         onInputChange={handleInputChange}
         onInputSubmit={handleInputSubmit}
-        totalCount={total}
+        totalCount={activeFilterCount > 0 || kokuIds.length > 0 ? filteredLocations.length : total}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         mapAvailable={mapAvailable}
@@ -274,17 +334,27 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {/* Koku filter banner */}
       {kokuIds.length > 0 && (
         <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-brand-primary/30 bg-brand-primary/10 px-4 py-2.5 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-brand-primary">Koku suggested</span>
-              <span className="text-foreground-secondary">· Showing {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""}</span>
+          <div className="flex items-start justify-between gap-3 rounded-lg border border-brand-primary/30 bg-brand-primary/10 px-4 py-3 text-sm">
+            <div className="flex items-start gap-2.5">
+              <svg className="h-5 w-5 shrink-0 text-brand-primary mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" d="M12 16v-4m0-4h.01" />
+              </svg>
+              <div>
+                <span className="font-medium text-brand-primary">
+                  Koku suggested {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""} for you
+                </span>
+                <p className="text-xs text-foreground-secondary mt-0.5">
+                  Other filters are paused while viewing suggestions.
+                </p>
+              </div>
             </div>
             <button
               type="button"
               onClick={clearKokuFilter}
-              className="shrink-0 text-xs font-medium text-foreground-secondary underline-offset-2 hover:text-foreground hover:underline"
+              className="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium text-brand-primary hover:bg-brand-primary/10 transition"
             >
-              Clear
+              Show all places
             </button>
           </div>
         </div>
@@ -325,13 +395,13 @@ export function PlacesShell({ content }: PlacesShellProps) {
             onSelect={handleSelectLocation}
             totalCount={total}
             activeCategory={activeCategory}
+            onClearFilters={activeFilterCount > 0 ? clearAllFilters : undefined}
           />
 
           {hasMore && (
-            <div ref={sentinelRef} className="py-8 flex justify-center">
-              <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
-                <div className="h-full w-1/3 bg-brand-primary rounded-full animate-pulse" />
-              </div>
+            <div ref={sentinelRef} className="py-8 flex flex-col items-center gap-2">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-stone/30 border-t-stone" />
+              <p className="text-sm text-stone">Loading more places...</p>
             </div>
           )}
 
@@ -377,6 +447,9 @@ export function PlacesShell({ content }: PlacesShellProps) {
         sortOptions={SORT_OPTIONS}
         selectedSort={selectedSort}
         onSortChange={setSelectedSort}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        seasonalHighlight={seasonalHighlight}
       />
 
       {/* Location Detail Panel */}
