@@ -38,12 +38,12 @@ export type KnownCityId =
   | "kyoto" | "osaka" | "nara" | "kobe" | "otsu"  // Kansai
   | "tokyo" | "yokohama" | "kamakura" | "nikko" | "hakone"  // Kanto
   | "nagoya" | "kanazawa" | "takayama" | "nagano" | "niigata"  // Chubu
-  | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita"  // Kyushu
-  | "sapporo" | "hakodate"                // Hokkaido
+  | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita" | "yakushima"  // Kyushu
+  | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"  // Hokkaido
   | "sendai" | "morioka" | "aomori" | "akita"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori"  // Chugoku
   | "matsuyama" | "takamatsu" | "tokushima" | "kochi"  // Shikoku
-  | "naha" | "ishigaki";                  // Okinawa
+  | "naha" | "ishigaki" | "miyako" | "amami";  // Okinawa
 
 /**
  * City ID type that accepts both known static cities and dynamic database cities.
