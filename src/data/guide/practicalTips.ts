@@ -278,4 +278,20 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
       "Regional passes can be better value than the nationwide JR Pass. The Kansai Area Pass covers Kyoto-Osaka-Nara-Kobe. The Hokkaido Pass is essential for Sapporo-Hakodate routes. Check Jorudan or Hyperdia to compare.",
     icon: "🎫",
   },
+
+  // ── Shoe Removal (2 variants) ───────────────────────────────────────
+  {
+    id: "pt-37",
+    key: "shoe-removal",
+    content:
+      "Shoe removal is common in Japan: temples, ryokan, many restaurants with tatami, some museums, and all homes. Wear slip-on shoes and clean socks. Look for a raised entry (genkan) or shoe shelves as your cue.",
+    icon: "👟",
+  },
+  {
+    id: "pt-38",
+    key: "shoe-removal",
+    content:
+      "When you remove your shoes, point them toward the exit (toes facing the door). Slippers provided inside are for hallways only. Remove them before stepping onto tatami. Toilet slippers stay in the bathroom.",
+    icon: "👟",
+  },
 ];
