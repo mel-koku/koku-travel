@@ -53,8 +53,14 @@ import { SeasonalBannerB } from "./SeasonalBannerB";
 import { DayTripBannerB } from "./DayTripBannerB";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "@/components/features/itinerary/ActivityRatingsContext";
-import { PrintHeader } from "@/components/features/itinerary/PrintHeader";
-import { PrintFooter } from "@/components/features/itinerary/PrintFooter";
+const PrintHeaderLazy = dynamic(
+  () => import("@/components/features/itinerary/PrintHeader").then((m) => ({ default: m.PrintHeader })),
+  { ssr: false },
+);
+const PrintFooterLazy = dynamic(
+  () => import("@/components/features/itinerary/PrintFooter").then((m) => ({ default: m.PrintFooter })),
+  { ssr: false },
+);
 import { REGIONS } from "@/data/regions";
 import { useItineraryDiscover } from "@/components/features/itinerary/hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanelB } from "./ItineraryDiscoverPanelB";
@@ -746,7 +752,7 @@ export const ItineraryShellB = ({
 
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
-    <PrintHeader tripName={printTripName} dateRange={printDateRange} cities={printCities} />
+    <PrintHeaderLazy tripName={printTripName} dateRange={printDateRange} cities={printCities} />
     <section
       className="mx-auto min-h-[100dvh] max-w-screen-2xl lg:fixed lg:inset-x-0 lg:top-[var(--header-h)] lg:bottom-0 lg:min-h-0 lg:overflow-hidden"
       style={{ background: "var(--background)" }}
@@ -1383,7 +1389,7 @@ export const ItineraryShellB = ({
         />
       )}
     </section>
-    <PrintFooter />
+    <PrintFooterLazy />
     </ActivityRatingsProvider>
   );
 };
