@@ -22,7 +22,7 @@ export type DisplayTip = {
   icon: string;
 };
 
-const GUIDANCE_TYPE_ICONS: Record<string, string> = {
+export const GUIDANCE_TYPE_ICONS: Record<string, string> = {
   etiquette: "\uD83D\uDE4F",
   practical: "\uD83D\uDCA1",
   environmental: "\uD83C\uDF3F",
@@ -40,7 +40,7 @@ const GUIDANCE_TYPE_ICONS: Record<string, string> = {
 
 const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
 
-function toDisplayTip(tip: TravelGuidance): DisplayTip {
+export function toDisplayTip(tip: TravelGuidance): DisplayTip {
   return {
     id: tip.id,
     title: tip.title,
@@ -51,29 +51,32 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
 }
 
 /** Keywords used to detect DB tips that overlap with hardcoded pro tips. */
-const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
+export const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
   "pro-ic-card": ["ic card", "suica", "pasmo"],
   "pro-city-transition": ["takkyubin", "luggage forwarding"],
   "pro-last-train": ["last train"],
 };
 
-export function useDayTips(
+export type UseDayTipsCoreOptions = {
+  nextDayActivities?: ItineraryDay["activities"];
+  isFirstTimeVisitor?: boolean;
+  /** When true, luggage smart prompt is active -- suppress the "Send luggage ahead" pro tip */
+  hasLuggagePrompt?: boolean;
+};
+
+export function useDayTipsCore(
   day: ItineraryDay,
   tripStartDate: string | undefined,
   dayIndex: number,
-  options?: {
-    nextDayActivities?: ItineraryDay["activities"];
-    isFirstTimeVisitor?: boolean;
-    /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
-    hasLuggagePrompt?: boolean;
-  },
-): { tips: DisplayTip[]; isLoading: boolean } {
+  options?: UseDayTipsCoreOptions,
+): { proTips: DisplayTip[]; dbTips: DisplayTip[]; allTips: DisplayTip[]; isLoading: boolean } {
   const nextDayActivities = options?.nextDayActivities;
   const isFirstTimeVisitor = options?.isFirstTimeVisitor;
   const hasLuggagePrompt = options?.hasLuggagePrompt;
-  const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
+  const [rawDbTips, setRawDbTips] = useState<TravelGuidance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Extract unique location categories from the day's activities
   const dayCategories = useMemo(() => {
     const categories = new Set<string>();
     for (const activity of day.activities ?? []) {
@@ -85,6 +88,7 @@ export function useDayTips(
     return Array.from(categories);
   }, [day.activities]);
 
+  // Calculate the date for this day
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       return parseLocalDateWithOffset(tripStartDate, dayIndex) ?? new Date();
@@ -92,6 +96,7 @@ export function useDayTips(
     return new Date();
   }, [tripStartDate, dayIndex]);
 
+  // Fetch day-level tips from DB
   useEffect(() => {
     let cancelled = false;
     async function loadTips() {
@@ -106,6 +111,9 @@ export function useDayTips(
           month: dayDate.getMonth() + 1,
         });
         if (!cancelled) {
+          // On Day 2+, filter out truly-universal tips (no city/region/category
+          // scope) to prevent the same generic tips from repeating every day.
+          // Safety-critical tips still show on Day 1.
           let filtered = guidance;
           if (dayIndex > 0) {
             filtered = guidance.filter(
@@ -116,7 +124,8 @@ export function useDayTips(
                 tip.locationIds.length > 0,
             );
           }
-          setDbTips(filtered.slice(0, 5));
+          // Limit to top 5 tips for the day
+          setRawDbTips(filtered.slice(0, 5));
         }
       } catch {
         // Silently fail
@@ -128,6 +137,7 @@ export function useDayTips(
     return () => { cancelled = true; };
   }, [dayCategories, day.cityId, dayDate, dayIndex]);
 
+  // Computed pro tips based on day data
   const proTips = useMemo<DisplayTip[]>(() => {
     const tips: DisplayTip[] = [];
     const activities = day.activities ?? [];
@@ -140,6 +150,7 @@ export function useDayTips(
     );
     const hasTransit = transitSegments.length > 0;
 
+    // Day 1 only: IC Card tip
     if (dayIndex === 0 && hasTransit) {
       tips.push({
         id: "pro-ic-card",
@@ -177,6 +188,7 @@ export function useDayTips(
       }
     }
 
+    // City transition day -- skip when luggage smart prompt is active (avoids duplication)
     if (day.cityTransition && !hasLuggagePrompt) {
       tips.push({
         id: "pro-city-transition",
@@ -187,6 +199,7 @@ export function useDayTips(
       });
     }
 
+    // Heavy transit day (3+ segments)
     if (transitSegments.length >= 3) {
       tips.push({
         id: "pro-heavy-transit",
@@ -197,7 +210,7 @@ export function useDayTips(
       });
     }
 
-    // Rush hour warning — check all transit segments for morning (7:30–9:30) and evening (17:30–19:00)
+    // Rush hour warning
     let hasMorningRush = false;
     let hasEveningRush = false;
     for (const a of activities) {
@@ -229,6 +242,7 @@ export function useDayTips(
       });
     }
 
+    // Long train ride
     const hasLongTrain = activities.some(
       (a) =>
         a.kind === "place" &&
@@ -330,8 +344,8 @@ export function useDayTips(
       }
     }
 
-    // Holiday crowd warning (Day 1 only)
-    if (dayIndex === 0) {
+    // Holiday crowd warning -- show on all days (not just Day 1)
+    {
       const dayOfMonth = dayDate.getDate();
       const holidays = getActiveHolidays(month, dayOfMonth, month, dayOfMonth);
       if (holidays.length > 0) {
@@ -345,7 +359,7 @@ export function useDayTips(
       }
     }
 
-    // Omiyage tip — on city transition days
+    // Omiyage tip -- on city transition days
     if (day.cityTransition && day.cityId) {
       const omiyage = getOmiyageForCity(day.cityId, 2);
       if (omiyage.length > 0) {
@@ -360,7 +374,7 @@ export function useDayTips(
       }
     }
 
-    // Goshuin etiquette tip — Day 1 when itinerary has temples/shrines
+    // Goshuin etiquette tip -- Day 1 when itinerary has temples/shrines
     if (dayIndex === 0 && (dayCategories.includes("temple") || dayCategories.includes("shrine"))) {
       tips.push({
         id: "pro-goshuin-etiquette",
@@ -388,10 +402,13 @@ export function useDayTips(
     return tips;
   }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories]);
 
-  // Combined display list — dedup DB tips that overlap with active pro tips
+  // DB tips converted to DisplayTip format
+  const dbTips = useMemo<DisplayTip[]>(() => rawDbTips.map(toDisplayTip), [rawDbTips]);
+
+  // Combined display list -- dedup DB tips that overlap with active pro tips
   const allTips = useMemo<DisplayTip[]>(() => {
     const activeProIds = new Set(proTips.map((p) => p.id));
-    const dedupedDb = dbTips.filter((tip) => {
+    const dedupedDb = rawDbTips.filter((tip) => {
       const titleLower = tip.title.toLowerCase();
       const summaryLower = tip.summary.toLowerCase();
       for (const [proId, keywords] of Object.entries(PRO_TIP_DEDUP_KEYWORDS)) {
@@ -403,7 +420,7 @@ export function useDayTips(
       return true;
     });
     return [...proTips, ...dedupedDb.map(toDisplayTip)];
-  }, [proTips, dbTips]);
+  }, [proTips, rawDbTips]);
 
-  return { tips: allTips, isLoading };
+  return { proTips, dbTips, allTips, isLoading };
 }

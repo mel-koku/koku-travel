@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ItineraryDay } from "@/types/itinerary";
-import { useDayTips } from "./useDayTips";
+import { useDayTipsCore } from "@/hooks/useDayTipsCore";
 
 type DayTipsBProps = {
   day: ItineraryDay;
@@ -16,7 +16,7 @@ type DayTipsBProps = {
 };
 
 export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActivities, isFirstTimeVisitor }: DayTipsBProps) {
-  const { tips: allTips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
+  const { allTips, isLoading } = useDayTipsCore(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
 
