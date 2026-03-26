@@ -191,7 +191,7 @@ export function LocalExpertsShell() {
                   <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 p-4">
-                  <h3 className="font-serif text-lg leading-tight text-white">
+                  <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white leading-tight")}>
                     All experts
                   </h3>
                   <p className="mt-0.5 font-mono text-xs text-white/60">
@@ -235,7 +235,7 @@ export function LocalExpertsShell() {
                       <div className="absolute inset-0 rounded-lg ring-2 ring-inset ring-brand-primary" />
                     )}
                     <div className="absolute inset-x-0 bottom-0 p-4">
-                      <h3 className="font-serif text-lg leading-tight text-white transition-colors group-hover:text-brand-primary/90">
+                      <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white leading-tight transition-colors group-hover:text-brand-primary/90")}>
                         {cat.label}
                       </h3>
                       <p className="mt-0.5 font-mono text-xs text-white/60">
