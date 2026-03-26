@@ -7,7 +7,6 @@ import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { calculateDistance } from "@/lib/utils/geoUtils";
-import { travelMinutes } from "@/lib/travelTime";
 import { VIBE_FILTER_MAP } from "@/data/vibeFilterMapping";
 import { LOCATION_DAY_TRIP_COLUMNS } from "@/lib/supabase/projections";
 import type { DayTripSuggestion } from "@/types/dayTrips";
@@ -120,19 +119,14 @@ function buildFallbackDescription(loc: { category: string; city: string; is_hidd
 }
 
 function estimateTravelMinutes(
-  baseCityId: string,
-  targetPlanningCity: string | null,
+  _baseCityId: string,
+  _targetPlanningCity: string | null,
   distanceKm: number,
 ): number {
-  // Try the travel matrix first
-  if (targetPlanningCity) {
-    const matrixTime = travelMinutes(baseCityId, targetPlanningCity);
-    if (matrixTime !== undefined) return matrixTime;
-  }
-
-  // Fallback: distance-based estimate
-  // Under 100km: ~80km/h (limited express / local train)
-  // Over 100km: ~120km/h (shinkansen or express)
+  // Distance-based estimate from base city center to the actual location.
+  // The travel matrix (city-to-city) is too coarse for day trip suggestions
+  // since locations are 50-150km from the base city, not at a city center.
+  // Real routing is used in /api/day-trips/plan when the user accepts.
   const avgSpeed = distanceKm > 100 ? 120 : 80;
   return Math.round((distanceKm / avgSpeed) * 60);
 }
