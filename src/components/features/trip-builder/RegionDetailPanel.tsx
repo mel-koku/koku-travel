@@ -32,23 +32,23 @@ export function RegionDetailPanel({
 
   return (
     <div
-      className={cn("flex h-full w-full", region ? "pointer-events-auto" : "pointer-events-none")}
+      className={cn("relative h-full w-full overflow-hidden", region ? "pointer-events-auto" : "pointer-events-none")}
       onMouseEnter={onPanelEnter}
       onMouseLeave={onPanelLeave}
       onWheel={handleWheel}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {region && (
           <motion.div
             key={region.id}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            exit={{ x: "100%", transition: { duration: 0.3, ease: easeCinematicMut } }}
             transition={{
               duration: durationBase,
               ease: easeCinematicMut,
             }}
-            className="flex h-full w-full flex-col border-l border-border bg-background/95 backdrop-blur-xl"
+            className="absolute inset-0 z-10 flex flex-col border-l border-border bg-background/95 backdrop-blur-xl"
           >
             {/* Hero image — fixed height, not scrollable */}
             <div className="relative h-[40%] shrink-0 overflow-hidden">

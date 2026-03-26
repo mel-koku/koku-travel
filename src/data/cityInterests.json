@@ -1,610 +1,735 @@
 {
-  "generatedAt": "2026-03-06T10:53:59.441Z",
-  "totalLocations": 6274,
-  "totalCities": 46,
+  "generatedAt": "2026-03-26T06:04:03.720Z",
+  "totalLocations": 6251,
+  "totalCities": 43,
   "cities": {
-    "naha": {
-      "nature": 143,
-      "history": 49,
-      "food": 77,
-      "culture": 26,
-      "nightlife": 7,
-      "craft": 5,
-      "wellness": 1,
-      "shopping": 3
-    },
-    "nikko": {
-      "history": 30,
-      "culture": 44,
-      "food": 10,
-      "wellness": 37,
-      "nature": 54,
-      "shopping": 2,
-      "craft": 5,
-      "nightlife": 3
-    },
-    "tokyo": {
-      "culture": 96,
-      "history": 48,
-      "food": 52,
-      "nature": 65,
-      "nightlife": 9,
-      "wellness": 10,
-      "shopping": 11,
-      "craft": 9
-    },
-    "kagoshima": {
-      "history": 28,
-      "food": 45,
-      "nature": 74,
-      "culture": 37,
-      "wellness": 15,
-      "nightlife": 1
-    },
-    "tokushima": {
-      "nature": 36,
-      "shopping": 4,
-      "food": 27,
-      "culture": 29,
-      "history": 23,
-      "wellness": 6,
-      "craft": 5,
-      "nightlife": 1
-    },
-    "takamatsu": {
-      "nature": 42,
-      "food": 54,
-      "culture": 43,
-      "history": 17,
-      "shopping": 3,
-      "nightlife": 2,
-      "wellness": 2
-    },
-    "kumamoto": {
-      "culture": 35,
-      "nature": 47,
-      "wellness": 11,
-      "history": 27,
-      "food": 41,
-      "nightlife": 4,
-      "shopping": 2
-    },
     "kochi": {
-      "history": 14,
-      "craft": 1,
-      "food": 8,
-      "culture": 23,
-      "nature": 33,
       "wellness": 2,
-      "nightlife": 1
-    },
-    "kanazawa": {
-      "culture": 67,
-      "food": 29,
-      "shopping": 3,
-      "history": 30,
-      "nature": 28,
-      "wellness": 11,
-      "craft": 7
-    },
-    "nagasaki": {
-      "history": 45,
-      "culture": 36,
-      "nature": 67,
-      "food": 42,
-      "shopping": 4,
-      "wellness": 7,
-      "craft": 6
-    },
-    "osaka": {
-      "culture": 48,
-      "shopping": 6,
-      "food": 49,
-      "nature": 25,
-      "history": 34,
-      "wellness": 11,
+      "nature": 32,
+      "food": 8,
+      "shopping": 1,
+      "history": 13,
+      "culture": 23,
       "nightlife": 3,
       "craft": 1
-    },
-    "morioka": {
-      "nature": 37,
-      "wellness": 23,
-      "history": 20,
-      "culture": 26,
-      "food": 35,
-      "shopping": 1,
-      "nightlife": 2
-    },
-    "hakone": {
-      "culture": 52,
-      "nature": 82,
-      "wellness": 22,
-      "history": 35,
-      "nightlife": 4,
-      "food": 4,
-      "shopping": 3,
-      "craft": 1
-    },
-    "okayama": {
-      "history": 23,
-      "food": 42,
-      "culture": 18,
-      "nightlife": 1,
-      "nature": 20,
-      "shopping": 3,
-      "craft": 5
-    },
-    "kamakura": {
-      "culture": 25,
-      "food": 20,
-      "nature": 16,
-      "history": 4,
-      "craft": 3,
-      "wellness": 2
     },
     "matsue": {
-      "nature": 36,
+      "history": 37,
+      "food": 44,
       "culture": 50,
-      "history": 33,
-      "shopping": 4,
-      "wellness": 8,
-      "food": 43,
-      "nightlife": 2
-    },
-    "kobe": {
-      "culture": 44,
-      "history": 30,
-      "food": 38,
-      "shopping": 4,
-      "nature": 19,
       "wellness": 6,
-      "craft": 2
-    },
-    "yokohama": {
-      "food": 38,
-      "nature": 15,
-      "culture": 17,
-      "history": 8,
-      "nightlife": 4,
-      "shopping": 2
-    },
-    "nagoya": {
-      "culture": 77,
-      "history": 59,
-      "nature": 57,
-      "food": 24,
-      "craft": 15,
-      "nightlife": 5,
-      "wellness": 3,
-      "shopping": 2
-    },
-    "sapporo": {
-      "culture": 40,
-      "history": 50,
-      "nature": 121,
-      "food": 98,
-      "wellness": 25,
-      "shopping": 5,
       "nightlife": 3,
-      "craft": 4
-    },
-    "nagano": {
-      "history": 41,
-      "food": 22,
-      "culture": 29,
-      "nature": 66,
-      "wellness": 35,
-      "shopping": 2,
-      "nightlife": 2
-    },
-    "tottori": {
-      "culture": 20,
-      "history": 14,
-      "nature": 32,
-      "wellness": 20,
-      "food": 6
-    },
-    "nara": {
-      "history": 31,
-      "culture": 108,
-      "food": 53,
-      "nature": 42,
-      "wellness": 12,
-      "craft": 3,
-      "nightlife": 1
-    },
-    "kyoto": {
-      "culture": 202,
-      "nature": 69,
-      "history": 77,
-      "food": 61,
-      "shopping": 5,
-      "wellness": 7,
-      "craft": 15,
-      "nightlife": 3
-    },
-    "niigata": {
-      "culture": 30,
-      "food": 5,
-      "nightlife": 1,
-      "nature": 42,
-      "wellness": 5,
-      "history": 15,
-      "shopping": 1
-    },
-    "hiroshima": {
-      "history": 42,
-      "wellness": 3,
-      "culture": 58,
-      "food": 45,
-      "nature": 74,
-      "craft": 1,
-      "nightlife": 1,
-      "shopping": 2
-    },
-    "otsu": {
-      "culture": 69,
-      "history": 31,
-      "food": 3,
-      "wellness": 3,
-      "nature": 23,
-      "nightlife": 1,
-      "craft": 2
-    },
-    "takayama": {
-      "food": 20,
-      "nature": 63,
-      "history": 29,
-      "culture": 31,
-      "wellness": 14,
-      "craft": 5,
-      "shopping": 1
+      "nature": 37,
+      "shopping": 4
     },
     "sendai": {
-      "nature": 66,
-      "history": 27,
       "culture": 58,
-      "wellness": 33,
-      "food": 45,
-      "nightlife": 4,
+      "history": 26,
+      "nature": 65,
+      "wellness": 26,
+      "food": 49,
       "shopping": 1,
+      "nightlife": 4,
       "craft": 4
     },
-    "hakodate": {
-      "food": 43,
-      "history": 15,
-      "culture": 7,
-      "wellness": 4,
-      "nightlife": 1,
-      "nature": 5,
-      "shopping": 2
+    "morioka": {
+      "food": 39,
+      "nature": 36,
+      "nightlife": 4,
+      "culture": 24,
+      "wellness": 17,
+      "history": 20,
+      "craft": 1,
+      "shopping": 1
+    },
+    "nara": {
+      "food": 54,
+      "wellness": 11,
+      "culture": 100,
+      "nature": 43,
+      "history": 30,
+      "craft": 3,
+      "nightlife": 2
+    },
+    "takamatsu": {
+      "history": 20,
+      "culture": 40,
+      "food": 56,
+      "nightlife": 3,
+      "nature": 41,
+      "wellness": 2,
+      "shopping": 3
+    },
+    "nagano": {
+      "nature": 62,
+      "nightlife": 11,
+      "culture": 32,
+      "food": 20,
+      "history": 37,
+      "wellness": 22,
+      "shopping": 3
+    },
+    "hiroshima": {
+      "nature": 61,
+      "food": 47,
+      "culture": 57,
+      "history": 44,
+      "nightlife": 2,
+      "shopping": 3,
+      "wellness": 2,
+      "craft": 1
     },
     "fukuoka": {
       "food": 54,
-      "culture": 83,
+      "nature": 53,
+      "culture": 72,
+      "history": 58,
+      "craft": 5,
+      "shopping": 4,
       "nightlife": 2,
-      "history": 48,
-      "nature": 52,
-      "wellness": 6,
-      "craft": 4,
-      "shopping": 3
+      "wellness": 5
     },
-    "aomori": {
+    "kumamoto": {
+      "culture": 33,
+      "food": 41,
+      "nature": 45,
+      "nightlife": 6,
+      "history": 32,
       "wellness": 10,
-      "nature": 48,
-      "history": 19,
-      "food": 36,
-      "nightlife": 1,
-      "culture": 19,
-      "shopping": 2,
-      "craft": 1
+      "shopping": 2
     },
-    "matsuyama": {
-      "shopping": 8,
-      "food": 42,
-      "culture": 38,
-      "nature": 20,
-      "wellness": 4,
-      "history": 21,
+    "nikko": {
+      "nature": 65,
+      "culture": 39,
+      "food": 11,
+      "shopping": 2,
+      "wellness": 23,
+      "history": 30,
+      "craft": 9,
+      "nightlife": 3
+    },
+    "nagoya": {
+      "nature": 55,
+      "food": 29,
+      "culture": 77,
+      "history": 53,
+      "nightlife": 5,
+      "craft": 16,
+      "shopping": 2,
+      "wellness": 1
+    },
+    "kobe": {
+      "nature": 17,
+      "food": 40,
+      "wellness": 6,
+      "history": 27,
+      "culture": 40,
+      "craft": 2,
+      "shopping": 6,
+      "nightlife": 1
+    },
+    "hakodate": {
+      "food": 47,
+      "history": 19,
+      "culture": 7,
+      "nightlife": 1,
+      "nature": 6,
+      "wellness": 5,
+      "craft": 1,
+      "shopping": 1
+    },
+    "sapporo": {
+      "nature": 49,
+      "nightlife": 8,
+      "food": 93,
+      "culture": 23,
+      "craft": 4,
+      "history": 31,
+      "wellness": 1,
+      "shopping": 4
+    },
+    "abashiri": {
+      "nature": 16,
+      "culture": 4,
+      "history": 5,
+      "wellness": 5
+    },
+    "tottori": {
+      "food": 8,
+      "wellness": 18,
+      "culture": 21,
+      "history": 13,
+      "nature": 32,
       "craft": 1,
       "nightlife": 1
     },
-    "akita": {
-      "food": 4,
+    "naha": {
+      "nature": 89,
+      "history": 42,
+      "culture": 22,
+      "food": 43,
+      "shopping": 4,
+      "nightlife": 9,
+      "craft": 5
+    },
+    "osaka": {
+      "food": 48,
+      "wellness": 10,
       "nature": 31,
-      "history": 13,
-      "culture": 20,
-      "wellness": 4
+      "culture": 50,
+      "shopping": 6,
+      "history": 47,
+      "craft": 1,
+      "nightlife": 4
+    },
+    "takayama": {
+      "food": 20,
+      "nature": 61,
+      "culture": 35,
+      "history": 28,
+      "wellness": 9,
+      "craft": 6,
+      "nightlife": 2,
+      "shopping": 3
+    },
+    "tokyo": {
+      "nature": 60,
+      "history": 52,
+      "culture": 95,
+      "food": 54,
+      "nightlife": 10,
+      "shopping": 14,
+      "wellness": 13,
+      "craft": 9
+    },
+    "kyoto": {
+      "culture": 189,
+      "nature": 58,
+      "food": 67,
+      "history": 70,
+      "wellness": 7,
+      "nightlife": 4,
+      "shopping": 5,
+      "craft": 15
+    },
+    "hakone": {
+      "culture": 62,
+      "history": 35,
+      "nature": 95,
+      "wellness": 15,
+      "nightlife": 5,
+      "craft": 2,
+      "food": 5,
+      "shopping": 3
+    },
+    "yakushima": {
+      "nature": 21,
+      "wellness": 4,
+      "history": 4,
+      "culture": 1
+    },
+    "otsu": {
+      "culture": 66,
+      "nature": 25,
+      "history": 26,
+      "wellness": 2,
+      "craft": 3,
+      "food": 4,
+      "nightlife": 1
+    },
+    "ishigaki": {
+      "food": 35,
+      "nature": 25,
+      "history": 4,
+      "culture": 3,
+      "nightlife": 1
+    },
+    "asahikawa": {
+      "nightlife": 1,
+      "history": 5,
+      "food": 3,
+      "culture": 3,
+      "nature": 19,
+      "wellness": 3,
+      "shopping": 2
     },
     "oita": {
       "history": 25,
+      "food": 5,
       "nature": 27,
       "culture": 36,
-      "wellness": 17,
-      "food": 4,
+      "wellness": 16,
+      "nightlife": 2,
+      "shopping": 1
+    },
+    "yokohama": {
+      "nightlife": 6,
+      "food": 40,
+      "nature": 18,
+      "history": 9,
+      "culture": 18,
+      "shopping": 2
+    },
+    "akita": {
+      "history": 16,
+      "nature": 27,
+      "culture": 21,
+      "nightlife": 2,
+      "food": 6,
+      "wellness": 3
+    },
+    "kushiro": {
+      "nature": 25,
+      "food": 2,
+      "culture": 8,
+      "history": 7,
       "shopping": 1,
+      "wellness": 2
+    },
+    "niigata": {
+      "nature": 39,
+      "food": 6,
+      "history": 18,
+      "wellness": 6,
+      "culture": 26,
+      "nightlife": 3,
+      "shopping": 1
+    },
+    "tokushima": {
+      "culture": 29,
+      "nature": 39,
+      "history": 21,
+      "craft": 5,
+      "food": 28,
+      "shopping": 4,
+      "wellness": 4,
+      "nightlife": 3
+    },
+    "nagasaki": {
+      "food": 43,
+      "history": 53,
+      "nature": 61,
+      "culture": 38,
+      "shopping": 3,
+      "wellness": 6,
+      "craft": 6,
       "nightlife": 1
+    },
+    "aomori": {
+      "food": 37,
+      "nature": 50,
+      "wellness": 8,
+      "history": 24,
+      "culture": 21,
+      "craft": 1,
+      "nightlife": 1,
+      "shopping": 2
+    },
+    "okayama": {
+      "nature": 21,
+      "history": 22,
+      "food": 43,
+      "culture": 19,
+      "nightlife": 1,
+      "craft": 4,
+      "shopping": 3
+    },
+    "kagoshima": {
+      "nature": 45,
+      "food": 44,
+      "culture": 34,
+      "history": 24,
+      "nightlife": 3,
+      "wellness": 9,
+      "craft": 1
+    },
+    "amami": {
+      "history": 3,
+      "nature": 20,
+      "culture": 2,
+      "wellness": 1
+    },
+    "kamakura": {
+      "food": 21,
+      "nature": 18,
+      "culture": 32,
+      "shopping": 1,
+      "history": 3,
+      "craft": 3
+    },
+    "matsuyama": {
+      "culture": 39,
+      "nature": 21,
+      "history": 23,
+      "food": 41,
+      "wellness": 4,
+      "shopping": 8,
+      "craft": 1,
+      "nightlife": 2
+    },
+    "kanazawa": {
+      "culture": 61,
+      "history": 33,
+      "nature": 26,
+      "food": 30,
+      "wellness": 9,
+      "shopping": 4,
+      "craft": 9
+    },
+    "wakkanai": {
+      "nature": 3,
+      "history": 3,
+      "food": 1,
+      "wellness": 1
+    },
+    "miyako": {
+      "nature": 5,
+      "history": 2
     }
   },
   "metadata": {
-    "naha": {
-      "locationCount": 311,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.1705094,
-        "lng": 127.34499210000001
-      }
-    },
-    "nikko": {
-      "locationCount": 185,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 36.3169465,
-        "lng": 139.3778298
-      }
-    },
-    "tokyo": {
-      "locationCount": 300,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.9976189,
-        "lng": 139.0841388
-      }
-    },
-    "kagoshima": {
-      "locationCount": 200,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 31.992932899999996,
-        "lng": 131.2353559
-      }
-    },
-    "tokushima": {
-      "locationCount": 131,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.697317,
-        "lng": 134.2540573
-      }
-    },
-    "takamatsu": {
-      "locationCount": 163,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.3417724,
-        "lng": 134.0946893
-      }
-    },
-    "kumamoto": {
-      "locationCount": 167,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 32.798072999999995,
-        "lng": 130.691562
-      }
-    },
     "kochi": {
-      "locationCount": 82,
+      "locationCount": 83,
       "region": "Shikoku",
       "coordinates": {
-        "lat": 33.3293119,
-        "lng": 133.22679879999998
-      }
-    },
-    "kanazawa": {
-      "locationCount": 175,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 36.4253237,
-        "lng": 136.9348441
-      }
-    },
-    "nagasaki": {
-      "locationCount": 207,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 34.2089405,
-        "lng": 129.2838435
-      }
-    },
-    "osaka": {
-      "locationCount": 177,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 34.6688,
-        "lng": 135.5018
-      }
-    },
-    "morioka": {
-      "locationCount": 144,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 39.8526209,
-        "lng": 141.0010175
-      }
-    },
-    "hakone": {
-      "locationCount": 203,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.5499805,
-        "lng": 138.90795839999998
-      }
-    },
-    "okayama": {
-      "locationCount": 112,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 34.5957392,
-        "lng": 133.77176509999998
-      }
-    },
-    "kamakura": {
-      "locationCount": 70,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.366917,
-        "lng": 139.597183
+        "lat": 33.9213454,
+        "lng": 133.81737189999998
       }
     },
     "matsue": {
-      "locationCount": 176,
+      "locationCount": 181,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 35.4714083,
-        "lng": 133.055273
+        "lat": 36.2243336,
+        "lng": 133.3079517
       }
     },
-    "kobe": {
-      "locationCount": 143,
-      "region": "Kansai",
+    "sendai": {
+      "locationCount": 233,
+      "region": "Tohoku",
       "coordinates": {
-        "lat": 34.6710883,
-        "lng": 135.1715232
+        "lat": 38.3720098,
+        "lng": 141.0598105
       }
     },
-    "yokohama": {
-      "locationCount": 84,
-      "region": "Kanto",
+    "morioka": {
+      "locationCount": 142,
+      "region": "Tohoku",
       "coordinates": {
-        "lat": 35.440663,
-        "lng": 139.627139
-      }
-    },
-    "nagoya": {
-      "locationCount": 242,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 35.0516921,
-        "lng": 137.16038369999998
-      }
-    },
-    "sapporo": {
-      "locationCount": 346,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.2311098,
-        "lng": 143.5434443
-      }
-    },
-    "nagano": {
-      "locationCount": 197,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 36.2582502,
-        "lng": 138.8997642
-      }
-    },
-    "tottori": {
-      "locationCount": 92,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 35.429263999999996,
-        "lng": 133.8152589
+        "lat": 39.6924207,
+        "lng": 141.1599609
       }
     },
     "nara": {
-      "locationCount": 250,
+      "locationCount": 243,
       "region": "Kansai",
       "coordinates": {
-        "lat": 34.4623142,
-        "lng": 135.806201
+        "lat": 33.62615280000001,
+        "lng": 135.94365489999998
+      }
+    },
+    "takamatsu": {
+      "locationCount": 165,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.5156402,
+        "lng": 134.3006589
+      }
+    },
+    "nagano": {
+      "locationCount": 187,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 36.7194362,
+        "lng": 138.4828316
+      }
+    },
+    "hiroshima": {
+      "locationCount": 217,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 34.2902245,
+        "lng": 132.32497189999998
+      }
+    },
+    "fukuoka": {
+      "locationCount": 253,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 33.3141007,
+        "lng": 130.5224757
+      }
+    },
+    "kumamoto": {
+      "locationCount": 169,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 32.2080251,
+        "lng": 130.7560986
+      }
+    },
+    "nikko": {
+      "locationCount": 182,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 36.8102726,
+        "lng": 140.373776
+      }
+    },
+    "nagoya": {
+      "locationCount": 238,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 35.090508799999995,
+        "lng": 136.8784377
+      }
+    },
+    "kobe": {
+      "locationCount": 139,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 34.7328452,
+        "lng": 135.2043559
+      }
+    },
+    "hakodate": {
+      "locationCount": 87,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 41.771691100000005,
+        "lng": 140.7322447
+      }
+    },
+    "sapporo": {
+      "locationCount": 213,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.0316221,
+        "lng": 141.33309789999998
+      }
+    },
+    "abashiri": {
+      "locationCount": 30,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.53749750000001,
+        "lng": 144.281085
+      }
+    },
+    "tottori": {
+      "locationCount": 94,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 35.5414363,
+        "lng": 134.2389005
+      }
+    },
+    "naha": {
+      "locationCount": 214,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 26.3315494,
+        "lng": 126.8077903
+      }
+    },
+    "osaka": {
+      "locationCount": 197,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 34.6720725,
+        "lng": 135.50198980000002
+      }
+    },
+    "takayama": {
+      "locationCount": 164,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 35.5972363,
+        "lng": 137.88437109999998
+      }
+    },
+    "tokyo": {
+      "locationCount": 307,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 35.685176299999995,
+        "lng": 139.7100517
       }
     },
     "kyoto": {
-      "locationCount": 439,
+      "locationCount": 415,
       "region": "Kansai",
       "coordinates": {
         "lat": 35.0302799,
         "lng": 135.7773755
       }
     },
-    "niigata": {
-      "locationCount": 99,
-      "region": "Chubu",
+    "hakone": {
+      "locationCount": 222,
+      "region": "Kanto",
       "coordinates": {
-        "lat": 37.890746,
-        "lng": 139.04975199999998
+        "lat": 35.2037,
+        "lng": 139.0222
       }
     },
-    "hiroshima": {
-      "locationCount": 226,
-      "region": "Chugoku",
+    "yakushima": {
+      "locationCount": 30,
+      "region": "Kyushu",
       "coordinates": {
-        "lat": 34.467356099999996,
-        "lng": 131.7736644
+        "lat": 30.3258653,
+        "lng": 130.6143744
       }
     },
     "otsu": {
-      "locationCount": 132,
+      "locationCount": 127,
       "region": "Kansai",
       "coordinates": {
         "lat": 35.408919499999996,
         "lng": 136.2825014
       }
     },
-    "takayama": {
-      "locationCount": 163,
-      "region": "Chubu",
+    "ishigaki": {
+      "locationCount": 68,
+      "region": "Okinawa",
       "coordinates": {
-        "lat": 36.1425437,
-        "lng": 137.2541783
+        "lat": 24.356516000000003,
+        "lng": 124.13026570000001
       }
     },
-    "sendai": {
-      "locationCount": 238,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 38.827205299999996,
-        "lng": 141.6028582
-      }
-    },
-    "hakodate": {
-      "locationCount": 77,
+    "asahikawa": {
+      "locationCount": 36,
       "region": "Hokkaido",
       "coordinates": {
-        "lat": 41.7655,
-        "lng": 140.7115
-      }
-    },
-    "fukuoka": {
-      "locationCount": 252,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 33.5963707,
-        "lng": 130.410327
-      }
-    },
-    "aomori": {
-      "locationCount": 136,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 40.664774099999995,
-        "lng": 140.91212199999998
-      }
-    },
-    "matsuyama": {
-      "locationCount": 135,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.170772,
-        "lng": 132.50597199999999
-      }
-    },
-    "akita": {
-      "locationCount": 72,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 39.5959,
-        "lng": 140.5646
+        "lat": 43.3249606,
+        "lng": 142.3532411
       }
     },
     "oita": {
-      "locationCount": 111,
+      "locationCount": 112,
       "region": "Kyushu",
       "coordinates": {
-        "lat": 33.0962341,
-        "lng": 131.2085357
+        "lat": 33.315883299999996,
+        "lng": 131.4696745
+      }
+    },
+    "yokohama": {
+      "locationCount": 93,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 35.4481821,
+        "lng": 139.63000399999999
+      }
+    },
+    "akita": {
+      "locationCount": 75,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 39.59926180000001,
+        "lng": 140.5617163
+      }
+    },
+    "kushiro": {
+      "locationCount": 45,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.1155344,
+        "lng": 144.4318361
+      }
+    },
+    "niigata": {
+      "locationCount": 99,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 37.6009417,
+        "lng": 140.0722501
+      }
+    },
+    "tokushima": {
+      "locationCount": 133,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.2460733,
+        "lng": 134.3637559
+      }
+    },
+    "nagasaki": {
+      "locationCount": 211,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 32.7441,
+        "lng": 129.8762
+      }
+    },
+    "aomori": {
+      "locationCount": 144,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 40.827357299999996,
+        "lng": 140.73964310000002
+      }
+    },
+    "okayama": {
+      "locationCount": 113,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 34.6651179,
+        "lng": 133.78465989999998
+      }
+    },
+    "kagoshima": {
+      "locationCount": 160,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 31.91945,
+        "lng": 130.845763
+      }
+    },
+    "amami": {
+      "locationCount": 26,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 27.802071,
+        "lng": 128.889429
+      }
+    },
+    "kamakura": {
+      "locationCount": 78,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 35.3114,
+        "lng": 139.5398
+      }
+    },
+    "matsuyama": {
+      "locationCount": 139,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.6338389,
+        "lng": 132.6494507
+      }
+    },
+    "kanazawa": {
+      "locationCount": 172,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 36.7502377,
+        "lng": 137.00512519999998
+      }
+    },
+    "wakkanai": {
+      "locationCount": 8,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 45.180588799999995,
+        "lng": 141.2411723
+      }
+    },
+    "miyako": {
+      "locationCount": 7,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 24.7179032,
+        "lng": 125.24005229999999
       }
     }
   }

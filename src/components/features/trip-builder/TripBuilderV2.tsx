@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
@@ -70,8 +70,9 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
   const variants = prefersReducedMotion ? reducedMotionVariants : stepVariants;
 
   // Dynamic disabled hint for the region step
+  // Use unique city count (Set) to match what the user sees in chips
   const regionDisabledHint = (() => {
-    const cityCount = data.cities?.length ?? 0;
+    const cityCount = new Set(data.cities ?? []).size;
     if (cityCount === 0) return "Pick at least one city to continue";
     const v = validateCityDayRatio(cityCount, data.duration ?? 0);
     return v.hint ?? "Pick at least one region to continue";
@@ -289,17 +290,29 @@ function StepShell({
   const resolvedBackLabel = backLabel ?? "Back";
   const [showHint, setShowHint] = useState(false);
 
-  const handleDisabledClick = useCallback(() => {
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showDisabledHint = useCallback(() => {
     if (nextDisabled && disabledHint) {
+      if (hintTimer.current) clearTimeout(hintTimer.current);
       setShowHint(true);
-      setTimeout(() => setShowHint(false), 3000);
+      hintTimer.current = setTimeout(() => setShowHint(false), 4500);
     }
   }, [nextDisabled, disabledHint]);
 
-  // Reset hint when button becomes enabled
+  const handleDisabledClick = showDisabledHint;
+
+  // Reset hint when button becomes enabled; cleanup timer
   useEffect(() => {
-    if (!nextDisabled) setShowHint(false);
+    if (!nextDisabled) {
+      setShowHint(false);
+      if (hintTimer.current) clearTimeout(hintTimer.current);
+    }
   }, [nextDisabled]);
+
+  useEffect(() => {
+    return () => { if (hintTimer.current) clearTimeout(hintTimer.current); };
+  }, []);
 
   return (
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
@@ -335,14 +348,14 @@ function StepShell({
                 onStepClick={onStepClick}
               />
             </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-1.5" onClick={handleDisabledClick} onMouseEnter={showDisabledHint}>
             {showHint && disabledHint && (
-              <p className="text-xs text-warning animate-in fade-in duration-200 pointer-events-auto" role="alert">
+              <p className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
                 {disabledHint}
               </p>
             )}
-          </div>
-
-          <div onClick={handleDisabledClick}>
             <ArrowLineCTA
               label={nextLabel}
               onClick={onNext}
