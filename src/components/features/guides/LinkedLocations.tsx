@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "@/lib/utils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { staggerItem } from "@/lib/motion";
@@ -86,7 +87,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
 
                   {/* Overlay text */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                    <h3 className="font-serif text-lg text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-xl">
+                    <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white transition-colors duration-500 group-hover:text-brand-primary")}>
                       {location.name}
                     </h3>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-white/70">
