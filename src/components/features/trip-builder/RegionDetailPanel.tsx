@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
 import type { CityId } from "@/types/trip";
@@ -63,7 +64,7 @@ export function RegionDetailPanel({
 
               {/* Region name overlay */}
               <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3 className="font-serif text-3xl text-white">
+                <h3 className={cn(typography({ intent: "editorial-h2" }), "text-white")}>
                   {region.name}
                 </h3>
                 <p className="mt-1 text-sm text-white/70">{region.tagline}</p>
