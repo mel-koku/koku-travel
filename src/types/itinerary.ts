@@ -279,7 +279,8 @@ export type ItineraryEdit = {
     | "replaceActivity"
     | "deleteActivity"
     | "reorderActivities"
-    | "addActivity";
+    | "addActivity"
+    | "swapDayTrip";
   dayId: string;
   /**
    * Snapshot of the itinerary state before this edit.

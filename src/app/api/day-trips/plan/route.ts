@@ -9,6 +9,7 @@ import { calculateDistance } from "@/lib/utils/geoUtils";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { LOCATION_ITINERARY_COLUMNS } from "@/lib/supabase/projections";
 import { VIBE_FILTER_MAP } from "@/data/vibeFilterMapping";
+import { requestRoute } from "@/lib/routing/provider";
 import type { ItineraryActivity, ItineraryTravelSegment } from "@/types/itinerary";
 import type { VibeId } from "@/data/vibes";
 import { v4 as uuid } from "uuid";
@@ -75,13 +76,35 @@ function buildTravelSegment(
   fromName: string,
   toName: string,
   durationMinutes: number,
+  isEstimated: boolean,
 ): ItineraryTravelSegment {
+  const hours = Math.round(durationMinutes / 60 * 10) / 10;
   return {
     mode: "train",
     durationMinutes,
-    isEstimated: true,
-    notes: `Train from ${fromName} to ${toName} (~${Math.round(durationMinutes / 60 * 10) / 10}h)`,
+    isEstimated,
+    notes: `Train from ${fromName} to ${toName} (~${hours}h)`,
   };
+}
+
+async function getRoutedTravelMinutes(
+  origin: { lat: number; lng: number },
+  destination: { lat: number; lng: number },
+  distanceKm: number,
+): Promise<{ minutes: number; isEstimated: boolean }> {
+  try {
+    const result = await requestRoute({
+      origin,
+      destination,
+      mode: "transit",
+    });
+    if (result.durationSeconds > 0) {
+      return { minutes: Math.round(result.durationSeconds / 60), isEstimated: false };
+    }
+  } catch {
+    // Fall through to heuristic
+  }
+  return { minutes: estimateTravelMinutes(distanceKm), isEstimated: true };
 }
 
 export const POST = withApiHandler(
@@ -178,14 +201,16 @@ export const POST = withApiHandler(
       tags: loc.tags || undefined,
     }));
 
-    // Calculate travel times
+    // Calculate travel times (real routing with heuristic fallback)
     const baseCityName = baseCityId.charAt(0).toUpperCase() + baseCityId.slice(1);
     const baseCityCoords = getCityCenterCoordinates(baseCityId);
     const distanceKm = calculateDistance(baseCityCoords, targetCoords);
-    const oneWayMinutes = estimateTravelMinutes(distanceKm);
 
-    const travelTo = buildTravelSegment(baseCityName, targetRow.city || targetRow.name, oneWayMinutes);
-    const travelFrom = buildTravelSegment(targetRow.city || targetRow.name, baseCityName, oneWayMinutes);
+    const outbound = await getRoutedTravelMinutes(baseCityCoords, targetCoords, distanceKm);
+    const inbound = await getRoutedTravelMinutes(targetCoords, baseCityCoords, distanceKm);
+
+    const travelTo = buildTravelSegment(baseCityName, targetRow.city || targetRow.name, outbound.minutes, outbound.isEstimated);
+    const travelFrom = buildTravelSegment(targetRow.city || targetRow.name, baseCityName, inbound.minutes, inbound.isEstimated);
 
     // Add travel-to as the first activity's travelFromPrevious
     if (activities.length > 0) {
@@ -203,7 +228,7 @@ export const POST = withApiHandler(
       activities,
       travelTo,
       travelFrom,
-      totalTravelMinutes: oneWayMinutes * 2,
+      totalTravelMinutes: outbound.minutes + inbound.minutes,
       dayLabel: `Day Trip: ${baseCityName} \u2192 ${targetRow.city || targetRow.name}`,
       targetCityId,
     });
