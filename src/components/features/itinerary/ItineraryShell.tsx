@@ -43,6 +43,7 @@ import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
 import { ShareButton } from "./ShareButton";
 import { SeasonalBanner } from "./SeasonalBanner";
+import { DayTripBanner } from "./DayTripBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 import { PrintHeader } from "./PrintHeader";
@@ -88,6 +89,7 @@ type ItineraryShellProps = {
   onCancelPreview?: () => void;
   onFilterChange?: (filter: Partial<RefinementFilters>) => void;
   isPreviewLoading?: boolean;
+  dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
 };
 
 export const ItineraryShell = ({
@@ -113,6 +115,7 @@ export const ItineraryShell = ({
   onCancelPreview,
   onFilterChange,
   isPreviewLoading,
+  dayTripSuggestions,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
@@ -502,6 +505,67 @@ export const ItineraryShell = ({
     [model, safeSelectedDay, setModelState, scheduleUserPlanningRef],
   );
 
+  // ── Day trip accept handler ──
+  const [isAcceptingDayTrip, setIsAcceptingDayTrip] = useState(false);
+
+  const handleAcceptDayTrip = useCallback(
+    async (suggestion: import("@/types/dayTrips").DayTripSuggestion) => {
+      if (!onItineraryChange) return;
+      setIsAcceptingDayTrip(true);
+      try {
+        // Find a suitable day in the base city to swap (prefer last day in that city)
+        const candidateDays = model.days
+          .map((d, i) => ({ day: d, index: i }))
+          .filter((d) => d.day.cityId === suggestion.baseCityId && !d.day.isDayTrip);
+        if (candidateDays.length === 0) return;
+        const target = candidateDays[candidateDays.length - 1]!;
+
+        const res = await fetch("/api/day-trips/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            baseCityId: suggestion.baseCityId,
+            targetLocationId: suggestion.targetLocationId,
+            dayIndex: target.index,
+            dayId: target.day.id,
+            vibes: tripBuilderData?.vibes || [],
+            usedLocationIds: model.days.flatMap((d) =>
+              d.activities
+                .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
+                .map((a) => a.locationId)
+                .filter(Boolean),
+            ),
+            tripDate: tripStartDate,
+          }),
+        });
+
+        if (!res.ok) return;
+        const plan = await res.json();
+
+        // Replace the target day's activities with day trip activities
+        const nextDays = [...model.days];
+        nextDays[target.index] = {
+          ...target.day,
+          activities: plan.activities,
+          isDayTrip: true,
+          baseCityId: suggestion.baseCityId,
+          cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
+          dayTripTravelMinutes: plan.totalTravelMinutes,
+          dateLabel: plan.dayLabel || `Day ${target.index + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
+        };
+
+        const nextItinerary = { ...model, days: nextDays };
+        setModelState(nextItinerary);
+        setTimeout(() => {
+          scheduleUserPlanningRef.current?.(nextItinerary);
+        }, 0);
+      } finally {
+        setIsAcceptingDayTrip(false);
+      }
+    },
+    [model, onItineraryChange, tripBuilderData, tripStartDate, setModelState, scheduleUserPlanningRef],
+  );
+
   // ── Discover mode ──
   const discover = useItineraryDiscover({
     model,
@@ -775,6 +839,9 @@ export const ItineraryShell = ({
                   }}
                   budgetTotal={tripBuilderData?.budget?.total}
                   tripBuilderData={tripBuilderData}
+                  dayTripSuggestions={dayTripSuggestions}
+                  onAcceptDayTrip={handleAcceptDayTrip}
+                  isAcceptingDayTrip={isAcceptingDayTrip}
                 />
               </div>
             )}
@@ -808,6 +875,15 @@ export const ItineraryShell = ({
           {/* Seasonal Banner */}
           {model.seasonalHighlight && (
             <SeasonalBanner highlight={model.seasonalHighlight} />
+          )}
+
+          {/* Day trip suggestions banner */}
+          {dayTripSuggestions && dayTripSuggestions.length > 0 && (
+            <DayTripBanner
+              suggestions={dayTripSuggestions}
+              tripId={tripId}
+              onViewDashboard={() => setViewMode("dashboard")}
+            />
           )}
 
           {/* Conflict summary banner */}

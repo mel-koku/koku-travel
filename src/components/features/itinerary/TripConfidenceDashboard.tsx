@@ -28,6 +28,7 @@ const LocationExpanded = dynamic(
   { ssr: false },
 );
 import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
+import { DayTripSection } from "./DayTripSection";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -48,6 +49,12 @@ type TripConfidenceDashboardProps = {
   budgetTotal?: number;
   /** Trip builder data for packing checklist */
   tripBuilderData?: TripBuilderData;
+  /** Day trip suggestions for the trip */
+  dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
+  /** Callback when user accepts a day trip suggestion */
+  onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion) => void;
+  /** Whether a day trip swap is in progress */
+  isAcceptingDayTrip?: boolean;
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
@@ -63,6 +70,9 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   mobilityNeeds,
   budgetTotal,
   tripBuilderData,
+  dayTripSuggestions,
+  onAcceptDayTrip,
+  isAcceptingDayTrip,
 }: TripConfidenceDashboardProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -325,6 +335,15 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           />
         ))}
       </div>
+
+      {/* Day Trip Suggestions */}
+      {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
+        <DayTripSection
+          suggestions={dayTripSuggestions}
+          onAcceptDayTrip={onAcceptDayTrip}
+          isAccepting={isAcceptingDayTrip ?? false}
+        />
+      )}
 
       {/* Accessibility — only when traveler has mobility needs */}
       {accessibility && (
