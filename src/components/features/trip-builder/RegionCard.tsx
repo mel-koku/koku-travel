@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Check, MapPin, Plane, Star } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { springInteraction, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { REGIONS } from "@/data/regions";
@@ -108,7 +109,7 @@ export function RegionCard({
 
         {/* Region Name & Tagline Overlay - Bottom */}
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className="font-serif text-xl text-white drop-shadow-lg sm:text-2xl">
+          <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white drop-shadow-lg")}>
             {region.name}
           </h3>
           <p className="mt-0.5 text-sm text-white/90 drop-shadow-md">
