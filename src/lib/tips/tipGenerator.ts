@@ -268,8 +268,8 @@ function generateWeatherTips(
     } else {
       tips.push({
         type: "weather",
-        title: "Rain Expected",
-        message: "Rain is forecasted. Bring an umbrella or consider rescheduling if possible. Some outdoor areas may be slippery.",
+        title: "Rain expected",
+        message: "Rain is forecast. Grab a clear vinyl umbrella at any konbini (about \u00A5500). Temple paths and stone steps get slippery. Consider shifting outdoor plans earlier or later.",
         priority: 9,
         icon: "🌧️",
       });
@@ -284,8 +284,8 @@ function generateWeatherTips(
     if (avgTemp < 10) {
       tips.push({
         type: "weather",
-        title: "Cold Weather",
-        message: "It will be chilly today. Dress warmly, especially if visiting outdoor areas.",
+        title: "Bundle up",
+        message: "Cold today. Temples and shrines have no heating, and you'll be removing shoes on cold wooden floors. Layer up and carry hand warmers (available at any konbini).",
         priority: 7,
         icon: "🧥",
       });
@@ -443,16 +443,16 @@ function generateGeneralTips(
     if (activity.durationMin < 60) {
       tips.push({
         type: "general",
-        title: "Quick Visit",
-        message: "This is a quick stop. Perfect for fitting into a busy schedule.",
+        title: "Quick stop",
+        message: "A short visit. Good time to grab a vending machine drink or pick up a stamp if they have one.",
         priority: 3,
         icon: "⏱️",
       });
     } else if (activity.durationMin > 180) {
       tips.push({
         type: "general",
-        title: "Extended Visit",
-        message: "Plan for a longer stay here. There's plenty to explore and experience.",
+        title: "Half-day visit",
+        message: "You'll be here a while. Pace yourself, find a bench, and don't rush. Many places have a rest area or tea shop inside.",
         priority: 4,
         icon: "⏰",
       });
@@ -487,8 +487,8 @@ function generateGeneralTips(
   } else if (category === "market") {
     tips.push({
       type: "general",
-      title: "Market Tips",
-      message: "Markets are best visited in the morning for freshest produce. Bring cash as some vendors may not accept cards.",
+      title: "Market tips",
+      message: "Go early for the freshest selection. Bring cash (most stalls are cash-only). Eat at the stall, not while walking. Ask before taking photos of food displays.",
       priority: 6,
       icon: "🛒",
     });
