@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import {
@@ -11,7 +12,7 @@ export const GET = withApiHandler(
     const locationId = request.nextUrl.searchParams.get("locationId");
 
     if (!slug && !locationId) {
-      return Response.json(
+      return NextResponse.json(
         { error: "slug or locationId parameter required" },
         { status: 400 },
       );
@@ -23,7 +24,7 @@ export const GET = withApiHandler(
       people = await getPeopleByLocationId(locationId);
     }
 
-    return Response.json({ data: people });
+    return NextResponse.json({ data: people });
   },
   { rateLimit: RATE_LIMITS.PEOPLE },
 );
