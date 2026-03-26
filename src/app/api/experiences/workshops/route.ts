@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import {
@@ -13,7 +14,7 @@ export const GET = withApiHandler(
       ? await getWorkshopExperiencesByCraftType(craftType)
       : await getWorkshopExperiences();
 
-    return Response.json(workshops, {
+    return NextResponse.json(workshops, {
       headers: {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       },
