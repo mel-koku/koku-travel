@@ -3,7 +3,7 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import type { Itinerary } from "@/types/itinerary";
-import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
@@ -24,6 +24,7 @@ import { DayTips } from "./DayTips";
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
   conflicts: ItineraryConflict[];
+  conflictsResult?: ItineraryConflictsResult;
   tripStartDate?: string;
   tripCities?: string[];
   onClose: () => void;
@@ -39,6 +40,7 @@ type TripConfidenceDashboardProps = {
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   itinerary,
   conflicts,
+  conflictsResult,
   tripStartDate,
   tripCities,
   onClose,
@@ -145,6 +147,11 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             ))}
           </div>
         </div>
+      )}
+
+      {/* Scheduling Notes */}
+      {conflictsResult && conflictsResult.summary.total > 0 && onSelectDay && (
+        <SchedulingNotesBanner conflictsResult={conflictsResult} onSelectDay={onSelectDay} />
       )}
 
       {/* Packing Checklist */}
@@ -511,4 +518,57 @@ function loadChecklist(): Set<string> {
 
 function saveChecklist(checked: Set<string>) {
   setLocal(CONFIDENCE_CHECKLIST_STORAGE_KEY, [...checked]);
+}
+
+function SchedulingNotesBanner({
+  conflictsResult,
+  onSelectDay,
+}: {
+  conflictsResult: ItineraryConflictsResult;
+  onSelectDay: (dayIndex: number) => void;
+}) {
+  const total = conflictsResult.summary.total;
+
+  // Group conflict count per day
+  const dayEntries: { dayIndex: number; count: number }[] = [];
+  const seen = new Set<number>();
+  for (const c of conflictsResult.conflicts) {
+    if (!seen.has(c.dayIndex)) {
+      seen.add(c.dayIndex);
+      dayEntries.push({
+        dayIndex: c.dayIndex,
+        count: conflictsResult.conflicts.filter((x) => x.dayIndex === c.dayIndex).length,
+      });
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <h3 className="eyebrow-editorial">Scheduling Notes</h3>
+      <div className="rounded-lg border border-warning/20 bg-warning/5 px-4 py-3">
+        <div className="flex items-start gap-2.5">
+          <svg className="mt-0.5 h-4 w-4 shrink-0 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              {total} {total === 1 ? "note" : "notes"} across your trip
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {dayEntries.map(({ dayIndex, count }) => (
+                <button
+                  key={dayIndex}
+                  type="button"
+                  onClick={() => onSelectDay(dayIndex)}
+                  className="rounded-lg bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning transition hover:bg-warning/20"
+                >
+                  Day {dayIndex + 1} ({count})
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

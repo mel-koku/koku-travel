@@ -36,6 +36,8 @@ type RefinementRequest = {
 type RefinementResponse = {
   refinedDay: ItineraryDay;
   updatedTrip: Trip;
+  /** Set when refinement made no changes (day already suited for the adjustment). */
+  message?: string;
 };
 
 const VALID_REFINEMENT_TYPES: RefinementType[] = [
@@ -149,7 +151,25 @@ const mapTripActivityToItineraryActivity = (
   };
 };
 
-const mapTripDayToItineraryDay = (day: TripDay): ItineraryDay => ({
+const mapTripDayToItineraryDay = (
+  day: TripDay,
+  originalDay?: ItineraryDay,
+): ItineraryDay => ({
+  // Preserve metadata from the original day that the refinement engine doesn't touch
+  ...(originalDay
+    ? {
+        dateLabel: originalDay.dateLabel,
+        timezone: originalDay.timezone,
+        bounds: originalDay.bounds,
+        weekday: originalDay.weekday,
+        cityTransition: originalDay.cityTransition,
+        isDayTrip: originalDay.isDayTrip,
+        baseCityId: originalDay.baseCityId,
+        dayTripTravelMinutes: originalDay.dayTripTravelMinutes,
+        paceLabel: originalDay.paceLabel,
+        isLateArrival: originalDay.isLateArrival,
+      }
+    : {}),
   id: day.id,
   cityId: day.cityId,
   activities: day.activities.map(mapTripActivityToItineraryActivity),
@@ -296,6 +316,7 @@ export const POST = withApiHandler(
       });
     }
 
+    const originalItineraryDay = itinerary.days[dayIndex];
     const refinedDay = await refineDay({ trip, dayIndex, type: refinementType });
     const updatedDays = trip.days.map((day, index) => (index === dayIndex ? refinedDay : day));
     const updatedTrip: Trip = {
@@ -304,9 +325,19 @@ export const POST = withApiHandler(
       updatedAt: new Date().toISOString(),
     };
 
+    // Detect if refinement made no changes (engine returned original day unchanged)
+    const originalIds = (originalItineraryDay?.activities ?? []).map((a) =>
+      a.kind === "place" ? a.locationId ?? a.id : a.id,
+    );
+    const refinedIds = refinedDay.activities.map((a) => a.locationId ?? a.id);
+    const unchanged =
+      originalIds.length === refinedIds.length &&
+      originalIds.every((id, i) => id === refinedIds[i]);
+
     const responseBody: RefinementResponse = {
-      refinedDay: mapTripDayToItineraryDay(refinedDay),
+      refinedDay: mapTripDayToItineraryDay(refinedDay, originalItineraryDay),
       updatedTrip,
+      ...(unchanged ? { message: "This day is already optimized for that adjustment." } : {}),
     };
 
     return NextResponse.json(responseBody);
