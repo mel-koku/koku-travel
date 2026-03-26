@@ -22,7 +22,7 @@ export const LAST_TRAIN_TIMES: Record<string, number> = {
   hakodate: 1350,   // 22:30
   matsuyama: 1380,  // 23:00
   takamatsu: 1380,  // 23:00
-  naha: 1410,       // 23:30
+  naha: 1395,       // 23:15 — Yui Rail monorail
 };
 
 /**
