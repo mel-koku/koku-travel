@@ -218,6 +218,16 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Visit Ōita's legendary hot springs in Beppu and Yufuin. Explore Japan's onsen capital and its steaming volcanic landscape.",
   },
+  yakushima: {
+    id: "yakushima",
+    name: "Yakushima",
+    nameJapanese: "屋久島",
+    tagline: "Ancient forests and the spirit of Mononoke",
+    description:
+      "Cedar trees thousands of years old stand wrapped in moss on this round, mountainous island south of Kyushu. Jomon Sugi, the oldest, has lived for millennia. The forests inspired Princess Mononoke. Waterfalls, sea turtles, and more rain than almost anywhere in Japan.",
+    ogDescription:
+      "Trek Yakushima's ancient cedar forests, see Jomon Sugi, and discover the island that inspired Princess Mononoke.",
+  },
 
   // --- Hokkaido ---
   sapporo: {
@@ -239,6 +249,46 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "The night view from Mt. Hakodate is one of Japan's three great views. Below, the morning market opens at dawn with crab, uni, and squid so fresh it's still moving. Historic Western-style buildings line the waterfront of this charming port city.",
     ogDescription:
       "Discover Hakodate's legendary night view, morning fish market, and historic port. Southern Hokkaido's most charming city.",
+  },
+  asahikawa: {
+    id: "asahikawa",
+    name: "Asahikawa",
+    nameJapanese: "旭川",
+    tagline: "Ramen, polar bears, and powder snow",
+    description:
+      "Asahiyama Zoo pioneered Japan's behavioral exhibits, letting penguins parade and polar bears swim overhead. Asahikawa ramen is soy-based with a lard cap to keep it hot in the cold. The city is a gateway to Daisetsuzan, Hokkaido's largest national park.",
+    ogDescription:
+      "Visit Asahikawa's famous zoo, soy ramen, and gateway to Daisetsuzan National Park. Central Hokkaido's welcoming hub.",
+  },
+  kushiro: {
+    id: "kushiro",
+    name: "Kushiro",
+    nameJapanese: "釧路",
+    tagline: "Cranes, wetlands, and the edge of Japan",
+    description:
+      "Kushiro Marshland is Japan's largest wetland, home to the red-crowned crane. In winter, the cranes dance against snow-covered fields. The Washo Market serves katte-don (pick-your-own seafood bowls). Eastern Hokkaido starts here, vast and unhurried.",
+    ogDescription:
+      "Discover Kushiro's red-crowned cranes, vast wetlands, and fresh seafood markets. Gateway to eastern Hokkaido's wild frontier.",
+  },
+  abashiri: {
+    id: "abashiri",
+    name: "Abashiri",
+    nameJapanese: "網走",
+    tagline: "Drift ice and the Sea of Okhotsk",
+    description:
+      "Every winter, drift ice from the Sea of Okhotsk reaches Abashiri's shores. Icebreaker cruises push through the floes. The former prison museum tells stories of the convicts who built Hokkaido's roads. In summer, flower fields and lakes take over.",
+    ogDescription:
+      "Experience Abashiri's drift ice cruises, prison museum, and Sea of Okhotsk frontier. Hokkaido's dramatic northern coast.",
+  },
+  wakkanai: {
+    id: "wakkanai",
+    name: "Wakkanai",
+    nameJapanese: "稚内",
+    tagline: "Japan's northern tip, where the wind never stops",
+    description:
+      "Cape Soya is the northernmost point of Japan. On clear days, you can see Sakhalin. Wakkanai is remote, wind-battered, and uniquely atmospheric. Rishiri and Rebun islands sit offshore, one a volcanic cone, the other a wildflower paradise.",
+    ogDescription:
+      "Visit Wakkanai, Japan's northernmost city. See Cape Soya, Rishiri Island, and the wild shores of Hokkaido's far north.",
   },
 
   // --- Tohoku ---
@@ -387,6 +437,26 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Gateway to the Yaeyama archipelago, Ishigaki sits closer to Taipei than Tokyo. Crystal waters surround coral reefs teeming with life. Day boats connect to Taketomi's star-sand beaches and Iriomote's jungle rivers. On the island itself, Kabira Bay glows an impossible blue.",
     ogDescription:
       "Discover Ishigaki's coral reefs, Kabira Bay, and the Yaeyama island chain. Plan your tropical Japan escape.",
+  },
+  miyako: {
+    id: "miyako",
+    name: "Miyako",
+    nameJapanese: "宮古",
+    tagline: "Bridges, beaches, and water so clear it glows",
+    description:
+      "Miyako-jima has some of the clearest water in Japan. Maehama Beach stretches in white sand, Irabu Bridge connects three islands by car, and the coral reefs below Yonaha are snorkeler's paradise. No jungles, no mountains, just sun, salt, and endless blue.",
+    ogDescription:
+      "Explore Miyako Island's crystal-clear beaches, coral reefs, and stunning island bridges. Okinawa's most beautiful water.",
+  },
+  amami: {
+    id: "amami",
+    name: "Amami",
+    nameJapanese: "奄美",
+    tagline: "Mangroves, mud-dyed silk, and wild subtropical shores",
+    description:
+      "Amami Oshima sits between Kyushu and Okinawa, a subtropical island with UNESCO-listed forests. Mangrove kayaking, traditional mud-dyeing (dorozome), and empty beaches define the experience. The Amami black rabbit lives in these forests and nowhere else on Earth.",
+    ogDescription:
+      "Discover Amami Oshima's UNESCO mangrove forests, mud-dyed silk, and pristine subtropical beaches. Japan's wild island.",
   },
 };
 
