@@ -90,15 +90,18 @@ export function generateActivityTips(
   const generalTips = generateGeneralTips(location, activity);
   tips.push(...generalTips);
 
-  // Sort by priority (highest first), with important tips getting a boost
-  // Return top 3 tips
-  return tips
-    .sort((a, b) => {
-      const aScore = a.priority + (a.isImportant ? 5 : 0);
-      const bScore = b.priority + (b.isImportant ? 5 : 0);
-      return bScore - aScore;
-    })
-    .slice(0, 3);
+  // Important tips always surface; fill remaining slots by priority
+  const important = tips.filter((t) => t.isImportant);
+  const rest = tips
+    .filter((t) => !t.isImportant)
+    .sort((a, b) => b.priority - a.priority);
+  const maxTips = 3;
+  const result = [...important.sort((a, b) => b.priority - a.priority)];
+  for (const tip of rest) {
+    if (result.length >= maxTips) break;
+    result.push(tip);
+  }
+  return result;
 }
 
 /**
@@ -128,14 +131,18 @@ export async function generateActivityTipsAsync(
     // Silently fail - we still have the base tips
   }
 
-  // Re-sort and limit to top 3
-  return tips
-    .sort((a, b) => {
-      const aScore = a.priority + (a.isImportant ? 5 : 0);
-      const bScore = b.priority + (b.isImportant ? 5 : 0);
-      return bScore - aScore;
-    })
-    .slice(0, 3);
+  // Important tips always surface; fill remaining slots by priority
+  const important = tips.filter((t) => t.isImportant);
+  const rest = tips
+    .filter((t) => !t.isImportant)
+    .sort((a, b) => b.priority - a.priority);
+  const maxTips = 3;
+  const result = [...important.sort((a, b) => b.priority - a.priority)];
+  for (const tip of rest) {
+    if (result.length >= maxTips) break;
+    result.push(tip);
+  }
+  return result;
 }
 
 /**
