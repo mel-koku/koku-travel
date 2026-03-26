@@ -111,7 +111,9 @@ export function DayRefinementButtonsB({
         }
 
         const data = await response.json();
-        if (data.refinedDay) {
+        if (data.message) {
+          setRefinementError(data.message);
+        } else if (data.refinedDay) {
           onRefine(data.refinedDay);
           setOpen(false);
         }

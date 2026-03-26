@@ -6,7 +6,7 @@ import type { DayTripSuggestion } from "@/types/dayTrips";
 
 /**
  * Dismissible banner that proactively surfaces day trip suggestions.
- * Shown at the top of the itinerary, between SeasonalBanner and ConflictSummaryBanner.
+ * Shown at the top of the itinerary timeline, after SeasonalBanner.
  * Dismiss state persists in localStorage per trip.
  */
 export function DayTripBanner({

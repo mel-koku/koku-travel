@@ -237,13 +237,13 @@ Fully self-contained — no A component imports.
 - **Guide**: LLM-generated prose (Pass 3) → template fallback via `src/lib/guide/guideBuilder.ts`. See "Hybrid LLM Layer" below.
 - **Accommodation**: `AccommodationBookend` at day start/end. 3-tier priority: per-day → city → fallback.
 - **Smart Prompts**: Gap detection finds light days, timing issues, transport optimizations. Suggestions are opt-in via trip score badge (X/100) next to day selector. Clicking the badge toggles suggestion visibility. Meal suggestions excluded from drawer (handled by day-level suggestions).
-- **Conflict Summary Banner**: Dismissible banner at itinerary open showing total scheduling notes with per-day jump buttons. `ConflictSummaryBanner` in `ItineraryShell.tsx`.
+- **Scheduling Notes**: Shown in Overview tab (`SchedulingNotesBanner` in `TripConfidenceDashboard.tsx`), not Timeline. Per-day jump buttons switch to Timeline. No dismiss needed since Overview is opt-in.
 - **Generation Success Moment**: After itinerary builds, `GeneratingOverlay` shows a 2.5s celebration screen (animated checkmark + trip name) before navigating to the itinerary page.
 - **Proactive Guidance**: `travel_guidance` tips surfaced as sage smart prompt cards
 - **Month Filtering**: `valid_months int[]` column on `travel_guidance` gives month-level precision beyond 4-season buckets. `guidanceService.ts` checks `validMonths` before `seasons` (score +6 vs +4). All callers pass `month` derived from trip start date.
 - **Transit Directions**: `TravelSegment` / `TravelSegmentB` show expandable step-by-step transit directions (line name, departure/arrival stations, num stops) when `transitSteps` data exists on travel segments. Collapsed = compact pill; expanded = vertical step list with walk/transit icons.
 - **Getting There**: Activity cards (`PlaceActivityRow` / `PlaceActivityRowB`) show nearest station + Japanese name from location data when available.
-- **Smart Pro Tips**: `DayTips` / `DayTipsB` compute context-aware tips from day travel data -- IC card (Day 1), city transitions, heavy transit days, rush hour warnings, long train rides.
+- **Smart Pro Tips**: `DayTips` / `DayTipsB` compute context-aware tips from day travel data -- IC card (Day 1), luggage drop-off (Day 1 with airport), city transitions, heavy transit days, rush hour warnings, long train rides.
 - **Day Trip Suggestions**: Proactively surfaces high-quality locations 50-150km from planned cities as opt-in day trip ideas. These are locations outside normal itinerary scheduling range (which applies -100 penalty at >50km) that are worth a dedicated day.
   - **Suggest API** (`POST /api/day-trips/suggest`): Queries locations by bounding box, filters to 50-150km from user cities, scores by vibe match + rating + UNESCO/hidden gem badges. Returns max 3 per city, 12 total. Distance-based travel time estimates.
   - **Plan API** (`POST /api/day-trips/plan`): Fetches anchor location + 2 nearby companions, builds 2-3 activity day with real routed travel times (Google Directions transit mode, heuristic fallback). Attaches `travelFromPrevious` on first activity and `travelToNext` on last.
@@ -344,7 +344,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Preference Learning**: localStorage-based. favorite +2, unfavorite -0.5, replace -1, skip -0.5.
 - **Trip Warnings**: Pacing, distance, holidays, seasonal (cherry blossom, rainy season, etc.)
 - **Conflict Detection**: Operating hours, travel time, overlaps, reservation recommendations
-- **Refinement**: 7 types via `POST /api/itinerary/refine` (too_busy, too_light, more_food, more_culture, more_kid_friendly, more_rest, more_craft)
+- **Refinement**: 7 types via `POST /api/itinerary/refine` (too_busy, too_light, more_food, more_culture, more_kid_friendly, more_rest, more_craft). Response preserves original day metadata (bounds, timezone, weekday, day trip fields). Returns `message` when no changes were possible.
 
 ---
 
