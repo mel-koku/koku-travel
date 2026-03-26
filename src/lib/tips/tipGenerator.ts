@@ -456,10 +456,26 @@ function generateGeneralTips(
   if (category === "shrine" || category === "temple") {
     tips.push({
       type: "general",
-      title: "Cultural Etiquette",
-      message: "Remember to be respectful: remove shoes if required, avoid loud conversations, and follow any posted guidelines.",
+      title: "Temple and shrine etiquette",
+      message: "Remove shoes before entering temple buildings (look for shelves or plastic bags at the entrance). Speak quietly, silence your phone, and follow posted guidelines.",
       priority: 7,
       icon: "🙏",
+    });
+  } else if (category === "onsen" || category === "wellness") {
+    tips.push({
+      type: "general",
+      title: "Shoes off",
+      message: "Remove shoes at the entrance and use the provided slippers or go in socks. This applies to most onsen, ryokan, and traditional wellness facilities.",
+      priority: 7,
+      icon: "👟",
+    });
+  } else if (category === "restaurant" || category === "cafe") {
+    tips.push({
+      type: "general",
+      title: "Check for shoe removal",
+      message: "Some traditional restaurants with tatami seating require shoe removal. Look for a raised floor (genkan) or shoe shelves at the entrance.",
+      priority: 5,
+      icon: "👟",
     });
   } else if (category === "market") {
     tips.push({
