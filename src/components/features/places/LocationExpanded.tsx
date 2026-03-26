@@ -14,6 +14,7 @@ import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon } from "./LocationCard";
 
@@ -239,7 +240,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-1">
               {location.city}, {location.region}
             </p>
-            <h2 className="line-clamp-2 font-serif text-xl text-white sm:text-2xl">
+            <h2 className={cn(typography({ intent: "editorial-h3" }), "text-white line-clamp-2")}>
               {displayName}
             </h2>
           </div>
