@@ -667,7 +667,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       </div>
 
       {/* Trip Builder CTA */}
-      <section className="py-12 sm:py-16 text-center">
+      <section className="py-12 sm:py-16 lg:py-20 text-center">
         <div className="mx-auto max-w-xl px-4 sm:px-6">
           <p className="text-foreground-secondary text-sm mb-4">
             Want to visit {location.name}?
@@ -686,7 +686,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
       {/* Explore Nearby */}
       {nearbyLocations.length > 0 && (
-        <section className="bg-canvas py-12 sm:py-20">
+        <section className="bg-canvas py-12 sm:py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
