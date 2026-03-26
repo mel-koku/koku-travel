@@ -49,7 +49,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-7",
     key: "shrine:tokyo",
     content:
-      "Meiji Jingu's towering torii gate is made from a 1,500-year-old cypress tree from Taiwan. The original was destroyed in WWII, and the replacement tree was found after years of searching. The forest surrounding it was entirely planted — 100,000 trees donated from across Japan when the shrine was built in 1920.",
+      "Meiji Jingu's towering torii gate is made from a 1,500-year-old hinoki cypress. The original 1920 gate was struck by lightning in 1966, and the replacement tree was found after a nationwide search. The forest surrounding it was entirely planted — 100,000 trees donated from across Japan when the shrine was first built.",
     icon: "🌲",
   },
   {
