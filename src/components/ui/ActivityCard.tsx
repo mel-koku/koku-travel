@@ -3,6 +3,7 @@ import { ComponentPropsWithoutRef } from "react";
 import { Badge, BadgeTone, Tag } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 type ActivityCardTag = {
   label: string;
@@ -73,7 +74,7 @@ export const ActivityCard = ({
     >
       <div className="space-y-2">
         <div className="flex flex-wrap items-baseline gap-2">
-          <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+          <h3 className={typography({ intent: "utility-h2" })}>{title}</h3>
           {location && <span className="text-sm font-medium text-brand-primary">{location}</span>}
         </div>
         {description && <p className="text-sm text-foreground-secondary">{description}</p>}
