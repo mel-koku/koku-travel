@@ -405,10 +405,11 @@ export function useDayTipsCore(
       const festivals = getFestivalsForDay(month, dayOfMonth, day.cityId);
       if (festivals.length > 0) {
         const festival = festivals[0]!;
+        const prefix = festival.isApproximate ? "Around this time: " : "";
         tips.push({
           id: `pro-festival-${festival.id}`,
           title: festival.name,
-          summary: festival.description,
+          summary: `${prefix}${festival.description}`,
           icon: "\uD83C\uDF86",
         });
       }
