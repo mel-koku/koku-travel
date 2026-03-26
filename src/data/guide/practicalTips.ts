@@ -248,4 +248,18 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
       "Carry a small plastic bag for your trash — public bins are rare in Japan. You'll usually find bins at convenience stores and train stations, but during long walks or hikes, having your own bag is a lifesaver. Keeping things tidy is deeply valued here.",
     icon: "🗑️",
   },
+  {
+    id: "pt-33",
+    key: "escalator",
+    content:
+      "Stand on the left side of escalators in Tokyo and most of Japan. In Osaka and Kyoto, stand on the right. Follow what locals ahead of you are doing if unsure. The walking side is always kept clear for people in a hurry.",
+    icon: "🚶",
+  },
+  {
+    id: "pt-34",
+    key: "train-eating",
+    content:
+      "Eating on Shinkansen and long-distance express trains is perfectly fine — grab an ekiben and enjoy the view. On local and commuter trains, eating is frowned upon. Drinking water or tea quietly is acceptable on any train.",
+    icon: "🚄",
+  },
 ];
