@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { typography } from "@/lib/typography-system";
 import type { ExperienceType } from "@/types/experience";
 import type { ExperienceSummary } from "@/types/experience";
 
@@ -79,7 +81,7 @@ export function ExperienceFooter({
                     {related.city && ` \u00b7 ${related.city}`}
                     {related.duration && ` \u00b7 ${related.duration}`}
                   </p>
-                  <h3 className="font-serif text-lg text-white sm:text-xl transition-colors group-hover:text-brand-primary">
+                  <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white transition-colors group-hover:text-brand-primary")}>
                     {related.title}
                   </h3>
                 </div>
