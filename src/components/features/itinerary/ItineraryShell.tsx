@@ -851,6 +851,7 @@ export const ItineraryShell = ({
                 <TripConfidenceDashboard
                   itinerary={model}
                   conflicts={conflictsResult.conflicts}
+                  conflictsResult={conflictsResult}
                   tripStartDate={tripStartDate}
                   onClose={() => setViewMode("timeline")}
                   onSelectDay={(dayIndex) => {
@@ -904,14 +905,6 @@ export const ItineraryShell = ({
                 onViewDashboard={() => setViewMode("dashboard")}
               />
             )}
-            <ConflictSummaryBanner
-              conflicts={conflictsResult}
-              onSelectDay={(dayIndex) => {
-                handleSelectDayChange(dayIndex);
-                setViewMode("timeline");
-              }}
-            />
-
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -1089,73 +1082,3 @@ export const ItineraryShell = ({
   );
 };
 
-// Dismissible conflict summary banner shown at itinerary open
-function ConflictSummaryBanner({
-  conflicts,
-  onSelectDay,
-}: {
-  conflicts: ReturnType<typeof detectItineraryConflicts>;
-  onSelectDay: (dayIndex: number) => void;
-}) {
-  const [dismissed, setDismissed] = useState(false);
-
-  const total = conflicts.summary.total;
-  if (total === 0 || dismissed) return null;
-
-  // Group conflict count per day
-  const dayEntries: { dayIndex: number; count: number }[] = [];
-  const seen = new Set<number>();
-  for (const c of conflicts.conflicts) {
-    if (!seen.has(c.dayIndex)) {
-      seen.add(c.dayIndex);
-      dayEntries.push({
-        dayIndex: c.dayIndex,
-        count: conflicts.conflicts.filter((x) => x.dayIndex === c.dayIndex).length,
-      });
-    }
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      className="mx-4 mt-3 overflow-hidden rounded-lg border border-warning/20 bg-warning/5 px-4 py-3"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
-          <svg className="mt-0.5 h-4 w-4 shrink-0 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-          <div>
-            <p className="text-sm font-medium text-foreground">
-              {total} scheduling {total === 1 ? "note" : "notes"} for your trip
-            </p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {dayEntries.map(({ dayIndex, count }) => (
-                <button
-                  key={dayIndex}
-                  type="button"
-                  onClick={() => onSelectDay(dayIndex)}
-                  className="rounded-lg bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning transition hover:bg-warning/20"
-                >
-                  Day {dayIndex + 1} ({count})
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setDismissed(true)}
-          className="shrink-0 rounded-lg p-1 text-stone transition hover:text-foreground"
-          aria-label="Dismiss"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </motion.div>
-  );
-}

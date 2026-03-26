@@ -208,6 +208,22 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       });
     }
 
+    // Day 1 only: Luggage drop-off tip when arriving at an airport
+    if (dayIndex === 0) {
+      const hasAirportAnchor = activities.some(
+        (a) => a.kind === "place" && a.isAnchor && /airport/i.test(a.title),
+      );
+      if (hasAirportAnchor) {
+        tips.push({
+          id: "pro-luggage-dropoff",
+          title: "Luggage drop-off",
+          summary:
+            "Most hotels accept luggage before check-in. You can also use coin lockers at major stations. Set your hotel as the start location above to route there first.",
+          icon: "\uD83E\uDDF3",
+        });
+      }
+    }
+
     // City transition day — skip when luggage smart prompt is active (avoids duplication)
     if (day.cityTransition && !hasLuggagePrompt) {
       tips.push({
