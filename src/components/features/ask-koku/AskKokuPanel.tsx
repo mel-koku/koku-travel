@@ -24,7 +24,7 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
       id="ask-koku-panel"
       role="dialog"
       aria-label="Ask Koku chat"
-      className="fixed inset-0 z-50 flex flex-col bg-background lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-lg lg:border lg:border-border lg:shadow-2xl"
+      className="fixed inset-0 z-50 flex flex-col bg-background lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-lg lg:border lg:border-border lg:shadow-[var(--shadow-elevated)]"
       data-lenis-prevent
     >
       {/* Header */}

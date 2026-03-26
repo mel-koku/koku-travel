@@ -22,7 +22,7 @@ export function SearchInput({
       <input
         id="places-search"
         type="text"
-        className="w-full min-h-[44px] rounded-lg border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-base shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:shadow-md"
+        className="w-full min-h-[44px] rounded-lg border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-base shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:shadow-[var(--shadow-card)]"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
