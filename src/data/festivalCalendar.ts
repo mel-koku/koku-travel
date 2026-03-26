@@ -5,6 +5,8 @@
  * Used for festival_alert gap detection and trip warnings.
  */
 
+import { getRegionForCity } from "@/data/regions";
+
 export interface Festival {
   id: string;
   name: string;
@@ -59,9 +61,9 @@ export const FESTIVALS: readonly Festival[] = [
   { id: "hakata-gion", name: "Hakata Gion Yamakasa", nameJa: "博多祇園山笠", city: "fukuoka", startMonth: 7, startDay: 1, endMonth: 7, endDay: 15, crowdImpact: 4, category: "matsuri", description: "Men race massive floats through Hakata — the finale at dawn is unforgettable", suggestedActivity: "Wake up early for Yamakasa's dramatic dawn race" },
 
   // === AUGUST ===
-  { id: "nebuta", name: "Nebuta Matsuri", nameJa: "ねぶた祭", city: "tohoku", startMonth: 8, startDay: 2, endMonth: 8, endDay: 7, crowdImpact: 5, category: "matsuri", description: "Giant illuminated warrior floats parade through Aomori", suggestedActivity: "Join the Nebuta parade as a haneto dancer" },
-  { id: "awa-odori", name: "Awa Odori", nameJa: "阿波おどり", city: "shikoku", startMonth: 8, startDay: 12, endMonth: 8, endDay: 15, crowdImpact: 5, category: "matsuri", description: "Japan's largest dance festival in Tokushima", suggestedActivity: "Dance with locals at Awa Odori" },
-  { id: "tanabata-sendai", name: "Sendai Tanabata", nameJa: "仙台七夕まつり", city: "tohoku", startMonth: 8, startDay: 6, endMonth: 8, endDay: 8, crowdImpact: 4, category: "matsuri", description: "Elaborate paper streamer decorations fill the shopping arcades" },
+  { id: "nebuta", name: "Nebuta Matsuri", nameJa: "ねぶた祭", city: "aomori", startMonth: 8, startDay: 2, endMonth: 8, endDay: 7, crowdImpact: 5, category: "matsuri", description: "Giant illuminated warrior floats parade through Aomori", suggestedActivity: "Join the Nebuta parade as a haneto dancer" },
+  { id: "awa-odori", name: "Awa Odori", nameJa: "阿波おどり", city: "tokushima", startMonth: 8, startDay: 12, endMonth: 8, endDay: 15, crowdImpact: 5, category: "matsuri", description: "Japan's largest dance festival in Tokushima", suggestedActivity: "Dance with locals at Awa Odori" },
+  { id: "tanabata-sendai", name: "Sendai Tanabata", nameJa: "仙台七夕まつり", city: "sendai", startMonth: 8, startDay: 6, endMonth: 8, endDay: 8, crowdImpact: 4, category: "matsuri", description: "Elaborate paper streamer decorations fill the shopping arcades" },
   { id: "daimonji", name: "Gozan no Okuribi", nameJa: "五山送り火", city: "kyoto", startMonth: 8, startDay: 16, endMonth: 8, endDay: 16, crowdImpact: 5, category: "cultural", description: "Giant bonfires on five mountains — signaling the end of Obon", suggestedActivity: "Watch Gozan no Okuribi from Kamogawa riverbank" },
   { id: "koenji-awa", name: "Koenji Awa Odori", nameJa: "高円寺阿波おどり", city: "tokyo", startMonth: 8, startDay: 23, endMonth: 8, endDay: 24, crowdImpact: 4, category: "matsuri", description: "Tokyo's biggest street dance festival in Koenji neighborhood" },
   { id: "pikachu-outbreak", name: "Pikachu Outbreak", nameJa: "ピカチュウ大量発生チュウ", city: "yokohama", startMonth: 8, startDay: 8, endMonth: 8, endDay: 14, crowdImpact: 3, category: "cultural", description: "Hundreds of Pikachu march through Yokohama's Minato Mirai" },
@@ -71,9 +73,10 @@ export const FESTIVALS: readonly Festival[] = [
 
   // === OCTOBER ===
   { id: "takayama-autumn", name: "Takayama Autumn Festival", nameJa: "高山祭（秋）", city: "takayama", startMonth: 10, startDay: 9, endMonth: 10, endDay: 10, crowdImpact: 5, category: "matsuri", description: "Autumn counterpart with illuminated evening floats", suggestedActivity: "See the illuminated yatai floats of Takayama Autumn Festival" },
-  { id: "nagasaki-kunchi", name: "Nagasaki Kunchi", nameJa: "長崎くんち", city: "kyushu", startMonth: 10, startDay: 7, endMonth: 10, endDay: 9, crowdImpact: 4, category: "matsuri", description: "Chinese-influenced dragon dances at Suwa Shrine" },
+  { id: "nagasaki-kunchi", name: "Nagasaki Kunchi", nameJa: "長崎くんち", city: "nagasaki", startMonth: 10, startDay: 7, endMonth: 10, endDay: 9, crowdImpact: 4, category: "matsuri", description: "Chinese-influenced dragon dances at Suwa Shrine" },
   { id: "jidai-matsuri", name: "Jidai Matsuri", nameJa: "時代祭", city: "kyoto", startMonth: 10, startDay: 22, endMonth: 10, endDay: 22, crowdImpact: 4, category: "matsuri", description: "Historical costume parade spanning 1,000 years of Kyoto", suggestedActivity: "Watch the Jidai Matsuri procession from Heian Shrine to Imperial Palace" },
-  { id: "kawagoe-matsuri", name: "Kawagoe Festival", nameJa: "川越まつり", city: "kanto", startMonth: 10, startDay: 19, endMonth: 10, endDay: 20, crowdImpact: 4, category: "matsuri", description: "Spectacular float confrontations in Little Edo" },
+  { id: "nada-kenka", name: "Nada no Kenka Matsuri", nameJa: "灘のけんか祭り", city: "kansai", startMonth: 10, startDay: 14, endMonth: 10, endDay: 15, crowdImpact: 4, category: "matsuri", description: "Fighting festival — mikoshi slam into each other in Himeji" },
+  { id: "kawagoe-matsuri", name: "Kawagoe Festival", nameJa: "川越まつり", city: "kawagoe", startMonth: 10, startDay: 19, endMonth: 10, endDay: 20, crowdImpact: 4, category: "matsuri", description: "Spectacular float confrontations in Little Edo" },
 
   // === NOVEMBER ===
   { id: "shichi-go-san", name: "Shichi-Go-San", nameJa: "七五三", city: "tokyo", startMonth: 11, startDay: 15, endMonth: 11, endDay: 15, crowdImpact: 3, category: "cultural", description: "Children's rite of passage — shrines full of families in kimono", suggestedActivity: "See kimono-clad children at Meiji Shrine for Shichi-Go-San" },
@@ -83,9 +86,8 @@ export const FESTIVALS: readonly Festival[] = [
 
   // === DECEMBER ===
   { id: "chichibu-night", name: "Chichibu Night Festival", nameJa: "秩父夜祭", city: "kanto", startMonth: 12, startDay: 2, endMonth: 12, endDay: 3, crowdImpact: 4, category: "matsuri", description: "One of Japan's three great float festivals — spectacular fireworks", suggestedActivity: "See the Chichibu Night Festival's fireworks and floats" },
-  { id: "nada-kenka", name: "Nada no Kenka Matsuri", nameJa: "灘のけんか祭り", city: "kansai", startMonth: 10, startDay: 14, endMonth: 10, endDay: 15, crowdImpact: 4, category: "matsuri", description: "Fighting festival — mikoshi slam into each other in Himeji" },
   { id: "kobe-luminarie", name: "Kobe Luminarie", nameJa: "神戸ルミナリエ", city: "kobe", startMonth: 12, startDay: 6, endMonth: 12, endDay: 15, crowdImpact: 4, category: "illumination", description: "Memorial illumination with millions of lights", suggestedActivity: "Walk through the Kobe Luminarie light tunnel" },
-  { id: "nabana-no-sato", name: "Nabana no Sato", nameJa: "なばなの里", city: "chubu", startMonth: 10, startDay: 19, endMonth: 5, endDay: 31, crowdImpact: 3, category: "illumination", description: "Japan's largest illumination — millions of LEDs in Mie" },
+  { id: "nabana-no-sato", name: "Nabana no Sato", nameJa: "なばなの里", city: "kuwana", startMonth: 10, startDay: 19, endMonth: 5, endDay: 31, crowdImpact: 3, category: "illumination", description: "Japan's largest illumination — millions of LEDs in Mie" },
 
   // === Fireworks (summer) ===
   { id: "omagari-fireworks", name: "Omagari Fireworks", nameJa: "大曲の花火", city: "tohoku", startMonth: 8, startDay: 30, endMonth: 8, endDay: 30, crowdImpact: 5, category: "fireworks", description: "Japan's top fireworks competition — pyrotechnic masters" },
@@ -131,7 +133,12 @@ export function getFestivalsForTrip(
     );
     if (!overlaps) return false;
     if (!city) return true;
-    return f.city === city;
+    // Exact city match
+    if (f.city === city) return true;
+    // Region-level match: festival city is in same region as user's city
+    const userRegion = getRegionForCity(city);
+    const festivalRegion = getRegionForCity(f.city);
+    return !!(userRegion && festivalRegion && userRegion === festivalRegion);
   });
 }
 
