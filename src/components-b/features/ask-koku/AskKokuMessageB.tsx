@@ -4,9 +4,7 @@ import ReactMarkdown from "react-markdown";
 import type { UIMessage } from "ai";
 import { AskKokuLocationCardB } from "./AskKokuLocationCardB";
 import { AskKokuTripPlanCardB } from "./AskKokuTripPlanCardB";
-import { AskKokuVideoImportCardB } from "./AskKokuVideoImportCardB";
 import type { TripPlanData } from "@/components/features/ask-koku/AskKokuTripPlanCard";
-import type { VideoImportData } from "@/components/features/ask-koku/AskKokuVideoImportCard";
 
 type AskKokuMessageProps = {
   message: UIMessage;
@@ -124,25 +122,6 @@ function extractTripPlan(message: UIMessage): TripPlanData | null {
   return null;
 }
 
-function extractVideoImport(message: UIMessage): VideoImportData | null {
-  for (const part of message.parts) {
-    if (
-      part.type.startsWith("tool-") ||
-      part.type === "dynamic-tool"
-    ) {
-      const toolPart = part as { state: string; output?: unknown };
-      if (toolPart.state !== "output-available") continue;
-      const result = toolPart.output as Record<string, unknown> | undefined;
-      if (!result) continue;
-
-      if (result.type === "videoImport") {
-        return result as unknown as VideoImportData;
-      }
-    }
-  }
-  return null;
-}
-
 function getTextContent(message: UIMessage): string {
   return message.parts
     .filter((p): p is { type: "text"; text: string } => p.type === "text")
@@ -154,7 +133,6 @@ export function AskKokuMessageB({ message, onClosePanel }: AskKokuMessageProps) 
   const isUser = message.role === "user";
   const locations = isUser ? [] : extractLocations(message);
   const tripPlan = isUser ? null : extractTripPlan(message);
-  const videoImport = isUser ? null : extractVideoImport(message);
   const textContent = getTextContent(message);
   const { toolName, toolInput } = isUser ? { toolName: null, toolInput: {} } : extractToolContext(message);
   const isNearby = toolName === "searchNearby";
@@ -216,10 +194,6 @@ export function AskKokuMessageB({ message, onClosePanel }: AskKokuMessageProps) 
 
         {tripPlan && (
           <AskKokuTripPlanCardB data={tripPlan} onClose={onClosePanel} />
-        )}
-
-        {videoImport && (
-          <AskKokuVideoImportCardB data={videoImport} />
         )}
 
         {locations.length > 0 && (

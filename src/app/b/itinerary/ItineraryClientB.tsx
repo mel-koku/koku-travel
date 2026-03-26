@@ -15,6 +15,8 @@ import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
 import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
+import { useDayTripSuggestions } from "@/hooks/useDayTripSuggestions";
+import { DayTripNudgeB } from "@b/features/itinerary/DayTripNudgeB";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
@@ -42,9 +44,12 @@ const formatDateLabel = (iso: string | undefined) => {
 function ItineraryPageContent({ content }: { content?: PagesContent }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
+  const isNewTrip = searchParams.get("new") === "1";
   const { trips, updateTripItinerary } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
+  const [showDayTripNudge, setShowDayTripNudge] = useState(false);
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -184,6 +189,25 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     );
   }, [activeItinerary]);
 
+  // Day trip suggestions (fetched once on mount)
+  const dayTripSuggestions = useDayTripSuggestions(
+    activeItinerary,
+    selectedTrip?.builderData,
+    getUsedLocationIds(),
+  );
+
+  // Show day trip nudge once after generation when suggestions arrive
+  useEffect(() => {
+    if (
+      isNewTrip &&
+      !nudgeDismissed &&
+      dayTripSuggestions.suggestions.length > 0 &&
+      !dayTripSuggestions.isLoading
+    ) {
+      setShowDayTripNudge(true);
+    }
+  }, [isNewTrip, nudgeDismissed, dayTripSuggestions.suggestions.length, dayTripSuggestions.isLoading]);
+
   // Smart prompt actions hook
   const smartPromptActions = useSmartPromptActions(
     selectedTrip?.id ?? null,
@@ -262,8 +286,24 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           onCancelPreview={smartPromptActions.cancelPreview}
           onFilterChange={smartPromptActions.setRefinementFilter}
           isPreviewLoading={smartPromptActions.isLoading}
+          dayTripSuggestions={dayTripSuggestions.suggestions}
         />
       </ErrorBoundary>
+
+      {/* Post-generation nudge for day trips */}
+      {showDayTripNudge && (
+        <DayTripNudgeB
+          count={dayTripSuggestions.suggestions.length}
+          onView={() => {
+            setShowDayTripNudge(false);
+            setNudgeDismissed(true);
+            const banner = document.querySelector("[data-day-trip-banner]");
+            if (banner) {
+              banner.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -319,7 +319,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             center: [DEFAULT_CENTER.lat, DEFAULT_CENTER.lng],
             zoom: DEFAULT_ZOOM,
             scrollWheelZoom: false,
-          });
+          } as Parameters<typeof Leaflet.map>[1]);
 
           mapRef.current.on("click", () => {
             onSelectActivity?.(null);

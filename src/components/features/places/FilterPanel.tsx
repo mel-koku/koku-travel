@@ -89,7 +89,7 @@ export function FilterPanel({
   selectedDuration,
   onDurationChange,
   openNow,
-  onOpenNowChange,
+  onOpenNowChange: _onOpenNowChange,
   wheelchairAccessible,
   onWheelchairAccessibleChange,
   vegetarianFriendly,
