@@ -176,7 +176,7 @@ export function DayTripSection({
                       )}
 
                       <p className="mt-1 text-xs text-stone">
-                        {formatTravelTime(s.travelMinutes)} each way by train. You can rebuild the original day later.
+                        {formatTravelTime(s.travelMinutes)} each way by train. Undo with Cmd+Z to restore the original day.
                       </p>
                       <div className="mt-2 flex gap-2">
                         <button

@@ -117,7 +117,7 @@ export const ItineraryShell = ({
   isPreviewLoading,
   dayTripSuggestions,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
+  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -510,7 +510,7 @@ export const ItineraryShell = ({
 
   const handleAcceptDayTrip = useCallback(
     async (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
-      if (!onItineraryChange) return;
+      if (!onItineraryChange || isUsingMock) return;
       const target = model.days[dayIndex];
       if (!target) return;
 
@@ -538,7 +538,30 @@ export const ItineraryShell = ({
         if (!res.ok) return;
         const plan = await res.json();
 
-        // Replace the target day's activities with day trip activities
+        // Swap through edit history so Cmd+Z works
+        updateDayActivities(
+          tripId,
+          target.id,
+          (itinerary) => ({
+            ...itinerary,
+            days: itinerary.days.map((d, i) =>
+              i === dayIndex
+                ? {
+                    ...d,
+                    activities: plan.activities,
+                    isDayTrip: true,
+                    baseCityId: suggestion.baseCityId,
+                    cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
+                    dayTripTravelMinutes: plan.totalTravelMinutes,
+                    dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
+                  }
+                : d,
+            ),
+          }),
+          { dayIndex, targetLocationId: suggestion.targetLocationId },
+        );
+
+        // Sync local model state and trigger travel time replanning
         const nextDays = [...model.days];
         nextDays[dayIndex] = {
           ...target,
@@ -549,7 +572,6 @@ export const ItineraryShell = ({
           dayTripTravelMinutes: plan.totalTravelMinutes,
           dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
         };
-
         const nextItinerary = { ...model, days: nextDays };
         setModelState(nextItinerary);
         setTimeout(() => {
@@ -559,7 +581,7 @@ export const ItineraryShell = ({
         setIsAcceptingDayTrip(false);
       }
     },
-    [model, onItineraryChange, tripBuilderData, tripStartDate, setModelState, scheduleUserPlanningRef],
+    [model, tripId, isUsingMock, onItineraryChange, tripBuilderData, tripStartDate, updateDayActivities, setModelState, scheduleUserPlanningRef],
   );
 
   // ── Discover mode ──

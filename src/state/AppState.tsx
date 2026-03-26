@@ -93,6 +93,7 @@ export type AppStateShape = {
   deleteActivity: (tripId: string, dayId: string, activityId: string) => void;
   reorderActivities: (tripId: string, dayId: string, activityIds: string[]) => void;
   addActivity: (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => void;
+  updateDayActivities: (tripId: string, dayId: string, updater: (itinerary: Itinerary) => Itinerary, metadata?: Record<string, unknown>) => void;
   undo: (tripId: string) => void;
   redo: (tripId: string) => void;
   canUndo: (tripId: string) => boolean;
@@ -136,6 +137,7 @@ const defaultState: AppStateShape = {
   deleteActivity: () => {},
   reorderActivities: () => {},
   addActivity: () => {},
+  updateDayActivities: () => {},
   undo: () => {},
   redo: () => {},
   canUndo: () => false,
@@ -693,7 +695,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   });
 
   const {
-    replaceActivity, deleteActivity, reorderActivities, addActivity,
+    replaceActivity, deleteActivity, reorderActivities, addActivity, updateDayActivities,
     undo, redo, canUndoCheck: canUndoFn, canRedoCheck: canRedoFn,
   } = editHistoryActions;
 
@@ -767,6 +769,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       deleteActivity,
       reorderActivities,
       addActivity,
+      updateDayActivities,
       undo,
       redo,
       canUndo,
@@ -790,6 +793,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       deleteActivity,
       reorderActivities,
       addActivity,
+      updateDayActivities,
       undo,
       redo,
       canUndo,
