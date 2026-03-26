@@ -24,7 +24,7 @@ export default function GlobalError({
     <html>
       <body>
         <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-surface px-4">
-          <div className="w-full max-w-md rounded-lg bg-background p-8 shadow-lg text-center">
+          <div className="w-full max-w-md rounded-lg bg-background p-8 shadow-[var(--shadow-elevated)] text-center">
             <h2 className={`mb-4 ${typography({ intent: "editorial-h2" })}`}>
               Application Error
             </h2>
