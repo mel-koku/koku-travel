@@ -96,6 +96,29 @@ function scoreVibeMatch(
   return { score, matches };
 }
 
+const CATEGORY_PHRASES: Record<string, string> = {
+  nature: "Natural scenery",
+  landmark: "Landmark",
+  shrine: "Historic shrine",
+  temple: "Buddhist temple",
+  castle: "Castle grounds",
+  garden: "Traditional garden",
+  onsen: "Hot spring",
+  beach: "Coastal spot",
+  viewpoint: "Scenic viewpoint",
+  museum: "Museum",
+  historic_site: "Historic site",
+  craft: "Artisan workshop",
+  market: "Local market",
+  park: "Park",
+};
+
+function buildFallbackDescription(loc: { category: string; city: string; is_hidden_gem: boolean | null; is_unesco_site: boolean | null }): string {
+  const phrase = CATEGORY_PHRASES[loc.category] || titleCase(loc.category.replace(/_/g, " "));
+  const qualifier = loc.is_unesco_site ? "UNESCO World Heritage " : loc.is_hidden_gem ? "Off-the-beaten-path " : "";
+  return `${qualifier}${qualifier ? phrase.toLowerCase() : phrase} in ${loc.city}.`;
+}
+
 function estimateTravelMinutes(
   baseCityId: string,
   targetPlanningCity: string | null,
@@ -279,7 +302,7 @@ export const POST = withApiHandler(
           targetRegion: loc.region,
           distanceKm: loc.distanceKm,
           travelMinutes: travelMins,
-          description: loc.short_description || `A ${loc.category} destination in ${loc.city}.`,
+          description: loc.short_description || buildFallbackDescription(loc),
           image: loc.primary_photo_url || loc.image,
           category: loc.category,
           rating: loc.rating,

@@ -509,25 +509,21 @@ export const ItineraryShell = ({
   const [isAcceptingDayTrip, setIsAcceptingDayTrip] = useState(false);
 
   const handleAcceptDayTrip = useCallback(
-    async (suggestion: import("@/types/dayTrips").DayTripSuggestion) => {
+    async (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
       if (!onItineraryChange) return;
+      const target = model.days[dayIndex];
+      if (!target) return;
+
       setIsAcceptingDayTrip(true);
       try {
-        // Find a suitable day in the base city to swap (prefer last day in that city)
-        const candidateDays = model.days
-          .map((d, i) => ({ day: d, index: i }))
-          .filter((d) => d.day.cityId === suggestion.baseCityId && !d.day.isDayTrip);
-        if (candidateDays.length === 0) return;
-        const target = candidateDays[candidateDays.length - 1]!;
-
         const res = await fetch("/api/day-trips/plan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             baseCityId: suggestion.baseCityId,
             targetLocationId: suggestion.targetLocationId,
-            dayIndex: target.index,
-            dayId: target.day.id,
+            dayIndex,
+            dayId: target.id,
             vibes: tripBuilderData?.vibes || [],
             usedLocationIds: model.days.flatMap((d) =>
               d.activities
@@ -544,14 +540,14 @@ export const ItineraryShell = ({
 
         // Replace the target day's activities with day trip activities
         const nextDays = [...model.days];
-        nextDays[target.index] = {
-          ...target.day,
+        nextDays[dayIndex] = {
+          ...target,
           activities: plan.activities,
           isDayTrip: true,
           baseCityId: suggestion.baseCityId,
           cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
           dayTripTravelMinutes: plan.totalTravelMinutes,
-          dateLabel: plan.dayLabel || `Day ${target.index + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
+          dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
         };
 
         const nextItinerary = { ...model, days: nextDays };
