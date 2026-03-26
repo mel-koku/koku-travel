@@ -15,6 +15,7 @@ import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
 import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
+import { useDayTripSuggestions } from "@/hooks/useDayTripSuggestions";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
@@ -185,6 +186,13 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     );
   }, [activeItinerary]);
 
+  // Day trip suggestions (fetched once on mount)
+  const dayTripSuggestions = useDayTripSuggestions(
+    activeItinerary,
+    selectedTrip?.builderData,
+    getUsedLocationIds(),
+  );
+
   // Smart prompt actions hook
   const smartPromptActions = useSmartPromptActions(
     selectedTrip?.id ?? null,
@@ -259,6 +267,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           onCancelPreview={smartPromptActions.cancelPreview}
           onFilterChange={smartPromptActions.setRefinementFilter}
           isPreviewLoading={smartPromptActions.isLoading}
+          dayTripSuggestions={dayTripSuggestions.suggestions}
         />
       </ErrorBoundary>
     </div>
