@@ -52,7 +52,7 @@ type TripConfidenceDashboardProps = {
   /** Day trip suggestions for the trip */
   dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
   /** Callback when user accepts a day trip suggestion */
-  onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion) => void;
+  onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => void;
   /** Whether a day trip swap is in progress */
   isAcceptingDayTrip?: boolean;
 };
@@ -340,6 +340,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
         <DayTripSection
           suggestions={dayTripSuggestions}
+          days={itinerary.days}
           onAcceptDayTrip={onAcceptDayTrip}
           isAccepting={isAcceptingDayTrip ?? false}
         />

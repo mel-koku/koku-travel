@@ -121,7 +121,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
             successData={successData}
             onSuccessComplete={() => {
               if (successData) {
-                router.push(`/itinerary?trip=${successData.tripId}`);
+                router.push(`/itinerary?trip=${successData.tripId}&new=1`);
               }
             }}
           />
