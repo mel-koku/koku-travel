@@ -145,7 +145,7 @@ export function useDayTips(
         id: "pro-ic-card",
         title: "Get an IC Card",
         summary:
-          "A Suica or PASMO card works on trains, buses, and convenience stores across Japan. Load it at any station.",
+          "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
         icon: "\uD83D\uDE83",
       });
     }
@@ -354,7 +354,7 @@ export function useDayTips(
       tips.push({
         id: "pro-goshuin-etiquette",
         title: "Goshuin etiquette",
-        summary: "Bring a goshuincho (stamp book) to collect temple stamps. Present it open to the correct page, pay \u00A5300-500, and wait quietly. Never use it for non-religious stamps.",
+        summary: "Bring a goshuincho (stamp book) to collect temple and shrine seals. Present it open to the correct page, pay \u00A5300-500, and wait quietly. Keep temple stamps separate from tourist stamps, as some temples may decline a mixed book.",
         icon: "\u26E9\uFE0F",
       });
     }
