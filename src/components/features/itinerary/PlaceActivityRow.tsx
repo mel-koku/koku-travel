@@ -790,6 +790,18 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   )}
                 </div>
               )}
+
+              {/* Insider Tip */}
+              {placeLocation?.insiderTip && (
+                <div className="mt-3 rounded-lg bg-yuzu-tint p-2.5">
+                  <p className="mb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
+                    Insider tip
+                  </p>
+                  <p className="text-xs leading-relaxed text-foreground-body">
+                    {placeLocation.insiderTip}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Action icons — vertical stack on right */}
