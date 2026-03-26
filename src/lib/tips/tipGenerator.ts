@@ -285,10 +285,11 @@ function generateWeatherTips(
     } else if (avgTemp > 30) {
       tips.push({
         type: "weather",
-        title: "Hot Weather",
-        message: "It will be hot today. Stay hydrated and seek shade when possible.",
-        priority: 7,
+        title: "Heat advisory",
+        message: "Hot and humid today. Vending machines and konbini are everywhere for cold drinks. Duck into department stores or shopping arcades for AC breaks. Watch for signs of heat exhaustion.",
+        priority: 8,
         icon: "🌡️",
+        isImportant: avgTemp > 35,
       });
     }
   }
