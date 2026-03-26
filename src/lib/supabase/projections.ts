@@ -248,6 +248,30 @@ export const LOCATION_ITINERARY_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
+ * Columns needed for day trip suggestion cards (16 columns)
+ * Used by: /api/day-trips/suggest
+ * Slim projection with coordinates for distance filtering + card display fields
+ */
+export const LOCATION_DAY_TRIP_COLUMNS = `
+  id,
+  name,
+  region,
+  city,
+  planning_city,
+  category,
+  image,
+  primary_photo_url,
+  short_description,
+  rating,
+  review_count,
+  coordinates,
+  is_hidden_gem,
+  is_unesco_site,
+  tags,
+  estimated_duration
+`.replace(/\s+/g, "");
+
+/**
  * Columns needed for primary photo endpoint (5 columns)
  * Used by: /api/locations/[id]/primary-photo
  */
