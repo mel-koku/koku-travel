@@ -15,6 +15,7 @@ import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
 import { PackingChecklistCardB } from "@b/features/trip-builder/PackingChecklistCardB";
+import { DayTripSectionB } from "./DayTripSectionB";
 import { REGIONS } from "@/data/regions";
 import {
   calculateTripHealth,
@@ -47,6 +48,9 @@ type TripConfidenceDashboardBProps = {
   mobilityNeeds?: boolean;
   budgetTotal?: number;
   tripBuilderData?: TripBuilderData;
+  dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
+  onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => void;
+  isAcceptingDayTrip?: boolean;
 };
 
 export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
@@ -62,6 +66,9 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
   mobilityNeeds,
   budgetTotal,
   tripBuilderData,
+  dayTripSuggestions,
+  onAcceptDayTrip,
+  isAcceptingDayTrip,
 }: TripConfidenceDashboardBProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -363,6 +370,16 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
           ))}
         </div>
       </div>
+
+      {/* Day Trip Ideas */}
+      {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
+        <DayTripSectionB
+          suggestions={dayTripSuggestions}
+          days={itinerary.days}
+          onAcceptDayTrip={onAcceptDayTrip}
+          isAccepting={isAcceptingDayTrip ?? false}
+        />
+      )}
 
       {/* Accessibility */}
       {accessibility && (
