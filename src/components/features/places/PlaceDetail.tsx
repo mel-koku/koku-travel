@@ -283,8 +283,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
         <motion.h1
           variants={fadeUp}
-          className="mt-3 font-serif leading-tight text-foreground"
-          style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)" }}
+          className={cn(typography({ intent: "editorial-h1" }), "mt-3")}
         >
           {displayName}
         </motion.h1>
