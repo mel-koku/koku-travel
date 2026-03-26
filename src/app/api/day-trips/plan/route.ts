@@ -192,6 +192,11 @@ export const POST = withApiHandler(
       (activities[0] as Extract<ItineraryActivity, { kind: "place" }>).travelFromPrevious = travelTo;
     }
 
+    // Add travel-from as the last activity's travelToNext (return journey)
+    if (activities.length > 0) {
+      (activities[activities.length - 1] as Extract<ItineraryActivity, { kind: "place" }>).travelToNext = travelFrom;
+    }
+
     const targetCityId = targetRow.planning_city || targetRow.city?.toLowerCase() || baseCityId;
 
     return NextResponse.json({
