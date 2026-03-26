@@ -160,6 +160,19 @@ export function useEditHistory({
     [updateItineraryWithHistory],
   );
 
+  const updateDayActivities = useCallback(
+    (tripId: string, dayId: string, updater: (itinerary: Itinerary) => Itinerary, metadata?: Record<string, unknown>) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "swapDayTrip",
+        updater,
+        metadata,
+      );
+    },
+    [updateItineraryWithHistory],
+  );
+
   const undo = useCallback(
     (tripId: string) => {
       setState((s) => {
@@ -207,6 +220,7 @@ export function useEditHistory({
     deleteActivity,
     reorderActivities,
     addActivity,
+    updateDayActivities,
     undo,
     redo,
     canUndoCheck,
