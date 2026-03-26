@@ -1,8 +1,8 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
+import { memo, useCallback, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import type { Itinerary } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
@@ -11,24 +11,15 @@ import { REGIONS } from "@/data/regions";
 import { typography } from "@/lib/typography-system";
 import {
   calculateTripHealth,
-  getHealthLevel,
   formatItineraryForExport,
   formatItineraryForCSV,
   analyzeAccessibility,
-  type DayHealth,
   type ChecklistItem,
 } from "@/lib/itinerary/tripHealth";
-import { easeReveal, durationFast, durationBase } from "@/lib/motion";
+import { easeReveal, durationBase } from "@/lib/motion";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
-import { useActivityLocations } from "@/hooks/useActivityLocations";
-import dynamic from "next/dynamic";
-
-const LocationExpanded = dynamic(
-  () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
-  { ssr: false },
-);
-import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
 import { DayTripSection } from "./DayTripSection";
+import { DayTips } from "./DayTips";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -37,23 +28,11 @@ type TripConfidenceDashboardProps = {
   tripCities?: string[];
   onClose: () => void;
   onSelectDay?: (dayIndex: number) => void;
-  /** Currently selected day from the DaySelector */
-  selectedDay?: number;
-  /** Called when a day is expanded/collapsed in the overview (syncs DaySelector) */
-  onDayExpand?: (dayIndex: number | null) => void;
-  /** Map of location ID → Location for accessibility analysis */
   locationMap?: Map<string, Location>;
-  /** Whether traveler has mobility needs */
   mobilityNeeds?: boolean;
-  /** User's budget total from trip builder (in JPY) */
-  budgetTotal?: number;
-  /** Trip builder data for packing checklist */
   tripBuilderData?: TripBuilderData;
-  /** Day trip suggestions for the trip */
   dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
-  /** Callback when user accepts a day trip suggestion */
   onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => void;
-  /** Whether a day trip swap is in progress */
   isAcceptingDayTrip?: boolean;
 };
 
@@ -64,11 +43,8 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   tripCities,
   onClose,
   onSelectDay,
-  selectedDay,
-  onDayExpand,
   locationMap,
   mobilityNeeds,
-  budgetTotal,
   tripBuilderData,
   dayTripSuggestions,
   onAcceptDayTrip,
@@ -87,45 +63,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
     () => loadChecklist(),
   );
-  const [expandedDay, setExpandedDay] = useState<number | null>(selectedDay ?? null);
   const [copiedToast, setCopiedToast] = useState(false);
-
-  // Sync expandedDay when DaySelector changes
-  useEffect(() => {
-    if (selectedDay != null) {
-      setExpandedDay(selectedDay);
-    }
-  }, [selectedDay]);
-
-  const handleToggleDay = useCallback((dayIndex: number) => {
-    const next = expandedDay === dayIndex ? null : dayIndex;
-    setExpandedDay(next);
-    if (next != null) {
-      onDayExpand?.(next);
-    }
-  }, [expandedDay, onDayExpand]);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-
-  // Batch-fetch all place activity locations for click-to-expand
-  const allPlaceActivities = useMemo(
-    () =>
-      itinerary.days.flatMap((day) =>
-        day.activities.filter(
-          (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
-            a.kind === "place",
-        ),
-      ),
-    [itinerary],
-  );
-  const { getLocation, locationsMap } = useActivityLocations(allPlaceActivities);
-
-  const handleActivityClick = useCallback(
-    (activityId: string) => {
-      const location = getLocation(activityId);
-      if (location) setSelectedLocation(location);
-    },
-    [getLocation],
-  );
 
   const toggleChecked = useCallback((id: string) => {
     setCheckedItems((prev) => {
@@ -166,18 +104,6 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     URL.revokeObjectURL(url);
   }, [itinerary, tripStartDate, tripCities]);
 
-  const level = getHealthLevel(health.overall);
-
-  const tripBudget = useMemo(
-    () => estimateTripCost(itinerary.days, locationsMap),
-    [itinerary.days, locationsMap],
-  );
-
-  const budgetStatus = useMemo(() => {
-    if (!tripBudget || !budgetTotal) return null;
-    const midEstimate = (tripBudget.min + tripBudget.max) / 2;
-    return midEstimate <= budgetTotal ? "within" : "over";
-  }, [tripBudget, budgetTotal]);
 
   return (
     <>
@@ -234,107 +160,11 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         interests={tripBuilderData?.interests}
       />
 
-      {/* Overall Health */}
-      <div className="rounded-lg border border-border bg-surface/40 p-4">
-        <div className="flex items-center gap-3">
-          <HealthDot level={level} size="lg" />
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              {level === "good"
-                ? "Trip looks solid"
-                : level === "fair"
-                  ? "A few things to check"
-                  : "Some issues to fix"}
-            </p>
-            <p className="text-xs text-stone">
-              {health.totalIssues === 0
-                ? "No issues detected across all days."
-                : `${health.totalIssues} issue${health.totalIssues === 1 ? "" : "s"} across ${itinerary.days.length} days`}
-            </p>
-          </div>
-          <div className="ml-auto font-mono text-2xl font-bold text-foreground">
-            {health.overall}
-          </div>
-        </div>
+      {/* Route Summary */}
+      <RouteSummary itinerary={itinerary} tripStartDate={tripStartDate} onSelectDay={onSelectDay} onClose={onClose} />
 
-        {/* Per-day mini bars */}
-        <div className="mt-4 flex gap-1">
-          {health.days.map((day) => {
-            const dayLevel = getHealthLevel(day.score);
-            return (
-              <button
-                key={day.dayId}
-                onClick={() => handleToggleDay(day.dayIndex)}
-                className="flex-1 group"
-                title={`Day ${day.dayIndex + 1}: ${day.score}/100`}
-              >
-                <div
-                  className={`h-2 rounded-full transition-all group-hover:h-3 ${
-                    dayLevel === "good"
-                      ? "bg-sage"
-                      : dayLevel === "fair"
-                        ? "bg-warning"
-                        : "bg-error"
-                  }`}
-                />
-                <p className="mt-1 text-[9px] text-stone text-center font-mono">
-                  {day.dayIndex + 1}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Estimated Cost */}
-      {tripBudget && (
-        <div className="space-y-2">
-          <h3 className="eyebrow-editorial">Estimated Cost</h3>
-          <div className="rounded-lg border border-border bg-surface/40 p-4">
-            <p className="text-lg font-semibold text-foreground">{formatCostRange(tripBudget)}</p>
-            <p className="mt-0.5 text-xs text-stone">Activity & transit costs · excluding accommodation</p>
-            {budgetTotal != null && budgetStatus && (
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className={budgetStatus === "within" ? "text-success" : "text-warning"}>
-                    {budgetStatus === "within" ? "Within budget" : "Over budget"}
-                  </span>
-                  <span className="text-stone">Budget: {formatYen(budgetTotal)}</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-border">
-                  <div
-                    className={`h-full rounded-full transition-all ${budgetStatus === "within" ? "bg-sage" : "bg-warning"}`}
-                    style={{ width: `${Math.min(100, ((tripBudget.min + tripBudget.max) / 2 / budgetTotal) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Days */}
-      <div className="space-y-2">
-        <h3 className="eyebrow-editorial">
-          Days
-        </h3>
-        {health.days.map((day) => (
-          <DayOverviewCard
-            key={day.dayId}
-            day={day}
-            itineraryDay={itinerary.days[day.dayIndex]}
-            tripStartDate={tripStartDate}
-            isExpanded={expandedDay === day.dayIndex}
-            onToggle={() => handleToggleDay(day.dayIndex)}
-            onGoToDay={() => {
-              onSelectDay?.(day.dayIndex);
-              onClose();
-            }}
-            getLocation={getLocation}
-            onActivityClick={handleActivityClick}
-          />
-        ))}
-      </div>
+      {/* Travel Tips — per-day tips moved from timeline */}
+      <TravelTipsSection itinerary={itinerary} tripStartDate={tripStartDate} />
 
       {/* Day Trip Suggestions */}
       {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
@@ -436,16 +266,6 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         </div>
       </div>
     </motion.div>
-
-    {/* Location detail slide-in */}
-    <AnimatePresence>
-      {selectedLocation && (
-        <LocationExpanded
-          location={selectedLocation}
-          onClose={() => setSelectedLocation(null)}
-        />
-      )}
-    </AnimatePresence>
     </>
   );
 });
@@ -458,200 +278,66 @@ function formatCityName(cityId: string): string {
   return cityId.charAt(0).toUpperCase() + cityId.slice(1);
 }
 
-function formatDayDate(tripStartDate: string | undefined, dayIndex: number): string | undefined {
-  if (!tripStartDate) return undefined;
-  try {
-    const parts = tripStartDate.split("-").map(Number);
-    const y = parts[0], m = parts[1], d = parts[2];
-    if (y == null || m == null || d == null) return undefined;
-    const date = new Date(y, m - 1, d + dayIndex);
-    if (isNaN(date.getTime())) return undefined;
-    const monthDay = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
-    const weekday = new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(date);
-    return `${monthDay}, ${weekday}`;
-  } catch {
-    return undefined;
-  }
-}
-
-function DayOverviewCard({
-  day,
-  itineraryDay,
+/**
+ * Visual route summary showing city sequence with day counts.
+ * Each city is a clickable pill that jumps to that day in the timeline.
+ */
+function RouteSummary({
+  itinerary,
   tripStartDate,
-  isExpanded,
-  onToggle,
-  onGoToDay,
-  getLocation,
-  onActivityClick,
+  onSelectDay,
+  onClose,
 }: {
-  day: DayHealth;
-  itineraryDay?: ItineraryDay;
+  itinerary: Itinerary;
   tripStartDate?: string;
-  isExpanded: boolean;
-  onToggle: () => void;
-  onGoToDay: () => void;
-  getLocation?: (activityId: string) => Location | null;
-  onActivityClick?: (activityId: string) => void;
+  onSelectDay?: (dayIndex: number) => void;
+  onClose: () => void;
 }) {
-  const level = getHealthLevel(day.score);
-  const errorCount = day.issues.filter((i) => i.severity === "error").length;
-  const warningCount = day.issues.filter((i) => i.severity === "warning").length;
-  const infoCount = day.issues.filter((i) => i.severity === "info").length;
-  const issueCount = errorCount + warningCount + infoCount;
-
-  const dateStr = formatDayDate(tripStartDate, day.dayIndex);
-  const cityName = itineraryDay?.cityId ? formatCityName(itineraryDay.cityId) : undefined;
-  const placeActivities = itineraryDay?.activities.filter((a) => a.kind === "place") ?? [];
-
-  // Calculate total hours at locations
-  const totalMinutes = placeActivities.reduce((sum, a) => {
-    if (a.kind === "place" && a.schedule) {
-      const [ah = 0, am = 0] = a.schedule.arrivalTime.split(":").map(Number);
-      const [dh = 0, dm = 0] = a.schedule.departureTime.split(":").map(Number);
-      return sum + (dh * 60 + dm) - (ah * 60 + am);
+  // Group consecutive days by city
+  const segments = useMemo(() => {
+    const result: { city: string; dayCount: number; startIndex: number }[] = [];
+    for (let i = 0; i < itinerary.days.length; i++) {
+      const cityId = itinerary.days[i]?.cityId;
+      const city = cityId ? formatCityName(cityId) : `Day ${i + 1}`;
+      const prev = result[result.length - 1];
+      if (prev && prev.city === city) {
+        prev.dayCount++;
+      } else {
+        result.push({ city, dayCount: 1, startIndex: i });
+      }
     }
-    if (a.kind === "place" && a.durationMin) {
-      return sum + a.durationMin;
-    }
-    return sum;
-  }, 0);
-  const totalHours = totalMinutes / 60;
-  const hoursDisplay = totalHours >= 1
-    ? `${totalHours % 1 === 0 ? totalHours : totalHours.toFixed(1)}h`
-    : totalMinutes > 0
-      ? `${totalMinutes}m`
-      : null;
+    return result;
+  }, [itinerary.days]);
+
+  if (segments.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-border bg-surface/30 overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface/50 transition"
-      >
-        <HealthDot level={level} size="sm" />
-        <div className="flex-1 min-w-0 flex items-baseline gap-1.5 whitespace-nowrap">
-          <span className="text-sm font-medium text-foreground shrink-0">
-            {dateStr || `Day ${day.dayIndex + 1}`}
-          </span>
-          {cityName && (
-            <span className="text-xs text-stone truncate">
-              {cityName}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0 whitespace-nowrap">
-          {placeActivities.length > 0 && (
-            <span className="text-foreground-secondary">
-              {placeActivities.length} {placeActivities.length === 1 ? "place" : "places"}
-            </span>
-          )}
-          {hoursDisplay && (
-            <>
-              <span className="text-stone">·</span>
-              <span className="text-stone">{hoursDisplay}</span>
-            </>
-          )}
-        </div>
-        <svg
-          className={`h-3.5 w-3.5 text-stone transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: durationFast, ease: easeReveal }}
-            className="overflow-hidden"
-          >
-            <div className="border-t border-border/50 px-3 py-2 space-y-2">
-              {/* Activity list */}
-              {placeActivities.length > 0 && (
-                <div className="space-y-0.5">
-                  {placeActivities.map((activity, i) => {
-                    const hasLocation = !!getLocation?.(activity.id);
-                    return (
-                      <button
-                        key={activity.id}
-                        onClick={(e) => {
-                          if (!hasLocation) return;
-                          e.stopPropagation();
-                          onActivityClick?.(activity.id);
-                        }}
-                        disabled={!hasLocation}
-                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
-                          hasLocation
-                            ? "cursor-pointer hover:bg-surface/60 active:bg-surface/80"
-                            : "cursor-default"
-                        }`}
-                      >
-                        <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
-                          {i + 1}
-                        </span>
-                        <span className={`truncate transition-colors ${hasLocation ? "text-foreground group-hover/row:text-brand-primary" : "text-stone"}`}>
-                          {activity.title}
-                        </span>
-                        {activity.kind === "place" && activity.mealType && (
-                          <span className="text-[10px] text-stone capitalize shrink-0">
-                            {activity.mealType}
-                          </span>
-                        )}
-                        {hasLocation && (
-                          <svg className="h-3 w-3 text-stone group-hover/row:text-foreground-secondary shrink-0 ml-auto transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                          </svg>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Issues */}
-              {issueCount > 0 && (
-                <div className="space-y-1">
-                  {day.issues.map((issue, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs">
-                      <span
-                        className={`mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                          issue.severity === "error"
-                            ? "bg-error"
-                            : issue.severity === "warning"
-                              ? "bg-warning"
-                              : "bg-stone"
-                        }`}
-                      />
-                      <div>
-                        {issue.activityTitle && (
-                          <span className="font-medium text-foreground-secondary">
-                            {issue.activityTitle}:{" "}
-                          </span>
-                        )}
-                        <span className="text-stone">{issue.message}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                onClick={onGoToDay}
-                className="text-[11px] font-medium text-brand-primary hover:underline"
-              >
-                Go to Day {day.dayIndex + 1}
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="space-y-2">
+      <h3 className="eyebrow-editorial">Your Route</h3>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {segments.map((seg, i) => (
+          <div key={`${seg.city}-${seg.startIndex}`} className="flex items-center gap-1.5">
+            {i > 0 && (
+              <svg className="h-3 w-3 shrink-0 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                onSelectDay?.(seg.startIndex);
+                onClose();
+              }}
+              className="flex items-baseline gap-1.5 rounded-lg border border-border bg-surface/40 px-3 py-2 text-left transition hover:bg-surface/70 hover:border-brand-primary/30"
+            >
+              <span className="text-sm font-medium text-foreground">{seg.city}</span>
+              <span className="font-mono text-[10px] text-stone">
+                {seg.dayCount}d
+              </span>
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -686,23 +372,6 @@ function ChecklistRow({
   );
 }
 
-function HealthDot({
-  level,
-  size = "sm",
-}: {
-  level: "good" | "fair" | "poor";
-  size?: "sm" | "lg";
-}) {
-  const sizeClass = size === "lg" ? "h-4 w-4" : "h-2.5 w-2.5";
-  const colorClass =
-    level === "good"
-      ? "bg-sage"
-      : level === "fair"
-        ? "bg-warning"
-        : "bg-error";
-
-  return <span className={`${sizeClass} ${colorClass} rounded-full shrink-0`} />;
-}
 
 function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
   const cls = "h-3.5 w-3.5 text-stone";
@@ -731,6 +400,104 @@ function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
     default:
       return null;
   }
+}
+
+/**
+ * Aggregated travel tips from all days, shown as per-day accordions.
+ * Replaces the per-day insights accordion that was in the timeline.
+ */
+function TravelTipsSection({
+  itinerary,
+  tripStartDate,
+}: {
+  itinerary: Itinerary;
+  tripStartDate?: string;
+}) {
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const [tipCounts, setTipCounts] = useState<Map<number, number>>(new Map());
+
+  const handleTipCount = useCallback((dayIndex: number, count: number) => {
+    setTipCounts((prev) => {
+      if (prev.get(dayIndex) === count) return prev;
+      const next = new Map(prev);
+      next.set(dayIndex, count);
+      return next;
+    });
+  }, []);
+
+  const totalTips = useMemo(() => {
+    let sum = 0;
+    for (const c of tipCounts.values()) sum += c;
+    return sum;
+  }, [tipCounts]);
+
+  return (
+    <div className="space-y-2">
+      <h3 className="eyebrow-editorial">
+        Travel Tips{totalTips > 0 && <span className="ml-1.5 text-stone">{totalTips}</span>}
+      </h3>
+      <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
+        {itinerary.days.map((day, i) => {
+          const cityName = day.cityId ? formatCityName(day.cityId) : undefined;
+          const count = tipCounts.get(i) ?? 0;
+          const isExpanded = expandedDay === i;
+
+          return (
+            <div key={day.id ?? i}>
+              <button
+                type="button"
+                onClick={() => setExpandedDay(isExpanded ? null : i)}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+              >
+                <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
+                  {i + 1}
+                </span>
+                <span className="flex-1 min-w-0 text-sm text-foreground truncate">
+                  {cityName ?? `Day ${i + 1}`}
+                </span>
+                {count > 0 && (
+                  <span className="rounded-full bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage">
+                    {count}
+                  </span>
+                )}
+                <svg
+                  className={`h-3.5 w-3.5 text-stone transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isExpanded && (
+                <div className="px-3 pb-3">
+                  <DayTips
+                    day={day}
+                    dayIndex={i}
+                    tripStartDate={tripStartDate}
+                    embedded
+                    nextDayActivities={itinerary.days[i + 1]?.activities}
+                    onTipCount={(c) => handleTipCount(i, c)}
+                  />
+                </div>
+              )}
+
+              {/* Count-only instance to populate badge when collapsed */}
+              {!isExpanded && (
+                <DayTips
+                  day={day}
+                  dayIndex={i}
+                  tripStartDate={tripStartDate}
+                  countOnly
+                  nextDayActivities={itinerary.days[i + 1]?.activities}
+                  onTipCount={(c) => handleTipCount(i, c)}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 // Persist checklist to localStorage

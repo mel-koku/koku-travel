@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { DayTripSuggestion } from "@/types/dayTrips";
 import type { ItineraryDay } from "@/types/itinerary";
+import type { Location } from "@/types/location";
+import dynamic from "next/dynamic";
+
+const LocationExpanded = dynamic(
+  () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
+  { ssr: false },
+);
 
 function formatTravelTime(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
@@ -33,6 +40,22 @@ export function DayTripSection({
 }) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+  const [loadingLocationId, setLoadingLocationId] = useState<string | null>(null);
+
+  const handleViewDetails = useCallback(async (suggestion: DayTripSuggestion) => {
+    setLoadingLocationId(suggestion.targetLocationId);
+    try {
+      const res = await fetch(`/api/locations/${suggestion.targetLocationId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setExpandedLocation(data.location ?? data);
+    } catch {
+      // silently fail
+    } finally {
+      setLoadingLocationId(null);
+    }
+  }, []);
 
   // Build eligible days per base city (non-day-trip days in that city)
   const eligibleDaysByCity = useMemo(() => {
@@ -68,22 +91,30 @@ export function DayTripSection({
                 <div className="flex gap-3">
                   {/* Thumbnail */}
                   {s.image && (
-                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-canvas">
+                    <button
+                      type="button"
+                      onClick={() => handleViewDetails(s)}
+                      className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-canvas"
+                    >
                       <img
                         src={s.image}
                         alt={s.targetLocationName}
                         className="h-full w-full object-cover transition group-hover:scale-[1.04]"
                         loading="lazy"
                       />
-                    </div>
+                    </button>
                   )}
 
                   <div className="min-w-0 flex-1">
                     {/* Name + badges */}
                     <div className="flex items-start gap-1.5">
-                      <p className="truncate text-sm font-medium text-foreground">
-                        {s.targetLocationName}
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleViewDetails(s)}
+                        className="truncate text-sm font-medium text-foreground hover:text-brand-primary transition-colors text-left"
+                      >
+                        {loadingLocationId === s.targetLocationId ? "Loading..." : s.targetLocationName}
+                      </button>
                       {s.isUnescoSite && (
                         <span className="shrink-0 rounded bg-accent/10 px-1 py-px text-[10px] font-medium text-accent">
                           UNESCO
@@ -208,6 +239,16 @@ export function DayTripSection({
           );
         })}
       </div>
+
+      {/* Location detail slide-in */}
+      <AnimatePresence>
+        {expandedLocation && (
+          <LocationExpanded
+            location={expandedLocation}
+            onClose={() => setExpandedLocation(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

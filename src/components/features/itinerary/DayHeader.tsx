@@ -151,27 +151,6 @@ export function DayHeader({
           <DayConflictSummary dayConflicts={conflicts} className="mt-1" />
         )}
       </div>
-      {tripId && (
-        <DayInsightsSection
-          day={day}
-          dayIndex={dayIndex}
-          tripStartDate={tripStartDate}
-          tripId={tripId}
-          builderData={builderData}
-          itinerary={itinerary}
-          onRefineDay={onRefineDay}
-          suggestions={suggestions}
-          onAcceptSuggestion={onAcceptSuggestion}
-          onSkipSuggestion={onSkipSuggestion}
-          loadingSuggestionId={loadingSuggestionId}
-          previewState={previewState}
-          onConfirmPreview={onConfirmPreview}
-          onShowAnother={onShowAnother}
-          onCancelPreview={onCancelPreview}
-          onFilterChange={onFilterChange}
-          isPreviewLoading={isPreviewLoading}
-        />
-      )}
       {/* Accommodation */}
       {(onStartLocationChange || startLocation || endLocation) && (
         <div className="mt-2">

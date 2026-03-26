@@ -276,21 +276,26 @@ export const ItineraryShell = ({
 
   // Header collapse on scroll (scroll down → collapse title, scroll up → expand)
   useEffect(() => {
-    const el = document.querySelector("[data-itinerary-activities]");
+    setHeaderCollapsed(false);
+    lastScrollTopRef.current = 0;
+    // On desktop, the left panel scrolls; on mobile, the activities div scrolls
+    const el = document.querySelector("[data-itinerary-activities]")?.closest("[data-lenis-prevent]") ?? document.querySelector("[data-itinerary-activities]");
     if (!el) return;
 
     const THRESHOLD = 30;
     const COOLDOWN_MS = 300;
     const handleScroll = () => {
-      if (headerCooldownRef.current) return;
       const top = el.scrollTop;
-      const delta = top - lastScrollTopRef.current;
 
+      // Always expand at the top, even during cooldown
       if (top < 10) {
         setHeaderCollapsed(false);
         lastScrollTopRef.current = top;
         return;
       }
+
+      if (headerCooldownRef.current) return;
+      const delta = top - lastScrollTopRef.current;
 
       const nearBottom = el.scrollHeight - top - el.clientHeight < 50;
       if (nearBottom) {
@@ -313,7 +318,7 @@ export const ItineraryShell = ({
 
     el.addEventListener("scroll", handleScroll, { passive: true });
     return () => el.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [viewMode]);
 
   const days = model.days ?? [];
   const safeSelectedDay =
@@ -646,7 +651,7 @@ export const ItineraryShell = ({
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <PrintHeader tripName={tripName} dateRange={printDateRange} cities={printCities} />
-    <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl">
+    <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl lg:h-[calc(100dvh-80px)] lg:overflow-hidden">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
         <motion.div
@@ -721,12 +726,12 @@ export const ItineraryShell = ({
         </motion.div>
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
+      <div className="flex flex-col lg:h-full lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
-        <div className="flex flex-col lg:w-1/2 lg:sticky lg:top-[80px] lg:h-[calc(100dvh-96px)]">
+        <div className="flex flex-col lg:w-1/2 lg:min-h-0 lg:overflow-y-auto" data-lenis-prevent>
           {/* Header bar */}
           <div
-            className="sticky top-0 z-30 lg:relative border-b border-border bg-background px-4 pb-3 lg:px-6"
+            className={`border-b border-border bg-background px-4 pb-3 lg:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
             style={{
               paddingTop: headerCollapsed ? "0.5rem" : "1rem",
               transition: "padding-top 0.25s ease",
@@ -798,64 +803,60 @@ export const ItineraryShell = ({
             </div>
             </div>
 
-            {/* Always visible: Day selector + search + adjust (single row) */}
-            <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }} className="flex items-start gap-2">
-              <DaySelector
-                totalDays={days.length}
-                selected={safeSelectedDay}
-                onChange={handleSelectDayChange}
-                labels={days.map((day) => {
-                  const label = day.dateLabel ?? "";
-                  // Ensure city is present in label for DaySelector display
-                  if (label && !label.includes("(") && day.cityId) {
-                    const city = day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
-                    return `${label} (${city})`;
-                  }
-                  return label;
-                })}
-                tripStartDate={tripStartDate}
-                dayHealthLevels={dayHealthLevels}
-              />
-              {!isReadOnly && !isUsingMock && currentDay && viewMode === "timeline" && (
-                <>
-                  <div className="min-w-0 flex-1">
-                    <LocationSearchBar
-                      dayActivities={currentDay.activities}
-                      onAddActivity={handleAddSearchedActivity}
-                    />
-                  </div>
-                  {tripId && (
-                    <DayRefinementButtons
-                      dayIndex={safeSelectedDay}
-                      tripId={tripId}
-                      builderData={tripBuilderData}
-                      itinerary={model}
-                      onRefine={handleRefineDay}
-                    />
-                  )}
-                </>
-              )}
-            </div>
+            {/* Day selector + search + adjust — timeline only */}
+            {viewMode === "timeline" && (
+              <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }} className="flex items-start gap-2">
+                <DaySelector
+                  totalDays={days.length}
+                  selected={safeSelectedDay}
+                  onChange={handleSelectDayChange}
+                  labels={days.map((day) => {
+                    const label = day.dateLabel ?? "";
+                    if (label && !label.includes("(") && day.cityId) {
+                      const city = day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
+                      return `${label} (${city})`;
+                    }
+                    return label;
+                  })}
+                  tripStartDate={tripStartDate}
+                  dayHealthLevels={dayHealthLevels}
+                />
+                {!isReadOnly && !isUsingMock && currentDay && (
+                  <>
+                    <div className="min-w-0 flex-1">
+                      <LocationSearchBar
+                        dayActivities={currentDay.activities}
+                        onAddActivity={handleAddSearchedActivity}
+                      />
+                    </div>
+                    {tripId && (
+                      <DayRefinementButtons
+                        dayIndex={safeSelectedDay}
+                        tripId={tripId}
+                        builderData={tripBuilderData}
+                        itinerary={model}
+                        onRefine={handleRefineDay}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Trip Confidence Dashboard */}
           <AnimatePresence>
             {viewMode === "dashboard" && (
-              <div className="px-4 pb-6">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
                 <TripConfidenceDashboard
                   itinerary={model}
                   conflicts={conflictsResult.conflicts}
                   tripStartDate={tripStartDate}
-                  selectedDay={safeSelectedDay}
                   onClose={() => setViewMode("timeline")}
                   onSelectDay={(dayIndex) => {
                     handleSelectDayChange(dayIndex);
                     setViewMode("timeline");
                   }}
-                  onDayExpand={(dayIndex) => {
-                    if (dayIndex != null) handleSelectDayChange(dayIndex);
-                  }}
-                  budgetTotal={tripBuilderData?.budget?.total}
                   tripBuilderData={tripBuilderData}
                   dayTripSuggestions={dayTripSuggestions}
                   onAcceptDayTrip={handleAcceptDayTrip}
@@ -890,31 +891,27 @@ export const ItineraryShell = ({
             </div>
           )}
 
-          {/* Seasonal Banner */}
-          {model.seasonalHighlight && (
-            <SeasonalBanner highlight={model.seasonalHighlight} />
-          )}
-
-          {/* Day trip suggestions banner */}
-          {dayTripSuggestions && dayTripSuggestions.length > 0 && (
-            <DayTripBanner
-              suggestions={dayTripSuggestions}
-              tripId={tripId}
-              onViewDashboard={() => setViewMode("dashboard")}
-            />
-          )}
-
-          {/* Conflict summary banner */}
-          <ConflictSummaryBanner
-            conflicts={conflictsResult}
-            onSelectDay={(dayIndex) => {
-              handleSelectDayChange(dayIndex);
-              setViewMode("timeline");
-            }}
-          />
-
           {/* Activities List */}
-          <div data-itinerary-activities data-lenis-prevent className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+            {/* Timeline banners (scroll with content) */}
+            {model.seasonalHighlight && (
+              <SeasonalBanner highlight={model.seasonalHighlight} />
+            )}
+            {dayTripSuggestions && dayTripSuggestions.length > 0 && (
+              <DayTripBanner
+                suggestions={dayTripSuggestions}
+                tripId={tripId}
+                onViewDashboard={() => setViewMode("dashboard")}
+              />
+            )}
+            <ConflictSummaryBanner
+              conflicts={conflictsResult}
+              onSelectDay={(dayIndex) => {
+                handleSelectDayChange(dayIndex);
+                setViewMode("timeline");
+              }}
+            />
+
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -1021,7 +1018,7 @@ export const ItineraryShell = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (50%) */}
-        <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100dvh-96px)] lg:w-1/2">
+        <div className="hidden lg:block lg:w-1/2">
           <div className="h-full lg:rounded-lg lg:overflow-hidden lg:border lg:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (

@@ -318,6 +318,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             attributionControl: true,
             center: [DEFAULT_CENTER.lat, DEFAULT_CENTER.lng],
             zoom: DEFAULT_ZOOM,
+            scrollWheelZoom: false,
           });
 
           mapRef.current.on("click", () => {
