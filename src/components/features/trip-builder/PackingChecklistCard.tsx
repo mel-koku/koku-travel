@@ -49,6 +49,7 @@ export function PackingChecklistCard({
   interests,
 }: PackingChecklistCardProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<PackingCategory>>(new Set());
 
   // Load from localStorage on mount
@@ -117,23 +118,35 @@ export function PackingChecklistCard({
   const checkedCount = checklist?.items.filter((i) => checked.has(i.id)).length ?? 0;
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <div className="flex items-center justify-between">
+    <div className="rounded-lg border border-border bg-surface">
+      <button
+        type="button"
+        onClick={() => setIsOpen((o) => !o)}
+        className="flex w-full items-center justify-between p-4 text-left"
+      >
         <div>
           <h4 className="text-sm font-medium text-foreground">Packing Checklist</h4>
           <p className="text-[10px] uppercase tracking-[0.15em] text-stone">
             {checkedCount}/{totalItems} packed
           </p>
         </div>
-        <div className="h-2 w-24 overflow-hidden rounded-full bg-border">
-          <div
-            className="h-full rounded-full bg-sage transition-all"
-            style={{ width: `${totalItems > 0 ? (checkedCount / totalItems) * 100 : 0}%` }}
+        <div className="flex items-center gap-3">
+          <div className="h-2 w-24 overflow-hidden rounded-full bg-border">
+            <div
+              className="h-full rounded-full bg-sage transition-all"
+              style={{ width: `${totalItems > 0 ? (checkedCount / totalItems) * 100 : 0}%` }}
+            />
+          </div>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-stone transition-transform",
+              isOpen && "rotate-180"
+            )}
           />
         </div>
-      </div>
+      </button>
 
-      <div className="mt-3 space-y-1">
+      {isOpen && <div className="space-y-1 px-4 pb-4">
         {[...grouped.entries()].map(([category, items]) => {
           const isExpanded = expandedCategories.has(category);
           const categoryChecked = items.filter((i) => checked.has(i.id)).length;
@@ -197,7 +210,7 @@ export function PackingChecklistCard({
             </div>
           );
         })}
-      </div>
+      </div>}
     </div>
   );
 }

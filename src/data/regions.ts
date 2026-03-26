@@ -168,7 +168,7 @@ export function getRegionForCity(cityId: CityId): RegionId | undefined {
 /**
  * Derive unique region IDs from a list of selected cities.
  * Used to keep `data.regions` in sync when selection is city-driven.
- * Supports both known (17 static) and dynamic cities via metadata lookup.
+ * Supports both known (43 static) and dynamic cities via metadata lookup.
  */
 export function deriveRegionsFromCities(cityIds: CityId[]): KnownRegionId[] {
   const regionSet = new Set<KnownRegionId>();

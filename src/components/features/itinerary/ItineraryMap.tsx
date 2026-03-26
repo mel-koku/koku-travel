@@ -151,6 +151,7 @@ export function ItineraryMap({
       style: MAP_STYLE,
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
+      scrollZoom: false,
     });
     map.addControl(new mapboxModule.NavigationControl(), "top-right");
     map.on("load", () => {
