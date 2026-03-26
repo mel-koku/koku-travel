@@ -485,6 +485,20 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </motion.section>
         )}
 
+        {/* Insider Tip */}
+        {location.insiderTip && (
+          <motion.section {...sectionReveal}>
+            <div className="rounded-lg bg-yuzu-tint p-4">
+              <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
+                Insider tip
+              </p>
+              <p className="text-sm leading-relaxed text-foreground-body">
+                {location.insiderTip}
+              </p>
+            </div>
+          </motion.section>
+        )}
+
         {/* Practical info */}
         {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo || location.dietaryOptions?.servesVegetarianFood || mealLabels || serviceLabels) && (
           <motion.section {...sectionReveal} className="space-y-3">
