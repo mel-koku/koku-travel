@@ -94,7 +94,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-13",
     key: "temple:kyoto",
     content:
-      "Kyoto's moss temple, Saihoji, requires advance reservation by postal letter — yes, actual mail. This isn't bureaucracy; it's intentional. The temple limits visitors to protect its 120 species of moss, some dating back 700 years. The slow process is itself part of the Zen experience.",
+      "Kyoto's moss temple, Saihoji, requires advance reservation — online or by postal letter. The temple limits visitors to protect its 120 species of moss, some dating back 700 years. Slots fill weeks ahead, so book early. The unhurried visit is itself part of the Zen experience.",
     icon: "🌿",
   },
   {
@@ -156,7 +156,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-21",
     key: "market:any",
     content:
-      "When buying food at a market stall, eat it at the stall or in designated eating areas. Walking and eating (tabearuki) is generally frowned upon in Japan — it's seen as disrespectful to the food and the people around you. Many stalls provide small standing counters for exactly this reason.",
+      "When buying food at a market stall, eat it at the stall or in designated eating areas. Walking and eating (tabearuki) is frowned upon on regular streets and in traditional markets like Nishiki. Festival stalls and dedicated food streets like Takeshita-dori are the exception. Many stalls provide small standing counters for exactly this reason.",
     icon: "🍡",
   },
   {
@@ -266,7 +266,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-35",
     key: "restaurant:any",
     content:
-      "Before eating, say 'itadakimasu' (I humbly receive) with a slight nod. After finishing, say 'gochisosama deshita' (thank you for the feast). These aren't just politeness — they express gratitude to everyone who grew, prepared, and served the food. Staff genuinely notice and appreciate it.",
+      "Before eating, say 'itadakimasu' (I humbly receive) with a slight nod. After finishing, say 'gochisousama deshita' (thank you for the feast). These aren't just politeness — they express gratitude to everyone who grew, prepared, and served the food. Staff genuinely notice and appreciate it.",
     icon: "🍱",
   },
   {
@@ -280,7 +280,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-37",
     key: "restaurant:any",
     content:
-      "Tipping does not exist in Japan and can actually cause confusion or embarrassment. The price covers everything, including excellent service. If you want to show appreciation, a sincere 'gochisosama deshita' when leaving means more to staff than any tip would.",
+      "Tipping does not exist in Japan and can actually cause confusion or embarrassment. The price covers everything, including excellent service. If you want to show appreciation, a sincere 'gochisousama deshita' when leaving means more to staff than any tip would.",
     icon: "💴",
   },
   {
