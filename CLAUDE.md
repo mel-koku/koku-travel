@@ -243,7 +243,17 @@ Fully self-contained — no A component imports.
 - **Month Filtering**: `valid_months int[]` column on `travel_guidance` gives month-level precision beyond 4-season buckets. `guidanceService.ts` checks `validMonths` before `seasons` (score +6 vs +4). All callers pass `month` derived from trip start date.
 - **Transit Directions**: `TravelSegment` / `TravelSegmentB` show expandable step-by-step transit directions (line name, departure/arrival stations, num stops) when `transitSteps` data exists on travel segments. Collapsed = compact pill; expanded = vertical step list with walk/transit icons.
 - **Getting There**: Activity cards (`PlaceActivityRow` / `PlaceActivityRowB`) show nearest station + Japanese name from location data when available.
-- **Smart Pro Tips**: `DayTips` / `DayTipsB` compute context-aware tips from day travel data — IC card (Day 1), city transitions, heavy transit days, rush hour warnings, long train rides.
+- **Smart Pro Tips**: `DayTips` / `DayTipsB` compute context-aware tips from day travel data -- IC card (Day 1), city transitions, heavy transit days, rush hour warnings, long train rides.
+- **Day Trip Suggestions**: Proactively surfaces high-quality locations 50-150km from planned cities as opt-in day trip ideas. These are locations outside normal itinerary scheduling range (which applies -100 penalty at >50km) that are worth a dedicated day.
+  - **Suggest API** (`POST /api/day-trips/suggest`): Queries locations by bounding box, filters to 50-150km from user cities, scores by vibe match + rating + UNESCO/hidden gem badges. Returns max 3 per city, 12 total. Distance-based travel time estimates.
+  - **Plan API** (`POST /api/day-trips/plan`): Fetches anchor location + 2 nearby companions, builds 2-3 activity day with real routed travel times (Google Directions transit mode, heuristic fallback). Attaches `travelFromPrevious` on first activity and `travelToNext` on last.
+  - **Hook** (`useDayTripSuggestions`): Fetches once on mount when a city has 3+ days. Caches by city+vibe key.
+  - **DayTripBanner**: Sage dismissible banner on the timeline ("5 day trip ideas near your route") with per-city counts and "View all" button to dashboard. `data-day-trip-banner` attribute for scroll targeting.
+  - **DayTripSection**: Card list in TripConfidenceDashboard with day picker dropdown and inline confirmation. "Swap Day" action replaces a user-chosen day's activities.
+  - **DayTripNudge**: One-time floating toast after itinerary generation (triggered by `?new=1` URL param from trip builder). Auto-dismisses after 8s or scrolls to banner on click.
+  - **Undo**: Day swaps go through `updateDayActivities` in edit history (`swapDayTrip` edit type), so Cmd+Z restores the original day.
+  - **ItineraryDay fields**: `isDayTrip`, `baseCityId`, `dayTripTravelMinutes` on swapped days.
+  - B variant components not yet built (fallback redirect handles it).
 
 ### Explore (`src/components/features/explore/`)
 - Map-driven browse with Mapbox. Desktop: cards left + sticky map right. Mobile: 30vh map peek.
@@ -273,7 +283,7 @@ Favorites-only flow: heart locations on Explore → generator injects as priorit
 Global React Context — `user`, `favorites`, `guideBookmarks`, `trips`, edit history + all actions.
 - Persists to localStorage (debounced). Auth sync via `onAuthStateChange` → `refreshFromSupabase()`.
 - Trip mutations debounced 2s. `beforeunload` + `visibilitychange` flush pending syncs.
-- Undo/redo: Snapshot-based per trip (`src/state/useEditHistory.ts`). Cmd+Z / Cmd+Shift+Z.
+- Undo/redo: Snapshot-based per trip (`src/state/useEditHistory.ts`). Cmd+Z / Cmd+Shift+Z. Edit types: `replaceActivity`, `deleteActivity`, `reorderActivities`, `addActivity`, `swapDayTrip`, `setDayEntryPoint`.
 - Sync layer in `src/services/sync/` — optimistic favorites/bookmarks, timestamp-based trip merge.
 
 ---
@@ -370,7 +380,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 
 ## Data
 
-- **Locations**: 6,308 active in Supabase. `is_hidden_gem` (1,012), `jta_approved`, `is_unesco_site` (216 locations across 26 UNESCO designations covering all 25 Japanese World Heritage Sites), `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. UNESCO locations also have `unesco_serial_name` (official inscription name), `unesco_year`, `unesco_type` (cultural/natural) metadata. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
+- **Locations**: 6,283 active in Supabase. `is_hidden_gem` (1,012), `jta_approved`, `is_unesco_site` (216 locations across 26 UNESCO designations covering all 25 Japanese World Heritage Sites), `is_active` flags. All have `tags[]`, food locations have `cuisine_type`. UNESCO locations also have `unesco_serial_name` (official inscription name), `unesco_year`, `unesco_type` (cultural/natural) metadata. All location list/search queries filter `.eq("is_active", true)`; single-item ID lookups (detail, saved, validation) are exempt.
 - **Google Places fields**: `place_id`, `rating`, `review_count`, `operating_hours`, `primary_photo_url`, `google_maps_uri`, `website_uri`, `phone_number`, `google_primary_type`, `google_types`, `business_status`, `price_level`, `editorial_summary`, `accessibility_options`, `good_for_children`, `good_for_groups`, `outdoor_seating`, `reservable`, `dietary_options`, `service_options`, `meal_options`
 - **Gemini-enriched fields**: `name_japanese`, `nearest_station`, `cash_only`, `reservation_info`, `insider_tip`, `tags` (9-dimension)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, garden, onsen, entertainment, market, wellness, viewpoint, bar, aquarium, beach, cafe, castle, historic_site, theater, zoo, craft
@@ -378,7 +388,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Tag Dimensions** (9): env (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day), seasonal, atmo (quiet/lively/contemplative/neutral), tourist (iconic/popular/local-favorite/hidden), time (morning/afternoon/sunset/evening/late-night/anytime), exp (scenic/hands-on/tasting/learning/spiritual/adrenaline/relaxation/photo-op), for (solo/couples/families/groups), char (traditional-japan/modern-japan/quirky-japan/zen-japan/pop-culture)
 - **Experiences**: 56 in Sanity (separate from locations/itinerary)
 - **Guides**: ~90 in Sanity
-- **DQ Health**: 90/100 (`npm run dq audit|fix|report`). Drop from 99 reflects pipeline-awareness checks (coord-city alignment, missing neighborhood/hours/accessibility). Duplicate rules now include `DUPLICATE_PLACE_ID` and `DUPLICATE_JAPANESE_NAME` detection. Enrichment script `scripts/enrich-locations.js` ready to fill gaps.
+- **DQ Health**: 0 critical, 0 high, 320 medium (`npm run dq audit|fix|report`). Remaining mediums are mostly MISSING_OPERATING_HOURS (221) and HIDDEN_GEM_MISSING_RATING (89), both awaiting Google Places enrichment pass. Duplicate rules include `DUPLICATE_PLACE_ID` and `DUPLICATE_JAPANESE_NAME` detection. PLANNING_CITY_COORD_MISMATCH 50-150km locations downgraded to low (surfaced via day trip suggestions). Enrichment script `scripts/enrich-locations.js` ready to fill gaps.
 
 ---
 
