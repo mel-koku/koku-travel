@@ -55,6 +55,7 @@ export const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
   "pro-ic-card": ["ic card", "suica", "pasmo"],
   "pro-city-transition": ["takkyubin", "luggage forwarding"],
   "pro-last-train": ["last train"],
+  "pro-jr-pass": ["rail pass", "jr pass", "japan rail"],
 };
 
 export type UseDayTipsCoreOptions = {
@@ -159,6 +160,20 @@ export function useDayTipsCore(
           "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
         icon: "\uD83D\uDE83",
       });
+    }
+
+    // Day 1: JR Pass / transit pass tip for multi-city trips
+    if (dayIndex === 0) {
+      const hasCityTransition = day.cityTransition;
+      if (hasCityTransition || hasTransit) {
+        tips.push({
+          id: "pro-jr-pass",
+          title: "Consider a rail pass",
+          summary:
+            "Multi-city trips often save money with a Japan Rail Pass or regional pass (Kansai Area Pass, Hokkaido Pass). Compare pass cost vs individual tickets before your trip.",
+          icon: "\uD83C\uDFAB",
+        });
+      }
     }
 
     // Day 1: Escalator convention

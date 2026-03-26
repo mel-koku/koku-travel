@@ -262,4 +262,20 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
       "Eating on Shinkansen and long-distance express trains is perfectly fine — grab an ekiben and enjoy the view. On local and commuter trains, eating is frowned upon. Drinking water or tea quietly is acceptable on any train.",
     icon: "🚄",
   },
+
+  // ── JR Pass (2 variants) ────────────────────────────────────────────
+  {
+    id: "pt-35",
+    key: "jr-pass",
+    content:
+      "The Japan Rail Pass covers most JR lines including Shinkansen (except Nozomi and Mizuho). Activate it at a JR ticket office with your passport. A 7-day pass pays for itself with one Tokyo-Kyoto round trip.",
+    icon: "🎫",
+  },
+  {
+    id: "pt-36",
+    key: "jr-pass",
+    content:
+      "Regional passes can be better value than the nationwide JR Pass. The Kansai Area Pass covers Kyoto-Osaka-Nara-Kobe. The Hokkaido Pass is essential for Sapporo-Hakodate routes. Check Jorudan or Hyperdia to compare.",
+    icon: "🎫",
+  },
 ];
