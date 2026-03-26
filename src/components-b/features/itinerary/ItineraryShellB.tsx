@@ -50,6 +50,7 @@ import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
 import { Lightbulb } from "lucide-react";
 import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
 import { SeasonalBannerB } from "./SeasonalBannerB";
+import { DayTripBannerB } from "./DayTripBannerB";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "@/components/features/itinerary/ActivityRatingsContext";
 import { PrintHeader } from "@/components/features/itinerary/PrintHeader";
@@ -103,6 +104,7 @@ type ItineraryShellBProps = {
   onCancelPreview?: () => void;
   onFilterChange?: (filter: Partial<RefinementFilters>) => void;
   isPreviewLoading?: boolean;
+  dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
 };
 
 export const ItineraryShellB = ({
@@ -128,12 +130,14 @@ export const ItineraryShellB = ({
   onCancelPreview,
   onFilterChange,
   isPreviewLoading,
+  dayTripSuggestions,
 }: ItineraryShellBProps) => {
   const {
     reorderActivities,
     replaceActivity,
     addActivity,
     deleteActivity,
+    updateDayActivities,
     getTripById,
     dayEntryPoints,
     cityAccommodations,
@@ -615,6 +619,83 @@ export const ItineraryShellB = ({
     [discover, handleAddSearchedActivity],
   );
 
+  // ── Day trip accept handler ──
+  const [isAcceptingDayTrip, setIsAcceptingDayTrip] = useState(false);
+
+  const handleAcceptDayTrip = useCallback(
+    async (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
+      if (!onItineraryChange || isUsingMock) return;
+      const target = model.days[dayIndex];
+      if (!target) return;
+
+      setIsAcceptingDayTrip(true);
+      try {
+        const res = await fetch("/api/day-trips/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            baseCityId: suggestion.baseCityId,
+            targetLocationId: suggestion.targetLocationId,
+            dayIndex,
+            dayId: target.id,
+            vibes: tripBuilderData?.vibes || [],
+            usedLocationIds: model.days.flatMap((d) =>
+              d.activities
+                .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
+                .map((a) => a.locationId)
+                .filter(Boolean),
+            ),
+            tripDate: tripStartDate,
+          }),
+        });
+
+        if (!res.ok) return;
+        const plan = await res.json();
+
+        updateDayActivities(
+          tripId,
+          target.id,
+          (itinerary) => ({
+            ...itinerary,
+            days: itinerary.days.map((d, i) =>
+              i === dayIndex
+                ? {
+                    ...d,
+                    activities: plan.activities,
+                    isDayTrip: true,
+                    baseCityId: suggestion.baseCityId,
+                    cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
+                    dayTripTravelMinutes: plan.totalTravelMinutes,
+                    dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} > ${suggestion.targetLocationName})`,
+                  }
+                : d,
+            ),
+          }),
+          { dayIndex, targetLocationId: suggestion.targetLocationId },
+        );
+
+        const nextDays = [...model.days];
+        nextDays[dayIndex] = {
+          ...target,
+          activities: plan.activities,
+          isDayTrip: true,
+          baseCityId: suggestion.baseCityId,
+          cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
+          dayTripTravelMinutes: plan.totalTravelMinutes,
+          dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} > ${suggestion.targetLocationName})`,
+        };
+        const nextItinerary = { ...model, days: nextDays };
+        setModelState(nextItinerary);
+        setTimeout(() => {
+          scheduleUserPlanningRef.current?.(nextItinerary);
+        }, 0);
+      } finally {
+        setIsAcceptingDayTrip(false);
+      }
+    },
+    [model, tripId, isUsingMock, onItineraryChange, tripBuilderData, tripStartDate, updateDayActivities, setModelState, scheduleUserPlanningRef],
+  );
+
   // Activity ratings
   const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
   useEffect(() => {
@@ -953,6 +1034,17 @@ export const ItineraryShellB = ({
             <SeasonalBannerB highlight={model.seasonalHighlight} />
           )}
 
+          {/* Day Trip Banner */}
+          {dayTripSuggestions && dayTripSuggestions.length > 0 && viewMode === "timeline" && (
+            <div className="px-4 lg:px-5">
+              <DayTripBannerB
+                suggestions={dayTripSuggestions}
+                tripId={tripId}
+                onViewDashboard={() => setViewMode("dashboard")}
+              />
+            </div>
+          )}
+
           {/* ── Trip Confidence Dashboard ── */}
           <AnimatePresence>
             {viewMode === "dashboard" && (
@@ -979,6 +1071,9 @@ export const ItineraryShellB = ({
                   }}
                   budgetTotal={tripBuilderData?.budget?.total}
                   tripBuilderData={tripBuilderData}
+                  dayTripSuggestions={dayTripSuggestions}
+                  onAcceptDayTrip={handleAcceptDayTrip}
+                  isAcceptingDayTrip={isAcceptingDayTrip}
                 />
               </motion.div>
             )}

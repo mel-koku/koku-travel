@@ -291,7 +291,7 @@ function formatCityName(cityId: string): string {
  */
 function RouteSummary({
   itinerary,
-  tripStartDate,
+  tripStartDate: _tripStartDate,
   onSelectDay,
   onClose,
 }: {

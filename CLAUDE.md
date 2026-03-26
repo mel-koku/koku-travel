@@ -257,7 +257,7 @@ Fully self-contained — no A component imports.
 
 ### Explore (`src/components/features/explore/`)
 - Map-driven browse with Mapbox. Desktop: cards left + sticky map right. Mobile: 30vh map peek.
-- `CategoryBar`: Unified search + video link import. Sticks on scroll.
+- `CategoryBar`: Unified search. Sticks on scroll.
 - `LocationExpanded`: Slide-in detail panel (backdrop + `x: "100%"` slide, 480px desktop, full-screen mobile)
 - Deep-link: `/explore?location={id}` auto-opens panel + flies map
 

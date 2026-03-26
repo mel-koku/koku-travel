@@ -38,10 +38,6 @@ type EnvConfig = {
   GOOGLE_GENERATIVE_AI_API_KEY?: string;
   ENABLE_CHAT?: string;
 
-  // Video Import
-  ENABLE_VIDEO_IMPORT?: string;
-  META_OEMBED_ACCESS_TOKEN?: string;
-
   // Email (Resend)
   RESEND_API_KEY?: string;
 };
@@ -105,8 +101,6 @@ function createLenientConfig(): EnvConfig {
     CHEAP_MODE: process.env.CHEAP_MODE,
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     ENABLE_CHAT: process.env.ENABLE_CHAT,
-    ENABLE_VIDEO_IMPORT: process.env.ENABLE_VIDEO_IMPORT,
-    META_OEMBED_ACCESS_TOKEN: process.env.META_OEMBED_ACCESS_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
 }
@@ -172,8 +166,6 @@ function validateEnv(): EnvConfig {
     CHEAP_MODE: getOptionalEnv("CHEAP_MODE"),
     GOOGLE_GENERATIVE_AI_API_KEY: getOptionalEnv("GOOGLE_GENERATIVE_AI_API_KEY"),
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
-    ENABLE_VIDEO_IMPORT: getOptionalEnv("ENABLE_VIDEO_IMPORT"),
-    META_OEMBED_ACCESS_TOKEN: getOptionalEnv("META_OEMBED_ACCESS_TOKEN"),
     RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
   };
 }
