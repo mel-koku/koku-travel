@@ -208,6 +208,17 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       });
     }
 
+    // Day 1: Escalator convention
+    if (dayIndex === 0 && hasTransit) {
+      tips.push({
+        id: "pro-escalator",
+        title: "Escalator etiquette",
+        summary:
+          "Stand on the left in Tokyo (right in Osaka/Kyoto). Keep the other side clear for people walking past.",
+        icon: "🚶",
+      });
+    }
+
     // Day 1 only: Luggage drop-off tip when arriving at an airport
     if (dayIndex === 0) {
       const hasAirportAnchor = activities.some(
