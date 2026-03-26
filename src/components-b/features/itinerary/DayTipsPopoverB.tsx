@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 import type { ItineraryDay } from "@/types/itinerary";
-import { useDayTips } from "./useDayTips";
+import { useDayTipsCore } from "@/hooks/useDayTipsCore";
 
 type DayTipsPopoverBProps = {
   day: ItineraryDay;
@@ -15,7 +15,7 @@ type DayTipsPopoverBProps = {
 };
 
 export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivities, isFirstTimeVisitor }: DayTipsPopoverBProps) {
-  const { tips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
+  const { allTips: tips, isLoading } = useDayTipsCore(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
