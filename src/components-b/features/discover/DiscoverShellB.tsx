@@ -104,7 +104,7 @@ export function DiscoverShellB() {
     [],
   );
 
-  const mapAvailable = useMemo(() => featureFlags.enableMapbox && !featureFlags.cheapMode, []);
+  const mapAvailable = featureFlags.enableMapbox && !featureFlags.cheapMode;
   const isLocating = geoLocation.isLoading || (userPosition === null && !usingFallback);
 
   return (
