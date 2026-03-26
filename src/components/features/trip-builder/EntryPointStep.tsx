@@ -1003,7 +1003,7 @@ function JapanSilhouette({
                 {/* IATA label — shown for top airports and selected */}
                 {showLabel && (
                   <text
-                    x={pos.x + (pos.x > 320 ? -8 : 10)}
+                    x={pos.x + (pos.x > 320 ? -5 : 7)}
                     y={pos.y + 3}
                     className={cn(
                       "cursor-pointer font-mono text-[8px]",
@@ -1024,7 +1024,7 @@ function JapanSilhouette({
           })}
         {hoveredAirport && selectedAirport?.iataCode !== hoveredAirport.iataCode && (
           <text
-            x={hoveredAirport.x + (hoveredAirport.x > 320 ? -8 : 10)}
+            x={hoveredAirport.x + (hoveredAirport.x > 320 ? -5 : 7)}
             y={hoveredAirport.y + (topSet.has(hoveredAirport.iataCode) ? 13 : 3)}
             className="pointer-events-none font-mono text-[8px] fill-foreground-secondary"
             textAnchor={hoveredAirport.x > 320 ? "end" : "start"}

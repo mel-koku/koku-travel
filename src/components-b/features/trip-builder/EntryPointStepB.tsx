@@ -992,7 +992,7 @@ function JapanMapB({
 
                 {showLabel && (
                   <text
-                    x={pos.x + (pos.x > 320 ? -8 : 10)}
+                    x={pos.x + (pos.x > 320 ? -5 : 7)}
                     y={pos.y + 3}
                     fill={
                       isSelected
