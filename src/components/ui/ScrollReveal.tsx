@@ -67,7 +67,7 @@ export function ScrollReveal({
     <motion.div
       ref={ref}
       className={className}
-      style={hidden}
+      initial={hidden}
       animate={isInView ? visible : hidden}
       transition={{
         duration,
