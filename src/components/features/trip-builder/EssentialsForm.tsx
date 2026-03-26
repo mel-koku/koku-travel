@@ -7,6 +7,7 @@ import { Calendar } from "lucide-react";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { typography } from "@/lib/typography-system";
 import { EntryPointSelector } from "./EntryPointSelector";
 import type { EntryPoint } from "@/types/trip";
 
@@ -107,7 +108,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="font-serif text-lg text-foreground">Trip Essentials</h3>
+        <h3 className={typography({ intent: "editorial-h3" })}>Trip Essentials</h3>
         <p className="mt-1 text-sm text-foreground-secondary">
           Set the basics for your Japan adventure.
         </p>
