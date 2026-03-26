@@ -405,6 +405,26 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
           </motion.section>
         )}
 
+        {/* Insider Tip */}
+        {location.insiderTip && (
+          <motion.section {...sectionReveal}>
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "color-mix(in srgb, var(--warning) 8%, transparent)" }}
+            >
+              <p
+                className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.15em]"
+                style={{ color: "var(--warning)" }}
+              >
+                Insider tip
+              </p>
+              <p className="text-sm leading-relaxed text-(--foreground-body,var(--muted-foreground))">
+                {location.insiderTip}
+              </p>
+            </div>
+          </motion.section>
+        )}
+
         {/* Practical info */}
         {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo || location.dietaryOptions?.servesVegetarianFood || mealLabels || serviceLabels) && (
           <motion.section {...sectionReveal} className="space-y-3">
