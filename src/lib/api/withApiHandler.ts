@@ -10,6 +10,7 @@ import {
   type RequestContext,
 } from "./middleware";
 import { internalError } from "./errors";
+import { checkDailyQuota, type DailyQuotaConfig } from "./dailyQuota";
 import type { User } from "@supabase/supabase-js";
 
 type RateLimitConfig = {
@@ -19,6 +20,7 @@ type RateLimitConfig = {
 
 type HandlerOptions = {
   rateLimit?: RateLimitConfig;
+  dailyQuota?: DailyQuotaConfig;
   requireAuth?: boolean;
   optionalAuth?: boolean;
   requireJson?: boolean;
@@ -98,6 +100,15 @@ export function withApiHandler(handler: HandlerFn, options: HandlerOptions = {})
       const authResult = await getOptionalAuth(request, context);
       user = authResult.user;
       finalContext = authResult.context;
+    }
+
+    // Daily quota check (after auth so we can key by userId when available)
+    if (options.dailyQuota) {
+      const identifier = user?.id || finalContext.ip;
+      const quotaResponse = await checkDailyQuota(identifier, options.dailyQuota);
+      if (quotaResponse) {
+        return addRequestContextHeaders(quotaResponse, finalContext);
+      }
     }
 
     try {

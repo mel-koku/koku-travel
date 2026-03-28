@@ -7,7 +7,7 @@ import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
 import { badRequest, serviceUnavailable, internalError } from "@/lib/api/errors";
 import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -130,4 +130,4 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     );
     return internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId });
   }
-}, { rateLimit: RATE_LIMITS.CHAT });
+}, { rateLimit: RATE_LIMITS.CHAT, dailyQuota: DAILY_QUOTAS.CHAT, optionalAuth: true });
