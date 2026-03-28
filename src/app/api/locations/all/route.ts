@@ -75,6 +75,7 @@ export const GET = withApiHandler(
       .from("locations")
       .select("id", { count: "exact", head: true })
       .eq("is_active", true)
+      .eq("is_accommodation", false)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
     if (countError) {
@@ -98,6 +99,7 @@ export const GET = withApiHandler(
         .from("locations")
         .select(LOCATION_EXPLORE_COLUMNS)
         .eq("is_active", true)
+        .eq("is_accommodation", false)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .order("name", { ascending: true })
         .range(from, to);
