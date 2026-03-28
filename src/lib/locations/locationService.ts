@@ -480,6 +480,7 @@ export async function fetchAllLocations(
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
     .eq("is_active", true)
+    .eq("is_accommodation", false)
     .order("name", { ascending: true });
 
   if (cities && cities.length > 0) {
@@ -514,6 +515,7 @@ export async function fetchAllLocations(
             .from("locations")
             .select(LOCATION_ITINERARY_COLUMNS)
             .eq("is_active", true)
+            .eq("is_accommodation", false)
             .order("name", { ascending: true });
 
           if (cities && cities.length > 0) {

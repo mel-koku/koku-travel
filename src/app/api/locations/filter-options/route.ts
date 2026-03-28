@@ -66,6 +66,7 @@ export const GET = withApiHandler(
         .from("locations")
         .select("city, category, region, prefecture, neighborhood")
         .eq("is_active", true)
+        .eq("is_accommodation", false)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .range(from, to);
 
