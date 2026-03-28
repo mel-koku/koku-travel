@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { badRequest } from "@/lib/api/errors";
 import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
@@ -233,5 +233,5 @@ export const POST = withApiHandler(
       targetCityId,
     });
   },
-  { rateLimit: RATE_LIMITS.DAY_TRIPS_PLAN },
+  { rateLimit: RATE_LIMITS.DAY_TRIPS_PLAN, dailyQuota: DAILY_QUOTAS.DAY_TRIPS_PLAN, optionalAuth: true },
 );

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, aiRecommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
@@ -231,7 +231,7 @@ export const POST = withApiHandler(
       fallback: isFallback,
     });
   },
-  { rateLimit: RATE_LIMITS.AI_RECOMMEND, requireJson: true },
+  { rateLimit: RATE_LIMITS.AI_RECOMMEND, dailyQuota: DAILY_QUOTAS.AI_RECOMMEND, optionalAuth: true, requireJson: true },
 );
 
 /**

@@ -8,7 +8,7 @@ import { findMealRecommendation } from "@/lib/mealPlanning";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, recommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
@@ -801,5 +801,5 @@ export const POST = withApiHandler(
     return NextResponse.json(response, { status: 200 });
 
   },
-  { rateLimit: RATE_LIMITS.SMART_PROMPTS, requireJson: true },
+  { rateLimit: RATE_LIMITS.SMART_PROMPTS, dailyQuota: DAILY_QUOTAS.SMART_PROMPTS, optionalAuth: true, requireJson: true },
 );

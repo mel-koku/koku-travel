@@ -30,3 +30,16 @@ export const RATE_LIMITS = {
   DAY_TRIPS_SUGGEST: { maxRequests: 20, windowMs: 60_000 },
   DAY_TRIPS_PLAN: { maxRequests: 10, windowMs: 60_000 },
 } as const;
+
+/**
+ * Daily quota configuration for expensive AI/external API endpoints.
+ * Caps total usage per user (or IP) per calendar day to control costs.
+ * Works alongside per-minute rate limits in RATE_LIMITS above.
+ */
+export const DAILY_QUOTAS = {
+  ITINERARY_PLAN: { name: "itinerary-plan", maxPerDay: 15 },
+  CHAT: { name: "chat", maxPerDay: 50 },
+  DAY_TRIPS_PLAN: { name: "day-trip-plan", maxPerDay: 10 },
+  AI_RECOMMEND: { name: "ai-recommend", maxPerDay: 30 },
+  SMART_PROMPTS: { name: "smart-prompts", maxPerDay: 30 },
+} as const;
