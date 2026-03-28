@@ -4,7 +4,7 @@ import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
 import { badRequest, internalError, gatewayTimeout } from "@/lib/api/errors";
@@ -193,5 +193,5 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       { requestId: context.requestId },
     );
   }
-}, { rateLimit: RATE_LIMITS.ITINERARY_PLAN, optionalAuth: true, requireJson: true });
+}, { rateLimit: RATE_LIMITS.ITINERARY_PLAN, dailyQuota: DAILY_QUOTAS.ITINERARY_PLAN, optionalAuth: true, requireJson: true });
 
