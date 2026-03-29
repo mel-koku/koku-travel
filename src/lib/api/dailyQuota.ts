@@ -100,7 +100,6 @@ export async function checkDailyQuota(
     }
 
     const resetAt = getResetTimestamp();
-    const remaining = Math.max(0, config.maxPerDay - count);
 
     if (count > config.maxPerDay) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
