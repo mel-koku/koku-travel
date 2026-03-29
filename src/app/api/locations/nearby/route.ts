@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import { internalError } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 const NEARBY_COLUMNS = `
   id,
@@ -69,12 +70,9 @@ export const GET = withApiHandler(
     const latDelta = radiusKm / 111.0;
     const lngDelta = radiusKm / (111.0 * Math.cos((lat * Math.PI) / 180));
 
-    let query = supabase
-      .from("locations")
-      .select(NEARBY_COLUMNS)
-      .eq("is_active", true)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
-      .gte("coordinates->lat", lat - latDelta)
+    let query = applyActiveLocationFilters(
+      supabase.from("locations").select(NEARBY_COLUMNS)
+    ).gte("coordinates->lat", lat - latDelta)
       .lte("coordinates->lat", lat + latDelta)
       .gte("coordinates->lng", lng - lngDelta)
       .lte("coordinates->lng", lng + lngDelta);

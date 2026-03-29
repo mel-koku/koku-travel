@@ -6,6 +6,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import type { FilterOption, FilterMetadata } from "@/types/filters";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 /** Two-tier cache: globalThis + file (survives dev server restarts) */
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
@@ -62,12 +63,9 @@ export const GET = withApiHandler(
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data: batch, error } = await supabase
-        .from("locations")
-        .select("city, category, region, prefecture, neighborhood")
-        .eq("is_active", true)
-        .eq("is_accommodation", false)
-        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+      const { data: batch, error } = await applyActiveLocationFilters(
+        supabase.from("locations").select("city, category, region, prefecture, neighborhood")
+      ).eq("is_accommodation", false)
         .range(from, to);
 
       if (error) {
