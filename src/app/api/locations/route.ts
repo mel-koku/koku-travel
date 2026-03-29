@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/pagination";
 import { LOCATION_LISTING_COLUMNS, type LocationListingDbRow } from "@/lib/supabase/projections";
 import { applySearchFilter } from "@/lib/supabase/searchFilters";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 /**
  * GET /api/locations
@@ -42,11 +43,9 @@ export const GET = withApiHandler(
 
     // Get total count for pagination metadata (with filters)
     // Exclude permanently closed locations at the database level
-    let countQuery = supabase
-      .from("locations")
-      .select("*", { count: "exact", head: true })
-      .eq("is_active", true)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+    let countQuery = applyActiveLocationFilters(
+      supabase.from("locations").select("*", { count: "exact", head: true })
+    );
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
     if (featured === "true") countQuery = countQuery.eq("is_featured", true);
@@ -69,11 +68,9 @@ export const GET = withApiHandler(
 
     // Fetch paginated locations (with filters)
     // Exclude permanently closed locations at the database level
-    let dataQuery = supabase
-      .from("locations")
-      .select(LOCATION_LISTING_COLUMNS)
-      .eq("is_active", true)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+    let dataQuery = applyActiveLocationFilters(
+      supabase.from("locations").select(LOCATION_LISTING_COLUMNS)
+    );
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
     if (featured === "true") dataQuery = dataQuery.eq("is_featured", true);

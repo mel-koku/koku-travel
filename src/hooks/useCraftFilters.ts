@@ -5,17 +5,19 @@ import type { Location } from "@/types/location";
 import type { ActiveFilter } from "@/types/filters";
 import type { CraftTypeId } from "@/data/craftTypes";
 import { CRAFT_TYPES } from "@/data/craftTypes";
-import { DURATION_FILTERS } from "@/data/durationFilters";
-import { calculatePopularityScore } from "@/lib/utils/popularityScoring";
-import { parseDuration } from "@/lib/utils/durationParser";
-import { generateFallbackRating, generateFallbackReviewCount } from "@/lib/utils/ratingFallbacks";
-import { normalizePrefecture } from "@/lib/utils/prefectureUtils";
+import {
+  DURATION_FILTERS,
+  calculatePopularityScore,
+  parseDuration,
+  generateFallbackRating,
+  generateFallbackReviewCount,
+  normalizePrefecture,
+  PAGE_SIZE,
+} from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
 
 export { DURATION_FILTERS };
-
-const PAGE_SIZE = 24;
 
 export type CraftSortOptionId = "recommended" | "highest_rated" | "most_reviews" | "duration_short";
 

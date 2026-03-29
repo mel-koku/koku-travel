@@ -9,16 +9,17 @@ import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
-import { DURATION_FILTERS } from "@/data/durationFilters";
-import { calculatePopularityScore } from "@/lib/utils/popularityScoring";
-import { parseDuration } from "@/lib/utils/durationParser";
-import { normalizePrefecture } from "@/lib/utils/prefectureUtils";
+import {
+  DURATION_FILTERS,
+  calculatePopularityScore,
+  parseDuration,
+  normalizePrefecture,
+  PAGE_SIZE,
+} from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
 
 export { DURATION_FILTERS };
-
-const PAGE_SIZE = 24;
 
 export type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
