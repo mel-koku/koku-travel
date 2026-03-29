@@ -1,10 +1,8 @@
-import { getRegionForCity, REGIONS } from "@/data/regions";
 import { shouldSuggestDayTrip, getDayTripsFromCity, type DayTripConfig } from "@/data/dayTrips";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
+import type { CityId, InterestId, TripBuilderData } from "@/types/trip";
 import type { TripWeatherContext, WeatherForecast } from "@/types/weather";
-import { getCategoryDefaultDuration } from "./durationExtractor";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -28,136 +26,26 @@ import {
   getTravelTime,
 } from "@/lib/scheduling/timeSlots";
 import {
-  type CityInfo,
   CITY_INFO_BY_KEY,
-  REGION_ID_BY_LABEL,
   expandCitySequenceForDays,
   resolveCitySequence,
 } from "@/lib/routing/citySequence";
 import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
 import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
 
-import { DINING_CATEGORIES } from "@/data/mealCategories";
-
-/**
- * Food-related location categories for meal detection.
- */
-const FOOD_CATEGORIES = new Set<string>(DINING_CATEGORIES);
-
-/**
- * Check if a location category indicates a food/dining establishment.
- */
-function isFoodCategory(category: string): boolean {
-  return FOOD_CATEGORIES.has(category.toLowerCase());
-}
-
-/**
- * Infer meal type from time of day.
- */
-function inferMealTypeFromTimeSlot(
-  timeSlot: "morning" | "afternoon" | "evening"
-): "breakfast" | "lunch" | "dinner" {
-  switch (timeSlot) {
-    case "morning":
-      return "breakfast";
-    case "afternoon":
-      return "lunch";
-    case "evening":
-      return "dinner";
-  }
-}
-
-/**
- * Pick a time slot for a saved location based on its category.
- * Falls back to the least-used slot when the preferred slot is >80% capacity.
- */
-function pickTimeSlotForSaved(
-  category: string,
-  timeSlotUsage: Map<string, number>,
-): "morning" | "afternoon" | "evening" {
-  const cat = category.toLowerCase();
-
-  // Category → preferred time slot mapping
-  const EVENING_CATS = new Set(["bar", "entertainment"]);
-  const AFTERNOON_CATS = new Set(["museum", "shopping", "mall", "craft"]);
-  const MORNING_CATS = new Set(["shrine", "temple", "park", "garden", "market", "nature", "viewpoint"]);
-
-  let preferred: "morning" | "afternoon" | "evening" = "morning";
-  if (EVENING_CATS.has(cat)) preferred = "evening";
-  else if (AFTERNOON_CATS.has(cat)) preferred = "afternoon";
-  else if (MORNING_CATS.has(cat)) preferred = "morning";
-
-  // Check if preferred slot is over 80% capacity
-  const capacities = { morning: 180, afternoon: 300, evening: 240 };
-  const usage = timeSlotUsage.get(preferred) ?? 0;
-  if (usage < capacities[preferred] * 0.8) return preferred;
-
-  // Overflow to the least-used slot
-  const slots: ("morning" | "afternoon" | "evening")[] = ["morning", "afternoon", "evening"];
-  slots.sort((a, b) => (timeSlotUsage.get(a) ?? 0) - (timeSlotUsage.get(b) ?? 0));
-  return slots[0]!;
-}
-
-const DEFAULT_TOTAL_DAYS = 5;
-const DEFAULT_INTEREST_ROTATION: readonly InterestId[] = ["culture", "nature", "shopping"];
-
-type LocationCategory = Location["category"];
-
-/**
- * Builds location maps from an array of locations.
- * Organizes locations by city and region for efficient lookup.
- */
-function buildLocationMaps(locations: Location[]): {
-  locationsByCityKey: Map<string, Location[]>;
-  locationsByRegionId: Map<RegionId, Location[]>;
-  allLocations: Location[];
-} {
-  const locationsByCityKey = new Map<string, Location[]>();
-  const locationsByRegionId = new Map<RegionId, Location[]>();
-
-  locations.forEach((location) => {
-    // Use planning_city (coordinate-snapped KnownCityId) when available, fall back to city field
-    const cityKey = location.planningCity ?? normalizeKey(location.city);
-    if (!cityKey) {
-      return;
-    }
-    const regionIdFromLabel = REGION_ID_BY_LABEL.get(normalizeKey(location.region));
-    const existingInfo = CITY_INFO_BY_KEY.get(cityKey);
-    const info: CityInfo =
-      existingInfo ??
-      (() => {
-        const fallback: CityInfo = { key: cityKey, label: location.planningCity ?? location.city, regionId: regionIdFromLabel };
-        CITY_INFO_BY_KEY.set(cityKey, fallback);
-        return fallback;
-      })();
-
-    const cityList = locationsByCityKey.get(cityKey);
-    if (cityList) {
-      cityList.push(location);
-    } else {
-      locationsByCityKey.set(cityKey, [location]);
-    }
-
-    if (info.regionId) {
-      const regionList = locationsByRegionId.get(info.regionId);
-      if (regionList) {
-        regionList.push(location);
-      } else {
-        locationsByRegionId.set(info.regionId, [location]);
-      }
-    }
-  });
-
-  // Sort locations within each map
-  locationsByCityKey.forEach((locationList) => locationList.sort((a, b) => a.name.localeCompare(b.name)));
-  locationsByRegionId.forEach((locationList) => locationList.sort((a, b) => a.name.localeCompare(b.name)));
-
-  return {
-    locationsByCityKey,
-    locationsByRegionId,
-    allLocations: locations,
-  };
-}
+// Import from generation sub-modules
+import {
+  DEFAULT_TOTAL_DAYS,
+  isFoodCategory,
+  inferMealTypeFromTimeSlot,
+  pickTimeSlotForSaved,
+  resolveInterestSequence,
+  buildTags,
+  buildDayTitle,
+  capitalize,
+  getLocationDurationMinutes,
+} from "@/lib/generation/helpers";
+import { buildLocationMaps } from "@/lib/generation/locationFetcher";
 
 
 /**
@@ -972,126 +860,3 @@ export async function generateItinerary(
   return { days };
 }
 
-function resolveInterestSequence(data: TripBuilderData): InterestId[] {
-  if (data.interests && data.interests.length > 0) {
-    return data.interests;
-  }
-  return [...DEFAULT_INTEREST_ROTATION];
-}
-
-function buildTags(interest: InterestId, category: LocationCategory): string[] {
-  const tags: string[] = [];
-  const interestMap: Record<InterestId, string> = {
-    culture: "cultural",
-    food: "dining",
-    nature: "nature",
-    nightlife: "nightlife",
-    shopping: "shopping",
-    photography: "photo spot",
-    wellness: "relaxation",
-    history: "historical",
-    craft: "artisan",
-  };
-
-  const categoryMap: Record<string, string> = {
-    shrine: "shrine",
-    temple: "temple",
-    landmark: "landmark",
-    restaurant: "restaurant",
-    market: "market",
-    park: "park",
-    garden: "garden",
-    shopping: "shopping",
-    bar: "bar",
-    entertainment: "entertainment",
-    museum: "museum",
-    viewpoint: "viewpoint",
-    nature: "nature",
-    culture: "culture",
-    onsen: "onsen",
-    wellness: "wellness",
-    cafe: "cafe",
-    aquarium: "aquarium",
-    beach: "beach",
-    castle: "castle",
-    historic_site: "historic site",
-    theater: "theater",
-    zoo: "zoo",
-    craft: "craft workshop",
-  };
-
-  const interestTag = interestMap[interest];
-  if (interestTag) {
-    tags.push(interestTag);
-  }
-
-  const categoryTag = categoryMap[category];
-  if (categoryTag && categoryTag !== interestTag) {
-    tags.push(categoryTag);
-  }
-
-  return tags;
-}
-
-function buildDayTitle(dayIndex: number, cityKey: string): string {
-  const region = getRegionForCity(cityKey);
-  if (region) {
-    const cityInfo = CITY_INFO_BY_KEY.get(cityKey);
-    const cityLabel = cityInfo?.label ?? capitalize(cityKey);
-    return `Day ${dayIndex + 1} (${cityLabel})`;
-  }
-
-  // For unknown cities, try to find city name from REGIONS
-  for (const regionData of REGIONS) {
-    const city = regionData.cities.find((c) => c.id === cityKey);
-    if (city) {
-      return `Day ${dayIndex + 1} (${city.name})`;
-    }
-  }
-  const info = CITY_INFO_BY_KEY.get(cityKey);
-  const label = info?.label ?? capitalize(cityKey);
-  return `Day ${dayIndex + 1} (${label})`;
-}
-
-/**
- * Get the duration of a location in minutes.
- * Prefers recommendedVisit.typicalMinutes, falls back to parsing estimatedDuration string,
- * then category-based defaults.
- * 
- * Note: This is a synchronous function used during initial itinerary generation.
- * For more accurate durations with Google Places data, see determineVisitDuration
- * in itineraryPlanner.ts which runs during the planning phase.
- */
-function getLocationDurationMinutes(location: Location): number {
-  // 1. Prefer structured recommendation
-  if (location.recommendedVisit?.typicalMinutes) {
-    return location.recommendedVisit.typicalMinutes;
-  }
-
-  // 2. Parse estimatedDuration string (e.g., "1.5 hours", "2 hours", "0.5 hours")
-  if (location.estimatedDuration) {
-    const match = location.estimatedDuration.match(/(\d+(?:\.\d+)?)\s*(?:hour|hours|hr|hrs)/i);
-    if (match) {
-      const hours = parseFloat(match[1] ?? "1");
-      return Math.round(hours * 60);
-    }
-  }
-
-  // 3. Use category-based default if available
-  if (location.category) {
-    const categoryDefault = getCategoryDefaultDuration(location.category);
-    if (categoryDefault !== 90) {
-      // Only use if it's different from the global default
-      return categoryDefault;
-    }
-  }
-
-  // 4. Default fallback: 90 minutes
-  return 90;
-}
-
-
-function capitalize(str: string): string {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
