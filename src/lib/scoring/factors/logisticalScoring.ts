@@ -1,0 +1,110 @@
+import type { Location } from "@/types/location";
+import type { LocationScoringCriteria, ScoringResult } from "@/lib/scoring/types";
+import { calculateDistance } from "@/lib/utils/geoUtils";
+import { getLocationDurationMinutes } from "@/lib/scoring/factors/helpers";
+
+/**
+ * Score logistical fit (distance, duration, time slot).
+ * Range: -100 to 20 points
+ *
+ * IMPORTANT: Locations >50km away receive a hard penalty of -100 to effectively
+ * exclude them from selection. This prevents cross-region recommendations where
+ * a location's city field may be incorrect (e.g., "Osaka" location actually in Okinawa).
+ */
+export function scoreLogisticalFit(
+  location: Location,
+  criteria: LocationScoringCriteria,
+): ScoringResult {
+  let score = 10; // Base score
+  const reasons: string[] = [];
+
+  // Distance scoring with hard cutoffs and stronger penalties
+  if (criteria.currentLocation && location.coordinates) {
+    const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
+
+    // Contextual distance threshold: nature/outdoor locations get extended
+    // range when the traveler selected nature_adventure or local_secrets vibes
+    // with a relaxed pace. A guide wouldn't skip Shirakami Sanchi (60km from
+    // Aomori) for a nature lover with time to spare.
+    const EXTENDED_RANGE_CATEGORIES = new Set(["nature", "park", "beach", "viewpoint", "onsen", "craft"]);
+    const useExtendedRange =
+      (criteria.hasNatureAdventureVibe || criteria.hasLocalSecretsVibe) &&
+      criteria.travelStyle === "relaxed" &&
+      location.category != null &&
+      EXTENDED_RANGE_CATEGORIES.has(location.category);
+    const hardCutoffKm = useExtendedRange ? 75 : 50;
+
+    // CRITICAL: Hard cutoff for locations way too far away
+    // This catches data corruption where locations have wrong city assignments
+    if (distanceKm > hardCutoffKm) {
+      // Return immediately with hard penalty - this location should not be selected
+      return {
+        score: -100,
+        reasoning: `Location is ${distanceKm.toFixed(1)}km away - outside acceptable range (max ${hardCutoffKm}km).${useExtendedRange ? "" : " May indicate incorrect city assignment."}`,
+      };
+    }
+
+    // Graduated distance scoring with stronger penalties for far locations
+    if (distanceKm < 1) {
+      score += 8;
+      reasons.push("Very close (<1km)");
+    } else if (distanceKm < 3) {
+      score += 6;
+      reasons.push("Nearby (1-3km)");
+    } else if (distanceKm < 5) {
+      score += 4;
+      reasons.push("Moderate distance (3-5km)");
+    } else if (distanceKm < 10) {
+      score += 1;
+      reasons.push("Far (5-10km)");
+    } else if (distanceKm < 20) {
+      score -= 5;
+      reasons.push(`Far away (${distanceKm.toFixed(1)}km) - consider closer options`);
+    } else if (distanceKm < 50) {
+      score -= 15;
+      reasons.push(`Very far (${distanceKm.toFixed(1)}km) - significant travel required`);
+    } else if (distanceKm < 75) {
+      // Extended range band: steep penalty so closer alternatives still win,
+      // but the location can survive if interest/rating/tag scores are strong
+      score -= 25;
+      reasons.push(`Extended range (${distanceKm.toFixed(1)}km) - nature/adventure day trip`);
+    }
+  } else {
+    reasons.push("No distance data available");
+  }
+
+  // Duration fit (0-7 points)
+  const locationDuration = getLocationDurationMinutes(location);
+  const availableMinutes = criteria.availableMinutes;
+
+  if (locationDuration <= availableMinutes * 0.3) {
+    score += 2; // Too short, but acceptable
+    reasons.push("Short duration, fits easily");
+  } else if (locationDuration <= availableMinutes * 0.7) {
+    score += 7; // Optimal duration
+    reasons.push("Duration fits well in time slot");
+  } else if (locationDuration <= availableMinutes * 1.1) {
+    score += 4; // Slightly over, but manageable
+    reasons.push("Duration slightly exceeds available time");
+  } else {
+    score -= 3; // Too long
+    reasons.push("Duration exceeds available time significantly");
+  }
+
+  // Travel style adjustment (0-5 points)
+  if (criteria.travelStyle === "fast" && locationDuration > 180) {
+    score -= 2; // Penalize long activities for fast pace
+    reasons.push("Too long for fast-paced travel");
+  } else if (criteria.travelStyle === "relaxed" && locationDuration < 60) {
+    score -= 1; // Prefer longer activities for relaxed pace
+    reasons.push("Short duration for relaxed pace");
+  }
+
+  // Clamp score to -100 to 20 range (negative values for hard penalties)
+  score = Math.max(-100, Math.min(20, score));
+
+  return {
+    score,
+    reasoning: reasons.join("; "),
+  };
+}
