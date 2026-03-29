@@ -7,8 +7,8 @@ import { PlacesCardB } from "@/components-b/features/places/PlacesCardB";
 import { useSaved } from "@/context/SavedContext";
 import { useSavedLocations } from "@/hooks/useSavedLocations";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type SavedClientBProps = {
   content?: PagesContent;

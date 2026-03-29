@@ -64,6 +64,7 @@ const PrintFooterLazy = dynamic(
 import { REGIONS } from "@/data/regions";
 import { useItineraryDiscover } from "@/components/features/itinerary/hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanelB } from "./ItineraryDiscoverPanelB";
+import { bEase } from "@/lib/variant-b-motion";
 
 const DiscoverMapB = dynamic(
   () => import("@b/features/discover/DiscoverMapB").then((m) => ({ default: m.DiscoverMapB })),
@@ -80,8 +81,6 @@ const PlaceDetailPanelBLazy = dynamic(
   { ssr: false },
 );
 
-// B motion tokens
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 const bDurationFast = 0.2;
 const bDurationMedium = 0.35;
 

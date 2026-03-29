@@ -10,8 +10,8 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type LocationSearchBarBProps = {
   /** Current day's activities (for duplicate detection + timeOfDay inference) */

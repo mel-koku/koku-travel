@@ -13,8 +13,8 @@ import type { SanityExperience } from "@/types/sanityExperience";
 import type { ExperienceSummary } from "@/types/experience";
 import type { Location } from "@/types/location";
 import type { ExperiencePerson } from "@/types/person";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const sectionReveal = {
   initial: { opacity: 0, y: 10 },

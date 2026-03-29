@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 /** Animate a number from 0 to target over ~1.2s when visible. */
 function AnimatedCounter({ value }: { value: number }) {

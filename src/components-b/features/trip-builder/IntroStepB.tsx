@@ -7,8 +7,8 @@ import { vibesToInterests } from "@/data/vibes";
 import type { TripBuilderData, CityId, EntryPoint } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { VibeId } from "@/data/vibes";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const QUICK_ENTRY_POINTS: Record<string, EntryPoint> = {
   NRT: { type: "airport", id: "nrt", name: "Narita International Airport", iataCode: "NRT", cityId: "tokyo", coordinates: { lat: 35.7647, lng: 140.3864 }, region: "kanto" },

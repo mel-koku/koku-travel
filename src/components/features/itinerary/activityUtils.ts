@@ -1,5 +1,6 @@
 import type { Location } from "@/types/location";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
+import { hashString } from "@/lib/utils/hashString";
 
 const CATEGORY_DESCRIPTORS: Record<string, string> = {
   culture: "Historic cultural landmark",
@@ -66,14 +67,6 @@ function generateReviewCountFromId(seed: string): number {
   return 120 + (hash % 780) + Math.floor(hash % 4) * 100;
 }
 
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
-}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
