@@ -6,8 +6,8 @@ import type { ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import type { StoredTrip } from "@/state/AppState";
 import { groupTrips, getTripStatus, type TripLifecycleStatus } from "@/lib/trip/tripStatus";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 const STATUS_CONFIG_B: Record<TripLifecycleStatus, { label: string; tint: string; text: string }> = {
   active: { label: "Active", tint: "color-mix(in srgb, var(--success) 12%, transparent)", text: "var(--success)" },

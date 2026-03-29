@@ -8,8 +8,8 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 type DateFormValues = {
   start?: string;

@@ -13,8 +13,8 @@ import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const stepVariants = {
   enter: (dir: number) => ({

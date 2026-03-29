@@ -33,7 +33,6 @@ import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { RouteOverviewB } from "./RouteOverviewB";
 import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type TripConfidenceDashboardBProps = {
   itinerary: Itinerary;
@@ -774,6 +773,7 @@ function ChecklistRowB({
 
 import { CONFIDENCE_CHECKLIST_STORAGE_KEY } from "@/lib/constants/storage";
 import { getLocal, setLocal } from "@/lib/storageHelpers";
+import { bEase } from "@/lib/variant-b-motion";
 
 function loadChecklist(): Set<string> {
   const stored = getLocal<string[]>(CONFIDENCE_CHECKLIST_STORAGE_KEY);

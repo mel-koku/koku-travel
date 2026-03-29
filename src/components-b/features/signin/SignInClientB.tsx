@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type SignInClientBProps = {
   content?: PagesContent;

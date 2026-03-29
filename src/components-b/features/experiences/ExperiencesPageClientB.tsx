@@ -6,8 +6,8 @@ import { cn } from "@/lib/cn";
 import { ExperienceCardB } from "./ExperienceCardB";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type ExperiencesPageClientBProps = {
   experiences: ExperienceSummary[];

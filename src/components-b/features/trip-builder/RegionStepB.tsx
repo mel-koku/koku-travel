@@ -19,8 +19,8 @@ import { RegionDetailPanelB } from "./RegionDetailPanelB";
 import type { CityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 function mergeRegionOverride(
   region: RegionDescription,

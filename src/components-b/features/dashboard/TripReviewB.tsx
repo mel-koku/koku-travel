@@ -6,8 +6,8 @@ import dynamic from "next/dynamic";
 import { motion, useInView } from "framer-motion";
 import { MapPin, Star, Calendar, Compass, ArrowLeft } from "lucide-react";
 import { REGIONS } from "@/data/regions";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type SummaryData = {
   tripName: string;

@@ -9,27 +9,12 @@ import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
+import { DURATION_FILTERS } from "@/data/durationFilters";
+import { calculatePopularityScore } from "@/lib/utils/popularityScoring";
+import { parseDuration } from "@/lib/utils/durationParser";
+import { normalizePrefecture } from "@/lib/utils/prefectureUtils";
 
 // ── Constants ──────────────────────────────────────────────
-
-const DURATION_FILTERS = [
-  {
-    id: "short",
-    label: "Under 1 hour",
-    predicate: (value: number | null) => value !== null && value <= 60,
-  },
-  {
-    id: "medium",
-    label: "1\u20133 hours",
-    predicate: (value: number | null) =>
-      value !== null && value >= 60 && value <= 180,
-  },
-  {
-    id: "long",
-    label: "Over 3 hours",
-    predicate: (value: number | null) => value !== null && value > 180,
-  },
-] as const;
 
 export { DURATION_FILTERS };
 
@@ -55,37 +40,6 @@ type EnhancedLocation = Location & {
 
 export type { EnhancedLocation };
 
-function parseDuration(value?: string): number | null {
-  if (!value) return null;
-  const trimmed = value.trim();
-  // After normalization, most durations are plain integers (minutes)
-  const asInt = parseInt(trimmed, 10);
-  if (!isNaN(asInt) && String(asInt) === trimmed) return asInt;
-  // Legacy text formats (backward compat)
-  const normalized = trimmed.toLowerCase();
-  const match = normalized.match(
-    /([0-9]+(?:\.[0-9]+)?)\s*(hour|hours|hr|hrs|minute|minutes|day|days)/
-  );
-  if (!match || !match[1] || !match[2]) return null;
-  const amount = Number.parseFloat(match[1]);
-  if (Number.isNaN(amount)) return null;
-  const unit = match[2];
-  if (unit.startsWith("day")) return amount * 24 * 60;
-  if (unit.startsWith("hour") || unit.startsWith("hr")) return amount * 60;
-  if (unit.startsWith("minute")) return amount;
-  return null;
-}
-
-function calculatePopularityScore(rating: number | null, reviewCount: number | null): number {
-  const r = rating ?? 0;
-  const v = reviewCount ?? 0;
-  if (r === 0 || v === 0) return 0;
-  const m = 50;
-  const C = 4.2;
-  const score = (v / (v + m)) * r + (m / (v + m)) * C;
-  const reviewBoost = Math.log10(v + 1) / 10;
-  return score + reviewBoost;
-}
 
 // ── Category diversity interleaving ───────────────────────
 // Prevents dining-heavy clusters in the default "recommended" sort
@@ -230,16 +184,6 @@ export function usePlacesFilters(
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
-
-    const normalizePrefecture = (name: string | undefined): string => {
-      if (!name) return '';
-      return name
-        .replace(/\s+Prefecture$/i, '')
-        .replace(/-ken$/i, '')
-        .replace(/-fu$/i, '')
-        .replace(/-to$/i, '')
-        .trim();
-    };
 
     const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
 

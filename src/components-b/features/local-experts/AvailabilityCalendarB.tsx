@@ -7,8 +7,8 @@ import { usePersonBookedSlots, useCreateBooking, useBookingPrice } from "@/hooks
 import { useAuthState } from "@/components/ui/IdentityBadge";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { Person, BookingSession } from "@/types/person";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [

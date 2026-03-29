@@ -22,6 +22,7 @@ import { useState } from "react";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
 import { computeDefaultCityDays } from "@/lib/tripBuilder/cityDayAllocation";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
+import { bEase } from "@/lib/variant-b-motion";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -613,7 +614,6 @@ export function ReviewStepB({
   );
 }
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 /**
  * B-styled collapsible preference card — collapsed by default.
