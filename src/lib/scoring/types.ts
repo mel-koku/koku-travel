@@ -124,6 +124,7 @@ export interface LocationScoringCriteria {
   /**
    * Whether the user selected the "history_buff" or "temples_tradition" vibe.
    * UNESCO World Heritage Sites get a scoring boost when these vibes are active.
+   * Also extends distance threshold for cultural categories (temples, shrines, castles, historic sites).
    */
   hasHeritageVibe?: boolean;
 }

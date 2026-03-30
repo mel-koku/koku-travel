@@ -173,6 +173,7 @@ export function scoreLocation(
     ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
     ...(hiddenGem.localSecretsBonus > 0 ? [`Hidden gem + local_secrets vibe: +${hiddenGem.localSecretsBonus}`] : []),
     ...(hiddenGem.tagBonus > 0 ? [`Hidden gem + tag preference match: +${hiddenGem.tagBonus}`] : []),
+    ...(hiddenGem.iconicPenalty < 0 ? [`Iconic location penalty (local_secrets): ${hiddenGem.iconicPenalty}`] : []),
     ...(unesco.base > 0 ? [`UNESCO World Heritage Site: +${unesco.base}`] : []),
     ...(unesco.vibe > 0 ? [`UNESCO + heritage vibe: +${unesco.vibe}`] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),

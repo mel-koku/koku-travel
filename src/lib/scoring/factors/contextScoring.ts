@@ -35,7 +35,7 @@ export function scoreSeasonalMatch(
 
   if (hasMatch) {
     return {
-      scoreAdjustment: 5,
+      scoreAdjustment: 7,
       reasoning: `Seasonal match: ${seasonalTags.join(", ")} in month ${tripMonth}`,
     };
   }

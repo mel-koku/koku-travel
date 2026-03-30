@@ -22,16 +22,31 @@ export function scoreLogisticalFit(
   if (criteria.currentLocation && location.coordinates) {
     const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
 
-    // Contextual distance threshold: nature/outdoor locations get extended
-    // range when the traveler selected nature_adventure or local_secrets vibes
-    // with a relaxed pace. A guide wouldn't skip Shirakami Sanchi (60km from
-    // Aomori) for a nature lover with time to spare.
-    const EXTENDED_RANGE_CATEGORIES = new Set(["nature", "park", "beach", "viewpoint", "onsen", "craft"]);
+    // Contextual distance threshold: the 50-75km band opens up based on
+    // trip style and vibes. A Japan travel guide wouldn't skip Yamadera
+    // (60km from Sendai) for a history lover, or Ginzan Onsen (70km) for
+    // a relaxed traveler. But a fast-paced Tokyo foodie shouldn't get
+    // locations 75km away between lunch and dinner.
+    //
+    // Extended range (75km) activates when:
+    //   1. Relaxed pace (any vibe, any category) — relaxed travelers accept longer commutes
+    //   2. Nature/adventure vibes + nature-ish categories (any pace)
+    //   3. Cultural/history vibes + cultural categories (any pace)
+    //   4. Craft vibe + craft category (any pace)
+    const NATURE_CATEGORIES = new Set(["nature", "park", "beach", "viewpoint", "onsen"]);
+    const CULTURAL_CATEGORIES = new Set(["temple", "shrine", "castle", "historic_site", "culture", "landmark"]);
+    const category = location.category ?? "";
+
     const useExtendedRange =
-      (criteria.hasNatureAdventureVibe || criteria.hasLocalSecretsVibe) &&
-      criteria.travelStyle === "relaxed" &&
-      location.category != null &&
-      EXTENDED_RANGE_CATEGORIES.has(location.category);
+      // Relaxed pace always gets extended range
+      criteria.travelStyle === "relaxed" ||
+      // Nature vibes + nature categories
+      ((criteria.hasNatureAdventureVibe || criteria.hasLocalSecretsVibe) && NATURE_CATEGORIES.has(category)) ||
+      // Cultural vibes + cultural categories
+      (criteria.hasHeritageVibe && CULTURAL_CATEGORIES.has(category)) ||
+      // Local secrets vibe + craft category (craft absorbed into local_secrets)
+      (criteria.hasLocalSecretsVibe && category === "craft");
+
     const hardCutoffKm = useExtendedRange ? 75 : 50;
 
     // CRITICAL: Hard cutoff for locations way too far away
