@@ -132,24 +132,32 @@ export function scoreUnescoBonus(
 
 /**
  * Calculate hidden gem bonus. Two layers:
- * 1. Unconditional +5 when user selected "local_secrets" vibe — the vibe
- *    selection itself is intent signal. A guide doesn't need tag overlap
- *    to recommend a special place to someone who asked for discoveries.
- * 2. Additional +8 when the gem also matches 2+ preferred tags — rewards
- *    alignment between the hidden gem and specific user preferences.
- * Returns { localSecretsBonus, tagBonus, total }.
+ * 1. Unconditional +12 when user selected "local_secrets" vibe -- strong
+ *    signal that produces a fundamentally different itinerary.
+ * 2. Additional +3 when the gem also matches 2+ preferred tags.
+ * 3. Iconic locations get -5 penalty when local_secrets is active --
+ *    steers away from overcrowded spots toward neighborhood favorites.
+ * Returns { localSecretsBonus, tagBonus, iconicPenalty, total }.
  */
 export function scoreHiddenGemBonus(
   location: Location,
   hasLocalSecretsVibe?: boolean,
   tagMatchScore?: number,
-): { localSecretsBonus: number; tagBonus: number; total: number } {
+): { localSecretsBonus: number; tagBonus: number; iconicPenalty: number; total: number } {
   const localSecretsBonus = (
     location.isHiddenGem && hasLocalSecretsVibe
-  ) ? 5 : 0;
+  ) ? 12 : 0;
   const tagBonus = (
     location.isHiddenGem &&
     (tagMatchScore ?? 0) >= 10 // At least 2 matching tags
-  ) ? 8 : 0;
-  return { localSecretsBonus, tagBonus, total: localSecretsBonus + tagBonus };
+  ) ? 3 : 0;
+  // Iconic tourist locations get penalized when user wants local secrets
+  const isIconic = location.tags?.includes("iconic") ?? false;
+  const iconicPenalty = (hasLocalSecretsVibe && isIconic) ? -5 : 0;
+  return {
+    localSecretsBonus,
+    tagBonus,
+    iconicPenalty,
+    total: localSecretsBonus + tagBonus + iconicPenalty,
+  };
 }
