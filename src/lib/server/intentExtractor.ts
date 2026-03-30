@@ -96,8 +96,9 @@ Extract structured constraints from ALL the above information:
    - "temples_tradition" → { "shrine": 1.5, "temple": 1.5, "garden": 1.3, "craft": 1.2 }
    - "nature_adventure" → { "nature": 1.5, "park": 1.3, "garden": 1.2 }
    - "family_fun" → { "aquarium": 1.3, "zoo": 1.3, "park": 1.3, "entertainment": 1.2 }
-   - "neon_nightlife" → { "bar": 1.5, "entertainment": 1.4 }
-   - "artisan_craft" → { "craft": 2.0, "museum": 1.3, "shopping": 1.0 }
+   - "modern_japan" → { "bar": 1.5, "entertainment": 1.5, "shopping": 1.3 }
+   - "art_architecture" → { "museum": 1.8, "culture": 1.5, "entertainment": 1.2 }
+   - "local_secrets" → { "craft": 1.4 }
 
 6. **timePreference**: Infer from notes or vibes. Night-focused vibes → "night_owl". Early temple visits → "morning_person". Default to "no_preference".
 
