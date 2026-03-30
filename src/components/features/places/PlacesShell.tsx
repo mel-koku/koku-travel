@@ -215,8 +215,9 @@ export function PlacesShell({ content }: PlacesShellProps) {
       temples_tradition: "culture",
       foodie_paradise: "food",
       nature_adventure: "nature",
-      pop_culture: "shopping",
-      neon_nightlife: "shopping",
+      modern_japan: "shopping",
+      art_architecture: "culture",
+      zen_wellness: "nature",
     };
     if (selectedVibes.length === 1) {
       return vibeToCategory[selectedVibes[0]!] ?? null;

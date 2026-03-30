@@ -134,7 +134,7 @@ describe("regionScoring", () => {
     });
 
     it("includes entry point region's cities", () => {
-      const cities = autoSelectCities(["neon_nightlife"], tokyoEntryPoint);
+      const cities = autoSelectCities(["modern_japan"], tokyoEntryPoint);
       const kantoCities = ["tokyo", "yokohama"];
       const hasKantoCity = cities.some((c) => kantoCities.includes(c));
       expect(hasKantoCity).toBe(true);
