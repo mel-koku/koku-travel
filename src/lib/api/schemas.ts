@@ -4,7 +4,7 @@
 
 import { z } from "zod";
 import { INTEREST_CATEGORIES } from "@/data/interests";
-import { VIBES } from "@/data/vibes";
+import { normalizeVibeId } from "@/data/vibes";
 
 /**
  * Schema for location ID parameter
@@ -232,11 +232,19 @@ const interestIdSchema = z.enum(
 );
 
 /**
- * Schema for vibe ID (must be valid vibe from VIBES)
+ * Schema for vibe ID (accepts current IDs and legacy aliases)
  */
-const vibeIdSchema = z.enum(
-  VIBES.map((v) => v.id) as [string, ...string[]]
-);
+const vibeIdSchema = z.string().transform((val, ctx) => {
+  const normalized = normalizeVibeId(val);
+  if (!normalized) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Invalid vibe ID: ${val}`,
+    });
+    return z.NEVER;
+  }
+  return normalized;
+});
 
 /**
  * Schema for trip style
