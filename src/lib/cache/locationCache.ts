@@ -9,13 +9,18 @@
 import type { Location } from "@/types/location";
 import { LOCATION_STALE_TIME } from "@/lib/constants/time";
 
+/** Maximum cache entries before LRU eviction kicks in */
+const MAX_CACHE_SIZE = 1000;
+
 type CacheEntry = {
   location: Location;
   cachedAt: number;
 };
 
 /**
- * In-memory cache for location data
+ * In-memory cache for location data.
+ * Uses Map insertion order for LRU eviction: accessing an entry
+ * deletes and re-inserts it, keeping recently-used entries at the end.
  */
 const cache = new Map<string, CacheEntry>();
 
@@ -42,6 +47,10 @@ export function getCachedLocation(id: string): Location | null {
     return null;
   }
 
+  // Move to end of Map (most recently used) for LRU ordering
+  cache.delete(id);
+  cache.set(id, entry);
+
   return entry.location;
 }
 
@@ -51,10 +60,13 @@ export function getCachedLocation(id: string): Location | null {
  * @param location - Location to cache
  */
 export function setCachedLocation(location: Location): void {
+  // If key already exists, delete first to update insertion order
+  cache.delete(location.id);
   cache.set(location.id, {
     location,
     cachedAt: Date.now(),
   });
+  evictIfNeeded();
 }
 
 /**
@@ -65,11 +77,13 @@ export function setCachedLocation(location: Location): void {
 export function setCachedLocations(locations: Location[]): void {
   const now = Date.now();
   for (const location of locations) {
+    cache.delete(location.id);
     cache.set(location.id, {
       location,
       cachedAt: now,
     });
   }
+  evictIfNeeded();
 }
 
 /**
@@ -202,6 +216,21 @@ export async function batchFetchWithDeduplication(
   );
 
   return [...found, ...fetchedLocations, ...validPendingLocations];
+}
+
+/**
+ * Evicts least-recently-used entries when cache exceeds MAX_CACHE_SIZE.
+ * Map iteration order = insertion order, so the first entries are oldest.
+ */
+function evictIfNeeded(): void {
+  if (cache.size <= MAX_CACHE_SIZE) return;
+  const excess = cache.size - MAX_CACHE_SIZE;
+  let removed = 0;
+  for (const key of cache.keys()) {
+    if (removed >= excess) break;
+    cache.delete(key);
+    removed++;
+  }
 }
 
 /**
