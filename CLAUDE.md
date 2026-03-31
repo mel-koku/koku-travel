@@ -305,10 +305,11 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
                                                                        Trip + Guide
 ```
 
-### Pass 1: Intent Extraction (`intentExtractor.ts`)
+### Pass 1: Intent Extraction (`intentExtractor.ts` + `ruleBasedIntent.ts`)
 - **Input**: All builder data (notes, vibes, group, pace, accessibility, dates, cities)
 - **Output**: `IntentExtractionResult` — pinned locations, excluded categories, category weights (0.5-2.0), pacing hint, day constraints, time preference
-- **Latency**: 0s added (parallel with location fetch, 5s timeout)
+- **LLM Tiering**: Rule-based parser handles ~80% of trips (no free-text notes). Gemini only called when `accessibility.notes` or `dietaryOther` has content (needs NLP for pinned locations, day constraints). Rule-based path: 0ms latency, $0 cost.
+- **Latency**: 0s added (parallel with location fetch, 5s timeout for Gemini path)
 - **Integration**: Pinned locations injected before scoring loop. Excluded categories filter in `availableLocations`. Category weights multiply interest match score. Pacing hint scales time slot capacity.
 
 ### Pass 2: Day Refinement (`dayRefinement.ts`)
@@ -389,6 +390,7 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Gemini-enriched fields**: `name_japanese`, `nearest_station`, `cash_only`, `reservation_info`, `insider_tip`, `tags` (9-dimension)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, garden, onsen, entertainment, market, wellness, viewpoint, bar, aquarium, beach, cafe, castle, historic_site, theater, zoo, craft
 - **Vibes** (10): temples_tradition, foodie_paradise, nature_adventure, zen_wellness, modern_japan, art_architecture, local_secrets, family_fun, history_buff, in_season — defined in `src/data/vibes.ts`, filter mapping in `src/data/vibeFilterMapping.ts`
+- **Vibes vs Interests**: Vibes are user-facing aspirational labels stored on `TripBuilderData.vibes`. Interests (`InterestId` in `src/data/interests.ts`) are an internal scoring concept (culture, food, nature, etc.) used by the interest rotation system to ensure diversity per time slot. Interests are derived from vibes via `vibesToInterests()` at point of use. `TripBuilderData` does NOT store interests. `TravelerProfile` stores derived interests for downstream use (refinement engine, etc.).
 - **Tag Dimensions** (9): env (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day), seasonal, atmo (quiet/lively/contemplative/neutral), tourist (iconic/popular/local-favorite/hidden), time (morning/afternoon/sunset/evening/late-night/anytime), exp (scenic/hands-on/tasting/learning/spiritual/adrenaline/relaxation/photo-op), for (solo/couples/families/groups), char (traditional-japan/modern-japan/quirky-japan/zen-japan/pop-culture)
 - **Experiences**: 56 in Sanity (separate from locations/itinerary)
 - **Guides**: ~90 in Sanity
