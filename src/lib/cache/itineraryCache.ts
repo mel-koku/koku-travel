@@ -330,3 +330,12 @@ export function isItineraryCacheAvailable(): boolean {
   initializeRedis();
   return redisAvailable;
 }
+
+/**
+ * Returns the shared Redis client (or null if unavailable).
+ * Used by other modules that need Redis caching (e.g., LLM result caching).
+ */
+export function getRedisClient(): Redis | null {
+  initializeRedis();
+  return redisAvailable ? redisClient : null;
+}

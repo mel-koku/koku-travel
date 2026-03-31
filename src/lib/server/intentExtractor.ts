@@ -15,8 +15,12 @@ import { google } from "@ai-sdk/google";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
+import { generateCacheKey, getRedisClient } from "@/lib/cache/itineraryCache";
 import type { TripBuilderData } from "@/types/trip";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
+
+/** Intent cache TTL: 7 days (intent is deterministic for same builder data) */
+const INTENT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 /**
  * Extracts trip intent from builder data using Gemini.
@@ -29,6 +33,23 @@ export async function extractTripIntent(
 ): Promise<IntentExtractionResult | null> {
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return null;
+  }
+
+  // Check Redis cache for identical builder data
+  const redis = getRedisClient();
+  const itineraryCacheKey = generateCacheKey(builderData);
+  const intentCacheKey = itineraryCacheKey.replace("itinerary", "intent");
+
+  if (redis) {
+    try {
+      const cached = await redis.get<IntentExtractionResult>(intentCacheKey);
+      if (cached) {
+        logger.info("Intent extraction cache hit");
+        return cached;
+      }
+    } catch {
+      // Cache miss or error, proceed with LLM
+    }
   }
 
   const notes = builderData.accessibility?.notes?.trim();
@@ -138,6 +159,13 @@ Important:
       pacingHint: clamped.pacingHint,
       weightCount: Object.keys(clamped.categoryWeights).length,
     });
+
+    // Cache the result for future identical requests
+    if (redis) {
+      redis.set(intentCacheKey, JSON.stringify(clamped), { ex: INTENT_CACHE_TTL_SECONDS }).catch(() => {
+        // Best-effort caching
+      });
+    }
 
     return clamped as IntentExtractionResult;
   } catch (error) {
