@@ -127,6 +127,20 @@ Reflective close. What the day felt like, not what happened.
 - No exclamation marks
 - No "what a day!" or "unforgettable"
 
+## Topics to AVOID in practicalTip
+These are handled by our tips system. Do not duplicate them:
+- IC card / Suica / transit card setup or usage
+- Cash withdrawal, ATM locations, or payment warnings
+- Last train timing or schedule
+- Luggage forwarding (takkyubin) logistics
+- Rush hour avoidance
+- Shoe removal at temples/shrines
+- Temizuya (purification basin) instructions
+- Weather warnings (heat, rain, cold, umbrella)
+- General etiquette (bowing, queuing, quiet on trains)
+
+Focus practicalTip on: route-specific navigation, neighborhood logistics, timing strategies unique to this day's activity sequence, or reservation/ticket tips for specific venues.
+
 ## Style rules
 - No emoji. No exclamation marks.
 - No "amazing/incredible/unforgettable/bustling/vibrant"

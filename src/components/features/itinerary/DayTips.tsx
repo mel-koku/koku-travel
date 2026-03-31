@@ -38,12 +38,14 @@ type DayTipsProps = {
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
   hasLuggagePrompt?: boolean;
+  /** DB tip IDs already surfaced as smart prompts — suppress from day tips */
+  surfacedGuidanceIds?: Set<string>;
   /** When true, runs fetch logic and fires onTipCount but renders nothing */
   countOnly?: boolean;
 };
 
 
-export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, countOnly }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, surfacedGuidanceIds, countOnly }: DayTipsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => getDismissedTips());
@@ -61,6 +63,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     nextDayActivities,
     isFirstTimeVisitor,
     hasLuggagePrompt,
+    surfacedGuidanceIds,
   });
 
   const allTips = useMemo(
