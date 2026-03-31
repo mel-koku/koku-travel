@@ -461,6 +461,28 @@ export async function fetchPlaceDetailsByPlaceId(
     } : undefined,
   };
 
+  // Cache in memory
+  const detailsCache = getPlaceDetailsCache();
+  detailsCache.set(placeId, { details, expiresAt: Date.now() + PLACE_DETAILS_CACHE_TTL });
+
+  // Persist to Supabase so subsequent cold starts don't re-fetch from Google
+  const { client: supabase, canPersist } = await getSupabaseClientSafe();
+  if (supabase && canPersist) {
+    const { error: persistError } = await supabase.from(PLACE_DETAILS_TABLE).upsert({
+      location_id: placeId,
+      place_id: details.placeId,
+      payload: details as unknown as Record<string, unknown>,
+      fetched_at: details.fetchedAt,
+    } as never);
+
+    if (persistError && process.env.NODE_ENV !== "production") {
+      logger.warn("Failed to persist entry point place details", {
+        placeId,
+        error: persistError,
+      });
+    }
+  }
+
   return { location, details };
 }
 
