@@ -49,7 +49,6 @@ const AUTH_REQUIRED_SUB_ROUTES = [
  */
 const AUTH_ROUTES = [
   "/signin",
-  "/b/signin",
 ];
 
 /**
@@ -131,7 +130,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (isAuthRoute(pathname) && user) {
     const url = request.nextUrl.clone();
-    url.pathname = pathname.startsWith("/b/") ? "/b/dashboard" : "/dashboard";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

@@ -5,8 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ── Warm editorial palette (default) ── */
-:root,
-[data-variant="a"] {
+:root {
   color-scheme: light;
 
   /* Core */
@@ -102,8 +101,7 @@
 }
 
 /* Dark theme (opt-in via data-theme="dark") */
-[data-theme="dark"],
-[data-theme="dark"] [data-variant="a"] {
+[data-theme="dark"] {
   color-scheme: dark;
   --background: #1c1917;
   --foreground: #f0e8dc;
@@ -192,87 +190,6 @@
   --foreground-secondary: #b8ad9e;
   --surface: #252220;
   --canvas: #2e2720;
-}
-
-/* ── Variant B: Soft Minimalism (light, monochromatic, Ai-iro accent) ── */
-/* Neutrals: warm kinari (生成り) tones — indigo accent is the sole cool anchor */
-[data-variant="b"] {
-  color-scheme: light;
-
-  /* Core */
-  --background: #f8f7f4;
-  --foreground: #1c1a17;
-  --card: #ffffff;
-  --card-foreground: #1c1a17;
-  --popover: #ffffff;
-  --popover-foreground: #1c1a17;
-
-  /* shadcn compat */
-  --primary: #2d4b8e;
-  --primary-foreground: #ffffff;
-  --secondary: #f1efeb;
-  --secondary-foreground: #3d3a36;
-  --muted: #f1efeb;
-  --muted-foreground: #78736c;
-  --accent: #edecf3;
-  --accent-foreground: #2d4b8e;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2dfd9;
-  --input: #e2dfd9;
-  --ring: #2d4b8e;
-  --radius: 1rem;
-
-  /* Charts */
-  --chart-1: #2d4b8e;
-  --chart-2: #059669;
-  --chart-3: #d97706;
-  --chart-4: #0ea5e9;
-  --chart-5: #9b958d;
-
-  /* Sidebar */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1c1a17;
-  --sidebar-primary: #2d4b8e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1efeb;
-  --sidebar-accent-foreground: #3d3a36;
-  --sidebar-border: #e2dfd9;
-  --sidebar-ring: #2d4b8e;
-
-  /* Extended palette (mapped to A's token names for Tailwind compat) */
-  --foreground-secondary: #78736c;
-  --foreground-body: #504d48;
-  --surface: #f1efeb;
-  --brand-primary: #2d4b8e;
-  --brand-secondary: #3a5fa0;
-  --success: #059669;
-  --warning: #d97706;
-  --error: #ef4444;
-  --stone: #9b958d;
-  --cream: #f9f8f5;
-  --sage: #059669;
-  --terracotta: #d97706;
-  --charcoal: #181714;
-  --sand: #e2dfd9;
-  --warm-gray: #78736c;
-  --canvas: #ffffff;
-
-  /* Shadows — earth-tinted organic layers */
-  --shadow-sm: 0 1px 2px rgba(60, 50, 38, 0.04);
-  --shadow-card:
-    0 1px 2px rgba(60, 50, 38, 0.04), 0 4px 8px -2px rgba(60, 50, 38, 0.06),
-    0 12px 24px -4px rgba(60, 50, 38, 0.04);
-  --shadow-elevated:
-    0 2px 4px rgba(60, 50, 38, 0.05), 0 8px 16px -4px rgba(60, 50, 38, 0.08),
-    0 20px 40px -8px rgba(60, 50, 38, 0.06);
-  --shadow-depth:
-    0 4px 8px rgba(60, 50, 38, 0.06), 0 16px 32px -8px rgba(60, 50, 38, 0.1),
-    0 32px 64px -16px rgba(60, 50, 38, 0.08);
-
-  /* Layout */
-  --header-h: 72px;
-  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
 }
 
 @theme inline {
