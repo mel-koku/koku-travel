@@ -50,6 +50,27 @@ export function scoreLocation(
 
   const ratingResult = scoreRatingQuality(location, criteria.communityRatings);
   const logisticalResult = scoreLogisticalFit(location, criteria);
+
+  // Short-circuit: location is too far away (hard -100 penalty).
+  // Skip remaining 16 factor evaluations for locations that will never be selected.
+  if (logisticalResult.score <= -100) {
+    return {
+      location,
+      score: interestResult.score + ratingResult.score + logisticalResult.score,
+      breakdown: {
+        interestMatch: interestResult.score,
+        ratingQuality: ratingResult.score,
+        logisticalFit: logisticalResult.score,
+        budgetFit: 0, accessibilityFit: 0, diversityBonus: 0,
+        neighborhoodDiversity: 0, weatherFit: 0, timeOptimization: 0,
+        groupFit: 0, seasonalFit: 0, contentFit: 0, dietaryFit: 0,
+        crowdFit: 0, photoFit: 0, tagMatch: 0, goshuinFit: 0,
+        accommodationBonus: 0, unescoBonus: 0,
+      },
+      reasoning: [interestResult.reasoning, ratingResult.reasoning, logisticalResult.reasoning],
+    };
+  }
+
   const budgetResult = scoreBudgetFit(location, {
     budgetLevel: criteria.budgetLevel,
     budgetTotal: criteria.budgetTotal,
