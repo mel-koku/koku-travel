@@ -42,7 +42,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
             </p>
             <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
-              {content?.featuredGuidesHeading ?? "The guides the locals wrote"}
+              {content?.featuredGuidesHeading ?? "Travel guides worth reading twice"}
             </h2>
             <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
               {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries — written by people who live there."}
@@ -103,17 +103,23 @@ function GuideCard({
           featured ? "aspect-[3/2] lg:aspect-auto" : "aspect-[4/3]"
         )}
       >
-        <Image
-          src={imageSrc || "/placeholder.jpg"}
-          alt={guide.title}
-          fill
-          className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04] group-active:scale-[1.04]"
-          sizes={
-            featured
-              ? "(min-width: 1024px) 66vw, 100vw"
-              : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          }
-        />
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={guide.title}
+            fill
+            className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04] group-active:scale-[1.04]"
+            sizes={
+              featured
+                ? "(min-width: 1024px) 66vw, 100vw"
+                : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            }
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-surface">
+            <span className="text-stone text-sm">No image</span>
+          </div>
+        )}
         {/* Gradient overlay — recedes on hover to reveal more image */}
         <div className="absolute inset-0 scrim-80 transition-opacity duration-500 group-hover:opacity-50" />
 
