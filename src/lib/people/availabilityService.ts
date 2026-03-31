@@ -117,10 +117,21 @@ export async function getExperienceInterpreters(
   const dateObj = parseLocalDate(date)!;
   const dow = dateObj.getDay();
 
+  // Build a lookup map: O(rules.length) once, then O(1) per person
+  const rulesMap = new Map<string, typeof rules>();
+  for (const rule of rules ?? []) {
+    const existing = rulesMap.get(rule.person_id);
+    if (existing) {
+      existing.push(rule);
+    } else {
+      rulesMap.set(rule.person_id, [rule]);
+    }
+  }
+
   const result: AvailableInterpreter[] = [];
 
   for (const person of people) {
-    const personRules = (rules ?? []).filter((r) => r.person_id === person.id);
+    const personRules = rulesMap.get(person.id) ?? [];
 
     // Check specific date override first
     const specific = personRules.find((r) => r.specific_date === date);
