@@ -7,6 +7,11 @@ import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 /** Weather API timeout — 4s is plenty; mock data is fine if it's slower */
 const WEATHER_TIMEOUT_MS = 4_000;
 
+/** In-memory cache for weather forecasts. Key: "cityId:startDate:endDate" */
+const weatherCache = new Map<string, { data: Map<string, WeatherForecast>; fetchedAt: number }>();
+/** Cache forecasts for 6 hours (weather changes slowly) */
+const WEATHER_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+
 /**
  * City coordinates for weather API calls
  */
@@ -57,8 +62,15 @@ export async function fetchWeatherForecast(
   startDate: string, // ISO date string (yyyy-mm-dd)
   endDate: string, // ISO date string (yyyy-mm-dd)
 ): Promise<Map<string, WeatherForecast>> {
+  // Check in-memory cache first
+  const cacheKey = `${cityId}:${startDate}:${endDate}`;
+  const cached = weatherCache.get(cacheKey);
+  if (cached && Date.now() - cached.fetchedAt < WEATHER_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  
+
   if (!apiKey) {
     logger.warn("OpenWeatherMap API key not configured, returning mock weather data");
     return getMockWeatherForecast(startDate, endDate);
@@ -158,6 +170,9 @@ export async function fetchWeatherForecast(
         description,
       });
     }
+
+    // Cache the result
+    weatherCache.set(cacheKey, { data: forecasts, fetchedAt: Date.now() });
 
     return forecasts;
   } catch (error) {
