@@ -52,17 +52,42 @@ export function toDisplayTip(tip: TravelGuidance): DisplayTip {
 
 /** Keywords used to detect DB tips that overlap with hardcoded pro tips. */
 export const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
-  "pro-ic-card": ["ic card", "suica", "pasmo"],
-  "pro-city-transition": ["takkyubin", "luggage forwarding"],
-  "pro-last-train": ["last train"],
+  // Transit cards
+  "pro-ic-card": ["ic card", "suica", "pasmo", "icoca", "mobile suica"],
+  // Luggage forwarding
+  "pro-city-transition": [
+    "takkyubin", "luggage forwarding", "luggage delivery",
+    "send luggage", "send bags", "ship luggage",
+  ],
+  // Last train
+  "pro-last-train": ["last train", "shuden"],
+  // Rail passes
   "pro-jr-pass": ["rail pass", "jr pass", "japan rail"],
+  // Cash / payment
+  "pro-cash-tomorrow": ["cash", "yen", "atm", "coins", "cashless"],
+  // Rush hour
+  "pro-rush-hour-morning": ["rush hour", "crowded train", "avoid rush"],
+  "pro-rush-hour-evening": ["rush hour", "crowded train", "avoid rush"],
+  // Escalator convention
+  "pro-escalator": ["escalator", "stand on the left", "stand on the right"],
+  // Holidays / crowd events
+  "pro-holiday-crowd": ["golden week", "obon", "new year", "oshogatsu"],
+  // Seasonal food
+  "pro-seasonal-food": ["seasonal food", "seasonal dish"],
+  // Goshuin
+  "pro-goshuin-etiquette": ["goshuin", "stamp book", "temple stamp"],
 };
+
+/** Festival dedup keywords (pro tip IDs are dynamic: pro-festival-{id}) */
+const FESTIVAL_DEDUP_KEYWORDS = ["matsuri", "festival"];
 
 export type UseDayTipsCoreOptions = {
   nextDayActivities?: ItineraryDay["activities"];
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active -- suppress the "Send luggage ahead" pro tip */
   hasLuggagePrompt?: boolean;
+  /** DB tip IDs already surfaced as smart prompts -- suppress from day tips */
+  surfacedGuidanceIds?: Set<string>;
 };
 
 export function useDayTipsCore(
@@ -74,6 +99,7 @@ export function useDayTipsCore(
   const nextDayActivities = options?.nextDayActivities;
   const isFirstTimeVisitor = options?.isFirstTimeVisitor;
   const hasLuggagePrompt = options?.hasLuggagePrompt;
+  const surfacedGuidanceIds = options?.surfacedGuidanceIds;
   const [rawDbTips, setRawDbTips] = useState<TravelGuidance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -97,6 +123,28 @@ export function useDayTipsCore(
     return new Date();
   }, [tripStartDate, dayIndex]);
 
+  // Heuristic: if the day has these activity categories, tipGenerator will fire
+  // overlapping tips, so suppress the corresponding DB guidance types at day level
+  const CATEGORY_SUPPRESSES_GUIDANCE: Record<string, string[]> = {
+    temple: ["etiquette"],
+    shrine: ["etiquette"],
+    onsen: ["etiquette"],
+    restaurant: ["food_culture"],
+    market: ["food_culture"],
+    cafe: ["food_culture"],
+  };
+
+  const suppressGuidanceTypes = useMemo(() => {
+    const types = new Set<string>();
+    for (const cat of dayCategories) {
+      const suppressed = CATEGORY_SUPPRESSES_GUIDANCE[cat];
+      if (suppressed) {
+        for (const t of suppressed) types.add(t);
+      }
+    }
+    return Array.from(types);
+  }, [dayCategories]);
+
   // Fetch day-level tips from DB
   useEffect(() => {
     let cancelled = false;
@@ -110,23 +158,36 @@ export function useDayTipsCore(
           region: regionId,
           season: getCurrentSeason(dayDate),
           month: dayDate.getMonth() + 1,
+          suppressGuidanceTypes,
         });
         if (!cancelled) {
-          // On Day 2+, filter out truly-universal tips (no city/region/category
-          // scope) to prevent the same generic tips from repeating every day.
-          // Safety-critical tips still show on Day 1.
-          let filtered = guidance;
-          if (dayIndex > 0) {
-            filtered = guidance.filter(
-              (tip) =>
-                tip.categories.length > 0 ||
-                tip.cities.length > 0 ||
-                tip.regions.length > 0 ||
-                tip.locationIds.length > 0,
-            );
-          }
-          // Limit to top 5 tips for the day
-          setRawDbTips(filtered.slice(0, 5));
+          // Exclude tips already surfaced as smart prompts
+          const pool = surfacedGuidanceIds?.size
+            ? guidance.filter((tip) => !surfacedGuidanceIds.has(tip.id))
+            : guidance;
+
+          // Partition into scoped (has categories, cities, or regions) vs
+          // unscoped (universal no-category). Scoped tips are more contextually
+          // relevant and get priority. Unscoped tips backfill remaining slots.
+          // Day 2+ gets max 0 unscoped; Day 1 gets max 2.
+          const MAX_UNSCOPED = dayIndex === 0 ? 2 : 0;
+          const MAX_DB_TIPS = 5;
+
+          const isScoped = (tip: TravelGuidance) =>
+            tip.categories.length > 0 ||
+            tip.cities.length > 0 ||
+            tip.regions.length > 0 ||
+            tip.locationIds.length > 0;
+
+          const scoped = pool.filter(isScoped);
+          const unscoped = pool.filter((t) => !isScoped(t));
+
+          const filtered = [
+            ...scoped.slice(0, MAX_DB_TIPS),
+            ...unscoped.slice(0, Math.min(MAX_UNSCOPED, MAX_DB_TIPS - Math.min(scoped.length, MAX_DB_TIPS))),
+          ].slice(0, MAX_DB_TIPS);
+
+          setRawDbTips(filtered);
         }
       } catch {
         // Silently fail
@@ -136,7 +197,7 @@ export function useDayTipsCore(
     }
     loadTips();
     return () => { cancelled = true; };
-  }, [dayCategories, day.cityId, dayDate, dayIndex]);
+  }, [dayCategories, day.cityId, dayDate, dayIndex, suppressGuidanceTypes, surfacedGuidanceIds]);
 
   // Computed pro tips based on day data
   const proTips = useMemo<DisplayTip[]>(() => {
@@ -421,21 +482,40 @@ export function useDayTipsCore(
   // DB tips converted to DisplayTip format
   const dbTips = useMemo<DisplayTip[]>(() => rawDbTips.map(toDisplayTip), [rawDbTips]);
 
-  // Combined display list -- dedup DB tips that overlap with active pro tips
+  // Combined display list -- dedup DB tips that overlap with active pro tips, cap total
+  const MAX_TIPS_PER_DAY = 6;
+
   const allTips = useMemo<DisplayTip[]>(() => {
     const activeProIds = new Set(proTips.map((p) => p.id));
+    const hasFestivalPro = [...activeProIds].some((id) => id.startsWith("pro-festival-"));
+
     const dedupedDb = rawDbTips.filter((tip) => {
       const titleLower = tip.title.toLowerCase();
       const summaryLower = tip.summary.toLowerCase();
+      const text = `${titleLower} ${summaryLower}`;
+
+      // Static keyword dedup: suppress DB tips that overlap with active pro tips
       for (const [proId, keywords] of Object.entries(PRO_TIP_DEDUP_KEYWORDS)) {
         if (!activeProIds.has(proId)) continue;
-        if (keywords.some((kw) => titleLower.includes(kw) || summaryLower.includes(kw))) {
+        if (keywords.some((kw) => text.includes(kw))) {
           return false;
         }
       }
+
+      // Dynamic festival dedup: suppress DB tips about festivals when a festival pro tip fires
+      if (hasFestivalPro && FESTIVAL_DEDUP_KEYWORDS.some((kw) => text.includes(kw))) {
+        return false;
+      }
+
       return true;
     });
-    return [...proTips, ...dedupedDb.map(toDisplayTip)];
+
+    // Pro tips first (always win), then DB tips sorted by priority descending
+    const sortedDb = dedupedDb
+      .sort((a, b) => b.priority - a.priority)
+      .map(toDisplayTip);
+
+    return [...proTips, ...sortedDb].slice(0, MAX_TIPS_PER_DAY);
   }, [proTips, rawDbTips]);
 
   return { proTips, dbTips, allTips, isLoading };

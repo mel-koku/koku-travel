@@ -78,7 +78,7 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
           <div className="absolute inset-0 scrim-40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           {seasonLabel && (
             <div className="absolute top-2.5 left-2.5 z-10">
-              <span className="inline-flex items-center rounded-lg bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-[var(--shadow-sm)]">
+              <span className="inline-flex items-center rounded-lg bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-[var(--shadow-sm)]">
                 {seasonLabel}
               </span>
             </div>

@@ -256,7 +256,59 @@ export function optimizeCitySequence(
     }
   }
 
-  return appendReturnCityIfNeeded(result, entryPoint, exitPoint);
+  // Final pass: ensure last city is near the departure airport.
+  // Region-based grouping can strand the trip far from exit (e.g., round-trip
+  // from Narita ending in Chubu). Move a closer city to the end when possible.
+  const pinned = pinExitCityLast(result, entryPoint, exitPoint);
+
+  return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint);
+}
+
+/**
+ * Minutes from exit beyond which we consider the last city "far" and look for
+ * a closer alternative to pin at the end of the sequence.
+ */
+const DEPARTURE_COMFORT_MINUTES = 120;
+
+/**
+ * Move the nearest-to-exit city to the last position when the current last
+ * city is far from the departure airport AND a meaningfully closer city exists
+ * in the sequence. Skips the first city (entry pin) to avoid disrupting the
+ * start of the trip.
+ */
+function pinExitCityLast(
+  cities: CityId[],
+  entryPoint: TripBuilderData["entryPoint"],
+  exitPoint?: TripBuilderData["exitPoint"],
+): CityId[] {
+  const effectiveExit = exitPoint ?? entryPoint;
+  if (!effectiveExit || cities.length <= 2) return cities;
+
+  const lastCity = cities[cities.length - 1]!;
+  const lastTime = travelTimeFromEntryPoint(effectiveExit, lastCity);
+
+  // Current last city is already comfortable — no change needed
+  if (lastTime !== undefined && lastTime <= DEPARTURE_COMFORT_MINUTES) return cities;
+
+  // Find nearest-to-exit city, skipping index 0 (entry pin)
+  let bestIdx = -1;
+  let bestTime = Infinity;
+  for (let i = 1; i < cities.length; i++) {
+    const time = travelTimeFromEntryPoint(effectiveExit, cities[i]!);
+    if (time !== undefined && time < bestTime) {
+      bestTime = time;
+      bestIdx = i;
+    }
+  }
+
+  // Only move if the candidate is within the comfort zone
+  if (bestIdx === -1 || bestIdx === cities.length - 1) return cities;
+  if (bestTime > DEPARTURE_COMFORT_MINUTES) return cities;
+
+  const result = [...cities];
+  const [moved] = result.splice(bestIdx, 1);
+  result.push(moved!);
+  return result;
 }
 
 /**
@@ -456,4 +508,21 @@ export function optimizeRegionOrder(
   }
 
   return optimized;
+}
+
+/**
+ * Check whether the last city in a sequence is far from the departure airport.
+ * Returns travel time in minutes and the threshold, or null when data is missing.
+ */
+export function getDepartureDistanceWarning(
+  cities: CityId[],
+  entryPoint: TripBuilderData["entryPoint"],
+  exitPoint?: TripBuilderData["exitPoint"],
+): { lastCity: CityId; minutes: number; threshold: number } | null {
+  if (!entryPoint || cities.length === 0) return null;
+  const effectiveExit = exitPoint ?? entryPoint;
+  const lastCity = cities[cities.length - 1]!;
+  const time = travelTimeFromEntryPoint(effectiveExit, lastCity);
+  if (time === undefined || time <= DEPARTURE_COMFORT_MINUTES) return null;
+  return { lastCity, minutes: time, threshold: DEPARTURE_COMFORT_MINUTES };
 }

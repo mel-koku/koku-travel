@@ -13,10 +13,12 @@ type DayTipsBProps = {
   className?: string;
   nextDayActivities?: ItineraryDay["activities"];
   isFirstTimeVisitor?: boolean;
+  hasLuggagePrompt?: boolean;
+  surfacedGuidanceIds?: Set<string>;
 };
 
-export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActivities, isFirstTimeVisitor }: DayTipsBProps) {
-  const { allTips, isLoading } = useDayTipsCore(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
+export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, surfacedGuidanceIds }: DayTipsBProps) {
+  const { allTips, isLoading } = useDayTipsCore(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, surfacedGuidanceIds });
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
 
