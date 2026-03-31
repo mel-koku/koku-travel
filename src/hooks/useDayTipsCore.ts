@@ -161,25 +161,33 @@ export function useDayTipsCore(
           suppressGuidanceTypes,
         });
         if (!cancelled) {
-          // On Day 2+, filter out truly-universal tips (no city/region/category
-          // scope) to prevent the same generic tips from repeating every day.
-          // Safety-critical tips still show on Day 1.
-          let filtered = guidance;
-          if (dayIndex > 0) {
-            filtered = guidance.filter(
-              (tip) =>
-                tip.categories.length > 0 ||
-                tip.cities.length > 0 ||
-                tip.regions.length > 0 ||
-                tip.locationIds.length > 0,
-            );
-          }
           // Exclude tips already surfaced as smart prompts
-          if (surfacedGuidanceIds?.size) {
-            filtered = filtered.filter((tip) => !surfacedGuidanceIds.has(tip.id));
-          }
-          // Limit to top 5 tips for the day
-          setRawDbTips(filtered.slice(0, 5));
+          const pool = surfacedGuidanceIds?.size
+            ? guidance.filter((tip) => !surfacedGuidanceIds.has(tip.id))
+            : guidance;
+
+          // Partition into scoped (has categories, cities, or regions) vs
+          // unscoped (universal no-category). Scoped tips are more contextually
+          // relevant and get priority. Unscoped tips backfill remaining slots.
+          // Day 2+ gets max 0 unscoped; Day 1 gets max 2.
+          const MAX_UNSCOPED = dayIndex === 0 ? 2 : 0;
+          const MAX_DB_TIPS = 5;
+
+          const isScoped = (tip: TravelGuidance) =>
+            tip.categories.length > 0 ||
+            tip.cities.length > 0 ||
+            tip.regions.length > 0 ||
+            tip.locationIds.length > 0;
+
+          const scoped = pool.filter(isScoped);
+          const unscoped = pool.filter((t) => !isScoped(t));
+
+          const filtered = [
+            ...scoped.slice(0, MAX_DB_TIPS),
+            ...unscoped.slice(0, Math.min(MAX_UNSCOPED, MAX_DB_TIPS - Math.min(scoped.length, MAX_DB_TIPS))),
+          ].slice(0, MAX_DB_TIPS);
+
+          setRawDbTips(filtered);
         }
       } catch {
         // Silently fail
