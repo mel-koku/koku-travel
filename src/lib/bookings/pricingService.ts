@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import type { PricingRule, PriceBreakdown } from "@/types/person";
 
+/** Explicit projection matching PricingRule type -- avoids fetching future columns */
+const PRICING_RULE_COLUMNS = "id, person_id, experience_slug, base_price, currency, per_person_price, min_group, max_group, duration_minutes, valid_from, valid_until, created_at";
+
 /**
  * Get the best matching pricing rule for a person + optional experience.
  * Priority: experience-specific > person default (experience_slug IS NULL).
@@ -16,7 +19,7 @@ export async function getPricingRule(
 
   const { data, error } = await supabase
     .from("pricing_rules")
-    .select("*")
+    .select(PRICING_RULE_COLUMNS)
     .eq("person_id", personId)
     .order("experience_slug", { ascending: false, nullsFirst: false });
 
@@ -92,7 +95,7 @@ export async function getPersonPricingRules(
 
   const { data, error } = await supabase
     .from("pricing_rules")
-    .select("*")
+    .select(PRICING_RULE_COLUMNS)
     .eq("person_id", personId)
     .order("base_price", { ascending: true });
 

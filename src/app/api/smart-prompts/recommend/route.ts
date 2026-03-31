@@ -87,7 +87,7 @@ async function filterBySeasonalAvailability(
   const seasonalIds = seasonal.map((l) => l.id);
   const { data: availabilityRows, error } = await supabaseClient
     .from("location_availability")
-    .select("*")
+    .select("id, location_id, availability_type, month_start, day_start, month_end, day_end, week_ordinal, day_of_week, year_start, year_end, is_available, description")
     .in("location_id", seasonalIds);
 
   if (error) {
