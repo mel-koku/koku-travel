@@ -1,14 +1,21 @@
 /**
  * Defines the start and end ISO date strings used throughout the trip builder.
  */
-import { INTEREST_CATEGORIES } from "@/data/interests";
 import { VIBES, type VibeId as VibeIdFromData } from "@/data/vibes";
+import type { InterestId as InterestIdFromData } from "@/data/interests";
 import type { TravelerProfile } from "./traveler";
 
 /**
  * Re-export VibeId from vibes.ts for convenience.
  */
 export type VibeId = VibeIdFromData;
+
+/**
+ * Re-export InterestId from interests.ts for convenience.
+ * InterestId is an internal scoring concept derived from vibes via vibesToInterests().
+ * It is NOT stored on TripBuilderData -- use vibes for user-facing selections.
+ */
+export type InterestId = InterestIdFromData;
 
 /**
  * Valid vibe IDs set for validation.
@@ -27,8 +34,6 @@ export type TravelDates = {
  * as they may diverge in the future (e.g., trip-level vs traveler-level pacing).
  */
 export type TripStyle = "relaxed" | "balanced" | "fast";
-
-export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];
 
 /**
  * Known city IDs for static references. Dynamic cities from database
@@ -128,7 +133,6 @@ export type TripBuilderData = {
   vibes?: VibeId[]; // aspirational vibe selections
   regions?: RegionId[];
   cities?: CityId[];
-  interests?: InterestId[]; // derived from vibes for backward compatibility
   style?: TripStyle; // later steps
   entryPoint?: EntryPoint;
   exitPoint?: EntryPoint;

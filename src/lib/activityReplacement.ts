@@ -1,6 +1,7 @@
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { TripBuilderData, InterestId } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import type { WeatherForecast } from "@/types/weather";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { fetchLocationsByCity } from "@/lib/locations/locationService";
@@ -62,8 +63,8 @@ export async function findReplacementCandidates(
     usedLocationIds.add(originalLocation.id);
   }
 
-  // Extract interests from trip data
-  const interests: InterestId[] = tripData.interests ?? [];
+  // Derive interests from vibes at point of use
+  const interests: InterestId[] = tripData.vibes?.length ? vibesToInterests(tripData.vibes) : [];
 
   // Get current location coordinates for distance calculation
   const currentCoordinates = getActivityCoordinates(activity);
@@ -111,7 +112,7 @@ export async function findReplacementCandidates(
     date: options?.date,
     group: tripData.group,
     collectGoshuin: tripData.collectGoshuin,
-    hasPhotographyVibe: tripData.interests?.includes("photography"),
+    hasPhotographyVibe: tripData.vibes?.includes("local_secrets"),
     hasLocalSecretsVibe: tripData.vibes?.includes("local_secrets"),
     hasNatureAdventureVibe: tripData.vibes?.includes("nature_adventure"),
     hasHeritageVibe: tripData.vibes?.includes("history_buff") || tripData.vibes?.includes("temples_tradition"),

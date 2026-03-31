@@ -2,6 +2,7 @@ import { getRegionForCity, REGIONS } from "@/data/regions";
 import { DINING_CATEGORIES } from "@/data/mealCategories";
 import type { Location } from "@/types/location";
 import type { InterestId, TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { CITY_INFO_BY_KEY } from "@/lib/routing/citySequence";
 
@@ -74,8 +75,8 @@ export function pickTimeSlotForSaved(
 }
 
 export function resolveInterestSequence(data: TripBuilderData): InterestId[] {
-  if (data.interests && data.interests.length > 0) {
-    return data.interests;
+  if (data.vibes && data.vibes.length > 0) {
+    return vibesToInterests(data.vibes);
   }
   return [...DEFAULT_INTEREST_ROTATION];
 }
