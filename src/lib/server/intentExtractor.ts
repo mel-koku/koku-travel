@@ -53,7 +53,7 @@ export async function extractTripIntent(
   }
 
   const notes = builderData.accessibility?.notes?.trim();
-  const vibes = builderData.interests?.join(", ") ?? "general sightseeing";
+  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
   const cities = builderData.cities?.join(", ") ?? "not specified";
   const regions = builderData.regions?.join(", ") ?? "not specified";
   const duration = builderData.duration ?? "not specified";

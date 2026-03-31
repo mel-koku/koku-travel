@@ -62,7 +62,7 @@ export async function refineDays(
   const days = itinerary.days ?? [];
   if (days.length === 0) return itinerary;
 
-  const vibes = builderData.interests?.join(", ") ?? "general sightseeing";
+  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
   const pace = builderData.style ?? "balanced";
   const group = builderData.group?.type ?? "solo";
   const groupSize = builderData.group?.size ?? 1;

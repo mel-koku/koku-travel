@@ -51,7 +51,7 @@ export async function generateDayIntros(
   if (days.length === 0) return null;
 
   const season = getSeason(builderData.dates?.start);
-  const vibes = builderData.interests?.join(", ") ?? "general sightseeing";
+  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
   const pace = builderData.style ?? "balanced";
   const group = builderData.group?.type ?? "solo traveler";
   const dayContext = buildDayContext(itinerary);
