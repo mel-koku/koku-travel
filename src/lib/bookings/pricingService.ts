@@ -16,26 +16,25 @@ export async function getPricingRule(
   date?: string // optional: filters by valid_from/valid_until
 ): Promise<PricingRule | null> {
   const supabase = await createClient();
+  const today = date ?? new Date().toISOString().slice(0, 10);
 
-  const { data, error } = await supabase
+  // Filter by date validity at the database level
+  const query = supabase
     .from("pricing_rules")
     .select(PRICING_RULE_COLUMNS)
     .eq("person_id", personId)
+    .or(`valid_from.is.null,valid_from.lte.${today}`)
+    .or(`valid_until.is.null,valid_until.gte.${today}`)
     .order("experience_slug", { ascending: false, nullsFirst: false });
+
+  const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
     if (error) logger.error("Failed to fetch pricing rules", error);
     return null;
   }
 
-  const today = date ?? new Date().toISOString().slice(0, 10);
-
-  // Filter by date validity
-  const valid = (data as PricingRule[]).filter((r) => {
-    if (r.valid_from && today < r.valid_from) return false;
-    if (r.valid_until && today > r.valid_until) return false;
-    return true;
-  });
+  const valid = data as PricingRule[];
 
   // Prefer experience-specific rule
   if (experienceSlug) {
