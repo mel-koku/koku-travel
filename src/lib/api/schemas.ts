@@ -358,7 +358,6 @@ export const tripBuilderDataSchema = z.object({
   dates: travelDatesSchema,
   regions: z.array(regionIdSchema).max(50).optional(),
   cities: z.array(cityIdSchema).max(50).optional(),
-  interests: z.array(interestIdSchema).max(20).optional(),
   vibes: z.array(vibeIdSchema).max(5).optional(),
   style: tripStyleSchema,
   entryPoint: entryPointSchema,

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Calendar, MapPin, Sparkles, Zap } from "lucide-react";
 import { setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY } from "@/lib/constants/storage";
-import { vibesToInterests } from "@/data/vibes";
+
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { TripBuilderData, VibeId, TripStyle } from "@/types/trip";
 
@@ -85,7 +85,6 @@ export function AskKokuTripPlanCard({ data, onClose }: AskKokuTripPlanCardProps)
       cities: plan.cities,
       regions: plan.regions,
       vibes: plan.vibes,
-      interests: vibesToInterests(plan.vibes),
       style: plan.style,
     };
 

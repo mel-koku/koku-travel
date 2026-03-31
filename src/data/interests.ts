@@ -10,4 +10,4 @@ export const INTEREST_CATEGORIES = [
   { id: "craft", name: "Craft & Artisan" },
 ] as const;
 
-
+export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];

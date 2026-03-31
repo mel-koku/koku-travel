@@ -1,6 +1,7 @@
 import type { TravelerProfile } from "@/types/traveler";
 import { DEFAULT_TRAVELER_PROFILE } from "@/types/traveler";
 import type { TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 
 /**
  * Builds a TravelerProfile from TripBuilderData
@@ -30,7 +31,7 @@ export function buildTravelerProfile(data: TripBuilderData): TravelerProfile {
     ...DEFAULT_TRAVELER_PROFILE,
     // Override with TripBuilderData mappings, falling back to existing values
     pace: data.style ?? existing?.pace ?? "balanced",
-    interests: data.interests ?? existing?.interests ?? [],
+    interests: data.vibes?.length ? vibesToInterests(data.vibes) : (existing?.interests ?? []),
     budget: {
       ...existing?.budget,
       total: data.budget?.total ?? existing?.budget?.total,

@@ -15,7 +15,7 @@ import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
 import type { CityId, EntryPoint, RegionId, TripBuilderData, TripStyle, VibeId } from "@/types/trip";
 import { VALID_VIBE_IDS } from "@/types/trip";
-import { vibesToInterests, MAX_VIBE_SELECTION } from "@/data/vibes";
+import { MAX_VIBE_SELECTION } from "@/data/vibes";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -29,7 +29,6 @@ const createDefaultData = (): TripBuilderData => ({
   vibes: [],
   regions: [],
   cities: [],
-  interests: [],
   style: undefined,
   entryPoint: undefined,
   exitPoint: undefined,
@@ -46,8 +45,6 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     return base;
   }
   const normalizedVibes = sanitizeVibes(raw.vibes);
-  // Derive interests from vibes automatically for backward compatibility
-  const derivedInterests = vibesToInterests(normalizedVibes);
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
@@ -68,7 +65,6 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     vibes: normalizedVibes,
     regions: normalizedRegions,
     cities: normalizedCities,
-    interests: derivedInterests,
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
     exitPoint: normalizedExitPoint,
@@ -126,7 +122,6 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           vibes: normalizedStored.vibes,
           regions: normalizedStored.regions,
           cities: normalizedStored.cities,
-          interests: normalizedStored.interests,
           style: normalizedStored.style,
           entryPoint: normalizedStored.entryPoint,
           exitPoint: normalizedStored.exitPoint,
@@ -552,7 +547,6 @@ function shallowEqualTripData(a: TripBuilderData, b: TripBuilderData): boolean {
   if (!arraysEqual(a.vibes, b.vibes)) return false;
   if (!arraysEqual(a.regions, b.regions)) return false;
   if (!arraysEqual(a.cities, b.cities)) return false;
-  if (!arraysEqual(a.interests, b.interests)) return false;
   if (!arraysEqual(a.cityDays, b.cityDays)) return false;
 
   // Entry/exit points — compare by serialized value (small objects)

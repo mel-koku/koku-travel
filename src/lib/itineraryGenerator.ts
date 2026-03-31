@@ -160,7 +160,7 @@ export async function generateItinerary(
   const travelTime = getTravelTime(pace);
 
   // Pre-compute trip-level scoring criteria (constant across all days/slots)
-  const hasPhotographyVibe = data.interests?.includes("photography") || undefined;
+  const hasPhotographyVibe = data.vibes?.includes("local_secrets") || undefined;
   const hasLocalSecretsVibe = data.vibes?.includes("local_secrets") || undefined;
   const hasNatureAdventureVibe = data.vibes?.includes("nature_adventure") || undefined;
   const hasHeritageVibe = data.vibes?.includes("history_buff") || data.vibes?.includes("temples_tradition") || undefined;

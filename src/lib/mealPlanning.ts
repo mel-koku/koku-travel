@@ -3,6 +3,7 @@ import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { detectMealGap, type MealType } from "@/data/mealCategories";
 import type { InterestId, TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import { findLocationsForActivities } from "@/lib/itineraryLocations";
 
 /**
@@ -260,7 +261,7 @@ export async function insertMealActivities(
       availableRestaurants,
       gap.mealType,
       {
-        interests: builderData.interests ?? [],
+        interests: builderData.vibes?.length ? vibesToInterests(builderData.vibes) : [],
         travelStyle: builderData.style ?? "balanced",
         budgetLevel: travelerProfile?.budget.level,
         budgetTotal: travelerProfile?.budget.total,

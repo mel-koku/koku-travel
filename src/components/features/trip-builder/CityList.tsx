@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getCitiesByRelevance, getAllCities } from "@/lib/tripBuilder/cityRelevance";
 import { cn } from "@/lib/cn";
 import type { InterestId } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import { Input } from "@/components/ui/Input";
 import { calculateDistance } from "@/data/entryPoints";
 
@@ -37,8 +38,8 @@ export function CityList({ onCitySelect }: CityListProps) {
   const [showAllCities, setShowAllCities] = useState<Set<string>>(new Set());
 
   const selectedInterests = useMemo<InterestId[]>(
-    () => data.interests ?? [],
-    [data.interests]
+    () => data.vibes?.length ? vibesToInterests(data.vibes) : [],
+    [data.vibes]
   );
 
   const selectedCities = useMemo<Set<string>>(

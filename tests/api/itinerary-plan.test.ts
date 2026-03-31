@@ -62,7 +62,7 @@ function createValidBuilderData() {
     },
     regions: ["Kansai"],
     cities: ["Kyoto"],
-    interests: ["culture"],
+    vibes: ["temples_tradition"],
     style: "balanced",
   };
 }
