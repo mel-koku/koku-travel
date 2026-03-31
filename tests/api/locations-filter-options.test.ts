@@ -34,7 +34,11 @@ vi.mock("@/lib/supabase/server", () => ({
     chain.or = self;
     chain.range = terminal;
     chain.order = self;
-    return { from: () => ({ select: self }) };
+    return {
+      from: () => ({ select: self }),
+      // RPC not available in test — triggers fallback to client-side aggregation
+      rpc: () => Promise.resolve({ data: null, error: { message: "function not found" } }),
+    };
   }),
 }));
 
