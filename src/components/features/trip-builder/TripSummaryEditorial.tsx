@@ -7,8 +7,9 @@ import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
-import { deriveRegionsFromCities } from "@/data/regions";
+import { deriveRegionsFromCities, REGIONS } from "@/data/regions";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
+import { getDepartureDistanceWarning } from "@/lib/routing/citySequence";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import { SortableCityList } from "./SortableCityList";
 import type { CityId, TripBuilderData } from "@/types/trip";
@@ -54,6 +55,30 @@ export function TripSummaryEditorial({
         .filter(Boolean) as string[],
     [data.vibes]
   );
+
+  // Departure distance warning for the last city
+  const departureWarning = useMemo(() => {
+    const cities = data.cities ?? [];
+    if (cities.length < 2 || !data.entryPoint) return null;
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const warning = getDepartureDistanceWarning(cities, data.entryPoint, effectiveExit);
+    if (!warning) return null;
+
+    // Resolve display names
+    const cityName = (() => {
+      for (const r of REGIONS) {
+        const c = r.cities.find((c) => c.id === warning.lastCity);
+        if (c) return c.name;
+      }
+      return warning.lastCity.charAt(0).toUpperCase() + warning.lastCity.slice(1);
+    })();
+    const airportName = (data.sameAsEntry !== false ? data.entryPoint : data.exitPoint)?.name ?? data.entryPoint.name;
+    const hours = Math.floor(warning.minutes / 60);
+    const mins = warning.minutes % 60;
+    const timeStr = hours > 0 && mins > 0 ? `${hours}h ${mins}m` : hours > 0 ? `${hours}h` : `${mins}m`;
+
+    return { cityName, airportName, timeStr };
+  }, [data.cities, data.entryPoint, data.exitPoint, data.sameAsEntry]);
 
   // Effective per-city day allocation (parallel array)
   const effectiveCityDays = useMemo(() => {
@@ -270,27 +295,34 @@ export function TripSummaryEditorial({
           label="Route & Stays"
           value={
             (data.cities ?? []).length > 0 ? (
-              <SortableCityList
-                cities={data.cities ?? []}
-                onReorder={handleCityReorder}
-                onRemove={handleCityRemove}
-                variant="a"
-                cityDays={effectiveCityDays}
-                onDaysChange={handleDaysChange}
-                totalDays={data.duration}
-                onDuplicate={handleDuplicateCity}
-                renderAfterCity={
-                  onAccommodationChange
-                    ? (cityId) => (
-                        <InlineAccommodationInput
-                          cityId={cityId}
-                          value={accommodations?.[cityId]}
-                          onChange={(accom) => onAccommodationChange(cityId, accom)}
-                        />
-                      )
-                    : undefined
-                }
-              />
+              <>
+                <SortableCityList
+                  cities={data.cities ?? []}
+                  onReorder={handleCityReorder}
+                  onRemove={handleCityRemove}
+                  variant="a"
+                  cityDays={effectiveCityDays}
+                  onDaysChange={handleDaysChange}
+                  totalDays={data.duration}
+                  onDuplicate={handleDuplicateCity}
+                  renderAfterCity={
+                    onAccommodationChange
+                      ? (cityId) => (
+                          <InlineAccommodationInput
+                            cityId={cityId}
+                            value={accommodations?.[cityId]}
+                            onChange={(accom) => onAccommodationChange(cityId, accom)}
+                          />
+                        )
+                      : undefined
+                  }
+                />
+                {departureWarning && (
+                  <p className="mt-2 text-xs text-warning">
+                    {departureWarning.cityName} is about {departureWarning.timeStr} from {departureWarning.airportName}. Consider ending your trip in a city closer to your departure airport to keep your last day relaxed.
+                  </p>
+                )}
+              </>
             ) : (
               <span className="text-stone">Not set</span>
             )
