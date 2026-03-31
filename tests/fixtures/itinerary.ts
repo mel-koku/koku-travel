@@ -24,7 +24,7 @@ export function createTestBuilderData(
     dates: { start: "2026-04-01", end: "2026-04-03" },
     regions: ["kansai"],
     cities: ["kyoto"],
-    interests: ["culture", "food"],
+    vibes: ["temples_tradition", "foodie_paradise"],
     style: "balanced",
     ...overrides,
   };

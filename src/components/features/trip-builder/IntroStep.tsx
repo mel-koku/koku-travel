@@ -7,7 +7,7 @@ import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePa
 import { easeReveal, staggerWord, durationBase } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { deriveRegionsFromCities } from "@/data/regions";
-import { vibesToInterests } from "@/data/vibes";
+
 import type { TripBuilderData, CityId, EntryPoint } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { VibeId } from "@/data/vibes";
@@ -48,7 +48,6 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
     const cities = [...preset.cities] as CityId[];
     const regions = deriveRegionsFromCities(cities);
     const vibes: VibeId[] = ["temples_tradition", "foodie_paradise"];
-    const interests = vibesToInterests(vibes);
 
     // Start date 2 weeks from now
     const start = new Date();
@@ -65,7 +64,6 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
       duration: quickDuration,
       dates: { start: fmt(start), end: fmt(end) },
       vibes,
-      interests,
       regions,
       cities,
       style: "balanced",

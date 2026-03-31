@@ -12,6 +12,7 @@ import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { extractPlaceIntent, type PlaceIntent } from "@/lib/server/placeRecommender";
 import type { TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import type { Location } from "@/types/location";
 
 interface AiRecommendation {
@@ -63,7 +64,7 @@ export const POST = withApiHandler(
         category: a.category,
         isAnchor: a.isAnchor,
       })),
-      interests: (tripBuilderData as TripBuilderData | undefined)?.interests,
+      vibes: (tripBuilderData as TripBuilderData | undefined)?.vibes,
     });
 
     const isFallback = intent === null;
@@ -181,7 +182,7 @@ export const POST = withApiHandler(
 
     const scored = locations.map((location) => {
       const result = scoreLocation(location, {
-        interests: builderData?.interests ?? [],
+        interests: builderData?.vibes?.length ? vibesToInterests(builderData.vibes) : [],
         travelStyle: builderData?.style ?? "balanced",
         budgetLevel: intent?.pricePreference ?? builderData?.budget?.level,
         accessibility: builderData?.accessibility?.mobility

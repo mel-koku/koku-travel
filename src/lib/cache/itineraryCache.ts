@@ -110,8 +110,8 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     normalized.cities = data.customCityOrder ? [...data.cities] : [...data.cities].sort();
     if (data.customCityOrder) normalized.customCityOrder = true;
   }
-  if (data.interests && data.interests.length > 0) {
-    normalized.interests = [...data.interests].sort();
+  if (data.vibes && data.vibes.length > 0) {
+    normalized.vibes = [...data.vibes].sort();
   }
   if (data.style) normalized.style = data.style;
   if (data.budget) normalized.budget = data.budget;

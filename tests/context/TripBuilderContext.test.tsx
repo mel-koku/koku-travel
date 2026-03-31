@@ -22,7 +22,8 @@ describe("TripBuilderContext", () => {
       expect(result.current.data.dates).toEqual({});
       expect(result.current.data.regions).toEqual([]);
       expect(result.current.data.cities).toEqual([]);
-      expect(result.current.data.interests).toEqual([]);
+      // interests removed from TripBuilderData - now derived from vibes at point of use
+      expect(result.current.data.vibes).toEqual([]);
       expect(result.current.data.style).toBeUndefined();
       expect(result.current.data.accessibility).toBeUndefined();
     });
@@ -45,7 +46,7 @@ describe("TripBuilderContext", () => {
 
       expect(result.current.data.regions).toEqual(["kansai"]);
       expect(result.current.data.cities).toEqual(["kyoto"]);
-      expect(result.current.data.interests).toEqual(["culture", "history"]); // derived from temples_tradition vibe
+      expect(result.current.data.vibes).toEqual(["temples_tradition"]);
       expect(result.current.data.style).toBe("balanced");
     });
   });
@@ -103,12 +104,13 @@ describe("TripBuilderContext", () => {
 
       expect(result.current.data.regions).toEqual([]);
       expect(result.current.data.cities).toEqual([]);
-      expect(result.current.data.interests).toEqual([]);
+      // interests removed from TripBuilderData - now derived from vibes at point of use
+      expect(result.current.data.vibes).toEqual([]);
     });
   });
 
   describe("Data sanitization", () => {
-    it("should sanitize interests to max 5", () => {
+    it("should sanitize vibes to max 3", () => {
       const { result } = renderHook(() => useTripBuilder(), {
         wrapper: createContextWrapper(TripBuilderProvider),
       });
@@ -116,11 +118,11 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          interests: ["culture", "food", "nature", "shopping", "nightlife", "photography"],
+          vibes: ["temples_tradition", "foodie_paradise", "nature_adventure", "zen_wellness"],
         }));
       });
 
-      contextAssertions.arrayLengthWithinBounds(result.current.data.interests || [], 5);
+      contextAssertions.arrayLengthWithinBounds(result.current.data.vibes || [], 3);
     });
 
     it("should sanitize style to valid values", () => {
@@ -334,9 +336,8 @@ describe("TripBuilderContext", () => {
         }));
       });
 
-      // Invalid vibes are filtered out, interests derived from valid vibes
+      // Invalid vibes are filtered out
       expect(result.current.data.vibes).toEqual(["temples_tradition", "foodie_paradise"]);
-      expect(result.current.data.interests).toEqual(["culture", "history", "food"]);
     });
   });
 

@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { deriveRegionsFromCities } from "@/data/regions";
-import { vibesToInterests } from "@/data/vibes";
 import type { TripBuilderData, CityId, EntryPoint } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { VibeId } from "@/data/vibes";
@@ -50,7 +49,6 @@ export function IntroStepB({
     const cities = preset.cities as unknown as CityId[];
     const regions = deriveRegionsFromCities(cities);
     const vibes: VibeId[] = ["temples_tradition", "foodie_paradise"];
-    const interests = vibesToInterests(vibes);
 
     const start = new Date();
     start.setDate(start.getDate() + 14);
@@ -66,7 +64,6 @@ export function IntroStepB({
       duration: quickDuration,
       dates: { start: fmt(start), end: fmt(end) },
       vibes,
-      interests,
       regions,
       cities,
       style: "balanced",

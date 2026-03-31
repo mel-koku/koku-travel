@@ -32,7 +32,7 @@ export type { SavedInTripPreviewProps } from "./SavedInTripPreview";
 export { EssentialsForm } from "./EssentialsForm";
 export { EntryPointSelector } from "./EntryPointSelector";
 export type { EntryPointSelectorProps } from "./EntryPointSelector";
-export { InterestChips } from "./InterestChips";
+
 export { CityList } from "./CityList";
 export { SelectionReview } from "./SelectionReview";
 export { PreferenceCards } from "./PreferenceCards";
