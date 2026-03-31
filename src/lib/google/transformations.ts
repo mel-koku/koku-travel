@@ -15,12 +15,30 @@ const MAX_PHOTOS = 5;
 /**
  * Rewrites a photo proxy URL to use a different maxWidthPx.
  * Returns the original string unchanged if it's not a proxy URL.
+ * Results are memoized since the same url+size pair is called on every render
+ * across hundreds of card components.
  */
+const resizeCache = new Map<string, string | undefined>();
+const RESIZE_CACHE_MAX = 500;
+
 export function resizePhotoUrl(url: string | undefined, maxWidthPx: number): string | undefined {
   if (!url) return url;
   if (!url.includes("/api/places/photo")) return url;
-  return url.replace(/maxWidthPx=\d+/, `maxWidthPx=${maxWidthPx}`)
-            .replace(/maxwidth=\d+/, `maxwidth=${maxWidthPx}`);
+
+  const key = `${url}|${maxWidthPx}`;
+  const cached = resizeCache.get(key);
+  if (cached !== undefined) return cached;
+
+  const result = url.replace(/maxWidthPx=\d+/, `maxWidthPx=${maxWidthPx}`)
+                    .replace(/maxwidth=\d+/, `maxwidth=${maxWidthPx}`);
+
+  if (resizeCache.size >= RESIZE_CACHE_MAX) {
+    // Evict oldest entry
+    const firstKey = resizeCache.keys().next().value;
+    if (firstKey !== undefined) resizeCache.delete(firstKey);
+  }
+  resizeCache.set(key, result);
+  return result;
 }
 
 /**
