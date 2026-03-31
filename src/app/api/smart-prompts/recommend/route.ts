@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Location, LocationAvailability } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import type { GapAction } from "@/lib/smartPrompts/gapDetection";
 import { findMealRecommendation } from "@/lib/mealPlanning";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
@@ -393,7 +394,7 @@ export const POST = withApiHandler(
       const dow = (y && m && d) ? new Date(y, m - 1, d).getDay() : undefined;
       return dow === 0 || dow === 6;
     })();
-    const hasPhotographyVibe = tripBuilderData?.interests?.includes("photography") || undefined;
+    const hasPhotographyVibe = tripBuilderData?.vibes?.includes("local_secrets") || undefined;
     const collectGoshuin = tripBuilderData?.collectGoshuin;
     const accommodationStyle = tripBuilderData?.accommodationStyle;
 
@@ -447,7 +448,7 @@ export const POST = withApiHandler(
 
       // Find the best meal recommendation
       recommendation = findMealRecommendation(available, action.mealType, {
-        interests: tripBuilderData.interests ?? [],
+        interests: tripBuilderData.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : [],
         travelStyle: tripBuilderData.style ?? "balanced",
         budgetLevel: tripBuilderData.budget?.level,
         budgetTotal: tripBuilderData.budget?.total,
@@ -539,7 +540,7 @@ export const POST = withApiHandler(
       // Score and sort locations
       const scored = available.map((location) =>
         scoreLocation(location, {
-          interests: tripBuilderData.interests ?? [],
+          interests: tripBuilderData.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : [],
           travelStyle: tripBuilderData.style ?? "balanced",
           budgetLevel: tripBuilderData.budget?.level,
           budgetTotal: tripBuilderData.budget?.total,
@@ -610,7 +611,7 @@ export const POST = withApiHandler(
 
       const scored = available.map((location) =>
         scoreLocation(location, {
-          interests: tripBuilderData.interests ?? [],
+          interests: tripBuilderData.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : [],
           travelStyle: tripBuilderData.style ?? "balanced",
           availableMinutes: action.gapMinutes,
           recentCategories: dayActivities
@@ -672,7 +673,7 @@ export const POST = withApiHandler(
 
       const scored = available.map((location) =>
         scoreLocation(location, {
-          interests: tripBuilderData.interests ?? [],
+          interests: tripBuilderData.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : [],
           travelStyle: tripBuilderData.style ?? "balanced",
           availableMinutes: 120,
           recentCategories: dayActivities
@@ -734,7 +735,7 @@ export const POST = withApiHandler(
 
       const scored = available.map((location) =>
         scoreLocation(location, {
-          interests: tripBuilderData.interests ?? [],
+          interests: tripBuilderData.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : [],
           travelStyle: tripBuilderData.style ?? "balanced",
           availableMinutes: 120,
           recentCategories: dayActivities

@@ -113,7 +113,7 @@ interface PlaceIntentContext {
   query: string;
   cityId: string;
   dayActivities?: Array<{ id?: string; name: string; category?: string; isAnchor?: boolean }>;
-  interests?: string[];
+  vibes?: string[];
 }
 
 /**
@@ -129,7 +129,7 @@ export async function extractPlaceIntent(
     return null;
   }
 
-  const { query, cityId, dayActivities, interests } = context;
+  const { query, cityId, dayActivities, vibes } = context;
 
   // Short-circuit: single common keywords skip the LLM entirely
   const normalized = query.trim().toLowerCase();
@@ -150,8 +150,8 @@ export async function extractPlaceIntent(
         .join("\n")
     : "none yet";
 
-  const tripInterests = interests?.length
-    ? interests.join(", ")
+  const tripVibes = vibes?.length
+    ? vibes.join(", ")
     : "general sightseeing";
 
   const prompt = `You are a Japan travel assistant. A traveler in ${cityId} is using a search bar that can both find new places AND manage their existing itinerary. Classify their query and extract structured parameters.
@@ -163,7 +163,7 @@ export async function extractPlaceIntent(
 ${activityListText}
 
 ## Trip Interests
-${tripInterests}
+${tripVibes}
 
 ## Command Classification
 

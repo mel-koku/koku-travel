@@ -6,6 +6,7 @@ import type { Itinerary } from "@/types/itinerary";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
 import { REGIONS } from "@/data/regions";
 import { typography } from "@/lib/typography-system";
@@ -164,7 +165,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             : undefined
         }
         groupType={tripBuilderData?.group?.type}
-        interests={tripBuilderData?.interests}
+        interests={tripBuilderData?.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : undefined}
       />
 
       {/* Route Summary */}

@@ -7,6 +7,7 @@ import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import type { InterestId } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 
 type DayPreview = {
   dayNumber: number;
@@ -23,7 +24,7 @@ export function ItineraryPreview() {
   const duration = data.duration ?? 0;
   const startDate = data.dates.start;
   const cities = useMemo(() => data.cities ?? [], [data.cities]);
-  const interests = useMemo(() => data.interests ?? [], [data.interests]);
+  const interests = useMemo(() => data.vibes?.length ? vibesToInterests(data.vibes) : [], [data.vibes]);
 
   // Generate day previews
   const dayPreviews = useMemo<DayPreview[]>(() => {

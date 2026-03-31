@@ -71,7 +71,7 @@ function createValidBuilderData() {
     dates: { start: "2026-03-01", end: "2026-03-03" },
     regions: ["Kansai"],
     cities: ["Kyoto"],
-    interests: ["culture"],
+    vibes: ["temples_tradition"],
     style: "balanced",
   };
 }

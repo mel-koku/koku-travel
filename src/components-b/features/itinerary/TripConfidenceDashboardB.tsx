@@ -14,6 +14,7 @@ import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinera
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
+import { vibesToInterests } from "@/data/vibes";
 import { PackingChecklistCardB } from "@b/features/trip-builder/PackingChecklistCardB";
 import { DayTripSectionB } from "./DayTripSectionB";
 import { REGIONS } from "@/data/regions";
@@ -299,7 +300,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
             : undefined
         }
         groupType={tripBuilderData?.group?.type}
-        interests={tripBuilderData?.interests}
+        interests={tripBuilderData?.vibes?.length ? vibesToInterests(tripBuilderData.vibes) : undefined}
       />
 
       {/* Estimated Cost */}

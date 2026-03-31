@@ -54,7 +54,7 @@ const baseTrip: TripBuilderData = {
   dates: {},
   regions: ["kansai"],
   cities: ["kyoto"],
-  interests: ["culture", "food", "nature"],
+  vibes: ["temples_tradition", "foodie_paradise", "nature_adventure"],
   style: "balanced",
 };
 
@@ -99,7 +99,7 @@ describe("generateItinerary", () => {
     const interestsTrip: TripBuilderData = {
       ...baseTrip,
       duration: 1,
-      interests: ["food", "culture"],
+      vibes: ["foodie_paradise", "temples_tradition"],
     };
 
     const itinerary = await generateItinerary(interestsTrip, { locations: MOCK_LOCATIONS });
