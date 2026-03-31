@@ -16,6 +16,7 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
 import { generateCacheKey, getRedisClient } from "@/lib/cache/itineraryCache";
+import { requiresLLMExtraction, extractIntentFromRules } from "./ruleBasedIntent";
 import type { TripBuilderData } from "@/types/trip";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
 
@@ -50,6 +51,27 @@ export async function extractTripIntent(
     } catch {
       // Cache miss or error, proceed with LLM
     }
+  }
+
+  // Rule-based fast path: skip Gemini when there are no free-text notes.
+  // Structured fields (vibes, pace, group, dietary) map deterministically.
+  if (!requiresLLMExtraction(builderData)) {
+    const ruleResult = extractIntentFromRules(builderData);
+    logger.info("Intent extraction via rule-based parser (no free-text notes)", {
+      excludedCount: ruleResult.excludedCategories.length,
+      pacingHint: ruleResult.pacingHint,
+      weightCount: Object.keys(ruleResult.categoryWeights).length,
+      tagCount: ruleResult.preferredTags?.length ?? 0,
+    });
+
+    // Cache the rule-based result too (same key scheme)
+    if (redis) {
+      redis.set(intentCacheKey, JSON.stringify(ruleResult), { ex: INTENT_CACHE_TTL_SECONDS }).catch(() => {
+        // Best-effort caching
+      });
+    }
+
+    return ruleResult;
   }
 
   const notes = builderData.accessibility?.notes?.trim();
