@@ -8,8 +8,8 @@ import { AskKokuPanelB } from "./AskKokuPanelB";
 import { useAppState } from "@/state/AppState";
 import { serializeTripContext } from "@/lib/chat/serializeTripContext";
 import type { AskKokuContext } from "./AskKokuSuggestionsB";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as const;
 
 const HIDDEN_PATHS = ["/b/places", "/b/trip-builder", "/studio"];
 

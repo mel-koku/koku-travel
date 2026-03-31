@@ -68,10 +68,17 @@ export function LocationBreakoutCard({
         distance={30}
         delay={0.05}
       >
-        <button
-        type="button"
+        <div
+        role="button"
+        tabIndex={0}
         onClick={() => onSelectLocation(location)}
-        className="group block w-full overflow-hidden rounded-lg bg-surface text-left shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelectLocation(location);
+          }
+        }}
+        className="group block w-full cursor-pointer overflow-hidden rounded-lg bg-surface text-left shadow-[var(--shadow-card)] transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
       >
         <div
           className={cn(
@@ -179,7 +186,7 @@ export function LocationBreakoutCard({
             </p>
           </div>
         </div>
-        </button>
+        </div>
       </ScrollReveal>
     </div>
   );

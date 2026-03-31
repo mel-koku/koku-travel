@@ -26,16 +26,16 @@ export const VIBE_FILTER_MAP: Record<
     dbCategories: ["onsen", "garden", "wellness"],
     tags: ["zen-japan", "relaxation", "quiet"],
   },
-  neon_nightlife: {
-    dbCategories: ["bar", "entertainment"],
-    tags: ["evening", "late-night", "lively", "modern-japan"],
+  modern_japan: {
+    dbCategories: ["bar", "entertainment", "shopping"],
+    tags: ["pop-culture", "quirky-japan", "modern-japan", "evening", "late-night", "lively"],
   },
-  pop_culture: {
-    dbCategories: ["entertainment", "shopping"],
-    tags: ["pop-culture", "quirky-japan"],
+  art_architecture: {
+    dbCategories: ["museum", "culture"],
+    tags: ["scenic", "photo-op", "contemplative", "modern-japan"],
   },
   local_secrets: {
-    dbCategories: [], // cross-category — uses is_hidden_gem flag + tags
+    dbCategories: [], // cross-category -- uses is_hidden_gem flag + tags
     tags: ["hidden", "local-favorite"],
     hiddenGemOnly: true,
   },
@@ -47,11 +47,8 @@ export const VIBE_FILTER_MAP: Record<
     dbCategories: ["museum", "castle", "historic_site", "landmark"],
     tags: ["learning"],
   },
-  artisan_craft: {
-    dbCategories: ["craft"],
-  },
   in_season: {
-    dbCategories: [], // cross-category — uses seasonal tag matching
+    dbCategories: [], // cross-category -- uses seasonal tag matching
     seasonalMatch: true,
   },
 };
@@ -64,9 +61,14 @@ export function vibesToCategoryWeights(vibes: VibeId[]): Record<string, number> 
   const weights: Record<string, number> = {};
   for (const vibeId of vibes) {
     const mapping = VIBE_FILTER_MAP[vibeId];
-    if (!mapping.dbCategories.length) continue; // skip cross-category vibes
-    for (const cat of mapping.dbCategories) {
-      weights[cat] = Math.min(2.0, Math.max(0.5, (weights[cat] ?? 1.0) + 0.3));
+    if (mapping.dbCategories.length > 0) {
+      for (const cat of mapping.dbCategories) {
+        weights[cat] = Math.min(2.0, Math.max(0.5, (weights[cat] ?? 1.0) + 0.3));
+      }
+    }
+    // local_secrets: boost craft workshops even though it's a cross-category vibe
+    if (vibeId === "local_secrets") {
+      weights["craft"] = Math.min(2.0, Math.max(0.5, (weights["craft"] ?? 1.0) + 0.4));
     }
   }
   return Object.keys(weights).length > 0 ? weights : {};

@@ -12,44 +12,8 @@ import {
   LOCATION_LISTING_COLUMNS,
   type LocationListingDbRow,
 } from "@/lib/supabase/projections";
-
-/**
- * Calculate popularity score using Bayesian weighted average
- * Balances rating quality with review quantity to produce fair rankings
- * A 4.8 location with 500 reviews ranks higher than a 5.0 with 3 reviews
- */
-function calculatePopularityScore(rating: number, reviewCount: number): number {
-  if (rating === 0 || reviewCount === 0) return 0;
-
-  const m = 50;   // minimum reviews threshold (smoothing factor)
-  const C = 4.2;  // global average rating
-
-  // Bayesian weighted average + log boost for volume
-  const score = (reviewCount / (reviewCount + m)) * rating + (m / (reviewCount + m)) * C;
-  const reviewBoost = Math.log10(reviewCount + 1) / 10;
-
-  return score + reviewBoost;
-}
-
-// Deterministic fallback generation (matches client-side logic exactly)
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function generateFallbackRating(locationId: string): number {
-  const hash = hashString(locationId);
-  return 3.9 + (hash % 18) / 20; // 3.9 - 4.8 range
-}
-
-function generateFallbackReviewCount(locationId: string): number {
-  const hash = hashString(locationId + "-reviews");
-  return 50 + (hash % 450); // 50-500 range
-}
+import { calculatePopularityScore } from "@/lib/utils/popularityScoring";
+import { generateFallbackRating, generateFallbackReviewCount } from "@/lib/utils/ratingFallbacks";
 
 /**
  * Transform database row to Location type with rating/reviewCount guaranteed

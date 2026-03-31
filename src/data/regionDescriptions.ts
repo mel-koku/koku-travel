@@ -44,7 +44,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Tokyo is a lot. In the best way. One minute you're in a six-seat ramen shop where the chef hasn't changed the recipe in forty years. The next, you're standing in a digital art universe that didn't exist last month. Kamakura is an hour away and feels like another century. That's the thing about Kanto — it doesn't pick a lane. You shouldn't either.",
     highlights: ["Shibuya Crossing", "Senso-ji Temple", "teamLab Borderless", "Kamakura"],
-    bestFor: ["neon_nightlife", "pop_culture", "temples_tradition"],
+    bestFor: ["modern_japan", "temples_tradition"],
     coordinates: { lat: 35.6762, lng: 139.6503 },
   },
   {

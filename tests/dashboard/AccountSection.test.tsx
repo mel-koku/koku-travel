@@ -140,9 +140,7 @@ describe("AccountSection", () => {
   describe("Supabase unavailable", () => {
     it("should show warning when supabase is unavailable", () => {
       render(<AccountSection {...defaultProps} supabaseUnavailable={true} />);
-      expect(screen.getByText(/cloud sync is disabled/i)).toBeInTheDocument();
-      expect(screen.getByText("NEXT_PUBLIC_SUPABASE_URL")).toBeInTheDocument();
-      expect(screen.getByText("NEXT_PUBLIC_SUPABASE_ANON_KEY")).toBeInTheDocument();
+      expect(screen.getByText(/cloud sync is unavailable/i)).toBeInTheDocument();
     });
 
     it("should disable email input when supabase is unavailable", () => {

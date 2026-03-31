@@ -5,8 +5,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 import { urlFor } from "@/sanity/image";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },

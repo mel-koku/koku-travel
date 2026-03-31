@@ -5,6 +5,7 @@ import { internalError } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createApiResponse } from "@/lib/api/pagination";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 export type CityOption = {
   id: string;
@@ -39,12 +40,9 @@ export const GET = withApiHandler(
     const supabase = await createClient();
 
     // Fetch all locations to get city/region data
-    const { data: locations, error } = await supabase
-      .from("locations")
-      .select("id, city, region, place_id, image, rating")
-      .eq("is_active", true)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
-      .order("rating", { ascending: false, nullsFirst: false });
+    const { data: locations, error } = await applyActiveLocationFilters(
+      supabase.from("locations").select("id, city, region, place_id, image, rating")
+    ).order("rating", { ascending: false, nullsFirst: false });
 
     if (error) {
       logger.error("Failed to fetch locations for cities", {

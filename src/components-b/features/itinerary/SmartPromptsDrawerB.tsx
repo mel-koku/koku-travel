@@ -5,8 +5,8 @@ import { Lightbulb, X, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SmartPromptCardB } from "./SmartPromptCardB";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 export type SmartPromptsDrawerBProps = {
   gaps: DetectedGap[];

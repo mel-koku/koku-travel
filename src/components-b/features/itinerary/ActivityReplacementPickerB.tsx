@@ -8,8 +8,8 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { ReplacementCandidate } from "@/hooks/useReplacementCandidates";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { numberFormatter } from "@/components/features/itinerary/activityUtils";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type ActivityReplacementPickerBProps = {
   isOpen: boolean;

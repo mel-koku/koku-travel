@@ -5,8 +5,8 @@ import type { FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
 import { env } from "@/lib/env";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type AccountSectionBProps = {
   isAuthenticated: boolean;

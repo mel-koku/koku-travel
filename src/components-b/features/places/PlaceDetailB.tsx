@@ -14,8 +14,8 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { PlacesCardB } from "./PlacesCardB";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const staggerContainer = {
   hidden: {},

@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { PlacesCardB } from "./PlacesCardB";
 import type { Location } from "@/types/location";
+import { bEase } from "@/lib/variant-b-motion";
 
 const PAGE_SIZE = 40;
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 type PlacesGridBProps = {
   locations: Location[];

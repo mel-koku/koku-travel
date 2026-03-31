@@ -6,31 +6,19 @@ import type { ActiveFilter } from "@/types/filters";
 import type { ExperienceType } from "@/types/experience";
 import { EXPERIENCE_TYPES } from "@/data/experienceTypes";
 import { CRAFT_TYPES, type CraftTypeId } from "@/data/craftTypes";
+import {
+  DURATION_FILTERS,
+  calculatePopularityScore,
+  parseDuration,
+  generateFallbackRating,
+  generateFallbackReviewCount,
+  normalizePrefecture,
+  PAGE_SIZE,
+} from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
 
-const DURATION_FILTERS = [
-  {
-    id: "short",
-    label: "Under 1 hour",
-    predicate: (value: number | null) => value !== null && value <= 60,
-  },
-  {
-    id: "medium",
-    label: "1\u20133 hours",
-    predicate: (value: number | null) =>
-      value !== null && value >= 60 && value <= 180,
-  },
-  {
-    id: "long",
-    label: "Over 3 hours",
-    predicate: (value: number | null) => value !== null && value > 180,
-  },
-] as const;
-
 export { DURATION_FILTERS };
-
-const PAGE_SIZE = 24;
 
 export type ExperienceSortOptionId = "recommended" | "highest_rated" | "most_reviews" | "newest";
 
@@ -41,53 +29,7 @@ export const EXPERIENCE_SORT_OPTIONS = [
   { id: "newest" as const, label: "Newest" },
 ] as const;
 
-// ── Helpers ────────────────────────────────────────────────
-
-function parseDuration(value?: string): number | null {
-  if (!value) return null;
-  const normalized = value.trim().toLowerCase();
-  const match = normalized.match(
-    /([0-9]+(?:\.[0-9]+)?)\s*(hour|hours|hr|hrs|minute|minutes|day|days)/
-  );
-  if (!match || !match[1] || !match[2]) return null;
-  const amount = Number.parseFloat(match[1]);
-  if (Number.isNaN(amount)) return null;
-  const unit = match[2];
-  if (unit.startsWith("day")) return amount * 24 * 60;
-  if (unit.startsWith("hour") || unit.startsWith("hr")) return amount * 60;
-  if (unit.startsWith("minute")) return amount;
-  return null;
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function calculatePopularityScore(rating: number | null, reviewCount: number | null): number {
-  const r = rating ?? 0;
-  const v = reviewCount ?? 0;
-  if (r === 0 || v === 0) return 0;
-  const m = 50;
-  const C = 4.2;
-  const score = (v / (v + m)) * r + (m / (v + m)) * C;
-  const reviewBoost = Math.log10(v + 1) / 10;
-  return score + reviewBoost;
-}
-
-function generateFallbackRating(id: string): number {
-  const hash = hashString(id);
-  return 3.9 + (hash % 18) / 20;
-}
-
-function generateFallbackReviewCount(id: string): number {
-  const hash = hashString(id + "-reviews");
-  return 50 + (hash % 450);
-}
+// ── Helpers ──────────────────────��─────────────────────────
 
 type EnhancedLocation = Location & {
   durationMinutes: number | null;
@@ -186,16 +128,6 @@ export function useExperienceFilters(experiences: Location[]) {
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((f) => f.id === selectedDuration) ?? null
       : null;
-
-    const normalizePrefecture = (name: string | undefined): string => {
-      if (!name) return "";
-      return name
-        .replace(/\s+Prefecture$/i, "")
-        .replace(/-ken$/i, "")
-        .replace(/-fu$/i, "")
-        .replace(/-to$/i, "")
-        .trim();
-    };
 
     return enhancedExperiences.filter((exp) => {
       const matchesQuery =

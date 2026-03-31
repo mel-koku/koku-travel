@@ -9,12 +9,11 @@ export type VibeId =
   | "foodie_paradise"
   | "nature_adventure"
   | "zen_wellness"
-  | "neon_nightlife"
-  | "pop_culture"
+  | "modern_japan"
+  | "art_architecture"
   | "local_secrets"
   | "family_fun"
   | "history_buff"
-  | "artisan_craft"
   | "in_season";
 
 /**
@@ -62,25 +61,25 @@ export const VIBES: readonly VibeDefinition[] = [
     interests: ["wellness", "nature"],
   },
   {
-    id: "neon_nightlife",
-    name: "Neon & Nightlife",
-    description: "City lights, bars, and entertainment",
+    id: "modern_japan",
+    name: "Modern Japan",
+    description: "Anime, nightlife, gaming arcades, and neon-lit streets",
     icon: "Sparkles",
     interests: ["nightlife", "shopping"],
   },
   {
-    id: "pop_culture",
-    name: "Pop Culture",
-    description: "Anime, manga, quirky cafes, and themed spots",
-    icon: "Gamepad2",
-    interests: ["shopping", "nightlife"],
+    id: "art_architecture",
+    name: "Art & Architecture",
+    description: "Art islands, contemporary museums, and design landmarks",
+    icon: "Frame",
+    interests: ["culture", "history"],
   },
   {
     id: "local_secrets",
-    name: "Neighborhood Life",
-    description: "Local favorites and everyday spots",
+    name: "Local Secrets",
+    description: "Hidden gems, craft workshops, and neighborhood favorites",
     icon: "Camera",
-    interests: ["photography"],
+    interests: ["photography", "craft"],
   },
   {
     id: "family_fun",
@@ -97,13 +96,6 @@ export const VIBES: readonly VibeDefinition[] = [
     interests: ["history", "culture"],
   },
   {
-    id: "artisan_craft",
-    name: "Artisan Craft",
-    description: "Pottery, textiles, lacquerware, and traditional workshops",
-    icon: "Palette",
-    interests: ["craft", "culture"],
-  },
-  {
     id: "in_season",
     name: "In Season",
     description: "Places at their best right now",
@@ -116,6 +108,38 @@ export const VIBES: readonly VibeDefinition[] = [
  * Maximum number of vibes a user can select.
  */
 export const MAX_VIBE_SELECTION = 3;
+
+/**
+ * Aliases for removed vibes. Maps old vibe IDs to their replacement.
+ * Used to migrate saved trips that reference deprecated vibes.
+ */
+export const VIBE_ALIASES: Record<string, VibeId> = {
+  neon_nightlife: "modern_japan",
+  pop_culture: "modern_japan",
+  artisan_craft: "local_secrets",
+};
+
+/**
+ * Normalize a vibe ID, resolving aliases for removed vibes.
+ * Returns null for completely unknown IDs.
+ */
+export function normalizeVibeId(id: string): VibeId | null {
+  if (isValidVibeId(id)) return id;
+  return VIBE_ALIASES[id] ?? null;
+}
+
+/**
+ * Normalize an array of vibe IDs, resolving aliases and deduplicating.
+ * Handles saved trips with old vibe IDs like "neon_nightlife".
+ */
+export function normalizeVibeIds(ids: string[]): VibeId[] {
+  const result = new Set<VibeId>();
+  for (const id of ids) {
+    const normalized = normalizeVibeId(id);
+    if (normalized) result.add(normalized);
+  }
+  return Array.from(result);
+}
 
 /**
  * Convert selected vibes to their underlying interest IDs.

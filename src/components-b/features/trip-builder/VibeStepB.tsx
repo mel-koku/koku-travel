@@ -19,8 +19,8 @@ import { VibeCardB } from "./VibeCardB";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 function ToriiIcon({ className }: { className?: string }) {
   return (

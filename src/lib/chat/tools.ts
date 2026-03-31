@@ -14,8 +14,7 @@ import { logger } from "@/lib/logger";
 
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ALL_CITY_IDS, REGIONS, deriveRegionsFromCities } from "@/data/regions";
-import { VIBES } from "@/data/vibes";
-import { VALID_VIBE_IDS } from "@/types/trip";
+import { VIBES, normalizeVibeId } from "@/data/vibes";
 import type { VibeId, TripStyle, KnownCityId } from "@/types/trip";
 
 export const chatTools = {
@@ -371,7 +370,7 @@ export const chatTools = {
         .array(z.string())
         .optional()
         .describe(
-          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), neon_nightlife (city lights, bars, entertainment), pop_culture (anime, manga, quirky cafes), local_secrets (hidden gems, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites), artisan_craft (pottery, textiles, lacquerware, traditional workshops)",
+          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), modern_japan (anime, nightlife, gaming arcades, neon-lit streets), art_architecture (art islands, contemporary museums, design landmarks), local_secrets (hidden gems, craft workshops, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites)",
         ),
       style: z
         .enum(["relaxed", "balanced", "fast"])
@@ -413,8 +412,9 @@ export const chatTools = {
       const validVibes: VibeId[] = [];
       if (params.vibes) {
         for (const vibe of params.vibes.slice(0, 3)) {
-          if (VALID_VIBE_IDS.has(vibe as VibeId)) {
-            validVibes.push(vibe as VibeId);
+          const normalized = normalizeVibeId(vibe);
+          if (normalized) {
+            validVibes.push(normalized);
           }
         }
       }

@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import type { DayTripSuggestion } from "@/types/dayTrips";
 import type { ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
+import { bEase } from "@/lib/variant-b-motion";
 
 const PlaceDetailPanelB = dynamic(
   () =>
@@ -17,7 +18,6 @@ const PlaceDetailPanelB = dynamic(
   { ssr: false },
 );
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 function formatTravelTime(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;

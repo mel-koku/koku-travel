@@ -4,6 +4,9 @@ import { rowToTravelGuidance } from "@/types/travelGuidance";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 
+/** Explicit projection matching TravelGuidanceRow columns */
+const GUIDANCE_COLUMNS = "id, title, summary, content, icon, guidance_type, tags, categories, regions, cities, location_ids, seasons, valid_months, is_universal, priority, source_name, source_url, status, created_at, updated_at";
+
 /** Minimal Supabase client interface for guidance queries */
 type SupabaseLike = {
   from: (table: string) => ReturnType<NonNullable<ReturnType<typeof createClient>>["from"]>;
@@ -136,7 +139,7 @@ export async function fetchMatchingGuidance(
     // Build the query
     const query = supabase
       .from("travel_guidance")
-      .select("*")
+      .select(GUIDANCE_COLUMNS)
       .eq("status", "published")
       .order("priority", { ascending: false });
 
@@ -430,7 +433,7 @@ export async function fetchDayGuidance(
   try {
     const query = supabase
       .from("travel_guidance")
-      .select("*")
+      .select(GUIDANCE_COLUMNS)
       .eq("status", "published")
       .order("priority", { ascending: false });
 

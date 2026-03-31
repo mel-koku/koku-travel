@@ -15,8 +15,13 @@ import { google } from "@ai-sdk/google";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
+import { generateCacheKey, getRedisClient } from "@/lib/cache/itineraryCache";
+import { requiresLLMExtraction, extractIntentFromRules } from "./ruleBasedIntent";
 import type { TripBuilderData } from "@/types/trip";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
+
+/** Intent cache TTL: 7 days (intent is deterministic for same builder data) */
+const INTENT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 /**
  * Extracts trip intent from builder data using Gemini.
@@ -29,6 +34,44 @@ export async function extractTripIntent(
 ): Promise<IntentExtractionResult | null> {
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return null;
+  }
+
+  // Check Redis cache for identical builder data
+  const redis = getRedisClient();
+  const itineraryCacheKey = generateCacheKey(builderData);
+  const intentCacheKey = itineraryCacheKey.replace("itinerary", "intent");
+
+  if (redis) {
+    try {
+      const cached = await redis.get<IntentExtractionResult>(intentCacheKey);
+      if (cached) {
+        logger.info("Intent extraction cache hit");
+        return cached;
+      }
+    } catch {
+      // Cache miss or error, proceed with LLM
+    }
+  }
+
+  // Rule-based fast path: skip Gemini when there are no free-text notes.
+  // Structured fields (vibes, pace, group, dietary) map deterministically.
+  if (!requiresLLMExtraction(builderData)) {
+    const ruleResult = extractIntentFromRules(builderData);
+    logger.info("Intent extraction via rule-based parser (no free-text notes)", {
+      excludedCount: ruleResult.excludedCategories.length,
+      pacingHint: ruleResult.pacingHint,
+      weightCount: Object.keys(ruleResult.categoryWeights).length,
+      tagCount: ruleResult.preferredTags?.length ?? 0,
+    });
+
+    // Cache the rule-based result too (same key scheme)
+    if (redis) {
+      redis.set(intentCacheKey, JSON.stringify(ruleResult), { ex: INTENT_CACHE_TTL_SECONDS }).catch(() => {
+        // Best-effort caching
+      });
+    }
+
+    return ruleResult;
   }
 
   const notes = builderData.accessibility?.notes?.trim();
@@ -96,8 +139,9 @@ Extract structured constraints from ALL the above information:
    - "temples_tradition" → { "shrine": 1.5, "temple": 1.5, "garden": 1.3, "craft": 1.2 }
    - "nature_adventure" → { "nature": 1.5, "park": 1.3, "garden": 1.2 }
    - "family_fun" → { "aquarium": 1.3, "zoo": 1.3, "park": 1.3, "entertainment": 1.2 }
-   - "neon_nightlife" → { "bar": 1.5, "entertainment": 1.4 }
-   - "artisan_craft" → { "craft": 2.0, "museum": 1.3, "shopping": 1.0 }
+   - "modern_japan" → { "bar": 1.5, "entertainment": 1.5, "shopping": 1.3 }
+   - "art_architecture" → { "museum": 1.8, "culture": 1.5, "entertainment": 1.2 }
+   - "local_secrets" → { "craft": 1.4 }
 
 6. **timePreference**: Infer from notes or vibes. Night-focused vibes → "night_owl". Early temple visits → "morning_person". Default to "no_preference".
 
@@ -137,6 +181,13 @@ Important:
       pacingHint: clamped.pacingHint,
       weightCount: Object.keys(clamped.categoryWeights).length,
     });
+
+    // Cache the result for future identical requests
+    if (redis) {
+      redis.set(intentCacheKey, JSON.stringify(clamped), { ex: INTENT_CACHE_TTL_SECONDS }).catch(() => {
+        // Best-effort caching
+      });
+    }
 
     return clamped as IntentExtractionResult;
   } catch (error) {
