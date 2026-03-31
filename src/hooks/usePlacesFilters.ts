@@ -58,39 +58,35 @@ function interleaveForDiversity<T extends { category: string }>(
 ): T[] {
   if (sorted.length <= maxConsecutive) return sorted;
 
-  const result: T[] = [];
-  const remaining = [...sorted];
-
-  while (remaining.length > 0) {
-    // Count trailing items that share the same diversity group
-    let consecutive = 0;
-    let trailingGroup: string | null = null;
-    const lastItem = result[result.length - 1];
-    if (lastItem) {
-      trailingGroup = getDiversityGroup(lastItem.category);
-      for (let i = result.length - 1; i >= 0; i--) {
-        const item = result[i]!;
-        if (getDiversityGroup(item.category) === trailingGroup) {
-          consecutive++;
-        } else break;
-      }
-    }
-
-    if (consecutive < maxConsecutive) {
-      // Safe to take the next highest-scored item
-      result.push(remaining.shift()!);
+  // Group items by diversity group, preserving sort order within each group
+  const groups = new Map<string, T[]>();
+  for (const item of sorted) {
+    const group = getDiversityGroup(item.category);
+    const existing = groups.get(group);
+    if (existing) {
+      existing.push(item);
     } else {
-      // Break the streak: pull the next different-group item forward
-      const idx = remaining.findIndex(
-        (item) => getDiversityGroup(item.category) !== trailingGroup
-      );
-      if (idx === -1) {
-        // Only same-group items left, append them all
-        result.push(...remaining);
-        break;
+      groups.set(group, [item]);
+    }
+  }
+
+  // Round-robin across groups, taking up to maxConsecutive from each
+  const result: T[] = [];
+  const groupKeys = [...groups.keys()];
+  let emptyGroups = 0;
+
+  while (emptyGroups < groupKeys.length) {
+    emptyGroups = 0;
+    for (const key of groupKeys) {
+      const bucket = groups.get(key)!;
+      if (bucket.length === 0) {
+        emptyGroups++;
+        continue;
       }
-      const [pulled] = remaining.splice(idx, 1);
-      result.push(pulled!);
+      const take = Math.min(maxConsecutive, bucket.length);
+      for (let i = 0; i < take; i++) {
+        result.push(bucket.shift()!);
+      }
     }
   }
 
