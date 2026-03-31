@@ -7,6 +7,9 @@ import type {
 } from "@/types/person";
 import { logger } from "@/lib/logger";
 
+/** Explicit projection matching Person type */
+const PERSON_COLUMNS = "id, type, name, name_japanese, slug, bio, photo_url, city, prefecture, region, languages, specialties, years_experience, license_number, website_url, social_links, guide_count, is_published, sanity_slug, created_at, updated_at";
+
 /**
  * Fetch people linked to an experience by its Sanity slug.
  * Returns people joined with their role, ordered primary-first.
@@ -87,7 +90,7 @@ export async function getPersonBySlug(
 
   const { data, error } = await supabase
     .from("people")
-    .select("*")
+    .select(PERSON_COLUMNS)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -111,7 +114,7 @@ export async function getPublishedPeople(
   while (true) {
     let query = supabase
       .from("people")
-      .select("*")
+      .select(PERSON_COLUMNS)
       .eq("is_published", true)
       .order("name", { ascending: true })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
@@ -144,7 +147,7 @@ export async function getPersonWithExperiences(
 
   const { data: person, error } = await supabase
     .from("people")
-    .select("*")
+    .select(PERSON_COLUMNS)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
