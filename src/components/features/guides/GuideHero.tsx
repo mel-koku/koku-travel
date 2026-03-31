@@ -37,6 +37,7 @@ export function GuideHero({
 }: GuideHeroProps) {
   const typeLabel = GUIDE_TYPE_LABELS[guideType];
   const location = city || region || "";
+  const hasImage = Boolean(featuredImage);
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -69,14 +70,14 @@ export function GuideHero({
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 70% at 50% 60%, rgba(31,26,20,0.75) 0%, rgba(31,26,20,0.35) 50%, rgba(31,26,20,0.10) 100%)",
+            "radial-gradient(ellipse 80% 70% at 50% 60%, rgba(44,40,37,0.75) 0%, rgba(44,40,37,0.35) 50%, rgba(44,40,37,0.10) 100%)",
         }}
       />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to top, rgba(31,26,20,0.85) 0%, rgba(31,26,20,0.40) 30%, transparent 60%)",
+            "linear-gradient(to top, rgba(44,40,37,0.85) 0%, rgba(44,40,37,0.40) 30%, transparent 60%)",
         }}
       />
       <div className="texture-grain absolute inset-0" />
@@ -100,14 +101,18 @@ export function GuideHero({
     return (
       <section className="relative -mt-20 h-[100dvh] w-full overflow-hidden">
         <div className="absolute inset-0">
-          <Image
-            src={featuredImage}
-            alt={title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+          {hasImage ? (
+            <Image
+              src={featuredImage}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          ) : (
+            <div className="h-full w-full bg-charcoal" />
+          )}
         </div>
         {overlays}
         {titleContent}
@@ -124,14 +129,18 @@ export function GuideHero({
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         {/* Image with subtle scale */}
         <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
-          <Image
-            src={featuredImage}
-            alt={title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+          {hasImage ? (
+            <Image
+              src={featuredImage}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          ) : (
+            <div className="h-full w-full bg-charcoal" />
+          )}
         </motion.div>
 
         {overlays}

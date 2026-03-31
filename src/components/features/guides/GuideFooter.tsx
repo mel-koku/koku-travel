@@ -53,13 +53,17 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
             className="group relative block overflow-hidden rounded-lg"
           >
             <div className="relative aspect-[16/9] w-full sm:aspect-[5/2]">
-              <Image
-                src={relatedGuide.featuredImage}
-                alt={relatedGuide.title}
-                fill
-                className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
-                sizes="(min-width: 1280px) 80vw, 95vw"
-              />
+              {relatedGuide.featuredImage ? (
+                <Image
+                  src={relatedGuide.featuredImage}
+                  alt={relatedGuide.title}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
+                  sizes="(min-width: 1280px) 80vw, 95vw"
+                />
+              ) : (
+                <div className="h-full w-full bg-surface" />
+              )}
               {/* Gradient overlay — recedes on hover */}
               <div className="absolute inset-0 scrim-60" />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />

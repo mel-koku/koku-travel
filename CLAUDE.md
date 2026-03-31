@@ -363,6 +363,9 @@ Builder data ──┬─→ [Pass 1: Intent Extract] ─→ constraints
 - **Dashboard guest prompt**: Unauthenticated users see a sign-in banner below the page header. Dashboard is accessible to guests but data is local-only.
 - **Dashboard empty state**: When no trips exist, shows atmospheric card with "Build My First Trip" CTA + 3 value props (timeline, routes, sharing).
 
+### Analytics
+- **Google Analytics**: gtag.js (`G-XE8JEJN333`) in root `src/app/layout.tsx` via `next/script` (`afterInteractive`). Covers both A and B variants.
+
 ### Key Patterns
 - **Rate Limiting**: Upstash Redis (prod) → in-memory (dev). Config in `src/lib/api/rateLimit.ts`.
 - **Itinerary Cache**: 24h Redis, SHA-256 key of normalized builder data

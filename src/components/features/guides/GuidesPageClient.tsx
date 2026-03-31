@@ -132,7 +132,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-4 sm:pt-12 sm:pb-6 lg:pt-16 text-center">
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
           <h1 className={cn(typography({ intent: "editorial-h1" }), "text-[clamp(2rem,4vw,3rem)] max-w-3xl mx-auto")}>
-            {content?.guidesHeading ?? "What the locals know, written down for the first time."}
+            {content?.guidesHeading ?? "Japan, explored in depth."}
           </h1>
         </ScrollReveal>
       </section>

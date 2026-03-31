@@ -6,6 +6,7 @@ type GuideJsonLdInput = {
   summary?: string;
   imageUrl?: string;
   authorName?: string;
+  authorSlug?: string;
   publishedAt?: string;
   updatedAt?: string;
 };
@@ -23,11 +24,17 @@ export function buildGuideJsonLd(guide: GuideJsonLdInput) {
     ...(guide.imageUrl && { image: guide.imageUrl }),
     ...(guide.publishedAt && { datePublished: guide.publishedAt }),
     ...(guide.updatedAt && { dateModified: guide.updatedAt }),
-    author: {
-      "@type": "Organization",
-      name: guide.authorName ?? "Koku Travel",
-      url: BASE_URL,
-    },
+    author: guide.authorName && guide.authorName !== "Koku Travel"
+      ? {
+          "@type": "Person",
+          name: guide.authorName,
+          ...(guide.authorSlug && { url: `${BASE_URL}/local-experts?person=${guide.authorSlug}` }),
+        }
+      : {
+          "@type": "Organization",
+          name: "Koku Travel",
+          url: BASE_URL,
+        },
     publisher: {
       "@type": "Organization",
       name: "Koku Travel",

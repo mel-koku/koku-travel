@@ -105,6 +105,8 @@ export default async function GuideDetailPage({ params }: Props) {
       title: guide.title,
       summary: guide.summary,
       imageUrl,
+      authorName: guide.author?.name,
+      authorSlug: guide.author?.slug,
       publishedAt: guide.publishedAt,
       updatedAt: guide._updatedAt,
     });

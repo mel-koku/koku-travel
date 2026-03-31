@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -29,6 +30,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" />
       </head>
       <body className="min-h-[100dvh] antialiased">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-XE8JEJN333"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XE8JEJN333');
+          `}
+        </Script>
         {children}
       </body>
     </html>
