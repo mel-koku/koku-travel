@@ -9,6 +9,7 @@ import { validateRequestBody, aiRecommendRequestSchema } from "@/lib/api/schemas
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { extractPlaceIntent, type PlaceIntent } from "@/lib/server/placeRecommender";
 import type { TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
@@ -87,11 +88,9 @@ export const POST = withApiHandler(
       categories?: string[];
       searchText?: string;
     }) => {
-      let q = supabase
-        .from("locations")
-        .select(LOCATION_ITINERARY_COLUMNS)
-        .eq("is_active", true)
-        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+      let q = applyActiveLocationFilters(
+        supabase.from("locations").select(LOCATION_ITINERARY_COLUMNS)
+      );
 
       if (cityId) q = q.ilike("city", cityId);
       if (options.categories?.length) q = q.in("category", options.categories);

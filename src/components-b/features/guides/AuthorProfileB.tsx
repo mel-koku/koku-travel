@@ -5,8 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import type { SanityAuthorFull } from "@/types/sanityGuide";
 import type { GuideType } from "@/types/guide";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   itinerary: "Itinerary",

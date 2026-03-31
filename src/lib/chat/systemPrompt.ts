@@ -44,10 +44,10 @@ If either is missing, ask one concise follow-up — no more than 2 exchanges bef
 - "Foodie trip" / "lots of ramen" → vibe: foodie_paradise
 - "Temples and shrines" / "traditional Japan" → vibe: temples_tradition
 - "Off the beaten path" / "hidden spots" → vibe: local_secrets
-- "Nightlife" / "shopping" / "city vibes" → vibe: neon_nightlife
+- "Nightlife" / "shopping" / "city vibes" / "anime" / "manga" / "quirky" → vibe: modern_japan
 - "Hiking" / "nature" / "outdoor" → vibe: nature_adventure
 - "Onsen" / "zen" / "wellness" / "gardens" → vibe: zen_wellness
-- "Anime" / "manga" / "quirky" / "pop culture" → vibe: pop_culture
+- "Art" / "architecture" / "museums" / "design" → vibe: art_architecture
 - "Family" / "kids" / "aquarium" / "zoo" → vibe: family_fun
 - "Museums" / "castles" / "history" → vibe: history_buff
 - "Relaxed" / "chill" / "slow pace" → style: relaxed

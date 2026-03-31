@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const DEFAULT_STATUS_MESSAGES = [
   "Looking at what you picked...",

@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { getActiveCraftHighlights } from "@/data/craftSeasons";
 import { getCraftTypeColor } from "@/data/craftTypes";
 import type { CraftTypeId } from "@/data/craftTypes";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 type CraftSeasonalBannerBProps = {
   onSelectCraftType: (craftType: CraftTypeId) => void;

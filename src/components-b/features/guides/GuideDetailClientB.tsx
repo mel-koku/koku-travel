@@ -12,8 +12,8 @@ import { GuideContentB } from "./GuideContentB";
 import type { Guide, GuideSummary } from "@/types/guide";
 import type { SanityGuide, SanityAuthor } from "@/types/sanityGuide";
 import type { Location } from "@/types/location";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const sectionReveal = {
   initial: { opacity: 0, y: 10 },

@@ -35,17 +35,23 @@ describe("extractTripIntent", () => {
     teardownLLMEnv();
   });
 
+  // Helper: builder data WITH notes to trigger Gemini path (rule-based skips Gemini)
+  const builderWithNotes = () =>
+    createTestBuilderData({
+      accessibility: { notes: "I want to visit Fushimi Inari on day 1" },
+    });
+
   describe("graceful degradation", () => {
     it("returns null when API key is missing", async () => {
       delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      const result = await extractTripIntent(createTestBuilderData());
+      const result = await extractTripIntent(builderWithNotes());
       expect(result).toBeNull();
     });
 
     it("returns null on Gemini error", async () => {
       setupLLMEnv();
       mockGenerateObjectFailure(new Error("quota exceeded"));
-      const result = await extractTripIntent(createTestBuilderData());
+      const result = await extractTripIntent(builderWithNotes());
       expect(result).toBeNull();
     });
 
@@ -56,7 +62,7 @@ describe("extractTripIntent", () => {
       // fires the AbortError immediately when signal fires.
       // We need to fast-forward timers.
       vi.useFakeTimers();
-      const promise = extractTripIntent(createTestBuilderData());
+      const promise = extractTripIntent(builderWithNotes());
       vi.advanceTimersByTime(5500);
       const result = await promise;
       expect(result).toBeNull();
@@ -80,7 +86,7 @@ describe("extractTripIntent", () => {
     it("returns structured result on success", async () => {
       setupLLMEnv();
       mockGenerateObjectSuccess(validResult);
-      const result = await extractTripIntent(createTestBuilderData());
+      const result = await extractTripIntent(builderWithNotes());
       expect(result).not.toBeNull();
       expect(result?.pinnedLocations).toHaveLength(1);
       expect(result?.excludedCategories).toContain("bar");
@@ -93,29 +99,48 @@ describe("extractTripIntent", () => {
         ...validResult,
         categoryWeights: { shrine: 3.0, restaurant: 0.1 },
       });
-      const result = await extractTripIntent(createTestBuilderData());
+      const result = await extractTripIntent(builderWithNotes());
       expect(result?.categoryWeights.shrine).toBe(2.0);
       expect(result?.categoryWeights.restaurant).toBe(0.5);
     });
   });
 
-  describe("input handling", () => {
-    it("handles missing notes gracefully", async () => {
+  describe("rule-based fast path", () => {
+    it("uses rule-based parser when no notes are present", async () => {
+      setupLLMEnv();
+      // No notes = rule-based path, Gemini should NOT be called
+      const result = await extractTripIntent(createTestBuilderData());
+      expect(result).not.toBeNull();
+      // Rule-based always returns empty pinnedLocations
+      expect(result?.pinnedLocations).toEqual([]);
+    });
+
+    it("falls through to Gemini when notes are present", async () => {
       setupLLMEnv();
       mockGenerateObjectSuccess({
-        pinnedLocations: [],
+        pinnedLocations: [{ locationName: "Fushimi Inari", reason: "Requested" }],
         excludedCategories: [],
         dayConstraints: [],
         categoryWeights: {},
         additionalInsights: [],
       });
+      const result = await extractTripIntent(builderWithNotes());
+      expect(result).not.toBeNull();
+      expect(result?.pinnedLocations).toHaveLength(1);
+    });
+  });
+
+  describe("input handling", () => {
+    it("handles missing notes gracefully (rule-based path)", async () => {
+      setupLLMEnv();
       const result = await extractTripIntent(
         createTestBuilderData({ accessibility: undefined }),
       );
+      // No notes = rule-based path returns a valid result
       expect(result).not.toBeNull();
     });
 
-    it("handles missing interests gracefully", async () => {
+    it("handles missing interests gracefully (Gemini path)", async () => {
       setupLLMEnv();
       mockGenerateObjectSuccess({
         pinnedLocations: [],
@@ -125,12 +150,15 @@ describe("extractTripIntent", () => {
         additionalInsights: [],
       });
       const result = await extractTripIntent(
-        createTestBuilderData({ interests: undefined }),
+        createTestBuilderData({
+          interests: undefined,
+          accessibility: { notes: "some notes" },
+        }),
       );
       expect(result).not.toBeNull();
     });
 
-    it("handles missing group gracefully", async () => {
+    it("handles missing group gracefully (Gemini path)", async () => {
       setupLLMEnv();
       mockGenerateObjectSuccess({
         pinnedLocations: [],
@@ -140,7 +168,10 @@ describe("extractTripIntent", () => {
         additionalInsights: [],
       });
       const result = await extractTripIntent(
-        createTestBuilderData({ group: undefined }),
+        createTestBuilderData({
+          group: undefined,
+          accessibility: { notes: "some notes" },
+        }),
       );
       expect(result).not.toBeNull();
     });

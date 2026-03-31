@@ -13,8 +13,8 @@ import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
 import { debounce } from "@/lib/utils";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type AccountClientBProps = {
   content?: PagesContent;

@@ -9,31 +9,17 @@ import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
+import {
+  DURATION_FILTERS,
+  calculatePopularityScore,
+  parseDuration,
+  normalizePrefecture,
+  PAGE_SIZE,
+} from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
 
-const DURATION_FILTERS = [
-  {
-    id: "short",
-    label: "Under 1 hour",
-    predicate: (value: number | null) => value !== null && value <= 60,
-  },
-  {
-    id: "medium",
-    label: "1\u20133 hours",
-    predicate: (value: number | null) =>
-      value !== null && value >= 60 && value <= 180,
-  },
-  {
-    id: "long",
-    label: "Over 3 hours",
-    predicate: (value: number | null) => value !== null && value > 180,
-  },
-] as const;
-
 export { DURATION_FILTERS };
-
-const PAGE_SIZE = 24;
 
 export type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
@@ -55,37 +41,6 @@ type EnhancedLocation = Location & {
 
 export type { EnhancedLocation };
 
-function parseDuration(value?: string): number | null {
-  if (!value) return null;
-  const trimmed = value.trim();
-  // After normalization, most durations are plain integers (minutes)
-  const asInt = parseInt(trimmed, 10);
-  if (!isNaN(asInt) && String(asInt) === trimmed) return asInt;
-  // Legacy text formats (backward compat)
-  const normalized = trimmed.toLowerCase();
-  const match = normalized.match(
-    /([0-9]+(?:\.[0-9]+)?)\s*(hour|hours|hr|hrs|minute|minutes|day|days)/
-  );
-  if (!match || !match[1] || !match[2]) return null;
-  const amount = Number.parseFloat(match[1]);
-  if (Number.isNaN(amount)) return null;
-  const unit = match[2];
-  if (unit.startsWith("day")) return amount * 24 * 60;
-  if (unit.startsWith("hour") || unit.startsWith("hr")) return amount * 60;
-  if (unit.startsWith("minute")) return amount;
-  return null;
-}
-
-function calculatePopularityScore(rating: number | null, reviewCount: number | null): number {
-  const r = rating ?? 0;
-  const v = reviewCount ?? 0;
-  if (r === 0 || v === 0) return 0;
-  const m = 50;
-  const C = 4.2;
-  const score = (v / (v + m)) * r + (m / (v + m)) * C;
-  const reviewBoost = Math.log10(v + 1) / 10;
-  return score + reviewBoost;
-}
 
 // ── Category diversity interleaving ───────────────────────
 // Prevents dining-heavy clusters in the default "recommended" sort
@@ -103,39 +58,35 @@ function interleaveForDiversity<T extends { category: string }>(
 ): T[] {
   if (sorted.length <= maxConsecutive) return sorted;
 
-  const result: T[] = [];
-  const remaining = [...sorted];
-
-  while (remaining.length > 0) {
-    // Count trailing items that share the same diversity group
-    let consecutive = 0;
-    let trailingGroup: string | null = null;
-    const lastItem = result[result.length - 1];
-    if (lastItem) {
-      trailingGroup = getDiversityGroup(lastItem.category);
-      for (let i = result.length - 1; i >= 0; i--) {
-        const item = result[i]!;
-        if (getDiversityGroup(item.category) === trailingGroup) {
-          consecutive++;
-        } else break;
-      }
-    }
-
-    if (consecutive < maxConsecutive) {
-      // Safe to take the next highest-scored item
-      result.push(remaining.shift()!);
+  // Group items by diversity group, preserving sort order within each group
+  const groups = new Map<string, T[]>();
+  for (const item of sorted) {
+    const group = getDiversityGroup(item.category);
+    const existing = groups.get(group);
+    if (existing) {
+      existing.push(item);
     } else {
-      // Break the streak: pull the next different-group item forward
-      const idx = remaining.findIndex(
-        (item) => getDiversityGroup(item.category) !== trailingGroup
-      );
-      if (idx === -1) {
-        // Only same-group items left, append them all
-        result.push(...remaining);
-        break;
+      groups.set(group, [item]);
+    }
+  }
+
+  // Round-robin across groups, taking up to maxConsecutive from each
+  const result: T[] = [];
+  const groupKeys = [...groups.keys()];
+  let emptyGroups = 0;
+
+  while (emptyGroups < groupKeys.length) {
+    emptyGroups = 0;
+    for (const key of groupKeys) {
+      const bucket = groups.get(key)!;
+      if (bucket.length === 0) {
+        emptyGroups++;
+        continue;
       }
-      const [pulled] = remaining.splice(idx, 1);
-      result.push(pulled!);
+      const take = Math.min(maxConsecutive, bucket.length);
+      for (let i = 0; i < take; i++) {
+        result.push(bucket.shift()!);
+      }
     }
   }
 
@@ -230,16 +181,6 @@ export function usePlacesFilters(
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
-
-    const normalizePrefecture = (name: string | undefined): string => {
-      if (!name) return '';
-      return name
-        .replace(/\s+Prefecture$/i, '')
-        .replace(/-ken$/i, '')
-        .replace(/-fu$/i, '')
-        .replace(/-to$/i, '')
-        .trim();
-    };
 
     const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
 

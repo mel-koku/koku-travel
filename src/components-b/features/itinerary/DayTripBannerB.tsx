@@ -4,8 +4,8 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { MapPin, X } from "lucide-react";
 import type { DayTripSuggestion } from "@/types/dayTrips";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 /**
  * Dismissible banner surfacing day trip suggestions on the B itinerary timeline.

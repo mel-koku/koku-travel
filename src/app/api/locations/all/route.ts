@@ -7,6 +7,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { LOCATION_EXPLORE_COLUMNS, type LocationExploreDbRow } from "@/lib/supabase/projections";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 /**
  * Two-tier cache: globalThis (survives Turbopack module re-eval) +
@@ -71,12 +72,9 @@ export const GET = withApiHandler(
     // so we paginate. First get the count, then fetch all pages in parallel.
     const PAGE_SIZE = 1000;
 
-    const { count, error: countError } = await supabase
-      .from("locations")
-      .select("id", { count: "exact", head: true })
-      .eq("is_active", true)
-      .eq("is_accommodation", false)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+    const { count, error: countError } = await applyActiveLocationFilters(
+      supabase.from("locations").select("id", { count: "exact", head: true })
+    ).eq("is_accommodation", false);
 
     if (countError) {
       logger.error("Failed to count locations", {
@@ -95,12 +93,9 @@ export const GET = withApiHandler(
     const pagePromises = Array.from({ length: totalPages }, (_, page) => {
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      return supabase
-        .from("locations")
-        .select(LOCATION_EXPLORE_COLUMNS)
-        .eq("is_active", true)
-        .eq("is_accommodation", false)
-        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+      return applyActiveLocationFilters(
+        supabase.from("locations").select(LOCATION_EXPLORE_COLUMNS)
+      ).eq("is_accommodation", false)
         .order("name", { ascending: true })
         .range(from, to);
     });

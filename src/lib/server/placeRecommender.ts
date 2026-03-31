@@ -69,6 +69,46 @@ const placeIntentSchema = z.object({
 
 export type PlaceIntent = z.infer<typeof placeIntentSchema>;
 
+/**
+ * Common single-keyword queries mapped directly to categories/tags.
+ * Avoids an LLM call for ~70-80% of simple searches.
+ */
+const KEYWORD_SHORTCUTS: Record<string, PlaceIntent> = {
+  // Food categories
+  ramen:      { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "ramen" },
+  sushi:      { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "sushi" },
+  udon:       { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "udon" },
+  soba:       { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "soba" },
+  yakitori:   { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "yakitori" },
+  tempura:    { commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "tempura" },
+  okonomiyaki:{ commandType: "search", categories: ["restaurant"], tags: ["tasting"], searchQuery: "okonomiyaki" },
+  izakaya:    { commandType: "search", categories: ["restaurant", "bar"], tags: ["tasting", "lively", "evening"], searchQuery: "izakaya" },
+  wagashi:    { commandType: "search", categories: ["cafe"], tags: ["tasting", "traditional-japan"], searchQuery: "wagashi" },
+  matcha:     { commandType: "search", categories: ["cafe"], tags: ["tasting", "traditional-japan"], searchQuery: "matcha" },
+  coffee:     { commandType: "search", categories: ["cafe"], tags: [], searchQuery: "coffee" },
+  breakfast:  { commandType: "search", categories: ["restaurant", "cafe"], tags: ["morning"], mealType: "breakfast" },
+  lunch:      { commandType: "search", categories: ["restaurant"], tags: ["afternoon"], mealType: "lunch" },
+  dinner:     { commandType: "search", categories: ["restaurant"], tags: ["evening"], mealType: "dinner" },
+  // Location categories
+  temple:     { commandType: "search", categories: ["temple"], tags: ["spiritual", "traditional-japan"] },
+  shrine:     { commandType: "search", categories: ["shrine"], tags: ["spiritual", "traditional-japan"] },
+  museum:     { commandType: "search", categories: ["museum"], tags: ["learning", "indoor"] },
+  park:       { commandType: "search", categories: ["park"], tags: ["outdoor", "scenic"] },
+  garden:     { commandType: "search", categories: ["garden"], tags: ["outdoor", "scenic", "quiet"] },
+  onsen:      { commandType: "search", categories: ["onsen"], tags: ["relaxation", "traditional-japan"] },
+  castle:     { commandType: "search", categories: ["castle"], tags: ["learning", "scenic", "traditional-japan"] },
+  market:     { commandType: "search", categories: ["market"], tags: ["tasting", "lively"] },
+  shopping:   { commandType: "search", categories: ["shopping"], tags: ["indoor"] },
+  bar:        { commandType: "search", categories: ["bar"], tags: ["evening", "lively"] },
+  cafe:       { commandType: "search", categories: ["cafe"], tags: [] },
+  beach:      { commandType: "search", categories: ["beach"], tags: ["outdoor", "scenic"] },
+  viewpoint:  { commandType: "search", categories: ["viewpoint"], tags: ["scenic", "photo-op"] },
+  craft:      { commandType: "search", categories: ["craft"], tags: ["hands-on", "traditional-japan"] },
+  nature:     { commandType: "search", categories: ["nature"], tags: ["outdoor", "scenic"] },
+  zoo:        { commandType: "search", categories: ["zoo"], tags: ["families", "outdoor"] },
+  aquarium:   { commandType: "search", categories: ["aquarium"], tags: ["families", "indoor"] },
+};
+
 interface PlaceIntentContext {
   query: string;
   cityId: string;
@@ -90,6 +130,19 @@ export async function extractPlaceIntent(
   }
 
   const { query, cityId, dayActivities, interests } = context;
+
+  // Short-circuit: single common keywords skip the LLM entirely
+  const normalized = query.trim().toLowerCase();
+  const shortcut = KEYWORD_SHORTCUTS[normalized];
+  if (shortcut) {
+    logger.info("Place intent resolved via keyword shortcut", {
+      query,
+      cityId,
+      commandType: shortcut.commandType,
+      categories: shortcut.categories,
+    });
+    return shortcut;
+  }
 
   const activityListText = dayActivities?.length
     ? dayActivities

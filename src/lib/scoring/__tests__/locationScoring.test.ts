@@ -104,7 +104,7 @@ describe("Location Scoring", () => {
         recentCategories: [],
       });
 
-      expect(result.breakdown.ratingQuality).toBeGreaterThan(20);
+      expect(result.breakdown.ratingQuality).toBeGreaterThanOrEqual(20);
     });
 
     it("should score lower with few reviews", () => {

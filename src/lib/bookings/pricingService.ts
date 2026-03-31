@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import type { PricingRule, PriceBreakdown } from "@/types/person";
 
+/** Explicit projection matching PricingRule type -- avoids fetching future columns */
+const PRICING_RULE_COLUMNS = "id, person_id, experience_slug, base_price, currency, per_person_price, min_group, max_group, duration_minutes, valid_from, valid_until, created_at";
+
 /**
  * Get the best matching pricing rule for a person + optional experience.
  * Priority: experience-specific > person default (experience_slug IS NULL).
@@ -13,26 +16,25 @@ export async function getPricingRule(
   date?: string // optional: filters by valid_from/valid_until
 ): Promise<PricingRule | null> {
   const supabase = await createClient();
+  const today = date ?? new Date().toISOString().slice(0, 10);
 
-  const { data, error } = await supabase
+  // Filter by date validity at the database level
+  const query = supabase
     .from("pricing_rules")
-    .select("*")
+    .select(PRICING_RULE_COLUMNS)
     .eq("person_id", personId)
+    .or(`valid_from.is.null,valid_from.lte.${today}`)
+    .or(`valid_until.is.null,valid_until.gte.${today}`)
     .order("experience_slug", { ascending: false, nullsFirst: false });
+
+  const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
     if (error) logger.error("Failed to fetch pricing rules", error);
     return null;
   }
 
-  const today = date ?? new Date().toISOString().slice(0, 10);
-
-  // Filter by date validity
-  const valid = (data as PricingRule[]).filter((r) => {
-    if (r.valid_from && today < r.valid_from) return false;
-    if (r.valid_until && today > r.valid_until) return false;
-    return true;
-  });
+  const valid = data as PricingRule[];
 
   // Prefer experience-specific rule
   if (experienceSlug) {
@@ -92,7 +94,7 @@ export async function getPersonPricingRules(
 
   const { data, error } = await supabase
     .from("pricing_rules")
-    .select("*")
+    .select(PRICING_RULE_COLUMNS)
     .eq("person_id", personId)
     .order("base_price", { ascending: true });
 

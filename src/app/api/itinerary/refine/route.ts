@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { refineDay, type RefinementType } from "@/lib/server/refinementEngine";
 import { convertItineraryToTrip } from "@/lib/server/itineraryEngine";
@@ -6,6 +7,7 @@ import { logger } from "@/lib/logger";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
+import { getRedisClient } from "@/lib/cache/itineraryCache";
 import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -16,6 +18,16 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
+
+/** Build a cache key from day activities + refinement type */
+function buildRefineCacheKey(dayActivities: string[], refinementType: string, cityId?: string): string {
+  const payload = JSON.stringify({ activities: dayActivities.sort(), refinementType, cityId });
+  const hash = crypto.createHash("sha256").update(payload).digest("hex").slice(0, 16);
+  return `@koku-travel/refine:${hash}`;
+}
+
+/** Refinement cache TTL: 12 hours */
+const REFINE_CACHE_TTL = 12 * 60 * 60;
 
 // Simple stub request format (as specified in plan)
 type RefineRequestBody = {
@@ -256,12 +268,36 @@ export const POST = withApiHandler(
         });
       }
 
+      // Check Redis cache for identical refinement request
+      const dayActivityIds = (trip.days[targetDayIndex]?.activities ?? []).map(a => a.locationId ?? a.id);
+      const cacheKey = buildRefineCacheKey(dayActivityIds, refinementType, trip.days[targetDayIndex]?.cityId);
+      const redis = getRedisClient();
+
+      if (redis) {
+        try {
+          const cached = await redis.get<TripDay>(cacheKey);
+          if (cached) {
+            logger.info("Refinement cache hit", { cacheKey, refinementType });
+            const updatedDays = trip.days.map((day, index) => index === targetDayIndex ? cached : day);
+            const refined: Trip = { ...trip, days: updatedDays, updatedAt: new Date().toISOString() };
+            return NextResponse.json({ trip: refined, refinementType, dayIndex: targetDayIndex, message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.` }, { status: 200 });
+          }
+        } catch {
+          // Cache miss or error, proceed with refinement
+        }
+      }
+
       // Perform actual refinement using refineDay function
       const refinedDay = await refineDay({
         trip,
         dayIndex: targetDayIndex,
         type: refinementType,
       });
+
+      // Cache the refined day
+      if (redis) {
+        redis.set(cacheKey, JSON.stringify(refinedDay), { ex: REFINE_CACHE_TTL }).catch(() => {});
+      }
 
       // Update the trip with the refined day
       const updatedDays = trip.days.map((day, index) =>

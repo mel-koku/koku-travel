@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check, ChevronDown, MapPin, Star } from "lucide-react";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 export type RegionSelectionState = "none" | "partial" | "full";
 

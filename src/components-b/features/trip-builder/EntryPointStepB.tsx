@@ -14,8 +14,8 @@ import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/li
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
 import { TimePickerB } from "@b/ui/TimePickerB";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
 function coordsToSvg(lat: number, lng: number): { x: number; y: number } {

@@ -5,6 +5,7 @@ import { badRequest, internalError } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { applySearchFilter } from "@/lib/supabase/searchFilters";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
 /**
  * Lightweight search result for autocomplete
@@ -61,11 +62,9 @@ export const GET = withApiHandler(
     const supabase = await createClient();
 
     // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
-    const baseQuery = supabase
-      .from("locations")
-      .select("id, name, city, region, category, place_id, image, rating")
-      .eq("is_active", true)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+    const baseQuery = applyActiveLocationFilters(
+      supabase.from("locations").select("id, name, city, region, category, place_id, image, rating")
+    );
 
     const { data, error } = await applySearchFilter(baseQuery, query)
       .order("name", { ascending: true })

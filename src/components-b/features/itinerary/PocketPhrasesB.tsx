@@ -3,8 +3,8 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { selectPocketPhrases } from "@/lib/phrases/phraseSelector";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type PocketPhrasesBProps = {
   locationCategory: string | undefined;

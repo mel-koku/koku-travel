@@ -17,9 +17,9 @@ import { DashboardHeaderB } from "./DashboardHeaderB";
 import { StatsSectionB } from "./StatsSectionB";
 import { TripsSectionB } from "./TripsSectionB";
 import { AccountSectionB } from "./AccountSectionB";
+import { bEase } from "@/lib/variant-b-motion";
 
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 

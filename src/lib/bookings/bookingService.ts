@@ -8,6 +8,12 @@ import type {
   BookingWithPerson,
 } from "@/types/person";
 
+/** Explicit projection matching Booking type */
+const BOOKING_COLUMNS = "id, inquiry_id, person_id, experience_slug, location_id, user_id, booking_date, session, start_time, end_time, group_size, interpreter_id, notes, total_price, currency, pricing_rule_id, status, cancellation_reason, created_at, updated_at";
+
+/** Booking with joined person/interpreter for display lists */
+const BOOKING_WITH_PERSON_COLUMNS = `${BOOKING_COLUMNS}, person:people!bookings_person_id_fkey(name, type, slug, photo_url, city), interpreter:people!bookings_interpreter_id_fkey(name, slug)`;
+
 const SESSION_TIMES: Record<BookingSession, { start: string; end: string }> = {
   morning: { start: "10:00", end: "12:00" },
   afternoon: { start: "14:00", end: "16:00" },
@@ -142,7 +148,7 @@ export async function createBooking(input: {
       pricing_rule_id: input.pricingRuleId ?? null,
       status: "confirmed",
     })
-    .select("*")
+    .select(BOOKING_COLUMNS)
     .single();
 
   if (error) {
@@ -168,13 +174,7 @@ export async function getUserBookings(
 
   let query = supabase
     .from("bookings")
-    .select(
-      `
-      *,
-      person:people!bookings_person_id_fkey(name, type, slug, photo_url, city),
-      interpreter:people!bookings_interpreter_id_fkey(name, slug)
-      `
-    )
+    .select(BOOKING_WITH_PERSON_COLUMNS)
     .eq("user_id", userId)
     .order("booking_date", { ascending: true });
 
@@ -231,7 +231,7 @@ export async function cancelBooking(
       updated_at: new Date().toISOString(),
     })
     .eq("id", bookingId)
-    .select("*")
+    .select(BOOKING_COLUMNS)
     .single();
 
   if (error) {

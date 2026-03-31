@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
 type ActData = {
   number: string;
@@ -46,7 +47,6 @@ const defaultActs: ActData[] = [
   },
 ];
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 function resolveActs(content?: LandingPageContent): ActData[] {
   if (content?.showcaseActs?.length === 3) {

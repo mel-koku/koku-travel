@@ -8,8 +8,8 @@ import { GuideCardB } from "./GuideCardB";
 import type { GuideSummary, GuideType } from "@/types/guide";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { getCurrentSeason, type Season } from "@/lib/utils/seasonUtils";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 type GuidesPageClientBProps = {
   guides: GuideSummary[];

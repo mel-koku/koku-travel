@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { bEase } from "@/lib/variant-b-motion";
 
-const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 type PlacesIntroBProps = {
   totalCount: number;
