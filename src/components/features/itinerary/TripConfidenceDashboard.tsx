@@ -7,6 +7,7 @@ import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validati
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
 import { vibesToInterests } from "@/data/vibes";
+import type { DetectedGap } from "@/lib/smartPrompts/detectors/types";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
 import { REGIONS } from "@/data/regions";
 import { typography } from "@/lib/typography-system";
@@ -36,6 +37,8 @@ type TripConfidenceDashboardProps = {
   dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
   onAcceptDayTrip?: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => void;
   isAcceptingDayTrip?: boolean;
+  /** Smart prompt suggestions -- used to suppress duplicate tips */
+  suggestions?: DetectedGap[];
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
@@ -52,7 +55,26 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   dayTripSuggestions,
   onAcceptDayTrip,
   isAcceptingDayTrip,
+  suggestions,
 }: TripConfidenceDashboardProps) {
+  // IDs of DB tips already promoted to smart prompts -- suppress from DayTips
+  const surfacedGuidanceIds = useMemo(() => {
+    if (!suggestions) return new Set<string>();
+    return new Set(
+      suggestions
+        .filter((g) => g.type === "guidance" && g.action.type === "acknowledge_guidance")
+        .map((g) => (g.action as { guidanceId: string }).guidanceId),
+    );
+  }, [suggestions]);
+
+  // Days that have a luggage smart prompt active
+  const luggagePromptDays = useMemo(() => {
+    if (!suggestions) return new Set<number>();
+    return new Set(
+      suggestions.filter((g) => g.type === "luggage_needs").map((g) => g.dayIndex),
+    );
+  }, [suggestions]);
+
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
     [itinerary, conflicts],
@@ -172,7 +194,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       <RouteSummary itinerary={itinerary} tripStartDate={tripStartDate} onSelectDay={onSelectDay} onClose={onClose} />
 
       {/* Travel Tips — per-day tips moved from timeline */}
-      <TravelTipsSection itinerary={itinerary} tripStartDate={tripStartDate} />
+      <TravelTipsSection itinerary={itinerary} tripStartDate={tripStartDate} surfacedGuidanceIds={surfacedGuidanceIds} luggagePromptDays={luggagePromptDays} />
 
       {/* Day Trip Suggestions */}
       {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
@@ -417,9 +439,13 @@ function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
 function TravelTipsSection({
   itinerary,
   tripStartDate,
+  surfacedGuidanceIds,
+  luggagePromptDays,
 }: {
   itinerary: Itinerary;
   tripStartDate?: string;
+  surfacedGuidanceIds?: Set<string>;
+  luggagePromptDays?: Set<number>;
 }) {
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [tipCounts, setTipCounts] = useState<Map<number, number>>(new Map());
@@ -485,6 +511,8 @@ function TravelTipsSection({
                     embedded
                     nextDayActivities={itinerary.days[i + 1]?.activities}
                     onTipCount={(c) => handleTipCount(i, c)}
+                    hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
+                    surfacedGuidanceIds={surfacedGuidanceIds}
                   />
                 </div>
               )}
@@ -498,6 +526,8 @@ function TravelTipsSection({
                   countOnly
                   nextDayActivities={itinerary.days[i + 1]?.activities}
                   onTipCount={(c) => handleTipCount(i, c)}
+                  hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
+                  surfacedGuidanceIds={surfacedGuidanceIds}
                 />
               )}
             </div>
