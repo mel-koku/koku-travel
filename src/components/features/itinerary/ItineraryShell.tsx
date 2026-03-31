@@ -862,6 +862,7 @@ export const ItineraryShell = ({
                   dayTripSuggestions={dayTripSuggestions}
                   onAcceptDayTrip={handleAcceptDayTrip}
                   isAcceptingDayTrip={isAcceptingDayTrip}
+                  suggestions={suggestions}
                 />
               </div>
             )}

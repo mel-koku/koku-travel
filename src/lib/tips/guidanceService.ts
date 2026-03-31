@@ -413,6 +413,8 @@ export type DayGuidanceCriteria = {
   month?: number;
   /** Location IDs to exclude (for deduplication with card-level tips) */
   excludeLocationIds?: string[];
+  /** Guidance types to suppress (activity-level tips already cover these) */
+  suppressGuidanceTypes?: string[];
 };
 
 /**
@@ -545,6 +547,10 @@ export async function fetchDayGuidance(
       }
 
       if (isRelevant) {
+        // Suppress guidance types that activity-level tips already cover
+        if (criteria.suppressGuidanceTypes?.includes(guidance.guidanceType)) {
+          continue;
+        }
         seenTitles.add(guidance.title.toLowerCase());
         dayGuidance.push(guidance);
       }
