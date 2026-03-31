@@ -61,7 +61,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 sizes="(min-width: 1280px) 80vw, 95vw"
               />
               {/* Gradient overlay — recedes on hover */}
-              <div className="absolute inset-0 scrim-60 transition-opacity duration-500 group-hover:opacity-50" />
+              <div className="absolute inset-0 scrim-60" />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
             </div>
 
@@ -73,7 +73,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 {relatedGuide.readingTimeMinutes &&
                   ` \u00b7 ${relatedGuide.readingTimeMinutes} min`}
               </p>
-              <p className="font-serif text-2xl text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-3xl">
+              <p className="font-serif text-2xl text-white sm:text-3xl">
                 {relatedGuide.title}
               </p>
             </div>
