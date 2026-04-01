@@ -7,6 +7,7 @@ import type { ChangeEvent } from "react";
 import type { StoredTrip } from "@/state/AppState";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { typography } from "@/lib/typography-system";
+import { LocalOnlyBadge } from "@/components/ui/LocalOnlyBadge";
 import { DaySelector } from "./DaySelector";
 
 type DashboardItineraryPreviewProps = {
@@ -16,6 +17,7 @@ type DashboardItineraryPreviewProps = {
   onSelectTrip?: (tripId: string) => void;
   onDeleteTrip?: (tripId: string) => void;
   isCompleted?: boolean;
+  isLocalOnly?: boolean;
 };
 
 type SectionKey = ItineraryActivity["timeOfDay"];
@@ -114,6 +116,7 @@ export const DashboardItineraryPreview = ({
   onSelectTrip,
   onDeleteTrip,
   isCompleted,
+  isLocalOnly,
 }: DashboardItineraryPreviewProps) => {
   const [selectedDay, setSelectedDay] = useState(0);
   const days = trip.itinerary.days ?? [];
@@ -158,6 +161,7 @@ export const DashboardItineraryPreview = ({
               {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
             </p>
           ) : null}
+          {isLocalOnly && <LocalOnlyBadge />}
         </div>
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-end sm:justify-end sm:gap-4 lg:w-auto">
           {showTripSelector ? (

@@ -16,6 +16,8 @@ import { sanitizeString } from "@/lib/api/sanitization";
 import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
 import { AccountSection } from "./components/AccountSection";
+import { GuestSignInPrompt } from "@/components/features/dashboard/GuestSignInPrompt";
+import { useSignInPrompts } from "@/hooks/useSignInPrompts";
 
 import { StatsSection } from "./components/StatsSection";
 import { typography } from "@/lib/typography-system";
@@ -314,6 +316,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                             selectedTripId={selectedTripId ?? trip.id}
                             onSelectTrip={setUserSelectedTripId}
                             onDeleteTrip={handleDeleteTrip}
+                            isLocalOnly={!isAuthenticated}
                           />
                         </ScrollReveal>
                       ))}
@@ -334,6 +337,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                             selectedTripId={selectedTripId ?? trip.id}
                             onSelectTrip={setUserSelectedTripId}
                             onDeleteTrip={handleDeleteTrip}
+                            isLocalOnly={!isAuthenticated}
                           />
                         </ScrollReveal>
                       ))}
@@ -354,6 +358,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                             selectedTripId={selectedTripId ?? trip.id}
                             onSelectTrip={setUserSelectedTripId}
                             onDeleteTrip={handleDeleteTrip}
+                            isLocalOnly={!isAuthenticated}
                           />
                         </ScrollReveal>
                       ))}
@@ -375,6 +380,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                             onSelectTrip={setUserSelectedTripId}
                             onDeleteTrip={handleDeleteTrip}
                             isCompleted
+                            isLocalOnly={!isAuthenticated}
                           />
                         </ScrollReveal>
                       ))}
