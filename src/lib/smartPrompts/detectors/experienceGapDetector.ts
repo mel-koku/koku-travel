@@ -23,8 +23,8 @@ export function detectExperienceGaps(day: ItineraryDay, dayIndex: number): Detec
       type: "experience",
       dayIndex,
       dayId: day.id,
-      title: "Add more experiences",
-      description: `Day ${dayIndex + 1} has room for more activities`,
+      title: "Light day",
+      description: `Day ${dayIndex + 1} has room if you want it.`,
       icon: "Plus",
       action: {
         type: "add_experience",
@@ -44,8 +44,8 @@ export function detectExperienceGaps(day: ItineraryDay, dayIndex: number): Detec
       type: "experience",
       dayIndex,
       dayId: day.id,
-      title: "Start earlier",
-      description: "Add a morning activity to make the most of the day",
+      title: "Morning open",
+      description: "Nothing before noon. Add something or sleep in.",
       icon: "Sunrise",
       action: {
         type: "add_experience",
@@ -60,8 +60,8 @@ export function detectExperienceGaps(day: ItineraryDay, dayIndex: number): Detec
       type: "experience",
       dayIndex,
       dayId: day.id,
-      title: "Extend your day",
-      description: "Add an evening activity or night views",
+      title: "Evening open",
+      description: "Free after dark.",
       icon: "Moon",
       action: {
         type: "add_experience",
@@ -106,7 +106,7 @@ export function detectCategoryImbalance(day: ItineraryDay, dayIndex: number): De
         dayIndex,
         dayId: day.id,
         title: `Lots of ${categoryLabel}`,
-        description: `Day ${dayIndex + 1} has ${count} ${categoryLabel} activities. Mix in something different?`,
+        description: `Day ${dayIndex + 1} has ${count} ${categoryLabel} visits back to back. A garden or meal between would improve the rhythm.`,
         icon: "Shuffle",
         action: {
           type: "diversify_categories",

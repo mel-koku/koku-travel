@@ -88,7 +88,7 @@ export function calculateTripHealth(
       issues.push({
         type: "gap",
         severity: "warning",
-        message: "No activities planned for this day.",
+        message: "Open day. Drop an activity in or keep it free.",
         dayIndex,
       });
     } else if (placeActivities.length > 7) {
@@ -96,7 +96,7 @@ export function calculateTripHealth(
       issues.push({
         type: "gap",
         severity: "warning",
-        message: `${placeActivities.length} activities may be too many for one day.`,
+        message: `${placeActivities.length} activities is a packed day. Consider dropping one to improve the flow.`,
         dayIndex,
       });
     }
@@ -112,7 +112,7 @@ export function calculateTripHealth(
       issues.push({
         type: "gap",
         severity: "info",
-        message: "No lunch planned — consider adding a meal.",
+        message: "No lunch slot. Long days move better with a midday break.",
         dayIndex,
       });
     }

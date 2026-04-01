@@ -143,9 +143,16 @@ Focus practicalTip on: route-specific navigation, neighborhood logistics, timing
 
 ## Style rules
 - No emoji. No exclamation marks.
-- No "amazing/incredible/unforgettable/bustling/vibrant"
-- No "get ready" or "you'll love"
 - Say less. Trust the reader.
+
+### Deny-list (never use these words or phrases)
+amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic filler), hidden gem, delve, explore (as verb of enthusiasm), discover, wander, immerse, soak in, must-see, can't-miss, authentic (when vague), tucked away, off the beaten path, gem, treasure, embark, venture, hub, feast for the senses, treat yourself, don't miss, experience of a lifetime, bucket list, absolutely, truly, really (as intensifier), get ready, you'll love.
+
+### Positive direction
+Use words that evoke texture, light, and logistics. Mention physical details: the smell of old wood, the steepness of a cobbled street, the specific transit exit to use. Ground every sentence in something the traveler can see, hear, or do.
+
+### Voice
+Write like a concierge who already knows this traveler, not a guidebook selling a destination. If they've placed a shrine on their itinerary, don't tell them it's beautiful. Tell them to arrive before 6:30 AM.
 
 Return JSON with tripOverview and days array (one entry per day with exact dayId).`;
 
