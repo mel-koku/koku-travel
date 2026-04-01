@@ -14,6 +14,7 @@ type StatsSectionProps = {
   savedCount: number;
   guideBookmarksCount: number;
   tripsCount: number;
+  isAuthenticated?: boolean;
   content?: {
     dashboardActivityEyebrow?: string;
     dashboardActivityHeading?: string;
@@ -24,6 +25,7 @@ export function StatsSection({
   savedCount,
   guideBookmarksCount,
   tripsCount,
+  isAuthenticated,
   content,
 }: StatsSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,9 @@ export function StatsSection({
               <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
                 Saved
               </p>
+              {!isAuthenticated && savedCount > 0 && (
+                <span className="text-[10px] text-white/30">(this device only)</span>
+              )}
               <Link
                 href={savedCount > 0 ? "/saved" : "/places"}
                 className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"

@@ -15,6 +15,7 @@ import { logger } from "@/lib/logger";
 import { sanitizeString } from "@/lib/api/sanitization";
 import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
+import { motion, AnimatePresence } from "framer-motion";
 import { AccountSection } from "./components/AccountSection";
 import { GuestSignInPrompt } from "@/components/features/dashboard/GuestSignInPrompt";
 import { useSignInPrompts } from "@/hooks/useSignInPrompts";
@@ -169,6 +170,17 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
   const isAuthenticated = Boolean(sessionUserId);
   const signInPrompts = useSignInPrompts(isAuthenticated);
   const supabaseUnavailable = !supabase;
+  const [savesThresholdToast, setSavesThresholdToast] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+    if (signInPrompts.shouldShowSavesThreshold(saved.length) && saved.length > 0) {
+      setSavesThresholdToast(true);
+      signInPrompts.markFired("saves-threshold");
+      const timer = setTimeout(() => setSavesThresholdToast(false), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [saved.length, isAuthenticated, signInPrompts]);
 
   const tripGroups = useMemo(() => groupTrips(trips), [trips]);
 
@@ -278,6 +290,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         savedCount={saved.length}
         guideBookmarksCount={guideBookmarks.length}
         tripsCount={tripsWithItinerary.length}
+        isAuthenticated={isAuthenticated}
         content={{
           dashboardActivityEyebrow: content?.dashboardActivityEyebrow,
           dashboardActivityHeading: content?.dashboardActivityHeading,
@@ -492,6 +505,30 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           </div>
         </section>
       )}
+
+      {/* Saves threshold toast for guests */}
+      <AnimatePresence>
+        {savesThresholdToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-20 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]"
+          >
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-background p-4 shadow-[var(--shadow-elevated)]">
+              <p className="flex-1 text-sm text-foreground">
+                {saved.length} places saved on this device.
+              </p>
+              <Link
+                href="/signin"
+                className="shrink-0 rounded-lg bg-brand-primary px-3 py-1.5 text-xs font-semibold text-white"
+              >
+                Sign in
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {pendingUndo ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
