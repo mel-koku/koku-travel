@@ -41,6 +41,44 @@ export async function getLocationCount(): Promise<number> {
 }
 
 /**
+ * Returns the number of distinct prefectures with active locations.
+ */
+export async function getPrefectureCount(): Promise<number> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select("prefecture")
+    .eq("is_active", true)
+    .not("prefecture", "is", null);
+
+  if (error || !data) {
+    return 0;
+  }
+
+  const unique = new Set(data.map((r) => r.prefecture));
+  return unique.size;
+}
+
+/**
+ * Returns the total number of published travel tips.
+ */
+export async function getTipCount(): Promise<number> {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("travel_guidance")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "published");
+
+  if (error || count === null) {
+    return 0;
+  }
+
+  return count;
+}
+
+/**
  * Transforms a database row to a Location type
  * Works with both full LocationDbRow and LocationListingDbRow
  */

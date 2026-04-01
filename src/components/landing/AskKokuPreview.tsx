@@ -12,9 +12,9 @@ const QA_ITEMS = [
   { q: "Cherry blossoms in Hokkaido?", a: "Early to mid-May. About a month after Tokyo peaks." },
   { q: "IC card or buy tickets?", a: "IC card. Works on trains, buses, and convenience stores." },
   { q: "How much cash should I carry?", a: "Keep 5,000-10,000 yen for small shops. Most places take cards." },
-  { q: "Is the JR Pass worth it?", a: "If you're hitting 3+ cities, yes. Do the math first." },
+  { q: "Is the JR Pass worth it?", a: "Prices went up in 2023. Run the numbers for your specific route. Often still worth it for longer trips across multiple cities." },
   { q: "Best onsen near Tokyo?", a: "Hakone. 90 minutes by Romancecar. Book a ryokan with a private bath." },
-  { q: "Safe to walk around at night?", a: "Very. Japan is one of the safest countries for late-night walks." },
+  { q: "Can I adjust the pace mid-trip?", a: "Yes. Tap any day and tell us it's too busy or too light. We rebalance." },
 ];
 
 // Hand-placed positions for desktop scattered layout
@@ -101,7 +101,7 @@ export function AskKokuPreview() {
   const isInView = useInView(sectionRef, { once: true, margin: "-10%" });
 
   return (
-    <section aria-label="Ask Koku" className="bg-background py-12 sm:py-20 lg:py-28">
+    <section aria-label="Ask Koku" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div ref={sectionRef} className="mx-auto max-w-7xl px-6">
         {/* Heading */}
         <motion.div

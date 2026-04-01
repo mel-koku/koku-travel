@@ -449,22 +449,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
   }, [supabase]);
 
-  // Warn guests with local data on tab close
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handleGuestBeforeUnload = (e: BeforeUnloadEvent) => {
-      const hasLocalData = state.trips.length > 0 || state.saved.length > 0;
-      if (!hasLocalData) return;
-      // Authenticated users have email set via buildProfileFromSupabase
-      if (state.user.email) return;
-      e.preventDefault();
-    };
-
-    window.addEventListener("beforeunload", handleGuestBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleGuestBeforeUnload);
-  }, [state.trips.length, state.saved.length, state.user.email]);
-
   // Cleanup pending trip sync timeouts on unmount
   useEffect(() => {
     const timeouts = tripSyncTimeouts.current;

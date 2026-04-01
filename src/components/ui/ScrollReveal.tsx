@@ -68,7 +68,7 @@ export function ScrollReveal({
       ref={ref}
       className={className}
       initial={hidden}
-      animate={isInView ? visible : hidden}
+      animate={isInView ? visible : undefined}
       transition={{
         duration,
         delay: delay + stagger,

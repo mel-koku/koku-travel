@@ -33,7 +33,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
   const rest = guides.slice(1, 3);
 
   return (
-    <section aria-label="Featured guides" className="bg-canvas py-12 sm:py-20 lg:py-28">
+    <section aria-label="Featured guides" className="bg-background py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div>

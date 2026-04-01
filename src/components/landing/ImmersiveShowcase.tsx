@@ -10,9 +10,9 @@ const defaultActs = [
   {
     number: "01",
     eyebrow: "DISCOVER",
-    title: "Places worth knowing by name",
+    title: "Every place scored, not just starred",
     description:
-      "Found the same way you\u2019d find them if you lived here: word of mouth, wandering, and years on the ground.",
+      "Weather, transit access, crowd levels, operating hours, seasonal timing. 19 factors per location. Not reviews. Context.",
     image:
       "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
     alt: "Traditional Japanese alley",
@@ -20,9 +20,9 @@ const defaultActs = [
   {
     number: "02",
     eyebrow: "PLAN",
-    title: "Build your days, down to the hour",
+    title: "Real routes. Real transit times.",
     description:
-      "Tell us your pace and vibe. We handle the routing, timing, and the gaps you didn't know to fill.",
+      "Shinkansen schedules, local train transfers, walking segments. Your day accounts for every minute between stops, not just pins on a map.",
     image:
       "https://images.unsplash.com/photo-1624253321171-1be53e12f5f4?w=1920&q=80",
     alt: "Peaceful Japanese garden",
@@ -32,7 +32,7 @@ const defaultActs = [
     eyebrow: "GO",
     title: "Your itinerary. Pocket-ready.",
     description:
-      "Check it on the Shinkansen, share it with a link. Your plan goes where you go.",
+      "Day-by-day timeline with timed activities, transit directions, and weather-aware tips. Share it with a link. Check it on the Shinkansen.",
     image:
       "https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?w=1920&q=80",
     alt: "Japanese train station",

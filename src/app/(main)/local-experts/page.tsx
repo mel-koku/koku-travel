@@ -1,28 +1,16 @@
 import type { Metadata } from "next";
-import { LocalExpertsShellLazy } from "@/components/features/local-experts/LocalExpertsShellLazy";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-
-export const revalidate = 3600;
+import { LocalExpertsComingSoon } from "@/components/features/local-experts/LocalExpertsComingSoon";
 
 export const metadata: Metadata = {
-  title: "Local Experts — Artisans & Guides | Koku Travel",
+  title: "Local Experts | Koku Travel",
   description:
-    "Browse local artisans and guides across Japan. Find the right expert for your trip and request a booking.",
+    "Connect with local artisans and guides across Japan. Coming soon.",
   alternates: {
     canonical: "/local-experts",
   },
-  openGraph: {
-    title: "Local Experts — Artisans & Guides | Koku Travel",
-    description:
-      "Browse local artisans and guides across Japan. Find the right expert for your trip and request a booking.",
-    siteName: "Koku Travel",
-  },
+  robots: { index: false },
 };
 
 export default function LocalExpertsPage() {
-  return (
-    <ErrorBoundary>
-      <LocalExpertsShellLazy />
-    </ErrorBoundary>
-  );
+  return <LocalExpertsComingSoon />;
 }

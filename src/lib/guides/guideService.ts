@@ -59,6 +59,24 @@ const GUIDE_SUMMARY_COLUMNS = `
 `;
 
 /**
+ * Returns the total number of published guides.
+ */
+export async function getGuideCount(): Promise<number> {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("guides")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "published");
+
+  if (error || count === null) {
+    return 0;
+  }
+
+  return count;
+}
+
+/**
  * Fetches all published guides for the list page.
  *
  * @returns Array of guide summaries sorted by sort_order and published_at

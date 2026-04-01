@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { SplitText } from "@/components/ui/SplitText";
@@ -10,99 +8,76 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
-const defaultTestimonials = [
-  {
-    quote:
-      "We ducked into a ramen shop down a Kyoto backstreet. No English sign, six seats, steam everywhere. Best bowl of our lives.",
-    author: "Sarah Chen",
-    location: "San Francisco",
-    image:
-      "https://images.unsplash.com/photo-1554797589-7241bb691973?w=1920&q=80",
-    alt: "Narrow Kyoto backstreet at night with warm lantern light",
-  },
-  {
-    quote:
-      "Five trips to Japan and Koku still surfaced places I'd overlooked. A cedar forest shrine at dawn, completely alone.",
-    author: "Marcus Johnson",
-    location: "London",
-    image:
-      "https://images.unsplash.com/photo-1440186347098-386b7459ad6b?w=1920&q=80",
-    alt: "Misty cedar forest with ancient stone path",
-  },
-  {
-    quote:
-      "The itinerary didn't feel algorithmic. It felt like someone who actually lives there planned it for us.",
-    author: "Yuki Tanaka",
-    location: "Vancouver",
-    image:
-      "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
-    alt: "Quiet Japanese alleyway with traditional architecture",
-  },
-  {
-    quote:
-      "Our taxi driver in Takayama saw the itinerary on my phone and nodded approvingly. That told me everything.",
-    author: "David Park",
-    location: "Seoul",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "I thought two weeks was too long. By day ten I was already sad it was ending. Every single day had a moment.",
-    author: "Emma Lindqvist",
-    location: "Stockholm",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "Koku suggested a tofu restaurant in Arashiyama we'd never have picked ourselves. Seven courses, all soy. Transcendent.",
-    author: "James O'Brien",
-    location: "Dublin",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "We traveled with a toddler and the plan actually accounted for nap breaks and family-friendly stops. Lifesaver.",
-    author: "Priya Sharma",
-    location: "Melbourne",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "The overnight ferry to Yakushima was the highlight we almost skipped. Woke up to that island emerging from mist.",
-    author: "Lucas Moreau",
-    location: "Paris",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "I've used every trip planner out there. This is the first one that understood the difference between seeing Japan and feeling it.",
-    author: "Aisha Williams",
-    location: "New York",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "Spent three hours in a Kanazawa market that wasn't even the 'main attraction' for the day. Bought pottery I'll keep forever.",
-    author: "Henrik Bjørnstad",
-    location: "Oslo",
-    image: "",
-    alt: "",
-  },
-  {
-    quote:
-      "My partner doesn't like planned trips. Five minutes into day one, she turned to me and said 'okay, this is different.'",
-    author: "Tomás Rivera",
-    location: "Mexico City",
-    image: "",
-    alt: "",
-  },
+// ── Feature showcase (default when no Sanity testimonials) ──────────
+
+const FEATURES = [
+  { title: "Routed Days", description: "Activities ordered by geography and transit. No backtracking." },
+  { title: "Transit Directions", description: "Station names, line numbers, transfer points. Step by step." },
+  { title: "Seasonal Fit", description: "Cherry blossom timing, rainy season, festival crowds. Your dates shape what we suggest." },
+  { title: "Smart Tips", description: "IC card reminders on Day 1. Luggage forwarding before long rides." },
+  { title: "Day Trip Ideas", description: "Locations outside your route, scored and ready to swap in." },
+  { title: "Shareable Link", description: "One link. Full itinerary. No account needed." },
 ];
+
+function FeatureShowcase() {
+  return (
+    <section aria-label="What your itinerary delivers" className="bg-background">
+      {/* Hero moment */}
+      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1554797589-7241bb691973?w=1920&q=80"
+          alt="Narrow Kyoto backstreet at night with warm lantern light"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-charcoal/60" />
+
+        <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28 text-center">
+          <p className="eyebrow-editorial text-brand-primary">What you get</p>
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
+            Every day, routed and timed
+          </h2>
+        </div>
+      </div>
+
+      {/* Numbered editorial feature list */}
+      <div className="bg-canvas py-12 sm:py-20 lg:py-28">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="grid gap-x-16 sm:grid-cols-2">
+            {FEATURES.map((feature, idx) => (
+              <ScrollReveal key={feature.title} delay={idx * 0.06}>
+                <div className={cn(
+                  "py-6",
+                  idx < FEATURES.length - 2 && "border-b border-border",
+                  /* Last item in each column has no bottom border on desktop */
+                  idx === FEATURES.length - 2 && "sm:border-b-0",
+                  idx === FEATURES.length - 1 && "border-b-0",
+                )}>
+                  <div className="flex items-baseline gap-4">
+                    <span className="font-mono text-xs text-foreground-secondary">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3 className={cn(typography({ intent: "editorial-h3" }))}>
+                        {feature.title}
+                      </h3>
+                      <p className={cn(typography({ intent: "utility-body-muted" }), "mt-1.5 text-sm leading-relaxed")}>
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Real testimonials (when Sanity has content) ─────────────────────
 
 type TestimonialData = {
   quote: string;
@@ -112,50 +87,14 @@ type TestimonialData = {
   alt: string;
 };
 
-type TestimonialTheaterProps = {
-  content?: LandingPageContent;
-};
-
-export function TestimonialTheater({ content }: TestimonialTheaterProps) {
-  const testimonials: TestimonialData[] = content?.testimonials?.length
-    ? content.testimonials.map((t) => ({
-        quote: t.quote,
-        author: t.authorName,
-        location: t.authorLocation,
-        image: t.image?.url ?? defaultTestimonials[0]!.image,
-        alt: t.alt,
-      }))
-    : defaultTestimonials;
-
+function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] }) {
   const [featured, ...rest] = testimonials;
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const updateScrollState = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 8);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
-  }, []);
-
-  useEffect(() => {
-    updateScrollState();
-  }, [updateScrollState]);
-
-  const scroll = useCallback((dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const amount = el.clientWidth * 0.7;
-    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-  }, []);
 
   if (!featured) return null;
 
   return (
     <section aria-label="Testimonials" className="bg-background">
-      {/* Featured testimonial — full-bleed hero moment */}
+      {/* Featured testimonial */}
       <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         {featured.image ? (
           <Image
@@ -164,7 +103,6 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             fill
             className="object-cover"
             sizes="100vw"
-            priority
           />
         ) : (
           <div className="absolute inset-0 bg-charcoal" />
@@ -200,63 +138,59 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         </div>
       </div>
 
-      {/* Remaining testimonials — horizontal scroll with arrows */}
+      {/* Remaining testimonials */}
       {rest.length > 0 && (
         <ScrollReveal delay={0.1}>
-        <div className="py-12 sm:py-20 lg:py-28">
-          <div
-            ref={scrollRef}
-            onScroll={updateScrollState}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-contain px-6 scrollbar-hide sm:gap-5 sm:px-8 lg:px-12"
-          >
-            {rest.map((testimonial, i) => (
-              <div
-                key={i}
-                className="w-[min(340px,85vw)] shrink-0 snap-start rounded-lg border border-border bg-white p-7 shadow-[var(--shadow-card)]"
-              >
-                <blockquote>
-                  <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>
-                    &ldquo;{testimonial.quote}&rdquo;
-                  </p>
-                </blockquote>
-                <div className="mt-4">
-                  <p className={cn(typography({ intent: "utility-meta" }), "font-medium text-foreground")}>
-                    {testimonial.author}
-                  </p>
-                  <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5")}>
-                    {testimonial.location}
-                  </p>
-                </div>
+          <div className="py-12 sm:py-20 lg:py-28">
+            <div className="mx-auto max-w-7xl px-6">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {rest.map((testimonial, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg border border-border bg-white p-7 shadow-[var(--shadow-card)]"
+                  >
+                    <blockquote>
+                      <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>
+                        &ldquo;{testimonial.quote}&rdquo;
+                      </p>
+                    </blockquote>
+                    <div className="mt-4">
+                      <p className={cn(typography({ intent: "utility-meta" }), "font-medium text-foreground")}>
+                        {testimonial.author}
+                      </p>
+                      <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5")}>
+                        {testimonial.location}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-
-          {/* Arrow buttons below cards */}
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <button
-              aria-label="Scroll left"
-              onClick={() => scroll("left")}
-              className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-foreground-secondary shadow-[var(--shadow-card)] transition-all hover:text-foreground",
-                canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"
-              )}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              aria-label="Scroll right"
-              onClick={() => scroll("right")}
-              className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-foreground-secondary shadow-[var(--shadow-card)] transition-all hover:text-foreground",
-                canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"
-              )}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
         </ScrollReveal>
       )}
     </section>
   );
+}
+
+// ── Exported component ──────────────────────────────────────────────
+
+type TestimonialTheaterProps = {
+  content?: LandingPageContent;
+};
+
+export function TestimonialTheater({ content }: TestimonialTheaterProps) {
+  // If Sanity has real testimonials, show those. Otherwise, show feature showcase.
+  if (content?.testimonials?.length) {
+    const testimonials: TestimonialData[] = content.testimonials.map((t) => ({
+      quote: t.quote,
+      author: t.authorName,
+      location: t.authorLocation,
+      image: t.image?.url ?? "",
+      alt: t.alt,
+    }));
+    return <TestimonialSection testimonials={testimonials} />;
+  }
+
+  return <FeatureShowcase />;
 }

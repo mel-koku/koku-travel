@@ -47,7 +47,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.1, ease: [...easeReveal] as [number, number, number, number] }}
             className="mt-4 text-base text-white/80"
           >
-            Pick your dates. We&apos;ll handle the rest.
+            {content?.finalCtaDescription ?? "Pick your dates. We\u2019ll handle the rest."}
           </motion.p>
 
           <motion.div

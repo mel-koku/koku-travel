@@ -12,7 +12,7 @@ import {
   AskKokuPreview,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount } from "@/lib/locations/locationService";
+import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount, getPrefectureCount, getTipCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 import { urlFor } from "@/sanity/image";
@@ -20,13 +20,13 @@ import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/l
 
 export const metadata: Metadata = {
   title: "Koku Travel | Plan Your Trip to Japan",
-  description: "6,000+ curated places across Japan. Build a trip, day by day, with routing and timing handled for you.",
+  description: "Thousands of curated places across all 47 prefectures. Build a trip, day by day, with routing and timing handled for you.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Koku Travel | Plan Your Trip to Japan",
-    description: "6,000+ curated places across Japan. Build a trip, day by day, with routing and timing handled for you.",
+    description: "Thousands of curated places across all 47 prefectures. Build a trip, day by day, with routing and timing handled for you.",
     siteName: "Koku Travel",
   },
 };
@@ -38,10 +38,12 @@ export default async function Home() {
   const currentMonth = getCurrentMonth();
   const sanitySeason = seasonToSanityBestSeason(currentSeason);
 
-  const [featuredLocations, locationCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations] =
+  const [featuredLocations, locationCount, prefectureCount, tipCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
+      getPrefectureCount(),
+      getTipCount(),
       getFeaturedGuides(3),
       getLandingPageContent(),
       getGuidesBySeason(sanitySeason, 3),
@@ -64,6 +66,8 @@ export default async function Home() {
         />
         <Philosophy
           locationCount={locationCount}
+          prefectureCount={prefectureCount}
+          tipCount={tipCount}
           content={landingContent ?? undefined}
         />
         <ErrorBoundary fallback={null}>
