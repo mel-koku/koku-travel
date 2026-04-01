@@ -46,7 +46,12 @@ import {
   syncTripSave,
   syncTripDelete,
   mergeTrips,
+  fetchPreferences,
+  syncPreferencesSave,
 } from "@/services/sync";
+import type { UserPreferences } from "@/types/userPreferences";
+import { DEFAULT_USER_PREFERENCES } from "@/types/userPreferences";
+import { USER_TRAVEL_PREFS_STORAGE_KEY } from "@/lib/constants/storage";
 
 // Re-export types for consumers
 export type { StoredTrip, CreateTripInput };
@@ -61,6 +66,7 @@ export type AppStateShape = {
   user: UserProfile;
   saved: string[];
   guideBookmarks: string[];
+  userPreferences: UserPreferences;
   trips: StoredTrip[];
 
   // Loading states
@@ -75,6 +81,7 @@ export type AppStateShape = {
 
   // Actions
   setUser: (patch: Partial<UserProfile>) => void;
+  setUserPreferences: (prefs: Partial<UserPreferences>) => void;
   toggleSave: (id: string) => void;
   isSaved: (id: string) => boolean;
   toggleGuideBookmark: (id: string) => void;
@@ -112,6 +119,7 @@ const defaultState: AppStateShape = {
   user: { id: STABLE_DEFAULT_USER_ID, displayName: "Guest" },
   saved: [],
   guideBookmarks: [],
+  userPreferences: DEFAULT_USER_PREFERENCES,
   trips: [],
   isLoadingRefresh: false,
   loadingBookmarks: new Set(),
@@ -121,6 +129,7 @@ const defaultState: AppStateShape = {
   currentHistoryIndex: {},
 
   setUser: () => {},
+  setUserPreferences: () => {},
   toggleSave: () => {},
   isSaved: () => false,
   toggleGuideBookmark: () => {},
@@ -151,7 +160,7 @@ const Ctx = createContext<AppStateShape>(defaultState);
 
 type InternalState = Pick<
   AppStateShape,
-  "user" | "saved" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "cityAccommodations" | "editHistory" | "currentHistoryIndex"
+  "user" | "saved" | "guideBookmarks" | "userPreferences" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "cityAccommodations" | "editHistory" | "currentHistoryIndex"
 >;
 
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
@@ -182,6 +191,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     user: defaultState.user,
     saved: [],
     guideBookmarks: [],
+    userPreferences: DEFAULT_USER_PREFERENCES,
     trips: [],
     isLoadingRefresh: false,
     loadingBookmarks: new Set(),
@@ -193,6 +203,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Ref to track pending trip sync timeouts by trip ID
   const tripSyncTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // Ref to track pending preferences sync timeout
+  const prefsSyncTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Guard against concurrent refreshFromSupabase calls
   const isRefreshingRef = useRef(false);
@@ -219,6 +232,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           // Support both old "favorites" key and new "saved" key in persisted state
           saved: parsed.saved ?? parsed.favorites ?? [],
           guideBookmarks: parsed.guideBookmarks ?? [],
+          userPreferences: parsed.userPreferences ?? DEFAULT_USER_PREFERENCES,
           trips: sanitizeTrips(parsed.trips),
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
@@ -232,6 +246,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           user: { ...defaultState.user, id: newId() },
           saved: [],
           guideBookmarks: [],
+          userPreferences: DEFAULT_USER_PREFERENCES,
           trips: [],
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
@@ -292,10 +307,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const [savedResult, bookmarksResult, tripsResult] = await Promise.all([
+      const [savedResult, bookmarksResult, tripsResult, prefsResult] = await Promise.all([
         fetchSaved(supabase, user.id),
         fetchGuideBookmarks(supabase, user.id),
         fetchTrips(supabase, user.id),
+        fetchPreferences(supabase, user.id),
       ]);
 
       setState((s) => {
@@ -320,6 +336,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           user: buildProfileFromSupabase(user, s.user),
           saved: mergedSaved,
           guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
+          userPreferences: prefsResult.success && prefsResult.data ? prefsResult.data : s.userPreferences,
           trips: mergedTrips,
           isLoadingRefresh: false,
         };
@@ -371,6 +388,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         user: state.user,
         saved: state.saved,
         guideBookmarks: state.guideBookmarks,
+        userPreferences: state.userPreferences,
         trips: state.trips,
         dayEntryPoints: state.dayEntryPoints,
         cityAccommodations: state.cityAccommodations,
@@ -385,7 +403,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }, APP_STATE_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [state.user, state.saved, state.guideBookmarks, state.trips, state.dayEntryPoints, state.cityAccommodations, state.editHistory, state.currentHistoryIndex]);
+  }, [state.user, state.saved, state.guideBookmarks, state.userPreferences, state.trips, state.dayEntryPoints, state.cityAccommodations, state.editHistory, state.currentHistoryIndex]);
 
   // Ref tracking current trips so beforeunload/visibilitychange can flush without stale closures
   const tripsRef = useRef(state.trips);
@@ -445,6 +463,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     (patch: Partial<UserProfile>) =>
       setState((s) => ({ ...s, user: { ...s.user, ...patch } })),
     [],
+  );
+
+  // User preferences actions
+  const setUserPreferences = useCallback(
+    (patch: Partial<UserPreferences>) => {
+      setState((s) => {
+        const next = { ...s.userPreferences, ...patch };
+
+        if (supabase) {
+          if (prefsSyncTimeout.current) clearTimeout(prefsSyncTimeout.current);
+          prefsSyncTimeout.current = setTimeout(() => {
+            void syncPreferencesSave(supabase, next);
+            prefsSyncTimeout.current = null;
+          }, 2000);
+        }
+
+        return { ...s, userPreferences: next };
+      });
+    },
+    [supabase],
   );
 
   // Trip actions
@@ -723,6 +761,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       user: { id: newId(), displayName: "Guest" },
       saved: [],
       guideBookmarks: [],
+      userPreferences: DEFAULT_USER_PREFERENCES,
       trips: [],
       isLoadingRefresh: false,
       loadingBookmarks: new Set(),
@@ -740,6 +779,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       }
       localStorage.removeItem(SAVED_STORAGE_KEY);
       localStorage.removeItem(USER_PREFERENCES_STORAGE_KEY);
+      localStorage.removeItem(USER_TRAVEL_PREFS_STORAGE_KEY);
       localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
       localStorage.removeItem(TRIP_STEP_STORAGE_KEY);
       localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
@@ -753,6 +793,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     () => ({
       ...state,
       setUser,
+      setUserPreferences,
       toggleSave,
       isSaved: (id: string) => state.saved.includes(id),
       toggleGuideBookmark,
@@ -780,6 +821,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [
       state,
       setUser,
+      setUserPreferences,
       toggleSave,
       toggleGuideBookmark,
       createTrip,
