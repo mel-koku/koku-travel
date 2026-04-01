@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
 import { parallaxSection, durationBase } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
@@ -120,21 +121,41 @@ export function SignInClient({ content }: SignInClientProps) {
 
           <ScrollReveal delay={0.1}>
             <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
-              {content?.signInFormHeading ?? "Sign in with email"}
+              {content?.signInFormHeading ?? "Sign in"}
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={0.3} distance={10}>
             <p className="mt-3 text-sm text-foreground-secondary">
-              {content?.signInFormDescription ?? "We'll send a magic link to your inbox."}
+              {content?.signInFormDescription ?? "Save your trips and access them anywhere."}
             </p>
           </ScrollReveal>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: durationBase, delay: 0.5 }}
+            className="mt-8"
+          >
+            <GoogleSignInButton />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: durationBase, delay: 0.6 }}
+            className="mt-6 flex items-center gap-3"
+          >
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs text-stone">or sign in with email</span>
+            <span className="h-px flex-1 bg-border" />
+          </motion.div>
 
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: durationBase, delay: 0.5 }}
-            className="mt-8 space-y-4"
+            transition={{ duration: durationBase, delay: 0.7 }}
+            className="mt-4 space-y-4"
             onSubmit={sendMagicLink}
           >
             <label className="block text-sm text-foreground-secondary">
@@ -153,10 +174,9 @@ export function SignInClient({ content }: SignInClientProps) {
             <button
               type="submit"
               disabled={!supabase}
-              className="relative w-full h-12 rounded-lg bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground transition-all hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
-              <span className="relative">{content?.signInSubmitText ?? "Send Sign-in Link"}</span>
+              {content?.signInSubmitText ?? "Send Sign-in Link"}
             </button>
 
             {status && (
@@ -174,7 +194,7 @@ export function SignInClient({ content }: SignInClientProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: durationBase, delay: 0.8 }}
+            transition={{ duration: durationBase, delay: 0.9 }}
             className="mt-8 space-y-3 border-t border-border pt-6"
           >
             <p className="text-xs text-stone">
