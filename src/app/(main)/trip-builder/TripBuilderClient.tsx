@@ -36,9 +36,10 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 
   useEffect(() => {
     if (!supabaseClient) return;
-    supabaseClient.auth.getUser().then(({ data }) => {
-      setIsGuest(!data.user);
-    });
+    void (async () => {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      setIsGuest(!user);
+    })();
   }, [supabaseClient]);
 
   const handleComplete = useCallback(async () => {
