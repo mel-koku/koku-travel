@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useRef, useMemo, type ReactNode } from "react";
 import { easeReveal, durationSlow } from "@/lib/motion";
 
 type ScrollRevealProps = {
@@ -42,38 +42,43 @@ export function ScrollReveal({
   const prefersReducedMotion = useReducedMotion();
   const isInView = useInView(ref, { once, margin: margin as `${number}px` });
 
+  const variants = useMemo(() => {
+    const dir = directionMap[direction];
+    const initialScale = scale ?? 1;
+    return {
+      hidden: {
+        opacity: 0,
+        x: dir.x * distance,
+        y: dir.y * distance,
+        scale: initialScale,
+      },
+      visible: {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+      },
+    };
+  }, [direction, distance, scale]);
+
+  const transition = useMemo(() => ({
+    duration,
+    delay: delay + stagger,
+    ease: easeReveal,
+  }), [duration, delay, stagger]);
+
   if (prefersReducedMotion) {
-    return <motion.div ref={ref} className={className}>{children}</motion.div>;
+    return <div ref={ref} className={className}>{children}</div>;
   }
-
-  const dir = directionMap[direction];
-  const initialScale = scale ?? 1;
-
-  const hidden = {
-    opacity: 0,
-    x: dir.x * distance,
-    y: dir.y * distance,
-    scale: initialScale,
-  };
-
-  const visible = {
-    opacity: 1,
-    x: 0,
-    y: 0,
-    scale: 1,
-  };
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={hidden}
-      animate={isInView ? visible : undefined}
-      transition={{
-        duration,
-        delay: delay + stagger,
-        ease: easeReveal,
-      }}
+      variants={variants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      transition={transition}
     >
       {children}
     </motion.div>

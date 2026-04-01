@@ -55,7 +55,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                 key={location.id}
                 delay={0.1 + i * 0.08}
                 className={cn(
-                  "h-full rounded-lg border border-border bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]",
+                  "h-full rounded-lg border border-border bg-white shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]",
                   isHero && "sm:col-span-2 lg:col-span-2 lg:row-span-2"
                 )}
               >
