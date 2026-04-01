@@ -73,9 +73,9 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
   // Use unique city count (Set) to match what the user sees in chips
   const regionDisabledHint = (() => {
     const cityCount = new Set(data.cities ?? []).size;
-    if (cityCount === 0) return "Pick at least one city to continue";
+    if (cityCount === 0) return "Pick at least one city.";
     const v = validateCityDayRatio(cityCount, data.duration ?? 0);
-    return v.hint ?? "Pick at least one region to continue";
+    return v.hint ?? "Pick at least one city.";
   })();
 
   return (
@@ -103,7 +103,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
-              disabledHint="Set your travel dates to continue"
+              disabledHint="Set your travel dates."
               currentStep={currentStep}
               totalSteps={stepCount}
               completedSteps={completedSteps}
@@ -139,7 +139,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
-              disabledHint="Select at least one vibe to continue"
+              disabledHint="Pick at least one vibe."
               fullBleed
               currentStep={currentStep}
               totalSteps={stepCount}

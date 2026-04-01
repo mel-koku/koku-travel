@@ -114,11 +114,11 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
           className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
-          {sanityConfig?.vibeStepHeading ?? "What moves you?"}
+          {sanityConfig?.vibeStepHeading ?? "How do you want to spend your days?"}
         </motion.h2>
 
         <p className="mt-2 text-sm text-stone">
-          {sanityConfig?.vibeStepDescription ?? "Pick what excites you. We'll find places that match."}
+          {sanityConfig?.vibeStepDescription ?? "Pick up to 3. These shape what we schedule."}
         </p>
 
         <div aria-live="polite">
@@ -155,7 +155,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         {/* Warning when max reached */}
         {isMaxSelected && (
           <p className="mt-6 text-center text-sm text-warning">
-            {(sanityConfig?.vibeStepMaxWarning ?? "That\u2019s all {max}. Tap one to swap it out.").replace("{max}", String(MAX_VIBE_SELECTION))}
+            {(sanityConfig?.vibeStepMaxWarning ?? "All {max} picked. Tap one to swap it.").replace("{max}", String(MAX_VIBE_SELECTION))}
           </p>
         )}
       </div>

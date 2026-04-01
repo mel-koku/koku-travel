@@ -48,9 +48,9 @@ const DIETARY_OPTIONS = [
 
 
 const PACE_OPTIONS = [
-  { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
-  { label: "Balanced", value: "balanced", description: "Mix of sightseeing and downtime" },
-  { label: "Full", value: "fast", description: "Packed days, lots of ground covered" },
+  { label: "Relaxed", value: "relaxed", description: "Late starts, long lunches, fewer stops" },
+  { label: "Balanced", value: "balanced", description: "Sightseeing with downtime between" },
+  { label: "Full", value: "fast", description: "Early to late, covering more ground" },
 ];
 
 const GROUP_TYPE_SEGMENTS = [
@@ -230,7 +230,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div>
               <p className="text-sm font-medium text-foreground">First time in Japan?</p>
-              <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
+              <p className="text-xs text-stone">Day 1 paced gently with orientation tips.</p>
             </div>
             <button
               type="button"
@@ -257,7 +257,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
             <div>
               <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
-              <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
+              <p className="text-xs text-stone">Temples and shrines with goshuincho priority.</p>
             </div>
             <button
               type="button"
@@ -506,7 +506,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             >
               <textarea
                 id="additional-notes"
-                placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."}
+                placeholder={sanityConfig?.reviewNotesPlaceholder ?? "Birthday dinner in Kyoto, must see Fushimi Inari, need wheelchair access..."}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 rows={4}
                 {...register("additionalNotes")}

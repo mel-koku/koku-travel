@@ -35,10 +35,10 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
       type: "meal",
       dayIndex,
       dayId: day.id,
-      title: "Add breakfast",
+      title: "Breakfast",
       description: firstActivity
-        ? `Fuel up before ${firstActivity.title} with a local breakfast spot`
-        : `Start Day ${dayIndex + 1} with a local breakfast in ${cityName}`,
+        ? `No breakfast before ${firstActivity.title}.`
+        : `No breakfast planned in ${cityName}.`,
       icon: "Coffee",
       action: {
         type: "add_meal",
@@ -57,7 +57,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
       dayIndex,
       dayId: day.id,
       title: "Quick breakfast (konbini)",
-      description: "Grab onigiri, sandwiches, or a hot drink from a convenience store",
+      description: "Onigiri, sandwiches, or hot drinks at any convenience store.",
       icon: "ShoppingBag",
       action: {
         type: "quick_meal",
@@ -81,11 +81,11 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
     const firstAfternoonActivity = activities.find((a) => a.timeOfDay === "afternoon");
     const cityName = day.cityId ?? "the area";
 
-    let description = `Refuel with lunch in ${cityName}`;
+    let description = `No lunch planned in ${cityName}.`;
     if (lastMorningActivity) {
-      description = `After visiting ${lastMorningActivity.title}, you might be hungry—add lunch nearby?`;
+      description = `Gap after ${lastMorningActivity.title}. Good spot for lunch.`;
     } else if (firstAfternoonActivity) {
-      description = `Add lunch before heading to ${firstAfternoonActivity.title}`;
+      description = `No lunch before ${firstAfternoonActivity.title}.`;
     }
 
     // Restaurant lunch option
@@ -116,7 +116,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
       dayIndex,
       dayId: day.id,
       title: "Quick lunch (konbini)",
-      description: "Save time with bento, onigiri, or noodles from 7-Eleven, Lawson, or FamilyMart",
+      description: "Bento, onigiri, or noodles from any konbini.",
       icon: "ShoppingBag",
       action: {
         type: "quick_meal",
@@ -140,9 +140,9 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
     const contextActivity = lastAfternoonActivity ?? lastActivity;
     const cityName = day.cityId ?? "the area";
 
-    let description = `End Day ${dayIndex + 1} with a memorable dinner`;
+    let description = `No dinner on Day ${dayIndex + 1}.`;
     if (contextActivity) {
-      description = `After ${contextActivity.title}, find a great dinner spot in ${cityName}`;
+      description = `Nothing after ${contextActivity.title}. Add dinner in ${cityName}.`;
     }
 
     // Restaurant dinner option
@@ -172,7 +172,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
       dayIndex,
       dayId: day.id,
       title: "Quick dinner (konbini)",
-      description: "Tired? Grab a hot bento or nikuman from a konbini to eat at your hotel",
+      description: "Hot bento or nikuman from a konbini. Eat at your hotel.",
       icon: "ShoppingBag",
       action: {
         type: "quick_meal",
