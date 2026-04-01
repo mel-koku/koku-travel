@@ -7,6 +7,8 @@ import IdentityBadge from "@/components/ui/IdentityBadge";
 import { env } from "@/lib/env";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import { TravelPreferencesSection } from "@/components/features/account/TravelPreferencesSection";
+import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
 
 type AccountSectionProps = {
   isAuthenticated: boolean;
@@ -88,9 +90,34 @@ export function AccountSection({
               Clear local data
             </button>
           </div>
+
+          <div className="border-t border-border pt-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground-secondary">
+              Travel Preferences
+            </h3>
+            <p className="mt-1 text-xs text-stone">
+              Defaults for your trip builder. Changes save automatically.
+            </p>
+            <div className="mt-4">
+              <TravelPreferencesSection />
+            </div>
+          </div>
         </>
       ) : (
-        <EmailForm supabase={supabase} supabaseUnavailable={supabaseUnavailable} />
+        <>
+          <EmailForm supabase={supabase} supabaseUnavailable={supabaseUnavailable} />
+          <div className="border-t border-border pt-6 opacity-60">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground-secondary">
+              Travel Preferences
+            </h3>
+            <p className="mt-1 text-xs text-stone">
+              Sign in to save your travel preferences.
+            </p>
+            <div className="mt-4">
+              <TravelPreferencesSection disabled />
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -138,27 +165,38 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
   }
 
   return (
-    <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
-      <label className="text-sm text-foreground-secondary">
-        Email for magic link
-        <input
-          type="email"
-          required
+    <div className="space-y-4">
+      <GoogleSignInButton />
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-surface px-4 text-stone">or</span>
+        </div>
+      </div>
+      <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
+        <label className="text-sm text-foreground-secondary">
+          Email for magic link
+          <input
+            type="email"
+            required
+            disabled={supabaseUnavailable}
+            className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <button
+          type="submit"
           disabled={supabaseUnavailable}
-          className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
-          placeholder="name@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-      <button
-        type="submit"
-        disabled={supabaseUnavailable}
-        className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
-      >
-        Send sign-in link
-      </button>
-      <div className="text-xs text-stone">{status}</div>
-    </form>
+          className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
+        >
+          Send sign-in link
+        </button>
+        <div className="text-xs text-stone">{status}</div>
+      </form>
+    </div>
   );
 }
