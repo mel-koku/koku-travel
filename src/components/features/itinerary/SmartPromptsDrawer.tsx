@@ -145,8 +145,7 @@ export function SmartPromptsDrawer({
         {/* Description */}
         <div className="border-b border-border px-4 py-3">
           <p className="text-xs text-stone">
-            We noticed some opportunities to enhance your itinerary. Optimize
-            transport, discover more experiences, and more.
+            A few notes on pacing and flow.
           </p>
         </div>
 

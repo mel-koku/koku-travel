@@ -94,8 +94,8 @@ export function detectEarlyEnd(day: ItineraryDay, dayIndex: number): DetectedGap
       type: "early_end",
       dayIndex,
       dayId: day.id,
-      title: "Day ends early",
-      description: `Day ${dayIndex + 1} ends at ${timeLabel}. Extend into the evening?`,
+      title: `Ends at ${timeLabel}`,
+      description: `Day ${dayIndex + 1} wraps early. Evening is open.`,
       icon: "Sunset",
       action: {
         type: "extend_day",
@@ -140,8 +140,8 @@ export function detectLateStart(day: ItineraryDay, dayIndex: number): DetectedGa
       type: "late_start",
       dayIndex,
       dayId: day.id,
-      title: "Late start",
-      description: `Day ${dayIndex + 1} starts at ${timeLabel}. Add a morning activity?`,
+      title: `Starts at ${timeLabel}`,
+      description: "Morning is open.",
       icon: "Sunrise",
       action: {
         type: "extend_day",
