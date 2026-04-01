@@ -16,6 +16,7 @@ import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants
 import type { CityId, EntryPoint, RegionId, TripBuilderData, TripStyle, VibeId } from "@/types/trip";
 import { VALID_VIBE_IDS } from "@/types/trip";
 import { MAX_VIBE_SELECTION } from "@/data/vibes";
+import type { UserPreferences } from "@/types/userPreferences";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -87,15 +88,39 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
 
 const TripBuilderContext = createContext<TripBuilderContextValue | undefined>(undefined);
 
+function applyPreferencesToDefaults(
+  base: TripBuilderData,
+  prefs?: UserPreferences,
+): TripBuilderData {
+  if (!prefs) return base;
+
+  return {
+    ...base,
+    vibes: base.vibes?.length ? base.vibes : prefs.defaultVibes.length ? prefs.defaultVibes : base.vibes,
+    style: base.style ?? prefs.defaultPace ?? base.style,
+    group: base.group ?? (prefs.defaultGroupType ? { type: prefs.defaultGroupType } : base.group),
+    accessibility: base.accessibility ?? (
+      prefs.dietaryRestrictions.length || prefs.accessibilityNeeds.mobility
+        ? {
+            dietary: prefs.dietaryRestrictions.length ? prefs.dietaryRestrictions : undefined,
+            mobility: prefs.accessibilityNeeds.mobility,
+            notes: prefs.accessibilityNeeds.notes,
+          }
+        : base.accessibility
+    ),
+  };
+}
+
 export type TripBuilderProviderProps = {
   /**
    * Optional initial state for the wizard. Typically sourced from the server.
    */
   initialData?: TripBuilderData;
+  userPreferences?: UserPreferences;
   children: ReactNode;
 };
 
-export function TripBuilderProvider({ initialData, children }: TripBuilderProviderProps) {
+export function TripBuilderProvider({ initialData, userPreferences, children }: TripBuilderProviderProps) {
   const [data, setData] = useState<TripBuilderData>(() => normalizeData(initialData));
   const isHydrated = useRef(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -108,7 +133,9 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
       return;
     }
     const stored = getLocal<TripBuilderData>(TRIP_BUILDER_STORAGE_KEY);
-    if (stored) {
+    if (!stored && userPreferences) {
+      setData(applyPreferencesToDefaults(createDefaultData(), userPreferences));
+    } else if (stored) {
       const normalizedStored = normalizeData(stored);
       setData((prev) => {
         const normalizedPrev = normalizeData(prev);
