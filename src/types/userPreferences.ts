@@ -1,85 +1,25 @@
-import type { Location } from "./location";
+import type { VibeId } from "@/data/vibes";
 
-/**
- * User preference data learned from behavior
- */
 export type UserPreferences = {
-  /**
-   * Activities that were replaced by the user
-   */
-  replacedActivities: Array<{
-    activityId: string;
-    locationId: string;
-    replacedAt: string;
-    reason?: string;
-  }>;
-
-  /**
-   * Activities that were skipped/deleted by the user
-   */
-  skippedActivities: Array<{
-    activityId: string;
-    locationId: string;
-    skippedAt: string;
-  }>;
-
-  /**
-   * Activities that were saved by the user
-   */
-  savedActivities: Array<{
-    activityId: string;
-    locationId: string;
-    savedAt: string;
-  }>;
-
-  /**
-   * Preferred location categories (learned from saved places and replacements)
-   */
-  preferredCategories: Record<string, number>; // category -> preference score
-
-  /**
-   * Preferred price ranges (learned from saved places)
-   */
-  preferredPriceRanges: Record<string, number>; // price range -> preference score
-
-  /**
-   * Preferred activity types (learned from behavior)
-   */
-  preferredActivityTypes: Record<string, number>; // activity type -> preference score
-
-  /**
-   * Last updated timestamp
-   */
-  lastUpdated: string;
+  dietaryRestrictions: string[];
+  accessibilityNeeds: {
+    mobility?: boolean;
+    visual?: boolean;
+    notes?: string;
+  };
+  defaultGroupType?: "solo" | "couple" | "family" | "friends";
+  defaultPace?: "relaxed" | "balanced" | "fast";
+  accommodationStyle: string[];
+  defaultVibes: VibeId[];
+  learnedVibes: Record<string, number>;
 };
 
-/**
- * Default user preferences
- */
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
-  replacedActivities: [],
-  skippedActivities: [],
-  savedActivities: [],
-  preferredCategories: {},
-  preferredPriceRanges: {},
-  preferredActivityTypes: {},
-  lastUpdated: new Date().toISOString(),
+  dietaryRestrictions: [],
+  accessibilityNeeds: {},
+  defaultGroupType: undefined,
+  defaultPace: undefined,
+  accommodationStyle: [],
+  defaultVibes: [],
+  learnedVibes: {},
 };
-
-/**
- * Preference event types
- */
-export type PreferenceEventType = "replace" | "skip" | "save" | "unsave";
-
-/**
- * Preference event data
- */
-export type PreferenceEvent = {
-  type: PreferenceEventType;
-  activityId: string;
-  locationId: string;
-  location?: Location;
-  timestamp: string;
-  reason?: string;
-};
-

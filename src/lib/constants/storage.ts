@@ -52,3 +52,13 @@ export const GEOLOCATION_STORAGE_KEY = "koku:geolocation";
  * LocalStorage key for trip step tracker
  */
 export const TRIP_STEP_STORAGE_KEY = "koku_trip_step";
+
+/**
+ * LocalStorage key for user travel preferences
+ */
+export const USER_TRAVEL_PREFS_STORAGE_KEY = "koku:travel-preferences";
+
+/**
+ * LocalStorage key for sign-in prompt tracking
+ */
+export const SIGN_IN_PROMPTS_STORAGE_KEY = "koku:signin-prompts";
