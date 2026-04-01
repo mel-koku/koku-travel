@@ -17,6 +17,7 @@ import {
 import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
@@ -76,9 +77,12 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
     return map;
   }, [sanityVibes]);
 
+  const { userPreferences } = useAppState();
   const selectedVibes = useMemo(() => data.vibes ?? [], [data.vibes]);
   const isMaxSelected = selectedVibes.length >= MAX_VIBE_SELECTION;
   const hasSelectedVibes = selectedVibes.length > 0;
+  const hasPrefilledVibes = userPreferences.defaultVibes.length > 0 &&
+    selectedVibes.some((v) => userPreferences.defaultVibes.includes(v));
 
   useEffect(() => {
     onValidityChange?.(hasSelectedVibes);
@@ -125,6 +129,9 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           <p className="mt-2 font-mono text-sm text-stone">
             {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
           </p>
+          {hasPrefilledVibes && (
+            <p className="mt-1 text-xs text-stone">Pre-selected from your profile</p>
+          )}
         </div>
       </div>
 

@@ -17,6 +17,7 @@ import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { useAppState } from "@/state/AppState";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
@@ -69,6 +70,12 @@ export type ReviewStepProps = {
 
 export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: ReviewStepProps) {
   const { data, setData } = useTripBuilder();
+  const { userPreferences } = useAppState();
+  const hasProfileDefaults = Boolean(
+    userPreferences.defaultPace ||
+    userPreferences.defaultGroupType ||
+    userPreferences.dietaryRestrictions.length
+  );
 
   const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
 
@@ -280,6 +287,10 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               />
             </button>
           </div>
+
+          {hasProfileDefaults && (
+            <p className="text-xs text-stone">Some fields pre-filled from your profile.</p>
+          )}
 
           {/* Pace — segmented control */}
           <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">

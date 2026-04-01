@@ -178,9 +178,11 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 }
 
 export default function TripBuilderClient({ sanityConfig }: { sanityConfig?: TripBuilderConfig }) {
+  const { userPreferences } = useAppState();
+
   return (
     <ErrorBoundary>
-      <TripBuilderProvider>
+      <TripBuilderProvider userPreferences={userPreferences}>
         <Suspense>
           <TripBuilderV2Content sanityConfig={sanityConfig} />
         </Suspense>
