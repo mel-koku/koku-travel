@@ -27,7 +27,7 @@ type PlanApiResponse = {
 function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConfig }) {
   const router = useRouter();
   const { data, reset } = useTripBuilder();
-  const { createTrip, saved, setCityAccommodation } = useAppState();
+  const { createTrip, saved, setCityAccommodation, userPreferences, setUserPreferences } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successData, setSuccessData] = useState<{ tripName: string; tripId: string } | null>(null);
@@ -93,6 +93,15 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         guideProse: result.guideProse,
       });
 
+      // Track vibe selections for learned preferences
+      if (data.vibes?.length) {
+        const updatedLearnedVibes = { ...userPreferences.learnedVibes };
+        for (const vibe of data.vibes) {
+          updatedLearnedVibes[vibe] = (updatedLearnedVibes[vibe] ?? 0) + 1;
+        }
+        setUserPreferences({ learnedVibes: updatedLearnedVibes });
+      }
+
       // Seed city accommodations from builder data so the itinerary page shows pre-filled hotels
       if (builderData.accommodations) {
         for (const [cityId, accom] of Object.entries(builderData.accommodations)) {
@@ -117,7 +126,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router, saved, setCityAccommodation]);
+  }, [data, createTrip, reset, router, saved, setCityAccommodation, userPreferences, setUserPreferences]);
 
   return (
     <>
