@@ -85,7 +85,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               Something went wrong
             </h2>
             <p className="mb-4 text-sm text-destructive/80">
-              An error occurred while rendering this component.
+              This section failed to load. Refresh or try again.
             </p>
             {process.env.NODE_ENV !== "production" && this.state.error && (
               <div className="mb-4 rounded border border-destructive/30 bg-destructive/15 p-3 text-left">

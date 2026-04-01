@@ -76,8 +76,8 @@ export const VIBES: readonly VibeDefinition[] = [
   },
   {
     id: "local_secrets",
-    name: "Local Secrets",
-    description: "Hidden gems, craft workshops, and neighborhood favorites",
+    name: "Off the Usual Route",
+    description: "Craft workshops, quiet neighborhoods, and places worth the extra stop",
     icon: "Camera",
     interests: ["photography", "craft"],
   },

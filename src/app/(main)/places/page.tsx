@@ -6,13 +6,13 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
   title: "Places in Japan | Koku Travel",
-  description: "Discover over 3,700 locations across Japan. Browse hidden gems, cultural landmarks, and local favorites on an interactive map.",
+  description: "Over 6,000 locations across Japan. Cultural landmarks, neighborhood favorites, and an interactive map.",
   alternates: {
     canonical: "/places",
   },
   openGraph: {
     title: "Places in Japan | Koku Travel",
-    description: "Discover over 3,700 locations across Japan. Browse hidden gems, cultural landmarks, and local favorites on an interactive map.",
+    description: "Over 6,000 locations across Japan. Cultural landmarks, neighborhood favorites, and an interactive map.",
     siteName: "Koku Travel",
   },
 };

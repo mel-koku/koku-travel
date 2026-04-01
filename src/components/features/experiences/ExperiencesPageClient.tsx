@@ -85,7 +85,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
 
         <ScrollReveal delay={0.2} distance={20} duration={0.5}>
           <p className="text-base text-foreground-secondary max-w-2xl mx-auto mt-6 leading-relaxed">
-            {content?.experiencesDescription ?? "Hands-on moments you won't find in any guidebook."}
+            {content?.experiencesDescription ?? "Hands-on moments. Forged, brewed, or folded by someone who\u2019s done it for decades."}
           </p>
         </ScrollReveal>
       </section>

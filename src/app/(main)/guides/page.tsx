@@ -5,11 +5,11 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 export const metadata = {
   title: "Travel Guides | Koku Travel",
   description:
-    "Discover curated travel guides for Japan. From hidden gems to seasonal highlights, find expert tips and local insights for your perfect trip.",
+    "Curated travel guides for Japan. Seasonal highlights, regional deep dives, and expert tips for your trip.",
   openGraph: {
     title: "Travel Guides | Koku Travel",
     description:
-      "Discover curated travel guides for Japan. From hidden gems to seasonal highlights, find expert tips and local insights for your perfect trip.",
+      "Curated travel guides for Japan. Seasonal highlights, regional deep dives, and expert tips for your trip.",
     siteName: "Koku Travel",
   },
 };

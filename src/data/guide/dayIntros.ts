@@ -8,14 +8,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-1",
     key: "kyoto:shrine:spring:first",
     content:
-      "Welcome to Kyoto! There's no better way to start your trip than with the gentle pink of cherry blossoms framing an ancient shrine. Take your time — Kyoto rewards those who slow down.",
+      "Welcome to Kyoto! There's no better way to start your trip than with the gentle pink of cherry blossoms framing an ancient shrine. Take your time. Kyoto rewards those who slow down.",
     icon: "🌸",
   },
   {
     id: "di-2",
     key: "kyoto:temple:any:any",
     content:
-      "Today takes you into Kyoto's spiritual heart. The temples here aren't just landmarks — they're living places of practice, surrounded by gardens designed for contemplation.",
+      "Today takes you into Kyoto's spiritual heart. The temples here aren't just landmarks. They're living places of practice, surrounded by gardens designed for contemplation.",
     icon: "🏯",
   },
   {
@@ -36,21 +36,21 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-5",
     key: "kyoto:market:any:any",
     content:
-      "Get ready for some of the best street food in Japan. Kyoto's markets are a feast for every sense — pickled vegetables, fresh mochi, roasted tea, and so much more to discover.",
+      "Get ready for some of the best street food in Japan. Kyoto's markets are a feast for every sense. Pickled vegetables, fresh mochi, roasted tea, and so much more to discover.",
     icon: "🍡",
   },
   {
     id: "di-6",
     key: "kyoto:restaurant:any:any",
     content:
-      "Kyoto cuisine is its own world — refined, seasonal, and deeply rooted in tradition. Whether it's a bowl of matcha or a multi-course kaiseki dinner, your taste buds are in for a treat.",
+      "Kyoto cuisine is its own world. Refined, seasonal, and deeply rooted in tradition. Whether it's a bowl of matcha or a multi-course kaiseki dinner, your taste buds are in for a treat.",
     icon: "🍵",
   },
   {
     id: "di-7",
     key: "kyoto:any:any:last",
     content:
-      "Your last day in Kyoto — soak it in. There's a saying that Kyoto reveals itself slowly, so whatever you see today, know that it'll mean even more than it did on day one.",
+      "Your last day in Kyoto. Soak it in. There's a saying that Kyoto reveals itself slowly, so whatever you see today, know that it'll mean even more than it did on day one.",
     icon: "💜",
   },
 
@@ -61,35 +61,35 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-8",
     key: "osaka:restaurant:any:first",
     content:
-      "Welcome to Osaka, Japan's kitchen! This city lives and breathes food. The locals say 'kuidaore' — eat until you drop — and honestly, that's the best advice anyone can give you here.",
+      "Welcome to Osaka, Japan's kitchen! This city lives and breathes food. The locals say 'kuidaore,' eat until you drop, and honestly, that's the best advice anyone can give you here.",
     icon: "🐙",
   },
   {
     id: "di-9",
     key: "osaka:market:any:any",
     content:
-      "Osaka's markets and food streets are legendary. Takoyaki sizzling on griddles, the smell of fresh okonomiyaki, vendors shouting their specials — this is Osaka at its liveliest.",
+      "Osaka's markets and food streets are legendary. Takoyaki sizzling on griddles, the smell of fresh okonomiyaki, vendors shouting their specials. This is Osaka at its liveliest.",
     icon: "🏮",
   },
   {
     id: "di-10",
     key: "osaka:landmark:any:any",
     content:
-      "Beyond the neon and the noise, Osaka has a proud history. Today you'll see the side of this city that locals are quietly proud of — stories of resilience, ambition, and reinvention.",
+      "Beyond the neon and the noise, Osaka has a proud history. Today you'll see the side of this city that locals are quietly proud of. Stories of resilience, ambition, and reinvention.",
     icon: "🏯",
   },
   {
     id: "di-11",
     key: "osaka:any:any:any",
     content:
-      "Osaka has a completely different energy from anywhere else in Japan — louder, funnier, more in-your-face. Embrace the chaos. Strike up a conversation. This city rewards the bold.",
+      "Osaka has a completely different energy from anywhere else in Japan. Louder, funnier, more in-your-face. Embrace the chaos. Strike up a conversation. This city rewards the bold.",
     icon: "⚡",
   },
   {
     id: "di-12",
     key: "osaka:bar:any:any",
     content:
-      "Tonight's going to be fun. Osaka's nightlife is lively and unpretentious — tiny standing bars, retro game arcades, and neon-lit alleys where every door leads to a new surprise.",
+      "Tonight's going to be fun. Osaka's nightlife is lively and unpretentious. Tiny standing bars, retro game arcades, and neon-lit alleys where every door leads to a new surprise.",
     icon: "🍺",
   },
 
@@ -107,14 +107,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-14",
     key: "tokyo:museum:any:any",
     content:
-      "Tokyo's museum scene is wildly eclectic — from ukiyo-e woodblock prints to cutting-edge digital art. Whatever you're into, this city has something that'll make you stop and stare.",
+      "Tokyo's museum scene is wildly eclectic. From ukiyo-e woodblock prints to cutting-edge digital art. Whatever you're into, this city has something that'll make you stop and stare.",
     icon: "🎨",
   },
   {
     id: "di-15",
     key: "tokyo:street:any:any",
     content:
-      "Today is all about wandering. Tokyo's neighborhoods each have their own personality — you can cross a single street and feel like you've entered a completely different city.",
+      "Today is all about wandering. Tokyo's neighborhoods each have their own personality. You can cross a single street and feel like you've entered a completely different city.",
     icon: "🚶",
   },
   {
@@ -135,7 +135,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-18",
     key: "tokyo:any:any:last",
     content:
-      "Your final day in Tokyo. This city has so many layers that no trip ever feels complete — and honestly, that's part of the charm. Make the most of these last hours.",
+      "Your final day in Tokyo. This city has so many layers that no trip ever feels complete, and honestly, that's part of the charm. Make the most of these last hours.",
     icon: "🗼",
   },
   {
@@ -160,14 +160,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-21",
     key: "nara:park:any:any",
     content:
-      "Nara Park is unlike anywhere else in the world — hundreds of deer roaming free among ancient temples and towering trees. Grab some shika senbei crackers and make some new friends.",
+      "Nara Park is unlike anywhere else in the world. Hundreds of deer roaming free among ancient temples and towering trees. Grab some shika senbei crackers and make some new friends.",
     icon: "🦌",
   },
   {
     id: "di-22",
     key: "nara:any:any:any",
     content:
-      "Nara is wonderfully compact and walkable. The deer, the massive Buddha, the quiet lanes behind the main sights — it all has this gentle, timeless feeling that's hard to find elsewhere.",
+      "Nara is wonderfully compact and walkable. The deer, the massive Buddha, the quiet lanes behind the main sights. It all has this gentle, timeless feeling that's hard to find elsewhere.",
     icon: "🌳",
   },
 
@@ -178,14 +178,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-23",
     key: "kobe:restaurant:any:any",
     content:
-      "Kobe is synonymous with incredible beef, but the food scene here goes way beyond that — Chinatown dim sum, harbor-side cafes, and some of the best bread bakeries in all of Japan.",
+      "Kobe is synonymous with incredible beef, but the food scene here goes way beyond that. Chinatown dim sum, harbor-side cafes, and some of the best bread bakeries in all of Japan.",
     icon: "🥩",
   },
   {
     id: "di-24",
     key: "kobe:viewpoint:any:any",
     content:
-      "Kobe is beautifully wedged between mountains and the sea. From the right vantage point, you can see the entire harbor twinkling below — especially stunning as the sun goes down.",
+      "Kobe is beautifully wedged between mountains and the sea. From the right vantage point, you can see the entire harbor twinkling below. Especially stunning as the sun goes down.",
     icon: "🌅",
   },
   {
@@ -210,7 +210,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-27",
     key: "fukuoka:any:any:first",
     content:
-      "Welcome to Fukuoka! Kyushu's biggest city has a relaxed, friendly vibe that hits you the moment you arrive. Think of it as Japan's chill cousin — great food, warm people, zero pretension.",
+      "Welcome to Fukuoka! Kyushu's biggest city has a relaxed, friendly vibe that hits you the moment you arrive. Think of it as Japan's chill cousin. Great food, warm people, zero pretension.",
     icon: "😊",
   },
   {
@@ -242,7 +242,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-31",
     key: "kanazawa:museum:any:any",
     content:
-      "Kanazawa punches well above its weight in the arts. The city is home to world-class museums and a craft tradition — gold leaf, lacquerware, Kutani pottery — that stretches back centuries.",
+      "Kanazawa punches well above its weight in the arts. The city is home to world-class museums and a craft tradition, gold leaf, lacquerware, Kutani pottery, that stretches back centuries.",
     icon: "🎨",
   },
   {
@@ -267,7 +267,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-34",
     key: "hiroshima:restaurant:any:any",
     content:
-      "Hiroshima-style okonomiyaki is a must — layers of noodles, cabbage, egg, and sauce piled high on a sizzling griddle. The locals are passionate about it, and after one bite, you will be too.",
+      "Hiroshima-style okonomiyaki is a must. Layers of noodles, cabbage, egg, and sauce piled high on a sizzling griddle. The locals are passionate about it, and after one bite, you will be too.",
     icon: "🥞",
   },
   {
@@ -299,7 +299,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-38",
     key: "sapporo:any:winter:any",
     content:
-      "Sapporo in winter is a wonderland. The city embraces the cold like nowhere else — snow festivals, illumination events, and some of the best skiing in Asia are right at your doorstep.",
+      "Sapporo in winter is a wonderland. The city embraces the cold like nowhere else. Snow festivals, illumination events, and some of the best skiing in Asia are right at your doorstep.",
     icon: "⛄",
   },
 
@@ -310,7 +310,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-39",
     key: "nagasaki:landmark:any:any",
     content:
-      "Nagasaki has one of the most fascinating histories in Japan — centuries of trade with the Dutch, Portuguese, and Chinese left a cultural tapestry you won't find anywhere else in the country.",
+      "Nagasaki has one of the most fascinating histories in Japan. Centuries of trade with the Dutch, Portuguese, and Chinese left a cultural tapestry you won't find anywhere else in the country.",
     icon: "🏛️",
   },
   {
@@ -342,7 +342,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-43",
     key: "hakone:museum:any:any",
     content:
-      "Hakone surprises people with its art scene. World-class sculpture gardens and museums are nestled right into the forested mountainside — it's culture with a view.",
+      "Hakone surprises people with its art scene. World-class sculpture gardens and museums are nestled right into the forested mountainside. It's culture with a view.",
     icon: "🖼️",
   },
 
@@ -371,7 +371,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-46",
     key: "sendai:restaurant:any:any",
     content:
-      "Sendai is famous for gyutan — grilled beef tongue — and once you try the real thing here, you'll understand the hype. Thick-cut, smoky, and impossibly tender. Don't miss it.",
+      "Sendai is famous for gyutan, grilled beef tongue, and once you try the real thing here, you'll understand the hype. Thick-cut, smoky, and impossibly tender. Don't miss it.",
     icon: "🔥",
   },
   {
@@ -389,7 +389,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-48",
     key: "matsuyama:onsen:any:any",
     content:
-      "Dogo Onsen in Matsuyama is one of the oldest hot springs in Japan — over 3,000 years old. The ornate bathhouse is said to have inspired the one in Spirited Away. Pure magic.",
+      "Dogo Onsen in Matsuyama is one of the oldest hot springs in Japan, over 3,000 years old. The ornate bathhouse is said to have inspired the one in Spirited Away. Pure magic.",
     icon: "♨️",
   },
   {
@@ -407,7 +407,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-50",
     key: "takamatsu:garden:any:any",
     content:
-      "Ritsurin Garden in Takamatsu is one of Japan's finest landscape gardens, though it's far less crowded than its Kyoto counterparts. Take the looping path around the ponds — every bend reveals a new composition.",
+      "Ritsurin Garden in Takamatsu is one of Japan's finest landscape gardens, though it's far less crowded than its Kyoto counterparts. Take the looping path around the ponds. Every bend reveals a new composition.",
     icon: "🌿",
   },
   {
@@ -425,14 +425,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-52",
     key: "naha:market:any:any",
     content:
-      "Makishi Public Market in Naha is Okinawa in a nutshell — tropical fish in electric blues and pinks, purple sweet potatoes, awamori liquor, and vendors who love sharing their island with visitors.",
+      "Makishi Public Market in Naha is Okinawa in a nutshell. Tropical fish in electric blues and pinks, purple sweet potatoes, awamori liquor, and vendors who love sharing their island with visitors.",
     icon: "🐠",
   },
   {
     id: "di-53",
     key: "naha:any:summer:any",
     content:
-      "Okinawa's subtropical warmth, turquoise waters, and distinct Ryukyu culture make it feel like a different country entirely. Let the island pace take over — there's no rush here.",
+      "Okinawa's subtropical warmth, turquoise waters, and distinct Ryukyu culture make it feel like a different country entirely. Let the island pace take over. There's no rush here.",
     icon: "🏝️",
   },
   {
@@ -450,28 +450,28 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-55",
     key: "generic:shrine:any:any",
     content:
-      "Today starts at a shrine — a place where the sacred and the everyday overlap in Japan. Bow twice, clap twice, bow once more, and take a quiet moment before the day unfolds.",
+      "Today starts at a shrine. A place where the sacred and the everyday overlap in Japan. Bow twice, clap twice, bow once more, and take a quiet moment before the day unfolds.",
     icon: "⛩️",
   },
   {
     id: "di-56",
     key: "generic:shrine:spring:any",
     content:
-      "Visiting a shrine in spring feels extra special. Cherry blossom petals drifting across stone pathways, the gentle sound of a purification fountain — it's the Japan you've been dreaming of.",
+      "Visiting a shrine in spring feels extra special. Cherry blossom petals drifting across stone pathways, the gentle sound of a purification fountain. It's the Japan you've been dreaming of.",
     icon: "🌸",
   },
   {
     id: "di-57",
     key: "generic:temple:any:any",
     content:
-      "Temples in Japan aren't just history — they're atmosphere. The scent of incense, the crunch of gravel, the way light filters through ancient wooden beams. Let yourself be present in it.",
+      "Temples in Japan aren't just history. They're atmosphere. The scent of incense, the crunch of gravel, the way light filters through ancient wooden beams. Let yourself be present in it.",
     icon: "🙏",
   },
   {
     id: "di-58",
     key: "generic:temple:fall:any",
     content:
-      "There's a reason people travel from all over the world for Japanese autumn. Red and gold maples framing a centuries-old temple — it's one of those scenes that makes you catch your breath.",
+      "There's a reason people travel from all over the world for Japanese autumn. Red and gold maples framing a centuries-old temple. It's one of those scenes that makes you catch your breath.",
     icon: "🍁",
   },
   {
@@ -499,7 +499,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-62",
     key: "generic:cafe:any:any",
     content:
-      "Japan's cafe culture is a world of its own — from minimalist pour-over coffee bars to retro kissaten with velvet chairs and jazz on vinyl. Find one that speaks to you and settle in.",
+      "Japan's cafe culture is a world of its own. From minimalist pour-over coffee bars to retro kissaten with velvet chairs and jazz on vinyl. Find one that speaks to you and settle in.",
     icon: "☕",
   },
   {
@@ -513,7 +513,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-64",
     key: "generic:market:any:any",
     content:
-      "Markets in Japan are a feast for the senses. Fresh seafood, seasonal produce, street snacks sizzling on griddles — this is where you taste a city's true character.",
+      "Markets in Japan are a feast for the senses. Fresh seafood, seasonal produce, street snacks sizzling on griddles. This is where you taste a city's true character.",
     icon: "🏮",
   },
   {
@@ -534,7 +534,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-67",
     key: "generic:garden:any:any",
     content:
-      "Japanese gardens are designed to be walked through slowly, with each turn revealing a new carefully composed scene. Resist the urge to rush — every detail is intentional.",
+      "Japanese gardens are designed to be walked through slowly, with each turn revealing a new carefully composed scene. Resist the urge to rush. Every detail is intentional.",
     icon: "🌿",
   },
   {
@@ -555,14 +555,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-70",
     key: "generic:street:any:any",
     content:
-      "Some of the best discoveries in Japan happen when you're just walking. Duck into a side alley, follow an interesting sign, peek into a small shop — this is how memories are made.",
+      "Some of the best discoveries in Japan happen when you're just walking. Duck into a side alley, follow an interesting sign, peek into a small shop. This is how memories are made.",
     icon: "🚶",
   },
   {
     id: "di-71",
     key: "generic:viewpoint:any:any",
     content:
-      "Today has a view that'll stop you in your tracks. Japan's landscape is endlessly photogenic — mountains, coastlines, city skylines. Find your moment, take it in, and snap a picture for later.",
+      "Today has a view that'll stop you in your tracks. Japan's landscape is endlessly photogenic. Mountains, coastlines, city skylines. Find your moment, take it in, and snap a picture for later.",
     icon: "📸",
   },
 
@@ -573,7 +573,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-72",
     key: "generic:any:spring:any",
     content:
-      "Spring in Japan is a celebration. The cherry blossoms are fleeting — they bloom for just a week or two — and that impermanence is exactly what makes them so precious. Enjoy every petal.",
+      "Spring in Japan is a celebration. The cherry blossoms are fleeting, they bloom for just a week or two, and that impermanence is exactly what makes them so precious. Enjoy every petal.",
     icon: "🌸",
   },
   {
@@ -605,28 +605,28 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-76",
     key: "generic:any:any:first",
     content:
-      "Day one! Your Japan adventure starts now. Don't try to do everything today — jet lag is real, and first impressions are best when you're relaxed. Ease in and enjoy the novelty of it all.",
+      "Day one! Your Japan adventure starts now. Don't try to do everything today. Jet lag is real, and first impressions are best when you're relaxed. Ease in and enjoy the novelty of it all.",
     icon: "✈️",
   },
   {
     id: "di-77",
     key: "generic:any:any:last",
     content:
-      "Your last day — make it count but don't overpack it. Save time for one final stroll, one last meal you've been eyeing, and maybe a souvenir or two. Japan has a way of calling you back.",
+      "Your last day. Make it count but don't overpack it. Save time for one final stroll, one last meal you've been eyeing, and maybe a souvenir or two. Japan has a way of calling you back.",
     icon: "👋",
   },
   {
     id: "di-78",
     key: "generic:any:any:only",
     content:
-      "One day to take it all in — let's make it a good one. We've picked the highlights, but leave room for spontaneity. Sometimes the unplanned moments are the ones you remember most.",
+      "One day to take it all in. Let's make it a good one. We've picked the highlights, but leave room for spontaneity. Sometimes the unplanned moments are the ones you remember most.",
     icon: "⭐",
   },
   {
     id: "di-79",
     key: "generic:any:spring:first",
     content:
-      "Welcome to Japan in cherry blossom season! Timing your trip during sakura is something special. The whole country feels lighter, more festive — like spring itself is putting on a show just for you.",
+      "Welcome to Japan in cherry blossom season! Timing your trip during sakura is something special. The whole country feels lighter, more festive. Like spring itself is putting on a show just for you.",
     icon: "🌸",
   },
   {
@@ -644,7 +644,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-81",
     key: "generic:any:any:any",
     content:
-      "Another great day ahead. Japan has a way of surprising you around every corner — a hidden garden behind a convenience store, a tiny ramen shop with a line out the door. Stay curious.",
+      "Another great day ahead. Japan has a way of surprising you around every corner. A hidden garden behind a convenience store, a tiny ramen shop with a line out the door. Stay curious.",
     icon: "✨",
   },
   {

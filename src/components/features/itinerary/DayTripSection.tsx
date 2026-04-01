@@ -122,7 +122,7 @@ export function DayTripSection({
                       )}
                       {s.isHiddenGem && (
                         <span className="shrink-0 rounded bg-sage/10 px-1 py-px text-[10px] font-medium text-sage">
-                          Hidden Gem
+                          Local Pick
                         </span>
                       )}
                     </div>

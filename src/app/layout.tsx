@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -16,6 +17,25 @@ export const metadata: Metadata = {
   title: "Koku Travel - Discover Japan with Local Experts",
   description:
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+  openGraph: {
+    title: "Koku Travel - Discover Japan with Local Experts",
+    description:
+      "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    url: BASE_URL,
+    siteName: "Koku Travel",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Koku Travel - Discover Japan with Local Experts",
+    description:
+      "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -30,19 +50,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" />
       </head>
       <body className="min-h-[100dvh] antialiased">
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XE8JEJN333"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XE8JEJN333');
-          `}
-        </Script>
+        <GoogleAnalytics />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

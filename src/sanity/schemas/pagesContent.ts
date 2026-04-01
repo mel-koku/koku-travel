@@ -23,7 +23,7 @@ export const pagesContent = defineType({
       title: "Heading",
       type: "string",
       fieldset: "places",
-      initialValue: "Temples, backstreets, and the restaurants your guidebook missed.",
+      initialValue: "Temples, backstreets, and restaurants worth crossing town for.",
     }),
     defineField({
       name: "placesSubtitle",
@@ -68,7 +68,7 @@ export const pagesContent = defineType({
       title: "Hero Description",
       type: "string",
       fieldset: "experiencesListing",
-      initialValue: "Hands-on moments you won't find in any guidebook.",
+      initialValue: "Hands-on moments. Forged, brewed, or folded by someone who's done it for decades.",
     }),
     defineField({
       name: "experiencesEmptyHeading",
@@ -105,7 +105,7 @@ export const pagesContent = defineType({
       title: "Hero Heading",
       type: "string",
       fieldset: "guidesListing",
-      initialValue: "What the locals know, written down for the first time.",
+      initialValue: "Years of ground-level knowledge, organized for your trip.",
     }),
     defineField({
       name: "guidesDescription",
@@ -267,7 +267,7 @@ export const pagesContent = defineType({
       type: "text",
       rows: 2,
       fieldset: "dashboard",
-      initialValue: "Head to the trip builder to plan your first adventure. It'll appear here once it's ready.",
+      initialValue: "Build your first trip. It shows up here.",
     }),
     defineField({
       name: "dashboardPlanButton",
@@ -455,7 +455,7 @@ export const pagesContent = defineType({
       title: "Description",
       type: "string",
       fieldset: "notFound",
-      initialValue: "This path leads nowhere — but Japan still has thousands waiting for you.",
+      initialValue: "This path leads nowhere. But Japan still has thousands of places waiting for you.",
     }),
     defineField({
       name: "notFoundPrimaryCtaText",
