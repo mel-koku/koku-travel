@@ -76,7 +76,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
   const subheading = sanityConfig?.introSubheading ?? "starts here";
   const description =
     sanityConfig?.introDescription ??
-    "Tell us what you\u2019re into. We\u2019ll build the trip, day by day, with routing and timing handled for you.";
+    "Tell us how you want to spend your days. We\u2019ll handle routing, timing, and the details.";
   const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
   const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
   const accentImage =

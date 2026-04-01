@@ -51,7 +51,7 @@ export function detectRainContingency(
       dayIndex,
       dayId: day.id,
       title: "Rain expected",
-      description: `${activity.title} is an outdoor activity and rain is forecast. Consider an indoor alternative.`,
+      description: `${activity.title} is outdoors and rain is forecast. Have an indoor backup.`,
       icon: "CloudRain",
       action: {
         type: "swap_for_weather",
@@ -132,7 +132,7 @@ export function detectCrowdAlerts(
         title: crowdLevel >= 5 ? "Expect large crowds" : "Busy period ahead",
         description: warning
           ? `${activity.title}: ${warning}`
-          : `${activity.title} is scheduled during peak hours. ${crowdLevel >= 5 ? "Expect long queues." : "Arrive early to beat the rush."}`,
+          : `${activity.title} is at peak hours. ${crowdLevel >= 5 ? "Long queues likely." : "Arrive early."}`,
         icon: "Users",
         action: {
           type: "acknowledge_crowd",

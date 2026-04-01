@@ -7,10 +7,10 @@ import { typography } from "@/lib/typography-system";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const DEFAULT_STATUS_MESSAGES = [
-  "Looking at what you picked...",
-  "Working out the routes...",
-  "Filling in the days...",
-  "Almost done...",
+  "Reading your preferences...",
+  "Routing between cities...",
+  "Scheduling the days...",
+  "Final checks...",
 ];
 
 const MESSAGE_INTERVAL = 2500;

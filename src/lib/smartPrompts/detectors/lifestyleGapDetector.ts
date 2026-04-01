@@ -43,7 +43,7 @@ export function detectEveningFree(day: ItineraryDay, dayIndex: number): Detected
     dayIndex,
     dayId: day.id,
     title: "Free evening",
-    description: `Your day ends early. Explore ${city}'s evening scene — ${suggestionText}.`,
+    description: `Evening is open. ${suggestionText}.`,
     icon: "Moon",
     action: {
       type: "add_evening",

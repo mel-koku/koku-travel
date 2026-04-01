@@ -183,9 +183,16 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
       return null;
     }
 
+    // Scan for deny-listed words that leaked through
+    const leaks = scanForDenyListViolations(guide);
+    if (leaks.length > 0) {
+      logger.warn("Guide prose deny-list violations", { leaks });
+    }
+
     logger.info("Generated guide prose", {
       dayCount: guide.days.length,
       overviewLength: guide.tripOverview.length,
+      denyListLeaks: leaks.length,
     });
 
     return guide;
@@ -196,4 +203,39 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
     });
     return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Deny-list validation
+// ---------------------------------------------------------------------------
+
+const DENY_LIST_PATTERNS = [
+  /\bamazing\b/i, /\bincredible\b/i, /\bunforgettable\b/i, /\bbustling\b/i,
+  /\bvibrant\b/i, /\bhidden gem\b/i, /\bdelve\b/i, /\bimmerse\b/i,
+  /\bsoak in\b/i, /\bmust-see\b/i, /\bcan't-miss\b/i, /\btucked away\b/i,
+  /\boff the beaten path\b/i, /\btreasure\b/i, /\bembark\b/i, /\bventure\b/i,
+  /\bfeast for the senses\b/i, /\btreat yourself\b/i, /\bdon't miss\b/i,
+  /\bexperience of a lifetime\b/i, /\bbucket list\b/i, /\bget ready\b/i,
+  /\byou'll love\b/i,
+];
+
+function scanForDenyListViolations(guide: GeneratedGuide): string[] {
+  const violations: string[] = [];
+  const allText = [
+    guide.tripOverview,
+    ...guide.days.flatMap((d) => [
+      d.intro,
+      ...(d.transitions ?? []),
+      d.culturalMoment ?? "",
+      d.practicalTip ?? "",
+      d.summary,
+    ]),
+  ].join(" ");
+
+  for (const pattern of DENY_LIST_PATTERNS) {
+    const match = allText.match(pattern);
+    if (match) violations.push(match[0]);
+  }
+
+  return violations;
 }
