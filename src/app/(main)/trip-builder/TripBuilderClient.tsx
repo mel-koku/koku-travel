@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
@@ -9,6 +9,7 @@ import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContex
 import { TripBuilderV2 } from "@/components/features/trip-builder";
 import { GeneratingOverlay } from "@/components/features/trip-builder/GeneratingOverlay";
 import { useAppState } from "@/state/AppState";
+import { createClient } from "@/lib/supabase/client";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
@@ -30,6 +31,15 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successData, setSuccessData] = useState<{ tripName: string; tripId: string } | null>(null);
+  const [isGuest, setIsGuest] = useState(true);
+  const supabaseClient = createClient();
+
+  useEffect(() => {
+    if (!supabaseClient) return;
+    supabaseClient.auth.getUser().then(({ data }) => {
+      setIsGuest(!data.user);
+    });
+  }, [supabaseClient]);
 
   const handleComplete = useCallback(async () => {
     setIsGenerating(true);
@@ -120,6 +130,12 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
             sanityConfig={sanityConfig}
             successData={successData}
             onSuccessComplete={() => {
+              if (successData) {
+                router.push(`/itinerary?trip=${successData.tripId}&new=1`);
+              }
+            }}
+            isGuest={isGuest}
+            onSkipSignIn={() => {
               if (successData) {
                 router.push(`/itinerary?trip=${successData.tripId}&new=1`);
               }

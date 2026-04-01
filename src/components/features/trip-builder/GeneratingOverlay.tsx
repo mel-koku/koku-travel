@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
+import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const DEFAULT_STATUS_MESSAGES = [
@@ -20,9 +21,11 @@ type GeneratingOverlayProps = {
   sanityConfig?: TripBuilderConfig;
   successData?: { tripName: string } | null;
   onSuccessComplete?: () => void;
+  isGuest?: boolean;
+  onSkipSignIn?: () => void;
 };
 
-export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete }: GeneratingOverlayProps) {
+export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete, isGuest, onSkipSignIn }: GeneratingOverlayProps) {
   const [messageIndex, setMessageIndex] = useState(0);
   const messages = sanityConfig?.generatingMessages?.length
     ? sanityConfig.generatingMessages
@@ -41,9 +44,10 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
   // Auto-navigate after success display
   useEffect(() => {
     if (!isSuccess || !onSuccessComplete) return;
+    if (isGuest) return; // guests see sign-in prompt instead
     const timer = setTimeout(onSuccessComplete, SUCCESS_DISPLAY_MS);
     return () => clearTimeout(timer);
-  }, [isSuccess, onSuccessComplete]);
+  }, [isSuccess, onSuccessComplete, isGuest]);
 
   return (
     <motion.div
@@ -102,6 +106,27 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
               >
                 {successData?.tripName}
               </motion.p>
+
+              {isGuest && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
+                  className="mt-2 w-full max-w-xs space-y-3 rounded-lg border border-border bg-surface p-5"
+                >
+                  <p className="text-center text-xs text-foreground-secondary">
+                    This trip is only on this device.
+                  </p>
+                  <GoogleSignInButton label="Sign in to save it everywhere" />
+                  <button
+                    type="button"
+                    onClick={onSkipSignIn}
+                    className="block w-full text-center text-xs text-stone transition-colors hover:text-foreground-secondary"
+                  >
+                    Continue without saving
+                  </button>
+                </motion.div>
+              )}
             </motion.div>
           ) : (
             <motion.div
