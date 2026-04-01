@@ -889,6 +889,7 @@ export const ItineraryShell = ({
                 userPosition={discover.userPosition}
                 onRequestGeolocation={discover.requestGeolocation}
                 geoLoading={discover.geoLocation.isLoading}
+                geoError={discover.geoLocation.error}
               />
             </div>
           )}

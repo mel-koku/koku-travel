@@ -27,6 +27,7 @@ type ItineraryDiscoverPanelProps = {
   userPosition: { lat: number; lng: number } | null;
   onRequestGeolocation: () => void;
   geoLoading: boolean;
+  geoError: string | null;
 };
 
 function formatDistance(meters: number): string {
@@ -52,6 +53,7 @@ export function ItineraryDiscoverPanel({
   userPosition,
   onRequestGeolocation,
   geoLoading,
+  geoError,
 }: ItineraryDiscoverPanelProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -114,18 +116,26 @@ export function ItineraryDiscoverPanel({
 
         {/* Geolocation prompt */}
         {!userPosition && (
-          <button
-            type="button"
-            onClick={onRequestGeolocation}
-            disabled={geoLoading}
-            className="flex w-full items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="8" cy="8" r="3" />
-              <path d="M8 1.5V4M8 12v2.5M1.5 8H4M12 8h2.5" strokeLinecap="round" />
-            </svg>
-            {geoLoading ? "Getting location..." : "Use my location for better results"}
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={onRequestGeolocation}
+              disabled={geoLoading}
+              className="flex w-full items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="8" cy="8" r="3" />
+                <path d="M8 1.5V4M8 12v2.5M1.5 8H4M12 8h2.5" strokeLinecap="round" />
+              </svg>
+              {geoLoading ? "Getting location..." : "Use my location for better results"}
+            </button>
+            {geoError && (
+              <p className="text-xs text-error">
+                {geoError}{" "}
+                {geoError.includes("denied") && "Check your browser site settings to allow location access."}
+              </p>
+            )}
+          </>
         )}
       </div>
 
