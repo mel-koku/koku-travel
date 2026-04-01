@@ -16,19 +16,19 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-1",
     key: "culture:food:kyoto",
     content:
-      "After all that temple-hopping, you've earned a proper meal. Kyoto's food scene is as refined as its gardens — think delicate flavors and beautiful presentation.",
+      "After all that temple-hopping, you've earned a proper meal. Kyoto's food scene is as refined as its gardens. Think delicate flavors and beautiful presentation.",
   },
   {
     id: "tr-2",
     key: "culture:food:osaka",
     content:
-      "Time to refuel! Osaka takes its street food seriously — this city was literally nicknamed 'the nation's kitchen.'",
+      "Time to refuel! Osaka takes its street food seriously. This city was literally nicknamed 'the nation's kitchen.'",
   },
   {
     id: "tr-3",
     key: "culture:food:tokyo",
     content:
-      "You've soaked up the history — now let Tokyo feed you. Whether it's a tiny ramen counter or a department-store basement food hall, you're in for a treat.",
+      "You've soaked up the history. Now let Tokyo feed you. Whether it's a tiny ramen counter or a department-store basement food hall, you're in for a treat.",
   },
   {
     id: "tr-4",
@@ -40,7 +40,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-5",
     key: "culture:food:any",
     content:
-      "Sightseeing for the soul, food for the body — time to switch gears and let your taste buds take over.",
+      "Sightseeing for the soul, food for the body. Time to switch gears and let your taste buds take over.",
   },
 
   // ─── food → culture ──────────────────────────────────────────────
@@ -54,7 +54,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-7",
     key: "food:culture:osaka",
     content:
-      "Belly full? Good. Osaka has a surprising depth of history beneath all the neon — let's go find some of it.",
+      "Belly full? Good. Osaka has a surprising depth of history beneath all the neon. Let's go find some of it.",
   },
   {
     id: "tr-8",
@@ -66,7 +66,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-9",
     key: "food:culture:any",
     content:
-      "With a full stomach, you're ready to take in something for the mind. The next stop is a shift in pace — from flavors to history.",
+      "With a full stomach, you're ready to take in something for the mind. The next stop is a shift in pace. From flavors to history.",
   },
 
   // ─── culture → nature ────────────────────────────────────────────
@@ -74,7 +74,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-10",
     key: "culture:nature:kyoto",
     content:
-      "Kyoto blurs the line between culture and nature better than anywhere. The next spot trades architecture for the real thing — open sky and greenery.",
+      "Kyoto blurs the line between culture and nature better than anywhere. The next spot trades architecture for the real thing. Open sky and greenery.",
   },
   {
     id: "tr-11",
@@ -94,19 +94,19 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-13",
     key: "nature:food:kyoto",
     content:
-      "Nothing sharpens an appetite like a garden stroll. Kyoto knows this — that's why so many of its best restaurants sit right alongside its parks.",
+      "Nothing sharpens an appetite like a garden stroll. Kyoto knows this. That's why so many of its best restaurants sit right alongside its parks.",
   },
   {
     id: "tr-14",
     key: "nature:food:osaka",
     content:
-      "Fresh air and a walk — now you're properly hungry. Osaka will happily fix that for you, and quickly.",
+      "Fresh air and a walk. Now you're properly hungry. Osaka will happily fix that for you, and quickly.",
   },
   {
     id: "tr-15",
     key: "nature:food:any",
     content:
-      "All that fresh air has done its job — you're ready to eat. Let's find somewhere good.",
+      "All that fresh air has done its job. You're ready to eat. Let's find somewhere good.",
   },
 
   // ─── nature → culture ────────────────────────────────────────────
@@ -114,13 +114,13 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-16",
     key: "nature:culture:kyoto",
     content:
-      "From one kind of beauty to another. In Kyoto, nature and culture are practically neighbors — sometimes they share the same address.",
+      "From one kind of beauty to another. In Kyoto, nature and culture are practically neighbors. Sometimes they share the same address.",
   },
   {
     id: "tr-17",
     key: "nature:culture:any",
     content:
-      "Feeling refreshed? Good — the next stop has a story to tell. A little nature goes a long way in getting you ready for it.",
+      "Feeling refreshed? Good. The next stop has a story to tell. A little nature goes a long way in getting you ready for it.",
   },
 
   // ─── culture → shopping ──────────────────────────────────────────
@@ -128,19 +128,19 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-18",
     key: "culture:shopping:kyoto",
     content:
-      "Kyoto's shopping streets are an experience in themselves — traditional crafts, pottery shops, and the occasional matcha soft serve to keep you going.",
+      "Kyoto's shopping streets are an experience in themselves. Traditional crafts, pottery shops, and the occasional matcha soft serve to keep you going.",
   },
   {
     id: "tr-19",
     key: "culture:shopping:osaka",
     content:
-      "From sightseeing to retail therapy — Osaka style. Think bustling arcades, quirky finds, and energy that never quits.",
+      "From sightseeing to retail therapy, Osaka style. Think bustling arcades, quirky finds, and energy that never quits.",
   },
   {
     id: "tr-20",
     key: "culture:shopping:tokyo",
     content:
-      "Tokyo's shopping districts are their own kind of cultural experience. Each neighborhood has a completely different vibe — you'll see what I mean.",
+      "Tokyo's shopping districts are their own kind of cultural experience. Each neighborhood has a completely different vibe. You'll see what I mean.",
   },
   {
     id: "tr-21",
@@ -154,7 +154,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-22",
     key: "shopping:food:osaka",
     content:
-      "Shopping in Osaka always leads to eating — it's basically a law here. Drop the bags and grab a seat.",
+      "Shopping in Osaka always leads to eating. It's basically a law here. Drop the bags and grab a seat.",
   },
   {
     id: "tr-23",
@@ -166,7 +166,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-24",
     key: "shopping:food:any",
     content:
-      "All that browsing calls for a food break. Good news — you're never far from something delicious in Japan.",
+      "All that browsing calls for a food break. Good news. You're never far from something delicious in Japan.",
   },
 
   // ─── food → nature ───────────────────────────────────────────────
@@ -180,7 +180,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-26",
     key: "food:nature:any",
     content:
-      "A gentle walk after a good meal — there's no better way to let everything settle. The next spot has just the right amount of calm.",
+      "A gentle walk after a good meal. There's no better way to let everything settle. The next spot has just the right amount of calm.",
   },
 
   // ─── food → shopping ─────────────────────────────────────────────
@@ -188,13 +188,13 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-27",
     key: "food:shopping:osaka",
     content:
-      "Osaka's shopping streets are often right next to its food alleys — so this transition is practically built into the city.",
+      "Osaka's shopping streets are often right next to its food alleys, so this transition is practically built into the city.",
   },
   {
     id: "tr-28",
     key: "food:shopping:any",
     content:
-      "Feeling energized after that meal? Perfect timing — the next stop is a great area to browse and pick up something memorable.",
+      "Feeling energized after that meal? Perfect timing. The next stop is a great area to browse and pick up something memorable.",
   },
 
   // ─── nature → shopping ───────────────────────────────────────────
@@ -226,7 +226,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-32",
     key: "view:food:tokyo",
     content:
-      "You've just seen Tokyo from above — now it's time to experience it at street level, starting with one of its best restaurants.",
+      "You've just seen Tokyo from above. Now it's time to experience it at street level, starting with one of its best restaurants.",
   },
   {
     id: "tr-33",
@@ -246,7 +246,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-35",
     key: "culture:view:any",
     content:
-      "From the details of history to the big picture — literally. The next stop gives you a view that puts everything in perspective.",
+      "From the details of history to the big picture, literally. The next stop gives you a view that puts everything in perspective.",
   },
 
   // ─── view → culture ──────────────────────────────────────────────
@@ -254,7 +254,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-36",
     key: "view:culture:any",
     content:
-      "With that panorama still fresh in your mind, the next stop brings you back down to earth — and into something with real depth.",
+      "With that panorama still fresh in your mind, the next stop brings you back down to earth, and into something with real depth.",
   },
 
   // ─── nature → view ───────────────────────────────────────────────
@@ -262,7 +262,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-37",
     key: "nature:view:any",
     content:
-      "You've been surrounded by nature — now it's time to step back and take in the bigger picture from a vantage point.",
+      "You've been surrounded by nature. Now it's time to step back and take in the bigger picture from a vantage point.",
   },
 
   // ─── view → nature ───────────────────────────────────────────────
@@ -286,13 +286,13 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-40",
     key: "food:food:osaka",
     content:
-      "Yes, more food. This is Osaka — pacing yourself is optional, but eating your way through the city is basically required.",
+      "Yes, more food. This is Osaka. Pacing yourself is optional, but eating your way through the city is basically required.",
   },
   {
     id: "tr-41",
     key: "food:food:any",
     content:
-      "Another food stop? Absolutely. Japan rewards the adventurous eater, and you've got room for one more — trust me.",
+      "Another food stop? Absolutely. Japan rewards the adventurous eater, and you've got room for one more. Trust me.",
   },
 
   // ─── culture → culture ───────────────────────────────────────────
@@ -300,13 +300,13 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-42",
     key: "culture:culture:kyoto",
     content:
-      "Kyoto never runs out of cultural gems. Each one has its own personality — this next place feels completely different from the last.",
+      "Kyoto never runs out of cultural gems. Each one has its own personality. This next place feels completely different from the last.",
   },
   {
     id: "tr-43",
     key: "culture:culture:any",
     content:
-      "One more cultural stop, but don't worry — it has a completely different feel from the last. Variety is the whole point.",
+      "One more cultural stop, but don't worry. It has a completely different feel from the last. Variety is the whole point.",
   },
 
   // ─── generic fallbacks ───────────────────────────────────────────
@@ -320,6 +320,6 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-45",
     key: "any:any:any",
     content:
-      "On to the next one — each stop tells a different part of the story. Let's keep exploring.",
+      "On to the next one. Each stop tells a different part of the story. Let's keep exploring.",
   },
 ];

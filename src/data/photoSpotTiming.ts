@@ -69,32 +69,32 @@ export const PHOTO_SPOT_TIMINGS: readonly PhotoTiming[] = [
   { locationId: "meiji-shrine", name: "Meiji Shrine", bestTimes: ["morning"], tip: "Morning light filters through the forest canopy" },
   { locationId: "shibuya-crossing", name: "Shibuya Crossing", bestTimes: ["blue_hour", "night"], tip: "Neon reflections at dusk from Shibuya Sky or Starbucks" },
   { locationId: "tokyo-skytree", name: "Tokyo Skytree", bestTimes: ["sunset", "night"], tip: "Sunset views of Mt. Fuji on clear days" },
-  { locationId: "tokyo-tower", name: "Tokyo Tower", bestTimes: ["blue_hour", "night"], tip: "Blue hour from Shiba Park — tower lit against fading sky" },
+  { locationId: "tokyo-tower", name: "Tokyo Tower", bestTimes: ["blue_hour", "night"], tip: "Blue hour from Shiba Park. Tower lit against fading sky." },
   { locationId: "harajuku-takeshita", name: "Takeshita Street", bestTimes: ["morning"], tip: "Empty street shots only possible before 9am" },
-  { locationId: "teamlab-borderless", name: "teamLab Borderless", bestTimes: ["anytime"], tip: "Dark interior — timing doesn't affect photos" },
+  { locationId: "teamlab-borderless", name: "teamLab Borderless", bestTimes: ["anytime"], tip: "Dark interior. Timing doesn't affect photos." },
   { locationId: "ueno-park", name: "Ueno Park", bestTimes: ["morning", "golden_hour"], tip: "Cherry blossom season: morning for empty paths, golden hour for warm light" },
   { locationId: "shinjuku-gyoen", name: "Shinjuku Gyoen", bestTimes: ["morning", "golden_hour"], tip: "Golden hour paints the French Garden beautifully" },
 
   // Kyoto
   { locationId: "fushimi-inari", name: "Fushimi Inari Shrine", bestTimes: ["sunrise", "morning"], tip: "Before 7am for empty torii tunnel shots" },
   { locationId: "kinkaku-ji", name: "Kinkaku-ji", bestTimes: ["morning"], tip: "Still water reflection best in early morning calm" },
-  { locationId: "arashiyama-bamboo", name: "Arashiyama Bamboo Grove", bestTimes: ["sunrise"], tip: "Only empty at dawn — light filters beautifully through bamboo" },
+  { locationId: "arashiyama-bamboo", name: "Arashiyama Bamboo Grove", bestTimes: ["sunrise"], tip: "Only empty at dawn. Light filters beautifully through bamboo." },
   { locationId: "kiyomizu-dera", name: "Kiyomizu-dera", bestTimes: ["sunrise", "golden_hour", "night"], tip: "Night illumination during autumn and spring" },
-  { locationId: "nishiki-market", name: "Nishiki Market", bestTimes: ["morning"], tip: "Stalls just opening — colorful displays, fewer people" },
+  { locationId: "nishiki-market", name: "Nishiki Market", bestTimes: ["morning"], tip: "Stalls just opening. Colorful displays, fewer people." },
   { locationId: "gion-district", name: "Gion District", bestTimes: ["blue_hour", "night"], tip: "Geisha spotting at dusk. Lantern-lit streets are magical." },
   { locationId: "philosopher-path", name: "Philosopher's Path", bestTimes: ["morning", "golden_hour"], tip: "Cherry blossom petals on the canal in morning light" },
 
   // Osaka
-  { locationId: "dotonbori", name: "Dotonbori", bestTimes: ["blue_hour", "night"], tip: "Neon reflections in the canal — iconic at blue hour" },
+  { locationId: "dotonbori", name: "Dotonbori", bestTimes: ["blue_hour", "night"], tip: "Neon reflections in the canal. Iconic at blue hour." },
   { locationId: "osaka-castle", name: "Osaka Castle", bestTimes: ["morning", "golden_hour"], tip: "Cherry blossom season: golden hour light on white walls" },
   { locationId: "shinsekai", name: "Shinsekai", bestTimes: ["night"], tip: "Retro neon signs glow brightest after dark" },
 
   // Nara
-  { locationId: "nara-park", name: "Nara Park", bestTimes: ["morning", "golden_hour"], tip: "Deer in morning mist — arrive at opening" },
+  { locationId: "nara-park", name: "Nara Park", bestTimes: ["morning", "golden_hour"], tip: "Deer in morning mist. Arrive at opening." },
   { locationId: "todai-ji", name: "Todai-ji", bestTimes: ["morning"], tip: "Interior light through windows best mid-morning" },
 
   // Hiroshima
-  { locationId: "itsukushima-shrine", name: "Itsukushima Shrine", bestTimes: ["sunrise", "sunset"], tip: "Check tide tables — high tide for floating torii, low tide for walking" },
+  { locationId: "itsukushima-shrine", name: "Itsukushima Shrine", bestTimes: ["sunrise", "sunset"], tip: "Check tide tables. High tide for floating torii, low tide for walking." },
   { locationId: "peace-memorial", name: "Hiroshima Peace Memorial", bestTimes: ["golden_hour", "night"], tip: "Illuminated A-Bomb Dome at night is powerful" },
 
   // Kamakura

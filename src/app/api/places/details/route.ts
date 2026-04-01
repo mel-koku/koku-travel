@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchPlaceDetailsByPlaceId } from "@/lib/googlePlaces";
-import { badRequest, serviceUnavailable } from "@/lib/api/errors";
+import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
@@ -85,7 +85,9 @@ export const GET = withApiHandler(
         });
       }
 
-      throw error;
+      return internalError("Failed to fetch place details", undefined, {
+        requestId: context.requestId,
+      });
     }
   },
   { rateLimit: RATE_LIMITS.PLACES, optionalAuth: true },

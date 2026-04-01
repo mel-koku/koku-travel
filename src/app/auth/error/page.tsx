@@ -20,37 +20,37 @@ const ERROR_MESSAGES: Record<string, ErrorMessage> = {
   missing_code: {
     title: "Authorization code missing",
     description:
-      "The authentication request is missing the required authorization code. Please try signing in again.",
+      "The sign-in request was incomplete. Try signing in again.",
     action: "Try signing in again",
   },
   invalid_code: {
     title: "Invalid authorization code",
     description:
-      "The authorization code provided is invalid or malformed. This may happen if the code has been tampered with or corrupted.",
+      "The sign-in link was invalid. Request a new one.",
     action: "Try signing in again",
   },
   expired_code: {
     title: "Authorization code expired",
     description:
-      "The authorization code has expired. Authorization codes are only valid for a short period of time for security reasons.",
+      "The sign-in link expired. They're only valid for a few minutes.",
     action: "Try signing in again",
   },
   authentication_failed: {
     title: "Authentication failed",
     description:
-      "We couldn't complete your sign-in. This may be due to a temporary issue with the authentication service.",
+      "Sign-in failed. Try again in a moment.",
     action: "Try signing in again",
   },
   session_creation_failed: {
     title: "Session creation failed",
     description:
-      "Your authorization was successful, but we couldn't create your session. Please try signing in again.",
+      "Authorization worked, but the session didn't stick. Try signing in again.",
     action: "Try signing in again",
   },
   service_unavailable: {
     title: "Service temporarily unavailable",
     description:
-      "The authentication service is currently unavailable. Please try again in a few moments.",
+      "Sign-in is temporarily down. Try again in a few minutes.",
     action: "Try again later",
   },
 };
@@ -58,7 +58,7 @@ const ERROR_MESSAGES: Record<string, ErrorMessage> = {
 const DEFAULT_ERROR: ErrorMessage = {
   title: "Authentication error",
   description:
-    "An unexpected error occurred during authentication. Please try signing in again.",
+    "Something went wrong during sign-in. Try again.",
   action: "Try signing in again",
 };
 

@@ -114,7 +114,7 @@ const CATEGORY_PHRASES: Record<string, string> = {
 
 function buildFallbackDescription(loc: { category: string; city: string; is_hidden_gem: boolean | null; is_unesco_site: boolean | null }): string {
   const phrase = CATEGORY_PHRASES[loc.category] || titleCase(loc.category.replace(/_/g, " "));
-  const qualifier = loc.is_unesco_site ? "UNESCO World Heritage " : loc.is_hidden_gem ? "Off-the-beaten-path " : "";
+  const qualifier = loc.is_unesco_site ? "UNESCO World Heritage " : loc.is_hidden_gem ? "Lesser-known " : "";
   return `${qualifier}${qualifier ? phrase.toLowerCase() : phrase} in ${loc.city}.`;
 }
 

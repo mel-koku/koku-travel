@@ -18,9 +18,9 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "京都",
     tagline: "Temples, tea, and a thousand quiet corners",
     description:
-      "Moss gardens, bamboo groves, wooden machiya lining narrow streets. Kyoto moves at its own pace — one that rewards slowing down. Morning markets give way to afternoon tea ceremonies, and by evening the geisha district glows with lantern light.",
+      "Moss gardens, bamboo groves, wooden machiya lining narrow streets. Kyoto moves at its own pace. One that rewards slowing down. Morning markets give way to afternoon tea ceremonies, and by evening the geisha district glows with lantern light.",
     ogDescription:
-      "Explore Kyoto's temples, tea houses, bamboo groves, and hidden gardens. Plan your trip with curated local favorites and hidden gems.",
+      "Explore Kyoto's temples, tea houses, bamboo groves, and quiet gardens. Plan your trip with curated local favorites.",
   },
   osaka: {
     id: "osaka",
@@ -38,7 +38,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "奈良",
     tagline: "Deer, ancient wood, and deep quiet",
     description:
-      "Deer bow in the park. The Great Buddha sits in the world's largest wooden building. Nara was Japan's first permanent capital, and that weight still shows — in the massive temple gates, the old-growth forests, and the unhurried pace of everything.",
+      "Deer bow in the park. The Great Buddha sits in the world's largest wooden building. Nara was Japan's first permanent capital, and that weight still shows. In the massive temple gates, the old-growth forests, and the unhurried pace of everything.",
     ogDescription:
       "Visit Nara's friendly deer park, ancient temples, and Japan's first capital. Find the best things to see and do in Nara.",
   },
@@ -48,7 +48,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "神戸",
     tagline: "Port city charm between mountains and sea",
     description:
-      "Wedged between the Rokko Mountains and Osaka Bay, Kobe packs a lot into a small footprint. The waterfront Harborland, Chinatown's bustle, hillside herb gardens, and yes — the beef. A cosmopolitan port city that's been welcoming the world since 1868.",
+      "Wedged between the Rokko Mountains and Osaka Bay, Kobe packs a lot into a small footprint. The waterfront Harborland, Chinatown's bustle, hillside herb gardens, and yes, the beef. A cosmopolitan port city that's been welcoming the world since 1868.",
     ogDescription:
       "Explore Kobe's waterfront, famous beef, sake breweries, and mountain views. Your guide to the best of Kobe, Japan.",
   },
@@ -60,7 +60,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     description:
       "Japan's largest lake stretches out from Otsu's doorstep. Ancient temples dot the hillsides, and the old Tokaido road still traces its path through town. Close enough to Kyoto for a day trip, far enough to feel like a different world.",
     ogDescription:
-      "Discover Otsu on Lake Biwa — ancient temples, scenic lakeside walks, and a peaceful escape near Kyoto.",
+      "Discover Otsu on Lake Biwa. Ancient temples, scenic lakeside walks, and a peaceful escape near Kyoto.",
   },
 
   // --- Kanto ---
@@ -70,9 +70,9 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "東京",
     tagline: "A hundred cities in one",
     description:
-      "Every neighborhood is its own world. Shibuya's energy, Yanaka's old-town lanes, Akihabara's electric hum, Shimokitazawa's vintage shops. Tokyo doesn't ask you to choose — it gives you everything and lets you find your own version of it.",
+      "Every neighborhood is its own world. Shibuya's energy, Yanaka's old-town lanes, Akihabara's electric hum, Shimokitazawa's vintage shops. Tokyo doesn't ask you to choose. It gives you everything and lets you find your own version of it.",
     ogDescription:
-      "Plan your Tokyo trip with curated places across every neighborhood. Temples, ramen shops, neon streets, and hidden gems.",
+      "Plan your Tokyo trip with curated places across every neighborhood. Temples, ramen shops, neon streets, and local favorites.",
   },
   yokohama: {
     id: "yokohama",
@@ -90,7 +90,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "鎌倉",
     tagline: "Seaside shrines and ancient power",
     description:
-      "The Great Buddha sits in the open air. Hiking trails connect hilltop temples. The Enoden train rattles along the coast. Kamakura was once the seat of Japan's military government, and its temples and shrines carry that gravity — softened by salt air and surfers.",
+      "The Great Buddha sits in the open air. Hiking trails connect hilltop temples. The Enoden train rattles along the coast. Kamakura was once the seat of Japan's military government, and its temples and shrines carry that gravity. Softened by salt air and surfers.",
     ogDescription:
       "Visit Kamakura's Great Buddha, coastal temples, and seaside hiking trails. A perfect day trip from Tokyo.",
   },
@@ -110,7 +110,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "箱根",
     tagline: "Hot springs with a view of Fuji",
     description:
-      "On a clear day, Mt. Fuji fills the horizon from Lake Ashi's shore. Hakone is Tokyo's favorite escape — pirate ships on the lake, open-air museums in the hills, volcanic steam vents, and ryokan after ryokan with private onsen baths.",
+      "On a clear day, Mt. Fuji fills the horizon from Lake Ashi's shore. Hakone is Tokyo's favorite escape. Pirate ships on the lake, open-air museums in the hills, volcanic steam vents, and ryokan after ryokan with private onsen baths.",
     ogDescription:
       "Explore Hakone's hot springs, Lake Ashi, and Mt. Fuji views. Your guide to the best onsen town near Tokyo.",
   },
@@ -164,7 +164,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     description:
       "Japan's best rice grows here, and where the rice goes, sake follows. Over 90 breweries line the prefecture. Beyond the paddies, Sado Island preserves traditions the mainland forgot, and the Fuji Rock Festival draws crowds to the mountains each summer.",
     ogDescription:
-      "Explore Niigata's sake breweries, rice paddies, and Sado Island. Japan's best-kept secret on the Sea of Japan coast.",
+      "Explore Niigata's sake breweries, rice paddies, and Sado Island. Japan's most underrated stretch of the Sea of Japan coast.",
   },
 
   // --- Kyushu ---
@@ -174,7 +174,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "福岡",
     tagline: "Yatai stalls, ramen, and easy living",
     description:
-      "Fukuoka's yatai food stalls light up the riverbanks at dusk. This is where tonkotsu ramen was born, and the city still takes it very seriously. Compact, walkable, and blessed with mild weather — it regularly tops Japan's most livable city rankings.",
+      "Fukuoka's yatai food stalls light up the riverbanks at dusk. This is where tonkotsu ramen was born, and the city still takes it very seriously. Compact, walkable, and blessed with mild weather. It regularly tops Japan's most livable city rankings.",
     ogDescription:
       "Discover Fukuoka's yatai street food, legendary ramen, and relaxed coastal lifestyle. Japan's most livable city awaits.",
   },
@@ -194,7 +194,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "熊本",
     tagline: "Castle town at the edge of a volcano",
     description:
-      "Kumamoto Castle — one of Japan's finest — is still being restored after the 2016 earthquake, and watching it come back is part of the experience. Mt. Aso's caldera steams nearby. Horse meat sashimi is a local specialty. Kumamoto is tougher than it looks.",
+      "Kumamoto Castle, one of Japan's finest, is still being restored after the 2016 earthquake, and watching it come back is part of the experience. Mt. Aso's caldera steams nearby. Horse meat sashimi is a local specialty. Kumamoto is tougher than it looks.",
     ogDescription:
       "Explore Kumamoto's iconic castle, Mt. Aso volcano, and unique local cuisine. A resilient city in the heart of Kyushu.",
   },
@@ -204,7 +204,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "鹿児島",
     tagline: "Japan's Naples, with an active volcano",
     description:
-      "Sakurajima volcano smokes across the bay — an active, visible reminder that this is volcanic country. Sand baths in Ibusuki, black pork tonkatsu, sweet potato shochu, and a subtropical warmth that sets Kagoshima apart from the rest of Japan.",
+      "Sakurajima volcano smokes across the bay. An active, visible reminder that this is volcanic country. Sand baths in Ibusuki, black pork tonkatsu, sweet potato shochu, and a subtropical warmth that sets Kagoshima apart from the rest of Japan.",
     ogDescription:
       "Discover Kagoshima's Sakurajima volcano, sand baths, and subtropical charm. Japan's gateway to the south.",
   },
@@ -214,7 +214,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "大分",
     tagline: "Hot spring capital of Japan",
     description:
-      "Beppu alone has more hot springs than anywhere else in the country. The Hells of Beppu steam in surreal colors. Yufuin offers a gentler version — boutique ryokan, art museums, and misty mountain mornings. Ōita is where Japan goes to soak.",
+      "Beppu alone has more hot springs than anywhere else in the country. The Hells of Beppu steam in surreal colors. Yufuin offers a gentler version. Boutique ryokan, art museums, and misty mountain mornings. Ōita is where Japan goes to soak.",
     ogDescription:
       "Visit Ōita's legendary hot springs in Beppu and Yufuin. Explore Japan's onsen capital and its steaming volcanic landscape.",
   },
@@ -236,9 +236,9 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "札幌",
     tagline: "Powder snow, miso ramen, and craft beer",
     description:
-      "Wide streets, a famous snow festival, and miso ramen that ruins every bowl you eat after it. Sapporo is Hokkaido's capital and gateway — from here, lavender fields, ski resorts, and seafood markets are all within reach.",
+      "Wide streets, a famous snow festival, and miso ramen that ruins every bowl you eat after it. Sapporo is Hokkaido's capital and gateway. From here, lavender fields, ski resorts, and seafood markets are all within reach.",
     ogDescription:
-      "Plan your Sapporo trip — snow festivals, miso ramen, craft beer, and gateway to Hokkaido's wilderness.",
+      "Plan your Sapporo trip. Snow festivals, miso ramen, craft beer, and gateway to Hokkaido's wilderness.",
   },
   hakodate: {
     id: "hakodate",
@@ -308,7 +308,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "盛岡",
     tagline: "Three noodles and a castle ruin",
     description:
-      "Morioka is famous for three noodle dishes — wanko soba, jajamen, and reimen. The castle ruins overlook two rivers, and the craft scene (Nambu ironware, in particular) runs deep. A small city with an outsized food reputation.",
+      "Morioka is famous for three noodle dishes. Wanko soba, jajamen, and reimen. The castle ruins overlook two rivers, and the craft scene (Nambu ironware, in particular) runs deep. A small city with an outsized food reputation.",
     ogDescription:
       "Visit Morioka for its legendary noodle culture, Nambu ironware, and riverside castle ruins. Tohoku's hidden food capital.",
   },
@@ -350,7 +350,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "岡山",
     tagline: "Sunshine, gardens, and the Seto Inland Sea",
     description:
-      "Korakuen is one of Japan's three great gardens. The black castle rises beside it. Kurashiki's canal district preserves white-walled warehouses turned galleries. Okayama bills itself as the 'Land of Sunshine' — and the weather usually agrees.",
+      "Korakuen is one of Japan's three great gardens. The black castle rises beside it. Kurashiki's canal district preserves white-walled warehouses turned galleries. Okayama bills itself as the 'Land of Sunshine'. And the weather usually agrees.",
     ogDescription:
       "Explore Okayama's Korakuen garden, black castle, and Kurashiki's canal district. Sunny gateway to the Seto Inland Sea.",
   },
@@ -370,7 +370,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "鳥取",
     tagline: "Sand dunes and unexpected landscapes",
     description:
-      "Japan has sand dunes — and they're magnificent. The Tottori Sand Dunes stretch along the Sea of Japan coast, shifting with the wind. Beyond the dunes, pear orchards, hot springs, and some of the freshest crab in the country.",
+      "Japan has sand dunes. And they're magnificent. The Tottori Sand Dunes stretch along the Sea of Japan coast, shifting with the wind. Beyond the dunes, pear orchards, hot springs, and some of the freshest crab in the country.",
     ogDescription:
       "Visit Tottori's stunning sand dunes, fresh crab, and Sea of Japan coastline. Japan's most surprising landscape.",
   },
@@ -382,7 +382,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "松山",
     tagline: "Japan's oldest hot spring and a hilltop castle",
     description:
-      "Dōgo Onsen has been welcoming bathers for over 3,000 years — it inspired the bathhouse in Spirited Away. Above the city, Matsuyama Castle commands the hilltop. Trams rattle through streets lined with haiku — this is Shiki's hometown, after all.",
+      "Dōgo Onsen has been welcoming bathers for over 3,000 years. It inspired the bathhouse in Spirited Away. Above the city, Matsuyama Castle commands the hilltop. Trams rattle through streets lined with haiku. This is Shiki's hometown, after all.",
     ogDescription:
       "Visit Matsuyama's ancient Dōgo Onsen, hilltop castle, and haiku heritage. Shikoku's largest city and cultural heart.",
   },
@@ -392,7 +392,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "高松",
     tagline: "Udon, art islands, and sculpted gardens",
     description:
-      "Ritsurin Garden is one of Japan's finest — 75 acres of sculpted pines and lotus ponds. Takamatsu is the gateway to Naoshima and the Seto art islands. And the udon here is the real deal — Sanuki udon, firm and chewy, eaten at no-frills shops across the city.",
+      "Ritsurin Garden is one of Japan's finest. 75 acres of sculpted pines and lotus ponds. Takamatsu is the gateway to Naoshima and the Seto art islands. And the udon here is the real deal. Sanuki udon, firm and chewy, eaten at no-frills shops across the city.",
     ogDescription:
       "Explore Takamatsu's Ritsurin Garden, Sanuki udon, and gateway to Naoshima's art islands. Shikoku's creative capital.",
   },
@@ -402,7 +402,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "徳島",
     tagline: "Wild rivers and the dance of a million",
     description:
-      "Every August, the Awa Odori festival transforms the city — a million spectators watch dancers fill the streets. The rest of the year, the Iya Valley's vine bridges and indigo-dyed rivers draw adventurers to some of Japan's wildest terrain.",
+      "Every August, the Awa Odori festival transforms the city. A million spectators watch dancers fill the streets. The rest of the year, the Iya Valley's vine bridges and indigo-dyed rivers draw adventurers to some of Japan's wildest terrain.",
     ogDescription:
       "Discover Tokushima's Awa Odori festival, Iya Valley vine bridges, and indigo craft heritage. Shikoku's wild heart.",
   },
@@ -412,7 +412,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "高知",
     tagline: "Sunday markets and bonito by the flame",
     description:
-      "The Sunday Market has run for over 300 years. Katsuo no tataki — bonito seared over straw flames — is the signature dish. Kōchi is the wildest corner of Shikoku, where rivers run clear, capes jut into the Pacific, and people drink more sake per capita than anywhere in Japan.",
+      "The Sunday Market has run for over 300 years. Katsuo no tataki, bonito seared over straw flames, is the signature dish. Kōchi is the wildest corner of Shikoku, where rivers run clear, capes jut into the Pacific, and people drink more sake per capita than anywhere in Japan.",
     ogDescription:
       "Visit Kōchi's 300-year-old Sunday Market, flame-seared bonito, and Pacific coastline. Shikoku's spirited southern capital.",
   },
@@ -424,7 +424,7 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     nameJapanese: "那覇",
     tagline: "Tropical rhythm, Ryukyu soul",
     description:
-      "Shuri Castle sits above a city that feels more Southeast Asian than Japanese. Kokusai-dori buzzes with shops and izakaya. The beaches are nearby but the real draw is the culture — Ryukyuan music, awamori spirits, and a pace of life the mainland left behind.",
+      "Shuri Castle sits above a city that feels more Southeast Asian than Japanese. Kokusai-dori buzzes with shops and izakaya. The beaches are nearby but the real draw is the culture. Ryukyuan music, awamori spirits, and a pace of life the mainland left behind.",
     ogDescription:
       "Explore Naha's Shuri Castle, Kokusai-dori, and Ryukyuan culture. Your gateway to Okinawa's tropical paradise.",
   },

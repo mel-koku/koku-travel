@@ -13,7 +13,7 @@ export const CRAFT_SEASONAL_HIGHLIGHTS: CraftSeasonalHighlight[] = [
     months: [10, 11],
     title: "Autumn Pottery Festivals",
     description:
-      "Fall pottery fairs across Mashiko, Seto, and Arita — open studios, kiln tours, and discounted wares.",
+      "Fall pottery fairs across Mashiko, Seto, and Arita. Open studios, kiln tours, and discounted wares.",
   },
   {
     craftType: "dyeing",
@@ -27,7 +27,7 @@ export const CRAFT_SEASONAL_HIGHLIGHTS: CraftSeasonalHighlight[] = [
     months: [1, 2, 3],
     title: "Winter Weaving Season",
     description:
-      "Cold months are peak weaving time in snow country — Nishijin looms run at full pace for spring kimono.",
+      "Cold months are peak weaving time in snow country. Nishijin looms run at full pace for spring kimono.",
   },
   {
     craftType: "papermaking",
@@ -48,21 +48,21 @@ export const CRAFT_SEASONAL_HIGHLIGHTS: CraftSeasonalHighlight[] = [
     months: [7, 8],
     title: "Summer Glass Festivals",
     description:
-      "Edo kiriko and blown glass workshops host summer events — cooler indoor studios make a refreshing escape.",
+      "Edo kiriko and blown glass workshops host summer events. Cooler indoor studios make a refreshing escape.",
   },
   {
     craftType: "metalwork",
     months: [3, 4],
     title: "Spring Forging Season",
     description:
-      "Seki and Tsubame-Sanjo open their forges for spring — knife-making workshops and smithy tours peak in early spring.",
+      "Seki and Tsubame-Sanjo open their forges for spring. Knife-making workshops and smithy tours peak in early spring.",
   },
   {
     craftType: "kintsugi",
     months: [1, 2, 3, 4],
     title: "New Year Kintsugi Revival",
     description:
-      "Start the year by mending — many studios offer beginner kintsugi workshops tied to the Japanese New Year spirit of renewal.",
+      "Start the year by mending. Many studios offer beginner kintsugi workshops tied to the Japanese New Year spirit of renewal.",
   },
 ];
 

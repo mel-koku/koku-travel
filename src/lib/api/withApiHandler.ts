@@ -122,7 +122,7 @@ export function withApiHandler(handler: HandlerFn, options: HandlerOptions = {})
       );
       return addRequestContextHeaders(
         internalError(
-          error instanceof Error ? error.message : "An internal error occurred",
+          "An internal error occurred",
           undefined,
           { requestId: finalContext.requestId },
         ),

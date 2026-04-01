@@ -335,7 +335,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           )}
           {location.isHiddenGem && (
             <span className="inline-flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
-              Hidden Gem
+              Local Pick
             </span>
           )}
           {location.isUnescoSite && (
