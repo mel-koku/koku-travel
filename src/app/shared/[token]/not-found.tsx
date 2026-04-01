@@ -14,6 +14,7 @@ export default function SharedNotFound() {
         </h1>
         <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
           This link has expired or been turned off.
+          If someone shared it with you, ask them to send a new one.
         </p>
         <Link
           href="/trip-builder"

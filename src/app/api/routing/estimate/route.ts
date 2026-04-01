@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { readBodyWithSizeLimit } from "@/lib/api/bodySizeLimit";
-import { badRequest } from "@/lib/api/errors";
+import { badRequest, internalError } from "@/lib/api/errors";
 
 const MAX_REQUEST_SIZE = 64 * 1024; // 64KB is generous for routing payloads
 
@@ -101,7 +101,9 @@ export const POST = withApiHandler(
         requestId: context.requestId,
         mode: payload.mode,
       });
-      throw error;
+      return internalError("Routing estimate unavailable", undefined, {
+        requestId: context.requestId,
+      });
     }
   },
   { rateLimit: RATE_LIMITS.ROUTING, requireJson: true, requireAuth: true },

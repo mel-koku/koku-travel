@@ -16,6 +16,7 @@ import { tmpdir } from "os";
 const CACHE_DIR = join(tmpdir(), "koku-travel-cache");
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 const STALE_FILE_AGE_MS = 48 * 60 * 60 * 1000; // 48 hours
+const MAX_STALE_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days — absolute limit for stale reads
 
 type CacheEnvelope<T> = { data: T; cachedAt: number };
 
@@ -48,6 +49,7 @@ export function readFileCacheStale<T>(key: string): T | null {
   try {
     const raw = readFileSync(join(CACHE_DIR, `${key}.json`), "utf-8");
     const envelope: CacheEnvelope<T> = JSON.parse(raw);
+    if (Date.now() - envelope.cachedAt > MAX_STALE_AGE_MS) return null;
     return envelope.data;
   } catch {
     return null;
