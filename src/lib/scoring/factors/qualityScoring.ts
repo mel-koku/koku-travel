@@ -57,7 +57,7 @@ export function scoreRatingQuality(
   if (rating === 0 && reviewCount === 0 && location.isHiddenGem) {
     return {
       score: 15,
-      reasoning: "Curated hidden gem — editorial quality floor (no Google rating)",
+      reasoning: "Curated hidden gem. Editorial quality floor (no Google rating)",
     };
   }
 

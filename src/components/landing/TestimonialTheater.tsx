@@ -13,7 +13,7 @@ import type { LandingPageContent } from "@/types/sanitySiteContent";
 const defaultTestimonials = [
   {
     quote:
-      "We ducked into a ramen shop down a Kyoto backstreet — no English sign, six seats, steam everywhere. Best bowl of our lives.",
+      "We ducked into a ramen shop down a Kyoto backstreet. No English sign, six seats, steam everywhere. Best bowl of our lives.",
     author: "Sarah Chen",
     location: "San Francisco",
     image:
@@ -22,7 +22,7 @@ const defaultTestimonials = [
   },
   {
     quote:
-      "Five trips to Japan and Koku still found places I'd never heard of. A cedar forest shrine at dawn, completely alone.",
+      "Five trips to Japan and Koku still surfaced places I'd overlooked. A cedar forest shrine at dawn, completely alone.",
     author: "Marcus Johnson",
     location: "London",
     image:
@@ -31,7 +31,7 @@ const defaultTestimonials = [
   },
   {
     quote:
-      "The itinerary didn't feel algorithmic — it felt like someone who actually lives there planned it for us.",
+      "The itinerary didn't feel algorithmic. It felt like someone who actually lives there planned it for us.",
     author: "Yuki Tanaka",
     location: "Vancouver",
     image:
@@ -56,7 +56,7 @@ const defaultTestimonials = [
   },
   {
     quote:
-      "Koku suggested a tofu restaurant in Arashiyama that wasn't on any blog I'd read. Seven courses, all soy. Transcendent.",
+      "Koku suggested a tofu restaurant in Arashiyama we'd never have picked ourselves. Seven courses, all soy. Transcendent.",
     author: "James O'Brien",
     location: "Dublin",
     image: "",
@@ -72,7 +72,7 @@ const defaultTestimonials = [
   },
   {
     quote:
-      "The overnight ferry to Yakushima was the highlight we never would have found ourselves. Woke up to that island emerging from mist.",
+      "The overnight ferry to Yakushima was the highlight we almost skipped. Woke up to that island emerging from mist.",
     author: "Lucas Moreau",
     location: "Paris",
     image: "",

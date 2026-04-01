@@ -104,11 +104,11 @@ const RULES: PackingRule[] = [
   { id: "walking-shoes", name: "Comfortable walking shoes", category: "clothing", reason: "You'll walk 15,000-25,000 steps daily", condition: () => true },
   { id: "slip-on-shoes", name: "Slip-on shoes", category: "clothing", reason: "Frequent shoe removal at temples, restaurants, and ryokan", condition: (ctx) => ctx.hasTemples },
   { id: "layers", name: "Light layers", category: "clothing", reason: "Temperature varies between indoor and outdoor", condition: () => true },
-  { id: "rain-jacket", name: "Packable rain jacket", category: "clothing", reason: "Rainy season — expect daily showers", condition: (ctx) => RAINY_MONTHS.has(ctx.month) },
+  { id: "rain-jacket", name: "Packable rain jacket", category: "clothing", reason: "Rainy season. Expect daily showers.", condition: (ctx) => RAINY_MONTHS.has(ctx.month) },
   { id: "warm-coat", name: "Warm coat", category: "clothing", reason: "Winter temperatures drop to 0-5°C", condition: (ctx) => COLD_MONTHS.has(ctx.month) },
   { id: "hokkaido-warmth", name: "Thermal underlayers", category: "clothing", reason: "Hokkaido is significantly colder", condition: (ctx) => ctx.cities.some((c) => HOKKAIDO_CITIES.has(c)) && COLD_MONTHS.has(ctx.month) },
   { id: "swimwear", name: "Swimwear", category: "clothing", reason: "For beach days", condition: (ctx) => ctx.hasBeach },
-  { id: "hat-sun", name: "Sun hat", category: "clothing", reason: "Strong summer sun — protect yourself outdoors", condition: (ctx) => HOT_MONTHS.has(ctx.month) },
+  { id: "hat-sun", name: "Sun hat", category: "clothing", reason: "Strong summer sun. Protect yourself outdoors.", condition: (ctx) => HOT_MONTHS.has(ctx.month) },
 
   // --- Temple Visits ---
   { id: "modest-clothing", name: "Modest clothing (covered shoulders)", category: "temple_visits", reason: "Required at some temples and shrines", condition: (ctx) => ctx.hasTemples },
@@ -124,12 +124,12 @@ const RULES: PackingRule[] = [
   // --- Tech ---
   { id: "portable-wifi", name: "Pocket WiFi or eSIM", category: "tech", reason: "Navigation, translation, and train apps need data", condition: () => true },
   { id: "power-bank", name: "Power bank", category: "tech", reason: "Long days drain your phone fast", condition: (ctx) => ctx.duration >= 3 },
-  { id: "translation-app", name: "Translation app (offline)", category: "tech", reason: "Download Japanese offline — many signs lack English", condition: () => true },
+  { id: "translation-app", name: "Translation app (offline)", category: "tech", reason: "Download Japanese offline. Many signs lack English.", condition: () => true },
 
   // --- Comfort ---
   { id: "compact-umbrella", name: "Compact umbrella", category: "comfort", reason: "Rain is common year-round in Japan", condition: () => true },
   { id: "packing-cubes", name: "Packing cubes", category: "comfort", reason: "Multi-city trips need organized luggage", condition: (ctx) => ctx.isMultiCity },
-  { id: "onsen-towel", name: "Quick-dry towel", category: "comfort", reason: "For onsen visits — some charge for towels", condition: (ctx) => ctx.hasOnsen },
+  { id: "onsen-towel", name: "Quick-dry towel", category: "comfort", reason: "For onsen visits. Some charge for towels.", condition: (ctx) => ctx.hasOnsen },
   { id: "earplugs", name: "Earplugs", category: "comfort", reason: "Useful for hostels and capsule hotels", condition: (ctx) => ctx.groupType === "solo" },
   { id: "motion-sickness", name: "Motion sickness meds", category: "comfort", reason: "Long shinkansen rides and winding mountain roads", condition: (ctx) => ctx.duration >= 5 && ctx.isMultiCity },
 
@@ -140,7 +140,7 @@ const RULES: PackingRule[] = [
   // --- Seasonal ---
   { id: "hand-warmers", name: "Disposable hand warmers (kairo)", category: "seasonal", reason: "Cheap in Japan but start with a few for the cold", condition: (ctx) => COLD_MONTHS.has(ctx.month) },
   { id: "cooling-towel", name: "Cooling towel", category: "seasonal", reason: "Summer heat and humidity can be intense", condition: (ctx) => HOT_MONTHS.has(ctx.month) },
-  { id: "umbrella-uv", name: "UV parasol", category: "seasonal", reason: "Japanese locals use them — protects from heat", condition: (ctx) => HOT_MONTHS.has(ctx.month) },
+  { id: "umbrella-uv", name: "UV parasol", category: "seasonal", reason: "Japanese locals use them. Protects from heat.", condition: (ctx) => HOT_MONTHS.has(ctx.month) },
 ];
 
 // ---------------------------------------------------------------------------

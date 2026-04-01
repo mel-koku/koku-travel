@@ -49,7 +49,7 @@ const DIETARY_OPTIONS = [
 
 const PACE_OPTIONS = [
   { label: "Relaxed", value: "relaxed", description: "Late starts, long lunches, fewer stops" },
-  { label: "Balanced", value: "balanced", description: "Sightseeing with downtime between" },
+  { label: "Balanced", value: "balanced", description: "Steady pace. Room to breathe." },
   { label: "Full", value: "fast", description: "Early to late, covering more ground" },
 ];
 

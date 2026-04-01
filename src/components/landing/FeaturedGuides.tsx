@@ -45,7 +45,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
               {content?.featuredGuidesHeading ?? "Travel guides worth reading twice"}
             </h2>
             <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
-              {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries — written by people who live there."}
+              {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries. Written by people who live there."}
             </p>
           </div>
         </div>

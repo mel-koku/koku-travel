@@ -158,7 +158,7 @@ export function CityDetail({
           >
             {[
               { label: "Places", value: stats.totalLocations.toString() },
-              { label: "Hidden gems", value: stats.hiddenGemsCount.toString() },
+              { label: "Local picks", value: stats.hiddenGemsCount.toString() },
               ...(stats.averageRating > 0
                 ? [{ label: "Avg rating", value: stats.averageRating.toFixed(1) }]
                 : []),
@@ -239,9 +239,9 @@ export function CityDetail({
       {hiddenGems.length > 0 && (
         <section className="py-12 sm:py-16 bg-canvas px-6">
           <div className="mx-auto max-w-7xl">
-            <p className="eyebrow-editorial text-brand-primary">Off the beaten path</p>
+            <p className="eyebrow-editorial text-brand-primary">Off the usual route</p>
             <h2 className={`mt-2 ${typography({ intent: "editorial-h3" })}`}>
-              Hidden gems in {city.name}
+              Local picks in {city.name}
             </h2>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {hiddenGems.map((loc) => (

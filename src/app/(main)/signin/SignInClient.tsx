@@ -65,7 +65,7 @@ export function SignInClient({ content }: SignInClientProps) {
     setStatus(
       error
         ? { message: `Error: ${error.message}`, isError: true }
-        : { message: "Sign-in link sent \u2014 check your inbox.", isError: false },
+        : { message: "Sign-in link sent. Check your inbox.", isError: false },
     );
   }
 
@@ -102,7 +102,7 @@ export function SignInClient({ content }: SignInClientProps) {
             </ScrollReveal>
             <ScrollReveal delay={0.3} distance={15}>
               <p className="mt-4 max-w-sm text-base text-white/70">
-                {content?.signInDescription ?? "Your trips, saves, and plans \u2014 all in one place."}
+                {content?.signInDescription ?? "Your trips, saves, and plans. All in one place."}
               </p>
             </ScrollReveal>
           </div>

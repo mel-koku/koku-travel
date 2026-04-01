@@ -11,10 +11,10 @@ export type AskKokuContext =
 
 const SUGGESTION_POOLS: Record<AskKokuContext, string[]> = {
   places: [
-    "What's the best hidden gem nearby?",
+    "What's worth seeing that I'd walk past?",
     "Show me top-rated shrines",
     "Where should I eat in this area?",
-    "Find something off the beaten path",
+    "Find something off the usual route",
     "Best photo spots around here?",
     "What's open right now?",
   ],

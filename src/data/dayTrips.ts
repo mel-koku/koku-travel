@@ -233,7 +233,7 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       cityId: "osaka",
       travelMinutes: 105,
       minDaysBeforeSuggesting: 3,
-      description: "Japan's kitchen — takoyaki, okonomiyaki, nightlife",
+      description: "Japan's kitchen. Takoyaki, okonomiyaki, nightlife",
     },
   ],
   // Okinawa

@@ -138,7 +138,7 @@ export const guide = defineType({
           { title: "Culture", value: "culture" },
           { title: "Seasonal", value: "seasonal" },
           { title: "Budget", value: "budget" },
-          { title: "Hidden Gems", value: "hidden-gems" },
+          { title: "Off the Usual Route", value: "hidden-gems" },
           { title: "Practical Tips", value: "practical-tips" },
           { title: "Neighborhoods", value: "neighborhoods" },
         ],

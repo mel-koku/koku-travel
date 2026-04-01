@@ -95,17 +95,17 @@ export const CROWD_OVERRIDES: CrowdOverride[] = [
   // Tokyo
   { locationId: "sensoji-temple", name: "Sensoji Temple", pattern: { 6: 2, 7: 3, 8: 4, 9: 5, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 4, 17: 3, 18: 2, 19: 2, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Visit before 7:00 for a peaceful experience" },
   { locationId: "meiji-shrine", name: "Meiji Shrine", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 4, 13: 4, 14: 4, 15: 3, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Early morning offers the most tranquil visit" },
-  { locationId: "tsukiji-outer-market", name: "Tsukiji Outer Market", pattern: { 6: 3, 7: 4, 8: 5, 9: 5, 10: 5, 11: 5, 12: 4, 13: 3, 14: 2, 15: 1, 16: 1, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Arrive before 8:00 — many stalls sell out by noon" },
-  { locationId: "teamlab-borderless", name: "teamLab Borderless", pattern: { 6: 1, 7: 1, 8: 1, 9: 2, 10: 4, 11: 5, 12: 5, 13: 5, 14: 5, 15: 5, 16: 4, 17: 4, 18: 3, 19: 3, 20: 2, 21: 1, 22: 1, 23: 1 }, peakWarning: "Book earliest time slot — crowds build quickly after 10:00" },
+  { locationId: "tsukiji-outer-market", name: "Tsukiji Outer Market", pattern: { 6: 3, 7: 4, 8: 5, 9: 5, 10: 5, 11: 5, 12: 4, 13: 3, 14: 2, 15: 1, 16: 1, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Arrive before 8:00. Many stalls sell out by noon" },
+  { locationId: "teamlab-borderless", name: "teamLab Borderless", pattern: { 6: 1, 7: 1, 8: 1, 9: 2, 10: 4, 11: 5, 12: 5, 13: 5, 14: 5, 15: 5, 16: 4, 17: 4, 18: 3, 19: 3, 20: 2, 21: 1, 22: 1, 23: 1 }, peakWarning: "Book earliest time slot. Crowds build quickly after 10:00" },
   { locationId: "shibuya-crossing", name: "Shibuya Crossing", pattern: { 6: 1, 7: 2, 8: 3, 9: 3, 10: 4, 11: 4, 12: 5, 13: 5, 14: 5, 15: 5, 16: 5, 17: 5, 18: 5, 19: 5, 20: 4, 21: 4, 22: 3, 23: 2 }, peakWarning: "Most photogenic at dusk with neon lights" },
   { locationId: "tokyo-skytree", name: "Tokyo Skytree", pattern: { 6: 1, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 4, 17: 4, 18: 3, 19: 3, 20: 2, 21: 1, 22: 1, 23: 1 }, peakWarning: "Weekday mornings are the quietest" },
   { locationId: "harajuku-takeshita", name: "Takeshita Street", pattern: { 6: 1, 7: 1, 8: 1, 9: 2, 10: 3, 11: 4, 12: 5, 13: 5, 14: 5, 15: 5, 16: 4, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Weekday mornings before 10:00 are manageable" },
 
   // Kyoto
-  { locationId: "fushimi-inari", name: "Fushimi Inari Shrine", pattern: { 6: 2, 7: 3, 8: 4, 9: 5, 10: 5, 11: 5, 12: 5, 13: 4, 14: 4, 15: 4, 16: 3, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "The higher trails thin out significantly — keep climbing" },
+  { locationId: "fushimi-inari", name: "Fushimi Inari Shrine", pattern: { 6: 2, 7: 3, 8: 4, 9: 5, 10: 5, 11: 5, 12: 5, 13: 4, 14: 4, 15: 4, 16: 3, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "The higher trails thin out significantly. Keep climbing" },
   { locationId: "kinkaku-ji", name: "Kinkaku-ji", pattern: { 6: 1, 7: 1, 8: 2, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 4, 15: 4, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "First entry at 9:00 gives you 15 quiet minutes" },
-  { locationId: "arashiyama-bamboo", name: "Arashiyama Bamboo Grove", pattern: { 6: 1, 7: 2, 8: 3, 9: 5, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Be there at dawn — by 9:00 it's shoulder-to-shoulder" },
-  { locationId: "kiyomizu-dera", name: "Kiyomizu-dera", pattern: { 6: 2, 7: 3, 8: 4, 9: 5, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 4, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Opens at 6:00 — early morning is magical" },
+  { locationId: "arashiyama-bamboo", name: "Arashiyama Bamboo Grove", pattern: { 6: 1, 7: 2, 8: 3, 9: 5, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Be there at dawn. By 9:00 it's shoulder-to-shoulder" },
+  { locationId: "kiyomizu-dera", name: "Kiyomizu-dera", pattern: { 6: 2, 7: 3, 8: 4, 9: 5, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 4, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Opens at 6:00. Early morning is magical" },
   { locationId: "nishiki-market", name: "Nishiki Market", pattern: { 6: 1, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5, 12: 5, 13: 5, 14: 4, 15: 3, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Narrow aisles get packed by 11:00" },
 
   // Osaka
@@ -117,7 +117,7 @@ export const CROWD_OVERRIDES: CrowdOverride[] = [
   { locationId: "todai-ji", name: "Todai-ji", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 4, 15: 4, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "School trip groups flood in by 10:00" },
 
   // Hiroshima
-  { locationId: "itsukushima-shrine", name: "Itsukushima Shrine", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 3, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Low tide reveals the torii base — check tide tables" },
+  { locationId: "itsukushima-shrine", name: "Itsukushima Shrine", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 5, 15: 4, 16: 3, 17: 3, 18: 2, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Low tide reveals the torii base. Check tide tables" },
 
   // Kamakura
   { locationId: "kamakura-daibutsu", name: "Kamakura Great Buddha", pattern: { 6: 1, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5, 12: 5, 13: 5, 14: 4, 15: 3, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Weekday mornings are the calmest" },
@@ -126,7 +126,7 @@ export const CROWD_OVERRIDES: CrowdOverride[] = [
   { locationId: "hakone-open-air", name: "Hakone Open-Air Museum", pattern: { 6: 1, 7: 1, 8: 1, 9: 2, 10: 3, 11: 4, 12: 5, 13: 5, 14: 5, 15: 4, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Arrive at opening for the best experience" },
 
   // Nikko
-  { locationId: "toshogu-shrine", name: "Nikko Toshogu", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 4, 15: 3, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Tour buses arrive around 10:00 — go earlier" },
+  { locationId: "toshogu-shrine", name: "Nikko Toshogu", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 5, 14: 4, 15: 3, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Tour buses arrive around 10:00. Go earlier" },
 
   // Kanazawa
   { locationId: "kenroku-en", name: "Kenroku-en Garden", pattern: { 6: 1, 7: 2, 8: 3, 9: 4, 10: 5, 11: 5, 12: 5, 13: 4, 14: 4, 15: 3, 16: 3, 17: 2, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1 }, peakWarning: "Early morning entry is free before 8:00 in spring/summer" },
