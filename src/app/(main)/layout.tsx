@@ -1,6 +1,5 @@
 import { Geist_Mono, Cormorant, Plus_Jakarta_Sans } from "next/font/google";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
-import { WebVitals } from "@/components/WebVitals";
 import { getSiteSettings } from "@/lib/sanity/contentService";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -32,7 +31,6 @@ export default async function VariantALayout({
     <div
       className={`${plusJakarta.variable} ${geistMono.variable} ${cormorant.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
     >
-      <WebVitals />
       <LayoutWrapper siteSettings={siteSettings ?? undefined}>
         {children}
       </LayoutWrapper>

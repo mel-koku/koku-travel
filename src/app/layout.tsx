@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { WebVitals } from "@/components/WebVitals";
 import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
@@ -51,6 +52,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-[100dvh] antialiased">
         <GoogleAnalytics />
+        <WebVitals />
         {children}
         <CookieBanner />
       </body>
