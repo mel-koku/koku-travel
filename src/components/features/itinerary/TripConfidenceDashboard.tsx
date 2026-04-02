@@ -25,7 +25,7 @@ import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { DayTripSection } from "./DayTripSection";
 import { DayTips } from "./DayTips";
 import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
-import { getTripLevelTips } from "@/lib/tips/tripLevelTips";
+import { getTripLevelTips, type TripLevelTip } from "@/lib/tips/tripLevelTips";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -192,24 +192,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
 
       {/* Travel Essentials — trip-level tips shown once */}
       {tripLevelTips.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="eyebrow-editorial">
-            Travel Essentials
-          </h3>
-          <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
-            {tripLevelTips.map((tip) => (
-              <div key={tip.id} className="flex items-start gap-3 px-4 py-3">
-                <span className="text-base mt-0.5 shrink-0">{tip.icon}</span>
-                <div className="min-w-0">
-                  <p className={typography({ intent: "utility-label" })}>{tip.title}</p>
-                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-0.5")}>
-                    {tip.summary}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <TravelEssentialsAccordion tips={tripLevelTips} />
       )}
 
       {/* Travel Tips — per-day tips moved from timeline */}
@@ -464,6 +447,49 @@ function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
     default:
       return null;
   }
+}
+
+/** Collapsible card for trip-level tips (IC card, rail pass, etiquette, etc.) */
+function TravelEssentialsAccordion({ tips }: { tips: TripLevelTip[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <h3 className="eyebrow-editorial">Travel Essentials</h3>
+      <div className="rounded-lg border border-border bg-surface/30">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+        >
+          <span className="flex-1 min-w-0 text-sm text-foreground">
+            {tips.length} tips for your trip
+          </span>
+          <svg
+            className={cn("h-3.5 w-3.5 text-stone transition-transform shrink-0", isOpen && "rotate-180")}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {isOpen && (
+          <div className="divide-y divide-border/50 border-t border-border/50">
+            {tips.map((tip) => (
+              <div key={tip.id} className="flex items-start gap-3 px-4 py-3">
+                <span className="text-base mt-0.5 shrink-0">{tip.icon}</span>
+                <div className="min-w-0">
+                  <p className={typography({ intent: "utility-label" })}>{tip.title}</p>
+                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-0.5")}>
+                    {tip.summary}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 /**
