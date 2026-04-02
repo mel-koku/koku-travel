@@ -849,7 +849,7 @@ export const ItineraryShell = ({
           {/* Trip Confidence Dashboard */}
           <AnimatePresence>
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
                 <TripConfidenceDashboard
                   itinerary={model}
                   conflicts={conflictsResult.conflicts}
@@ -898,7 +898,7 @@ export const ItineraryShell = ({
           )}
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
             {/* Compact notification strips */}
             {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
               <div className="mb-3 space-y-1">
