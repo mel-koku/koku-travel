@@ -228,7 +228,6 @@ export function applyPatches(
 
       case "reorder": {
         const placeActivities = day.activities.filter((a) => a.kind === "place");
-        const nonPlaceActivities = day.activities.filter((a) => a.kind !== "place");
 
         // Validate all IDs exist
         const activityMap = new Map(placeActivities.map((a) => [a.id, a]));
@@ -252,7 +251,11 @@ export function applyPatches(
           if (act) reordered.push(act);
         }
 
-        day.activities = [...nonPlaceActivities, ...reordered];
+        // Build reordered list: replace place activities in-order, keep non-place in position
+        const placeQueue = [...reordered];
+        day.activities = day.activities.map((a) =>
+          a.kind === "place" ? placeQueue.shift()! : a
+        ).filter(Boolean);
         logger.info(`Applied reorder patch on day ${patch.dayIndex + 1}`);
         break;
       }
