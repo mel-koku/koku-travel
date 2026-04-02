@@ -71,6 +71,11 @@ export const GET = withApiHandler(
       return badRequest("trip_id query parameter is required", undefined, { requestId: context.requestId });
     }
 
+    const uuidResult = z.string().uuid().safeParse(tripId);
+    if (!uuidResult.success) {
+      return badRequest("Invalid trip_id format", undefined, { requestId: context.requestId });
+    }
+
     const supabase = await createClient();
 
     const { data, error } = await supabase

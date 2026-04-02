@@ -19,6 +19,12 @@ export async function PATCH(
   props: { params: Promise<{ id: string }> },
 ) {
   const { id } = await props.params;
+
+  const uuidResult = z.string().uuid().safeParse(id);
+  if (!uuidResult.success) {
+    return NextResponse.json({ error: "Invalid booking ID format" }, { status: 400 });
+  }
+
   return withApiHandler(
     async (req, { user }) => {
       let body: z.infer<typeof cancelSchema> = {};
