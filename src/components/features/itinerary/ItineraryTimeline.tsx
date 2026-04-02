@@ -739,6 +739,16 @@ export const ItineraryTimeline = ({
                   path: undefined,
                 } : null);
 
+                // Count travel segments before this index (for staggered auto-fetch)
+                const travelSegmentIndex = extendedActivities.slice(0, index).filter((a, i) => {
+                  if (a.kind !== "place") return false;
+                  // Check if this activity has a previous place activity
+                  for (let j = i - 1; j >= 0; j--) {
+                    if (extendedActivities[j]?.kind === "place") return true;
+                  }
+                  return false;
+                }).length;
+
                 // Render travel segment between activities
                 const travelSegmentElement =
                   shouldShowTravelSegment && displayTravelSegment && previousActivity && previousActivity.kind === "place" ? (
@@ -750,6 +760,7 @@ export const ItineraryTimeline = ({
                       destinationCoordinates={destinationCoordinates!}
                       dayTimezone={day.timezone}
                       onUpdate={handleUpdate}
+                      segmentIndex={travelSegmentIndex}
                     />
                   ) : undefined;
 
@@ -942,6 +953,7 @@ type TravelSegmentWrapperProps = {
   destinationCoordinates: Coordinate;
   dayTimezone?: string;
   onUpdate: (activityId: string, patch: Partial<ItineraryActivity>) => void;
+  segmentIndex?: number;
 };
 
 const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
@@ -952,6 +964,7 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
   destinationCoordinates,
   dayTimezone,
   onUpdate,
+  segmentIndex,
 }: TravelSegmentWrapperProps) {
   const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
   const [hasAutoFetched, setHasAutoFetched] = useState(false);
@@ -1019,6 +1032,7 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
   }, [activity.id, originCoordinates, destinationCoordinates, travelFromPrevious, dayTimezone, onUpdate]);
 
   // Auto-fetch route if segment is missing or incomplete (duration is 0)
+  // Staggered by segmentIndex to avoid concurrent API storm on mount
   useEffect(() => {
     if (
       !hasAutoFetched &&
@@ -1027,13 +1041,17 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
       originCoordinates &&
       destinationCoordinates
     ) {
-      setHasAutoFetched(true);
-      handleModeChange(travelFromPrevious.mode).catch((error) => {
-        // Log warning for debugging - planning system will recalculate on refresh
-        logger.warn("[TravelSegmentWrapper] Failed to auto-fetch route", { error });
-      });
+      // Stagger auto-fetch calls to avoid concurrent API storm
+      const delay = (segmentIndex ?? 0) * 500;
+      const timer = setTimeout(() => {
+        setHasAutoFetched(true);
+        handleModeChange(travelFromPrevious.mode).catch((error) => {
+          logger.warn("[TravelSegmentWrapper] Failed to auto-fetch route", { error });
+        });
+      }, delay);
+      return () => clearTimeout(timer);
     }
-  }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange]);
+  }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange, segmentIndex]);
 
   return (
     <TravelSegment
