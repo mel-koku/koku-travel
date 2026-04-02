@@ -50,7 +50,7 @@ export default function Footer({ settings }: FooterProps) {
 
   return (
     <footer className="bg-charcoal text-white border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-6 py-12 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-20 lg:py-28">
         {/* Top: Brand + Navigation */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}
@@ -63,7 +63,7 @@ export default function Footer({ settings }: FooterProps) {
           </div>
 
           {/* Navigation Columns */}
-          <div className="grid grid-cols-2 gap-8 lg:col-span-7 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-6 lg:col-span-7 lg:gap-8 lg:grid-cols-3">
             {navColumns.map((col) => (
               <NavColumn key={col.title} title={col.title} links={col.links} />
             ))}

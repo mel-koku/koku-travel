@@ -97,7 +97,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
 
   return (
     <motion.nav
-      className="flex h-full flex-col px-6 py-12 sm:px-8 lg:px-12"
+      className="flex h-full flex-col px-4 py-12 sm:px-6 lg:px-12"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

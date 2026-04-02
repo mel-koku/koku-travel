@@ -476,8 +476,8 @@ export function DiscoverMap({
           className="flex items-center gap-1.5 rounded-lg bg-charcoal/80 px-3 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-[var(--shadow-elevated)] transition-colors hover:bg-charcoal active:scale-[0.98]"
           style={{
             position: "absolute",
-            bottom: 16,
-            right: 16,
+            bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))",
+            right: "calc(1rem + env(safe-area-inset-right, 0px))",
             zIndex: 5,
           }}
           aria-label="Recenter on my location"

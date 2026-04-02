@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type UIEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -125,6 +125,29 @@ export function PlacesMapLayout({
   const mappedCount = mapBounds ? boundsFilteredLocations.length : mappableLocations.length;
   const showResetButton = mapBounds !== null && mappedCount === 0 && mappableLocations.length > 0;
 
+  // Mobile horizontal scroll: track whether right edge is still reachable
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollEdge = useCallback(() => {
+    const el = mobileScrollRef.current;
+    if (!el) return;
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+  }, []);
+
+  const handleMobileScroll = useCallback(
+    (e: UIEvent<HTMLDivElement>) => {
+      const el = e.currentTarget;
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+    },
+    [],
+  );
+
+  // Re-check edge when visible locations change
+  useEffect(() => {
+    checkScrollEdge();
+  }, [visibleLocations, checkScrollEdge]);
+
   const setCardRef = useCallback(
     (locationId: string) => (el: HTMLDivElement | null) => {
       if (el) cardRefsMap.current.set(locationId, el);
@@ -163,18 +186,32 @@ export function PlacesMapLayout({
           </ErrorBoundary>
 
           {/* Mobile: horizontal snap-scroll strip at bottom */}
-          <div className="absolute bottom-3 left-0 right-0 z-10 flex md:hidden pointer-events-auto overflow-x-auto overscroll-contain snap-x snap-mandatory gap-2 px-3 scrollbar-hide">
-            {visibleLocations.map((location) => (
-              <div key={location.id} className="w-48 shrink-0 snap-start">
-                <PlacesMapCard
-                  ref={setCardRef(location.id)}
-                  location={location}
-                  isHighlighted={hoveredLocationId === location.id}
-                  onHover={handleCardHoverChange}
-                  onSelect={handleCardSelect}
-                />
-              </div>
-            ))}
+          <div className="absolute bottom-3 left-0 right-0 z-10 md:hidden">
+            <div
+              ref={mobileScrollRef}
+              onScroll={handleMobileScroll}
+              className="flex pointer-events-auto overflow-x-auto overscroll-contain snap-x snap-mandatory gap-2 px-3 scrollbar-hide"
+            >
+              {visibleLocations.map((location) => (
+                <div key={location.id} className="w-48 shrink-0 snap-start">
+                  <PlacesMapCard
+                    ref={setCardRef(location.id)}
+                    location={location}
+                    isHighlighted={hoveredLocationId === location.id}
+                    onHover={handleCardHoverChange}
+                    onSelect={handleCardSelect}
+                  />
+                </div>
+              ))}
+            </div>
+            {/* Fade edge hint: more cards to the right */}
+            <div
+              className={cn(
+                "pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-charcoal/20 to-transparent transition-opacity duration-300",
+                canScrollRight ? "opacity-100" : "opacity-0",
+              )}
+              aria-hidden="true"
+            />
           </div>
 
           {/* Desktop: Floating pill column on left */}

@@ -512,21 +512,28 @@ function TravelTipsSection({
 
   const handleTipsEmitted = useCallback((dayIndex: number, tipIds: string[]) => {
     setEmittedTipIds((prev) => {
+      const existing = prev.get(dayIndex);
+      if (existing && existing.length === tipIds.length && existing.every((id, i) => id === tipIds[i])) {
+        return prev;
+      }
       const next = new Map(prev);
       next.set(dayIndex, tipIds);
       return next;
     });
   }, []);
 
-  /** Build the set of tip IDs shown on days before dayIndex */
-  const getPreviousTipIds = useCallback((dayIndex: number): Set<string> => {
-    const ids = new Set<string>();
-    for (let i = 0; i < dayIndex; i++) {
+  /** Pre-computed sets of tip IDs shown on days before each dayIndex */
+  const previousTipIdsByDay = useMemo(() => {
+    const result = new Map<number, Set<string>>();
+    const dayCount = itinerary.days.length;
+    const accumulated = new Set<string>();
+    for (let i = 0; i < dayCount; i++) {
+      result.set(i, new Set(accumulated));
       const dayTips = emittedTipIds.get(i);
-      if (dayTips) dayTips.forEach((id) => ids.add(id));
+      if (dayTips) dayTips.forEach((id) => accumulated.add(id));
     }
-    return ids;
-  }, [emittedTipIds]);
+    return result;
+  }, [emittedTipIds, itinerary.days.length]);
 
   const totalTips = useMemo(() => {
     let sum = 0;
@@ -625,10 +632,10 @@ function TravelTipsSection({
                     dayIndex={i}
                     tripStartDate={tripStartDate}
                     embedded
-                    onTipCount={(c) => handleTipCount(i, c)}
+                    onTipCount={handleTipCount}
                     hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
                     surfacedGuidanceIds={surfacedGuidanceIds}
-                    previousDaysTipIds={getPreviousTipIds(i)}
+                    previousDaysTipIds={previousTipIdsByDay.get(i)}
                     onTipsEmitted={handleTipsEmitted}
                   />
                 </div>
@@ -641,10 +648,10 @@ function TravelTipsSection({
                   dayIndex={i}
                   tripStartDate={tripStartDate}
                   countOnly
-                  onTipCount={(c) => handleTipCount(i, c)}
+                  onTipCount={handleTipCount}
                   hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
                   surfacedGuidanceIds={surfacedGuidanceIds}
-                  previousDaysTipIds={getPreviousTipIds(i)}
+                  previousDaysTipIds={previousTipIdsByDay.get(i)}
                   onTipsEmitted={handleTipsEmitted}
                 />
               )}

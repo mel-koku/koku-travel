@@ -19,7 +19,7 @@ export function MobileBottomSheet({
   isOpen: controlledIsOpen,
   onToggle,
   minHeight = DEFAULT_MIN_HEIGHT,
-  maxHeight = "70vh",
+  maxHeight = "70dvh",
 }: MobileBottomSheetProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);

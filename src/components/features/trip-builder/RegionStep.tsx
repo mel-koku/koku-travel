@@ -312,16 +312,8 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   // Mobile expand handler — toggle region selection AND expand/collapse detail
   const handleMobileToggle = useCallback(
     (regionId: KnownRegionId) => {
-      setExpandedRegion((prev) => {
-        if (prev === regionId) {
-          // Collapsing — also toggle region off
-          toggleRegion(regionId);
-          return null;
-        }
-        // Expanding — toggle region on
-        toggleRegion(regionId);
-        return regionId;
-      });
+      toggleRegion(regionId);
+      setExpandedRegion((prev) => (prev === regionId ? null : regionId));
     },
     [toggleRegion]
   );

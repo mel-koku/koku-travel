@@ -31,7 +31,7 @@ type DayTipsProps = {
   /** When true, renders just the tip items without the accordion wrapper */
   embedded?: boolean;
   /** Callback fired when tip count changes (for parent badge) */
-  onTipCount?: (count: number) => void;
+  onTipCount?: (dayIndex: number, count: number) => void;
   /** Whether this is the traveler's first time visiting Japan */
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
@@ -75,8 +75,8 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
 
   // Report tip count to parent
   useEffect(() => {
-    onTipCount?.(allTips.length);
-  }, [allTips.length, onTipCount]);
+    onTipCount?.(dayIndex, allTips.length);
+  }, [allTips.length, dayIndex, onTipCount]);
 
   // Report emitted tip IDs for cross-day dedup
   useEffect(() => {

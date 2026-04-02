@@ -42,7 +42,7 @@ export function PageHeader({
   return (
     <div
       ref={containerRef}
-      className={`relative -mt-20 flex ${minHeight} items-center justify-center overflow-hidden bg-background pt-20`}
+      className={`relative -mt-[var(--header-h)] flex ${minHeight} items-center justify-center overflow-hidden bg-background pt-[var(--header-h)]`}
     >
       {/* Parallax background image */}
       {imageUrl ? (

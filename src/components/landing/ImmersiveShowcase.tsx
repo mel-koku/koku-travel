@@ -79,31 +79,56 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
           return (
             <ScrollReveal key={act.number} delay={0.05}>
               {isLast ? (
-                /* Last act: wide cinematic image with text overlay */
-                <div className="relative aspect-[16/7] overflow-hidden rounded-lg">
-                  <Image
-                    src={act.image}
-                    alt={act.alt}
-                    fill
-                    className="object-cover"
-                    sizes="100vw"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-charcoal/60" />
-                  <div className="absolute inset-0 flex items-center justify-center px-10 lg:px-16">
-                    <div className="max-w-lg text-center">
+                /* Last act: stacked on mobile, cinematic overlay on lg+ */
+                <>
+                  {/* Mobile/tablet: stacked like Acts 1-2 */}
+                  <div className="grid items-center gap-10 lg:hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                      <Image
+                        src={act.image}
+                        alt={act.alt}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="max-w-md">
                       <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
-                      <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
+                      <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
                         {act.title}
                       </h2>
-                      <p className="mt-5 text-base leading-relaxed text-white/80">
+                      <p className={cn(typography({ intent: "utility-body-muted" }), "mt-5 leading-relaxed")}>
                         {act.description}
                       </p>
                     </div>
                   </div>
-                </div>
+                  {/* Desktop: cinematic overlay */}
+                  <div className="relative hidden aspect-[16/7] overflow-hidden rounded-lg lg:block">
+                    <Image
+                      src={act.image}
+                      alt={act.alt}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-charcoal/60" />
+                    <div className="absolute inset-0 flex items-center justify-center px-16">
+                      <div className="max-w-lg text-center">
+                        <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
+                        <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
+                          {act.title}
+                        </h2>
+                        <p className="mt-5 text-base leading-relaxed text-white/80">
+                          {act.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
               ) : (
-                /* Acts 1–2: split layout, alternating image side */
+                /* Acts 1-2: split layout, alternating image side */
                 <div
                   className={`grid items-center gap-10 lg:gap-16 ${
                     imageLeft ? "lg:grid-cols-[5fr_4fr]" : "lg:grid-cols-[4fr_5fr]"

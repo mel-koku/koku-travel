@@ -61,7 +61,7 @@ export function MenuPanel() {
       <div className="absolute inset-0 scrim-70" />
 
       {/* Bottom-left content */}
-      <div className="absolute bottom-12 left-8 right-8">
+      <div className="absolute bottom-6 left-4 right-4 sm:bottom-12 sm:left-8 sm:right-8">
         <p className="font-serif text-xl text-white/90">
           {tagline}
         </p>

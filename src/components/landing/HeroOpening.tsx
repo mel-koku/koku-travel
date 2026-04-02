@@ -106,7 +106,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <div className="mt-8">
               <a
                 href="/trip-builder"
-                className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
+                className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto sm:px-10"
               >
                 {primaryCta}
               </a>
@@ -208,7 +208,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           >
             <a
               href="/trip-builder"
-              className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
+              className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto sm:px-10"
             >
               {primaryCta}
             </a>

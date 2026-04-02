@@ -23,7 +23,7 @@ function FeatureShowcase() {
   return (
     <section aria-label="What your itinerary delivers" className="bg-background">
       {/* Hero moment */}
-      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+      <div className="relative flex min-h-[50vh] sm:min-h-[80vh] items-center justify-center overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1554797589-7241bb691973?w=1920&q=80"
           alt="Narrow Kyoto backstreet at night with warm lantern light"
@@ -95,7 +95,7 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
   return (
     <section aria-label="Testimonials" className="bg-background">
       {/* Featured testimonial */}
-      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+      <div className="relative flex min-h-[50vh] sm:min-h-[80vh] items-center justify-center overflow-hidden">
         {featured.image ? (
           <Image
             src={featured.image}

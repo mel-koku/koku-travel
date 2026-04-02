@@ -119,6 +119,18 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
             }
           }}
         >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-charcoal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:right-6 lg:right-8"
+            aria-label="Close menu"
+          >
+            <svg className="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
           <div className="grid h-full grid-cols-1 lg:grid-cols-5">
             {/* Nav panel: 3 cols on desktop */}
             <div className="col-span-1 overflow-y-auto lg:col-span-3">

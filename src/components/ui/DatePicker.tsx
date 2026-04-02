@@ -118,6 +118,7 @@ export function DatePicker({
           >
             <DayPicker
               mode="single"
+              weekStartsOn={0}
               selected={selected}
               onSelect={handleSelect}
               defaultMonth={selected ?? fromDate ?? new Date()}

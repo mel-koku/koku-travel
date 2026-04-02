@@ -79,7 +79,7 @@ export function CategoryBar({
       <div
         ref={barRef}
         className={cn(
-          "sticky top-20 z-40",
+          "sticky z-40 [top:var(--header-h)]",
           isStuck || viewMode === "map"
             ? "bg-background/95 backdrop-blur-xl border-b border-border/50"
             : "bg-transparent border-b border-transparent"
