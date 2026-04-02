@@ -149,7 +149,7 @@ export function DatePicker({
                 weekday:
                   "w-9 text-[0.7rem] font-medium text-muted-foreground text-center",
                 week: "flex mt-1",
-                day: "relative p-0 text-center text-sm focus-within:relative",
+                day: "relative w-9 p-0 text-center text-sm focus-within:relative",
                 day_button: cn(
                   "inline-flex h-9 w-9 items-center justify-center rounded-lg",
                   "text-popover-foreground text-sm",
