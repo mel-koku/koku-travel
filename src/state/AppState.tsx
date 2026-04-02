@@ -595,15 +595,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       // Prevent double-toggle race: skip if sync is already in progress for this item
       if (pendingSavesRef.current.has(id)) return;
 
-      let existed = false;
+      // Read current state before setState to avoid concurrent-mode staleness
+      const existed = state.saved.includes(id);
       setState((s) => {
         const set = new Set(s.saved);
-        existed = set.has(id);
-        if (existed) {
-          set.delete(id);
-        } else {
-          set.add(id);
-        }
+        if (set.has(id)) set.delete(id);
+        else set.add(id);
         return { ...s, saved: Array.from(set) };
       });
 
@@ -625,7 +622,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         })();
       }
     },
-    [supabase],
+    [supabase, state.saved],
   );
 
   // Guide bookmark actions
