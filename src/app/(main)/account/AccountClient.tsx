@@ -301,7 +301,7 @@ function EmailForm({ content }: { content?: PagesContent }) {
       email,
       options: { emailRedirectTo: redirectUrl },
     });
-    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent \u2014 check your inbox.");
+    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent. Check your inbox.");
   }
 
   return (

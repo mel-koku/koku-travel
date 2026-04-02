@@ -157,7 +157,7 @@ export function DayConflictSummary({
       />
       {tightCount > 0 && (
         <p className="mt-2 text-xs text-warning">
-          {tightCount} tight {tightCount === 1 ? "connection" : "connections"} today — consider a slower pace
+          {tightCount} tight {tightCount === 1 ? "connection" : "connections"} today. Consider a slower pace
         </p>
       )}
     </div>

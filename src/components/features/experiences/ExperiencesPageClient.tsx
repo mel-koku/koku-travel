@@ -57,7 +57,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
           {content?.experiencesEmptyHeading ?? "Experiences are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.experiencesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
+          {content?.experiencesEmptyDescription ?? "Still writing these. Browse places while we finish."}
         </p>
         <a
           href="/places"

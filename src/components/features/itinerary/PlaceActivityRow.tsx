@@ -481,7 +481,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <div className="flex items-center gap-2.5 rounded-lg bg-background px-3 py-2 shadow-[var(--shadow-card)]">
             {/* Time */}
             <span className="w-12 shrink-0 text-right font-mono text-xs font-medium text-foreground-secondary">
-              {displayArrivalTime ?? activity.timeOfDay ?? "—"}
+              {displayArrivalTime ?? activity.timeOfDay ?? "-"}
             </span>
 
             {/* Category color dot / Plane icon for anchors */}
@@ -536,7 +536,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {activity.title}
             </p>
             <span className="ml-auto shrink-0 font-mono text-xs text-foreground-secondary">
-              {displayArrivalTime ?? "—"}
+              {displayArrivalTime ?? "-"}
             </span>
             {durationLabel && (
               <span className="shrink-0 text-xs text-stone">{durationLabel}</span>

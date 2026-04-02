@@ -73,12 +73,12 @@ export function scoreNeighborhoodDiversity(
     if (streakCount >= 1) {
       return {
         score: 3,
-        reasoning: `Same area "${locationNeighborhood}" — walkability bonus (zone-clustered)`,
+        reasoning: `Same area "${locationNeighborhood}", walkability bonus (zone-clustered)`,
       };
     }
     return {
       score: 1,
-      reasoning: `Different area "${locationNeighborhood}" within zone — still close`,
+      reasoning: `Different area "${locationNeighborhood}" within zone, still close`,
     };
   }
 

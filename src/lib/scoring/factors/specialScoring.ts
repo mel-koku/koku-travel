@@ -29,7 +29,7 @@ export function scorePhotoFit(
   const hour = SLOT_TO_HOUR[criteria.timeSlot] ?? 12;
 
   if (isPhotoOptimalTime(hour, timing.bestTimes)) {
-    const tipNote = timing.tip ? ` — ${timing.tip}` : "";
+    const tipNote = timing.tip ? `. ${timing.tip}` : "";
     return {
       score: 5,
       reasoning: `Optimal photo time for ${location.name}${tipNote}`,

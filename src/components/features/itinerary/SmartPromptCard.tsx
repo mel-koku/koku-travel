@@ -201,7 +201,7 @@ export function SmartPromptCard({
             {gap.action.locations.map((loc, i) => (
               <li key={i} className="text-xs text-foreground-secondary">
                 <span className="font-medium text-foreground">{loc.name}</span>
-                {" — Day "}
+                {", Day "}
                 {loc.dayIndex + 1}
                 {loc.reservationInfo === "required" ? " (required)" : " (recommended)"}
               </li>

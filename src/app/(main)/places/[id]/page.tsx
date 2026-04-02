@@ -80,13 +80,13 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
     `Discover ${location.name} in ${location.city}, Japan`;
 
   return {
-    title: `${location.name} — ${location.city} | Koku Travel`,
+    title: `${location.name} | ${location.city} | Koku Travel`,
     description,
     alternates: {
       canonical: `/places/${id}`,
     },
     openGraph: {
-      title: `${location.name} — ${location.city}`,
+      title: `${location.name} | ${location.city}`,
       description,
       images: location.primaryPhotoUrl
         ? [{ url: location.primaryPhotoUrl, width: 1200, height: 630 }]
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
     },
     twitter: {
       card: "summary_large_image",
-      title: `${location.name} — ${location.city}`,
+      title: `${location.name} | ${location.city}`,
       description,
     },
   };

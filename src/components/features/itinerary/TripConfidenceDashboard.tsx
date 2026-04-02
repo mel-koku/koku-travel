@@ -238,7 +238,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             </p>
             {accessibility.unknownCount > 0 && (
               <p className="text-xs text-stone">
-                {accessibility.unknownCount} unconfirmed — check before you go.
+                {accessibility.unknownCount} unconfirmed. Check before you go.
               </p>
             )}
             {accessibility.issues.length > 0 && (

@@ -89,7 +89,7 @@ export function AskKokuSuggestions({
         What do you want to know?
       </p>
       <p className="mt-1 text-sm text-foreground-secondary">
-        Places, tips, itineraries — I know the good stuff.
+        Places, tips, itineraries. I know the good stuff.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-2">
         {suggestions.map((s) => (

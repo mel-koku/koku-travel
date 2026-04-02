@@ -137,7 +137,7 @@ function composeDayIntro(
     if (firstDesc && activities.length <= 3) {
       // Truncate long descriptions
       const short = firstDesc.length > 120 ? firstDesc.slice(0, 117) + "..." : firstDesc;
-      content += ` Starting with ${activities[0]!.title} — ${short.charAt(0).toLowerCase() + short.slice(1)}`;
+      content += ` Starting with ${activities[0]!.title}. ${short.charAt(0).toUpperCase() + short.slice(1)}`;
     }
   } else {
     // Fallback to template-based intro when no activities
@@ -211,7 +211,7 @@ function composeTransition(
   return {
     id: `guide-${dayId}-tr-${index}`,
     type: "activity_context",
-    content: `${bridge} — ${short}`,
+    content: `${bridge}. ${short.charAt(0).toUpperCase() + short.slice(1)}`,
     dayId,
     afterActivityId: prevActivity.id,
   };
@@ -219,7 +219,7 @@ function composeTransition(
 
 const SUMMARY_CLOSERS_MULTI: string[] = [
   "{opener} {first} to {last}.",
-  "{opener} From {first} to {last} — good ground covered.",
+  "{opener} From {first} to {last}. Good ground covered.",
   "{opener} {last} was a solid way to wind down.",
   "{opener} {first} started it, {last} closed it out.",
   "{opener} A full day, {first} to {last}.",
@@ -227,7 +227,7 @@ const SUMMARY_CLOSERS_MULTI: string[] = [
 
 const SUMMARY_CLOSERS_SINGLE: string[] = [
   "{opener} {activity} was worth the time.",
-  "{opener} Just {activity} today — sometimes that's enough.",
+  "{opener} Just {activity} today. Sometimes that's enough.",
   "{opener} A focused day around {activity}.",
 ];
 
@@ -458,7 +458,7 @@ function buildDayGuide(
 
     const walkContent = cluster.name === "Walkable Area"
       ? `The next ${cluster.activityNames.length} stops are all within walking distance. Take your time exploring on foot.`
-      : `You're about to explore ${cluster.name} on foot — ${cluster.activityNames.length} stops, all walkable from each other.`;
+      : `You're about to explore ${cluster.name} on foot. ${cluster.activityNames.length} stops, all walkable from each other.`;
 
     segments.push({
       id: `guide-${dayId}-nw`,

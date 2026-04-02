@@ -114,7 +114,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
           {content?.guidesEmptyHeading ?? "Guides are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.guidesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
+          {content?.guidesEmptyDescription ?? "Still writing these. Browse places while we finish."}
         </p>
         <a
           href="/places"

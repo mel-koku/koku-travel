@@ -65,7 +65,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
                   <p className="text-xs text-foreground-secondary">
                     {phrase.english}
                     {phrase.context && (
-                      <span className="text-stone"> — {phrase.context}</span>
+                      <span className="text-stone"> ({phrase.context})</span>
                     )}
                   </p>
                 </div>

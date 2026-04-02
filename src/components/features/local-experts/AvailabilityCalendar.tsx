@@ -291,7 +291,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
               </p>
               {!interpLoading && interpreters.length === 0 && (
                 <p className="text-xs text-foreground-secondary">
-                  No interpreters available this day — you can still book without one.
+                  No interpreters available this day. You can still book without one.
                 </p>
               )}
               {interpreters.length > 0 && (
@@ -420,7 +420,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
             <div className="space-y-3 rounded-lg border border-success/30 bg-success/5 p-4">
               <p className="text-sm font-semibold text-foreground">Confirm your booking</p>
               <div className="space-y-1 text-xs text-foreground-secondary">
-                <p>{person.name} — {person.type}</p>
+                <p>{person.name}, {person.type}</p>
                 <p>{selectedDateLabel}, {selectedSession === "morning" ? "10:00–12:00" : "14:00–16:00"}</p>
                 <p>{groupSize} guest{groupSize > 1 ? "s" : ""}</p>
                 {price && <p className="font-medium text-foreground">{formatPrice(price.totalPrice, price.currency)}</p>}

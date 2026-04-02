@@ -193,7 +193,7 @@ export function TravelModeSelector({
   }, [isOpen, fetchAllEstimates]);
 
   const formatDuration = (minutes: number) => {
-    if (minutes === 0) return "—";
+    if (minutes === 0) return "-";
     if (minutes < 60) return `${minutes} min`;
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -205,7 +205,7 @@ export function TravelModeSelector({
     const modeOption = TRAVEL_MODES.find((m) => m.mode === mode);
     const icon = modeOption?.icon ?? "";
     const label = modeOption?.label ?? "";
-    return duration === "—" ? duration : `${icon} ${duration} ${label}`;
+    return duration === "-" ? duration : `${icon} ${duration} ${label}`;
   };
 
   const getEstimate = (mode: ItineraryTravelMode): ModeEstimate | undefined => {

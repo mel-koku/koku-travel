@@ -41,7 +41,7 @@ export default function RootNotFound() {
           Lost in Translation
         </h1>
         <p style={{ marginTop: "1.5rem", opacity: 0.8 }}>
-          This path leads nowhere — but Japan still has thousands waiting for
+          This path leads nowhere, but Japan still has thousands waiting for
           you.
         </p>
         <a

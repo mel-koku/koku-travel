@@ -62,7 +62,7 @@ export function TripSummaryEditorial({
     const end = parseLocalDate(data.dates.end)!;
     const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
     const year = start.toLocaleDateString("en-US", { year: "numeric" });
-    return `${start.toLocaleDateString("en-US", opts)} — ${end.toLocaleDateString("en-US", opts)}, ${year}`;
+    return `${start.toLocaleDateString("en-US", opts)} to ${end.toLocaleDateString("en-US", opts)}, ${year}`;
   }, [data.dates.start, data.dates.end]);
 
   const vibeNames = useMemo(

@@ -5,7 +5,7 @@ import { TripReview } from "@/components/features/dashboard/TripReview";
 
 export const metadata: Metadata = {
   title: "Trip Review | Koku Travel",
-  description: "Look back on your Japan journey — stats, highlights, and memories.",
+  description: "Look back on your Japan journey. Stats, highlights, and memories.",
 };
 
 export const dynamic = "force-dynamic";

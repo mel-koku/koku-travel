@@ -216,7 +216,7 @@ export function detectLateArrival(day: ItineraryDay, dayIndex: number): Detected
       dayIndex,
       dayId: day.id,
       title: "You get in late today",
-      description: `Take it easy tonight and start fresh tomorrow — or explore late-night ${city}: ${suggestionNames.join(", ")}.`,
+      description: `Take it easy tonight and start fresh tomorrow, or explore late-night ${city}: ${suggestionNames.join(", ")}.`,
       icon: "Moon",
       action: {
         type: "acknowledge_late_arrival",

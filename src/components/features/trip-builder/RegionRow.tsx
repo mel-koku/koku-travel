@@ -114,7 +114,7 @@ export function RegionRow({
         </span>
         {additionalCityCount > 0 && (
           <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
-            +{additionalCityCount} more — select in details
+            +{additionalCityCount} more, select in details
           </span>
         )}
       </div>

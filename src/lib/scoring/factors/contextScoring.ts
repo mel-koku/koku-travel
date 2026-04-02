@@ -142,6 +142,6 @@ export function scoreCrowdFit(
   if (crowdLevel <= 1) return { score: 8, reasoning: "Very low crowds expected" };
   if (crowdLevel === 2) return { score: 4, reasoning: "Light crowds expected" };
   if (crowdLevel === 3) return { score: 0, reasoning: "Moderate crowds expected" };
-  if (crowdLevel === 4) return { score: -4, reasoning: "Busy — consider off-peak timing" };
-  return { score: -8, reasoning: "Peak crowds — expect long queues" };
+  if (crowdLevel === 4) return { score: -4, reasoning: "Busy. Consider off-peak timing" };
+  return { score: -8, reasoning: "Peak crowds. Expect long queues" };
 }

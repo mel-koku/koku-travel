@@ -198,7 +198,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
     const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
     if (!effective) return null;
     const hh = Number(effective.split(":")[0]);
-    if (hh >= 20) return "Day 1 is arrival day — grab dinner and settle in";
+    if (hh >= 20) return "Day 1 is arrival day. Grab dinner and settle in";
     if (hh >= 18) return "Just enough time for dinner near your hotel";
     return `First activity starts around ${formatTime12h(effective)}`;
   }, [data.arrivalTime, data.entryPoint?.iataCode]);

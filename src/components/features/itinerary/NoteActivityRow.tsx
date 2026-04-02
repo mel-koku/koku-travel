@@ -82,7 +82,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
           <div className="flex items-center gap-2.5 rounded-lg border border-dashed border-sage/20 bg-sage/5 px-3 py-2">
             {/* Time */}
             <span className="w-12 shrink-0 text-right font-mono text-xs text-stone">
-              {noteStartTime || "—"}
+              {noteStartTime || "-"}
             </span>
             {/* Note icon */}
             <svg className="h-3.5 w-3.5 shrink-0 text-sage/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

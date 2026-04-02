@@ -71,8 +71,8 @@ function SaveCopyButton({ token }: { token: string }) {
     >
       {state === "idle" && "Save a Copy"}
       {state === "loading" && "Saving\u2026"}
-      {state === "done" && "Saved — redirecting"}
-      {state === "error" && "Failed — try again"}
+      {state === "done" && "Saved. Redirecting"}
+      {state === "error" && "Failed. Try again"}
     </button>
   );
 }

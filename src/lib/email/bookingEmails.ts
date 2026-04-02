@@ -66,7 +66,7 @@ export async function sendBookingConfirmation(
         ``,
         `You can manage your booking from your Koku Travel dashboard.`,
         ``,
-        `— Koku Travel`,
+        `Koku Travel`,
       ].join("\n"),
     });
   } catch (err) {
@@ -146,8 +146,8 @@ export async function sendBookingCancellation(
       resend.emails.send({
         from: "Koku Travel <noreply@koku.travel>",
         to: data.userEmail,
-        subject: `Booking cancelled — ${data.personName} on ${data.bookingDate}`,
-        text: body + "\n\n— Koku Travel",
+        subject: `Booking cancelled: ${data.personName} on ${data.bookingDate}`,
+        text: body + "\n\nKoku Travel",
       }),
       resend.emails.send({
         from: "Koku Travel <noreply@koku.travel>",

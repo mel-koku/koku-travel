@@ -89,7 +89,7 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
                 {error.message?.includes("quota") ||
                 error.message?.includes("503") ||
                 error.message?.includes("429")
-                  ? "Koku hit a limit \u2014 give it a minute and try again."
+                  ? "Koku hit a limit. Give it a minute and try again."
                   : "Couldn\u2019t get a response. Try sending that again."}
               </div>
             )}

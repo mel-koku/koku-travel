@@ -34,13 +34,13 @@ export async function generateMetadata({
   if (!city) return { title: "City not found" };
 
   return {
-    title: `${city.name}, Japan — Travel Guide | Koku Travel`,
+    title: `${city.name}, Japan | Travel Guide | Koku Travel`,
     description: city.ogDescription,
     alternates: {
       canonical: `/cities/${slug}`,
     },
     openGraph: {
-      title: `${city.name}, Japan — Travel Guide`,
+      title: `${city.name}, Japan | Travel Guide`,
       description: city.ogDescription,
       siteName: "Koku Travel",
     },

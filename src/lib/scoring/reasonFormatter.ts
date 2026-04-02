@@ -66,7 +66,7 @@ function humanizeFactor(
         return `${location.category ?? "This place"} matches your vibes well`;
       if (score >= 15)
         return `Partially matches your vibes`;
-      return `Outside your main vibes — adds variety`;
+      return `Outside your main vibes, adds variety`;
 
     case "ratingQuality": {
       const r = location.rating;
@@ -81,9 +81,9 @@ function humanizeFactor(
 
     case "logisticalFit":
       if (score >= 15) return "Very close to your previous stop";
-      if (score >= 10) return "Nearby — short commute";
+      if (score >= 10) return "Nearby, short commute";
       if (score >= 0) return "Moderate distance";
-      return "A bit of a trek — but worth it";
+      return "A bit of a trek, but worth it";
 
     case "budgetFit":
       if (score >= 9) return "Fits your budget perfectly";
@@ -107,7 +107,7 @@ function humanizeFactor(
 
     case "weatherFit":
       if (score >= 5) return "Great choice for today's weather";
-      if (score <= -5) return "Weather may not be ideal — consider indoor backup";
+      if (score <= -5) return "Weather may not be ideal. Consider an indoor backup";
       return "";
 
     case "timeOptimization":
@@ -180,8 +180,8 @@ function buildPrimaryReason(
 
   // Join with " — " for readability
   if (fragments.length === 1) return fragments[0]!;
-  if (fragments.length === 2) return `${fragments[0]} — ${fragments[1]}`;
-  return `${fragments[0]} — ${fragments[1]}. ${fragments[2]}`;
+  if (fragments.length === 2) return `${fragments[0]}. ${fragments[1]}`;
+  return `${fragments[0]}. ${fragments[1]}. ${fragments[2]}`;
 }
 
 // ---------------------------------------------------------------------------

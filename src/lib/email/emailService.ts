@@ -87,7 +87,7 @@ export async function sendInquiryConfirmation(
         ``,
         `We've received your inquiry and will get back to you within 48 hours.`,
         ``,
-        `— Koku Travel`,
+        `Koku Travel`,
       ].join("\n"),
     });
   } catch (err) {

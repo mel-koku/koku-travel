@@ -396,44 +396,44 @@ const CITY_SPECIFIC_OPENERS: Record<string, string[]> = {
   kyoto: [
     "Kyoto today.",
     "The ancient capital.",
-    "Kyoto — temples, tea, and quiet streets.",
+    "Kyoto. Temples, tea, and quiet streets.",
   ],
   osaka: [
     "Osaka today.",
-    "Osaka — loud, warm, and well-fed.",
+    "Osaka. Loud, warm, and well-fed.",
     "Japan's kitchen.",
   ],
   tokyo: [
     "Tokyo today.",
-    "Tokyo — where every neighborhood is a different city.",
+    "Tokyo. Every neighborhood is a different city.",
     "The big one.",
   ],
   nara: [
     "Nara today.",
-    "Nara — ancient, compact, deer everywhere.",
+    "Nara. Ancient, compact, deer everywhere.",
   ],
   kobe: [
     "Kobe today.",
-    "Kobe — harbor, hills, and good beef.",
+    "Kobe. Harbor, hills, and good beef.",
   ],
   hiroshima: [
     "Hiroshima today.",
-    "Hiroshima — forward-looking, worth the weight.",
+    "Hiroshima. Forward-looking, worth the weight.",
   ],
   fukuoka: [
     "Fukuoka today.",
-    "Fukuoka — Kyushu's easygoing capital.",
+    "Fukuoka. Kyushu's easygoing capital.",
   ],
   kanazawa: [
     "Kanazawa today.",
-    "Kanazawa — gardens, gold leaf, and fresh crab.",
+    "Kanazawa. Gardens, gold leaf, and fresh crab.",
   ],
 };
 
 export const DAY_INTRO_OPENERS: string[] = [
   "{city} today.",
   "A new day in {city}.",
-  "{city} — here's the plan.",
+  "{city}. Here's the plan.",
   "Morning in {city}.",
   "{city}, day ahead.",
 ];
@@ -441,7 +441,7 @@ export const DAY_INTRO_OPENERS: string[] = [
 export const DAY_INTRO_OPENERS_EVENING: string[] = [
   "Evening in {city}.",
   "{city} tonight.",
-  "{city} — winding down.",
+  "{city}. Winding down.",
   "A late start in {city}.",
 ];
 

@@ -37,7 +37,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
         transition={{ duration: 0.3 }}
         className="text-sm text-foreground-secondary"
       >
-        {highlight.description} — {matchCount.toLocaleString()} {matchCount === 1 ? "place" : "places"} to explore.{" "}
+        {highlight.description}. {matchCount.toLocaleString()} {matchCount === 1 ? "place" : "places"} to explore.{" "}
         <button
           type="button"
           onClick={onFilterSeasonal}

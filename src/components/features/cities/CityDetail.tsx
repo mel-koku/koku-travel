@@ -162,7 +162,7 @@ export function CityDetail({
               ...(stats.averageRating > 0
                 ? [{ label: "Avg rating", value: stats.averageRating.toFixed(1) }]
                 : []),
-              { label: "Known for", value: stats.topCategories[0]?.category ?? "—" },
+              { label: "Known for", value: stats.topCategories[0]?.category ?? "-" },
             ].map((item) => (
               <div
                 key={item.label}

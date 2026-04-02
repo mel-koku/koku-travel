@@ -67,7 +67,7 @@ export function PlaceActivityReasoning({
                     }
                   >
                     <span className="font-medium">{factor.factor}</span>
-                    {factor.reasoning && ` — ${factor.reasoning}`}
+                    {factor.reasoning && `. ${factor.reasoning}`}
                   </span>
                 </li>
               ))}
