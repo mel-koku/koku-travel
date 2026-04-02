@@ -88,6 +88,18 @@ export type TransitStep = {
   numStops?: number;
   /** Duration in minutes for this step */
   durationMinutes?: number;
+  /** Line color hex from NAVITIME, e.g. "#FF9500" */
+  lineColor?: string;
+  /** Train type, e.g. "Rapid", "Local", "Express" */
+  trainType?: string;
+  /** Which car to board for easy exit, e.g. "Middle/Rear" */
+  carPosition?: string;
+  /** Station exit/entrance name, e.g. "South Exit", "Exit 6" */
+  departureGateway?: string;
+  /** Station exit at arrival, e.g. "Exit 6" */
+  arrivalGateway?: string;
+  /** Fare in yen for this leg */
+  fareYen?: number;
 };
 
 export type ItineraryTravelSegment = {

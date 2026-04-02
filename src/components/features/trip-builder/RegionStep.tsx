@@ -197,8 +197,12 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
     const autoCities = autoSelectCities(vibes, data.entryPoint, data.duration);
     if (autoCities.length > 0) {
-      const autoRegions = deriveRegionsFromCities(autoCities);
-      setData((prev) => ({ ...prev, cities: autoCities, regions: autoRegions }));
+      const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+      const optimized = autoCities.length >= 2 && data.entryPoint
+        ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit)
+        : autoCities;
+      const autoRegions = deriveRegionsFromCities(optimized);
+      setData((prev) => ({ ...prev, cities: optimized, regions: autoRegions }));
       hasAutoSelected.current = true;
     }
   }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);

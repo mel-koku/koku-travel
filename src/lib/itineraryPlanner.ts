@@ -324,6 +324,12 @@ function buildTransitSteps(route: RoutingResult): TransitStep[] | undefined {
           headsign: td.headsign,
           numStops: td.numStops,
           durationMinutes: durationMin,
+          lineColor: td.lineColor,
+          trainType: td.trainType,
+          carPosition: td.carPosition,
+          departureGateway: td.departureGateway,
+          arrivalGateway: td.arrivalGateway,
+          fareYen: td.fareYen,
         });
       }
     }

@@ -45,6 +45,7 @@ type NavitimeMoveSection = {
     company?: { id: string; name: string };
     links?: NavitimeTransportLink[];
     getoff?: string;
+    fare?: Record<string, number>;
   };
 };
 
@@ -81,6 +82,94 @@ function mapVehicleType(transportName: string): string {
   if (lower.includes("フェリー") || lower.includes("ferry")) return "FERRY";
   if (lower.includes("モノレール") || lower.includes("monorail")) return "RAIL";
   return "RAIL";
+}
+
+/**
+ * Translate Japanese train type to English.
+ */
+function translateTrainType(type?: string): string | undefined {
+  if (!type) return undefined;
+  const map: Record<string, string> = {
+    "普通": "Local",
+    "快速": "Rapid",
+    "特急": "Limited Express",
+    "急行": "Express",
+    "準急": "Semi-Express",
+    "各停": "Local",
+    "通勤快速": "Commuter Rapid",
+    "新快速": "Special Rapid",
+    "区間快速": "Section Rapid",
+    "通勤特急": "Commuter Express",
+  };
+  return map[type] ?? type;
+}
+
+/**
+ * Translate Japanese gateway/exit name to English.
+ * Handles numbered exits (6番口 -> Exit 6) and directional exits (南口 -> South Exit).
+ */
+function translateGateway(gateway?: string): string | undefined {
+  if (!gateway) return undefined;
+
+  // Numbered exits: "6番口" -> "Exit 6", "A3口" -> "Exit A3"
+  const numberedMatch = gateway.match(/^([A-Za-z]?\d+)番?口$/);
+  if (numberedMatch) return `Exit ${numberedMatch[1]}`;
+
+  // Letter+number exits: "A3" style
+  const letterNumMatch = gateway.match(/^([A-Za-z]\d+)$/);
+  if (letterNumMatch) return `Exit ${letterNumMatch[1]}`;
+
+  const dirMap: Record<string, string> = {
+    "北口": "North Exit",
+    "南口": "South Exit",
+    "東口": "East Exit",
+    "西口": "West Exit",
+    "中央口": "Central Exit",
+    "中央北口": "Central North Exit",
+    "中央南口": "Central South Exit",
+    "中央東口": "Central East Exit",
+    "中央西口": "Central West Exit",
+    "正面口": "Main Exit",
+    "表口": "Front Exit",
+    "裏口": "Rear Exit",
+    "新南口": "New South Exit",
+    "新北口": "New North Exit",
+    "八重洲口": "Yaesu Exit",
+    "八重洲中央口": "Yaesu Central Exit",
+    "八重洲北口": "Yaesu North Exit",
+    "八重洲南口": "Yaesu South Exit",
+    "丸の内口": "Marunouchi Exit",
+    "丸の内中央口": "Marunouchi Central Exit",
+    "丸の内北口": "Marunouchi North Exit",
+    "丸の内南口": "Marunouchi South Exit",
+    "日本橋口": "Nihonbashi Exit",
+    "京王口": "Keio Exit",
+    "小田急口": "Odakyu Exit",
+    "銀座口": "Ginza Exit",
+    "乗換口": "Transfer Gate",
+  };
+  return dirMap[gateway] ?? gateway;
+}
+
+/**
+ * Translate Japanese car position hint to English.
+ * NAVITIME returns "前" (front), "中" (middle), "後" (rear), or combos like "中・後".
+ */
+function translateCarPosition(getoff?: string): string | undefined {
+  if (!getoff) return undefined;
+
+  // Pure number means car number
+  if (/^\d+$/.test(getoff)) return `Car ${getoff}`;
+
+  const map: Record<string, string> = {
+    "前": "Front",
+    "中": "Middle",
+    "後": "Rear",
+    "前・中": "Front/Middle",
+    "中・後": "Middle/Rear",
+    "前・後": "Front/Rear",
+  };
+  return map[getoff] ?? getoff;
 }
 
 /**
@@ -143,6 +232,17 @@ function parseSections(sections: NavitimeSection[]): RoutingLegStep[] {
       // Headsign from first link destination
       const headsign = move.transport.links?.[0]?.destination?.name;
 
+      // Extract gateway (exit/entrance) from surrounding station points
+      const departureGateway = prevPoint?.type === "point"
+        ? translateGateway(prevPoint.gateway)
+        : undefined;
+      const arrivalGateway = nextPoint?.type === "point"
+        ? translateGateway(nextPoint.gateway)
+        : undefined;
+
+      // Base fare (unit_0 = single adult fare in yen)
+      const fareYen = move.transport.fare?.unit_0;
+
       steps.push({
         instruction: `${move.transport.name} · ${departureStation ?? "?"} → ${arrivalStation ?? "?"} · ${move.time} min`,
         durationSeconds,
@@ -158,6 +258,12 @@ function parseSections(sections: NavitimeSection[]): RoutingLegStep[] {
           arrivalStop: arrivalStation,
           headsign,
           numStops,
+          lineColor: move.transport.color,
+          trainType: translateTrainType(move.transport.type),
+          carPosition: translateCarPosition(move.transport.getoff),
+          departureGateway,
+          arrivalGateway,
+          fareYen,
         },
       });
     }

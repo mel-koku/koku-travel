@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, Plane, Sparkles, MapPin, Search, X, Check } from "lucide-react";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -9,7 +9,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
 import { deriveRegionsFromCities, REGIONS } from "@/data/regions";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
-import { getDepartureDistanceWarning } from "@/lib/routing/citySequence";
+import { getDepartureDistanceWarning, optimizeCitySequence } from "@/lib/routing/citySequence";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import { SortableCityList } from "./SortableCityList";
 import type { CityId, TripBuilderData } from "@/types/trip";
@@ -37,6 +37,23 @@ export function TripSummaryEditorial({
   onAccommodationChange,
 }: TripSummaryEditorialProps) {
   const { data, setData } = useTripBuilder();
+
+  // One-time optimization: when cities were set without route optimization
+  // (e.g. auto-select, loaded from localStorage), apply circular route order.
+  const hasOptimized = useRef(false);
+  useEffect(() => {
+    if (hasOptimized.current) return;
+    const cities = data.cities ?? [];
+    if (data.customCityOrder || cities.length < 2 || !data.entryPoint) return;
+    hasOptimized.current = true;
+
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const optimized = optimizeCitySequence(data.entryPoint, cities, effectiveExit);
+
+    // Only update if the order actually changed
+    if (optimized.length === cities.length && optimized.every((c, i) => c === cities[i])) return;
+    setData((prev) => ({ ...prev, cities: optimized, regions: deriveRegionsFromCities(optimized) }));
+  }, [data.cities, data.customCityOrder, data.entryPoint, data.exitPoint, data.sameAsEntry, setData]);
 
   // Format dates
   const formattedDates = useMemo(() => {

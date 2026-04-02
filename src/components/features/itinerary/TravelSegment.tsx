@@ -76,10 +76,6 @@ function TransitStepRow({ step }: { step: TransitStep }) {
     ? VEHICLE_ICON[step.vehicleType.toUpperCase()] ?? "\uD83D\uDE83"
     : "\uD83D\uDE83";
 
-  const lineParts: string[] = [];
-  if (step.lineName) lineParts.push(step.lineName);
-  else if (step.lineShortName) lineParts.push(step.lineShortName);
-
   const routeParts: string[] = [];
   if (step.departureStop && step.arrivalStop) {
     routeParts.push(`${step.departureStop} \u2192 ${step.arrivalStop}`);
@@ -93,23 +89,51 @@ function TransitStepRow({ step }: { step: TransitStep }) {
     routeParts.push(`${step.durationMinutes} min`);
   }
 
+  // Hints for non-Japanese travelers
+  const hints: string[] = [];
+  if (step.carPosition) hints.push(`Board: ${step.carPosition}`);
+  if (step.departureGateway) hints.push(`Enter: ${step.departureGateway}`);
+  if (step.arrivalGateway) hints.push(`Exit: ${step.arrivalGateway}`);
+  if (step.fareYen) hints.push(`\u00A5${step.fareYen}`);
+
   return (
     <div className="flex items-start gap-2 py-1">
       <span className="text-xs">{icon}</span>
       <div className="min-w-0 flex-1">
-        {lineParts.length > 0 && (
+        <div className="flex items-center gap-1.5">
+          {step.lineColor && (
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: step.lineColor }}
+              title="Line color (match on station signs)"
+            />
+          )}
           <span className="text-xs font-semibold text-foreground">
-            {lineParts.join(" ")}
+            {step.lineName || step.lineShortName}
           </span>
-        )}
+          {step.trainType && step.trainType !== "Local" && (
+            <span className="rounded bg-sand/80 px-1 py-px text-[10px] font-medium text-foreground-secondary">
+              {step.trainType}
+            </span>
+          )}
+        </div>
         {step.headsign && (
-          <span className="ml-1 text-xs text-foreground-secondary">
+          <div className="text-xs text-foreground-secondary">
             toward {step.headsign}
-          </span>
+          </div>
         )}
         {routeParts.length > 0 && (
           <div className="text-xs text-foreground-secondary">
             {routeParts.join(" \u00B7 ")}
+          </div>
+        )}
+        {hints.length > 0 && (
+          <div className="mt-0.5 flex flex-wrap gap-x-2 gap-y-0.5">
+            {hints.map((hint) => (
+              <span key={hint} className="text-[10px] text-stone">
+                {hint}
+              </span>
+            ))}
           </div>
         )}
       </div>
@@ -286,7 +310,7 @@ export function TravelSegment({
 
       {/* Expanded transit steps */}
       {isExpanded && hasTransitSteps && (
-        <div className="mt-2 mx-4 rounded-lg border border-sage/20 bg-background/70 px-4 py-2">
+        <div className="mt-2 mx-4 cursor-default rounded-lg border border-sage/20 bg-background/70 px-4 py-2">
           <div className="relative space-y-0">
             {/* Vertical connector line */}
             <div className="absolute left-[8px] top-3 bottom-3 w-px bg-sage/30" />
@@ -308,8 +332,9 @@ export function TravelSegment({
                   <div className="relative pl-6">
                     <div
                       className={`absolute left-[5px] top-2.5 h-[7px] w-[7px] rounded-full ${
-                        step.type === "transit" ? "bg-sage" : "bg-stone"
+                        step.type === "transit" && !step.lineColor ? "bg-sage" : step.type !== "transit" ? "bg-stone" : ""
                       }`}
+                      style={step.type === "transit" && step.lineColor ? { backgroundColor: step.lineColor } : undefined}
                     />
                     <TransitStepRow step={step} />
                   </div>
@@ -317,6 +342,19 @@ export function TravelSegment({
               );
             })}
           </div>
+          {(() => {
+            const totalFare = segment.transitSteps!.reduce(
+              (sum, s) => sum + (s.fareYen ?? 0),
+              0,
+            );
+            return totalFare > 0 ? (
+              <div className="mt-1.5 border-t border-sage/10 pt-1.5 text-right">
+                <span className="font-mono text-[11px] text-stone">
+                  Total: {"\u00A5"}{totalFare.toLocaleString()}
+                </span>
+              </div>
+            ) : null;
+          })()}
         </div>
       )}
     </div>
