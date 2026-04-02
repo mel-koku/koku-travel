@@ -12,6 +12,7 @@ import type { Location } from "@/types/location";
 import { sanityClient } from "@/sanity/client";
 import { guideBySlugQuery, authorBySlugQuery, allAuthorsQuery } from "@/sanity/queries";
 import type { SanityGuide, SanityAuthorFull, SanityAuthorSummary } from "@/types/sanityGuide";
+import { logger } from "@/lib/logger";
 
 /**
  * Columns for full guide fetch
@@ -345,7 +346,8 @@ export async function getSanityGuideBySlug(
       { slug }
     );
     return result;
-  } catch {
+  } catch (error) {
+    logger.warn("[guideService] Failed to fetch guide by slug", { slug, error });
     return null;
   }
 }
@@ -379,7 +381,8 @@ export async function getSanityAuthorBySlug(
       { slug }
     );
     return result;
-  } catch {
+  } catch (error) {
+    logger.warn("[guideService] Failed to fetch author by slug", { slug, error });
     return null;
   }
 }
@@ -394,7 +397,8 @@ export async function getAllSanityAuthors(): Promise<SanityAuthorSummary[]> {
       allAuthorsQuery
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[guideService] Failed to fetch all authors", { error });
     return [];
   }
 }

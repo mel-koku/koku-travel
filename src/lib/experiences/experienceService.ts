@@ -6,6 +6,7 @@ import {
 } from "@/sanity/queries";
 import type { SanityExperience } from "@/types/sanityExperience";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
+import { logger } from "@/lib/logger";
 
 /**
  * Fetches an experience from Sanity by slug (CDN-cached).
@@ -19,7 +20,8 @@ export async function getSanityExperienceBySlug(
       { slug }
     );
     return result;
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch experience by slug", { slug, error });
     return null;
   }
 }
@@ -33,7 +35,8 @@ export async function getPublishedExperiences(): Promise<ExperienceSummary[]> {
       allPublishedExperiencesQuery
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch published experiences", { error });
     return [];
   }
 }
@@ -80,7 +83,8 @@ export async function getFeaturedExperiences(
       { limit }
     );
     return fallback || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch featured experiences", { error });
     return [];
   }
 }
@@ -120,7 +124,8 @@ export async function getExperiencesBySeason(
       { season, limit }
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch seasonal experiences", { error });
     return [];
   }
 }
@@ -157,7 +162,8 @@ export async function getWorkshopExperiences(): Promise<ExperienceSummary[]> {
       }`
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch workshop experiences", { error });
     return [];
   }
 }
@@ -197,7 +203,8 @@ export async function getWorkshopExperiencesByCraftType(
       { craftType }
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch workshops by craft type", { error });
     return [];
   }
 }
@@ -234,7 +241,8 @@ export async function getRelatedExperiences(
       { experienceType, excludeSlug, limit }
     );
     return result || [];
-  } catch {
+  } catch (error) {
+    logger.warn("[experienceService] Failed to fetch related experiences", { error });
     return [];
   }
 }
