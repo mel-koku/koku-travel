@@ -225,8 +225,58 @@ export function optimizeCitySequence(
     return appendReturnCityIfNeeded(result, entryPoint, exitPoint);
   }
 
-  // Determine optimal region order based on entry point, exit point, and travel time
-  // We need region order first to know which region is last
+  // Detect round trip: exit region equals entry region
+  const effectiveExit = exitPoint ?? entryPoint;
+  let entryRegion: RegionId | undefined;
+  let exitRegionId: RegionId | undefined;
+  if (entryPoint) {
+    const nearestToEntry = getNearestCityToEntryPoint(entryPoint);
+    if (nearestToEntry) entryRegion = getRegionForCity(nearestToEntry);
+  }
+  if (effectiveExit) {
+    const nearestToExit = getNearestCityToEntryPoint(effectiveExit);
+    if (nearestToExit) exitRegionId = getRegionForCity(nearestToExit);
+  }
+  const isRoundTrip = entryRegion && exitRegionId && entryRegion === exitRegionId
+    && citiesByRegion.has(entryRegion) && (citiesByRegion.get(entryRegion)?.length ?? 0) >= 2;
+
+  // Round trip with multiple regions: split the start region so the trip loops
+  // back. Entry city first → other regions → remaining start-region cities with
+  // the nearest-to-exit city last.
+  if (isRoundTrip && entryRegion) {
+    const startRegionCities = citiesByRegion.get(entryRegion)!;
+    const entryCityId = entryPoint ? getNearestCityToEntryPoint(entryPoint) : undefined;
+    const entryCity = entryCityId && startRegionCities.includes(entryCityId)
+      ? entryCityId
+      : startRegionCities[0]!;
+    const tailCities = startRegionCities.filter(c => c !== entryCity);
+
+    // Order other regions (excluding start region) using greedy nearest-neighbor
+    const otherRegionKeys = Array.from(citiesByRegion.keys()).filter(r => r !== entryRegion);
+    const otherRegionOrder = otherRegionKeys.length > 1
+      ? optimizeRegionOrder(otherRegionKeys, entryPoint, citiesByRegion, exitPoint)
+      : otherRegionKeys;
+
+    // Optimize cities within each non-start region
+    const lastOtherRegion = otherRegionOrder[otherRegionOrder.length - 1];
+    const result: CityId[] = [entryCity];
+    for (const regionId of otherRegionOrder) {
+      const isLast = regionId === lastOtherRegion && tailCities.length === 0;
+      const regionCities = citiesByRegion.get(regionId)!;
+      result.push(...optimizeCitiesWithinRegion(regionCities, entryPoint, isLast ? exitPoint : undefined, isLast));
+    }
+
+    // Add tail cities (remaining start-region cities), with nearest-to-exit last
+    if (tailCities.length > 0) {
+      const optimizedTail = optimizeCitiesWithinRegion(tailCities, entryPoint, exitPoint, true);
+      result.push(...optimizedTail);
+    }
+
+    const pinned = pinExitCityLast(result, entryPoint, exitPoint);
+    return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint);
+  }
+
+  // Non-round-trip: group by region and concatenate in optimal order
   const regionKeys = Array.from(citiesByRegion.keys());
   const regionOrder = optimizeRegionOrder(
     regionKeys,
@@ -257,8 +307,8 @@ export function optimizeCitySequence(
   }
 
   // Final pass: ensure last city is near the departure airport.
-  // Region-based grouping can strand the trip far from exit (e.g., round-trip
-  // from Narita ending in Chubu). Move a closer city to the end when possible.
+  // Region-based grouping can strand the trip far from exit (e.g., one-way trip
+  // ending far from exit airport). Move a closer city to the end when possible.
   const pinned = pinExitCityLast(result, entryPoint, exitPoint);
 
   return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint);
@@ -268,7 +318,7 @@ export function optimizeCitySequence(
  * Minutes from exit beyond which we consider the last city "far" and look for
  * a closer alternative to pin at the end of the sequence.
  */
-const DEPARTURE_COMFORT_MINUTES = 120;
+const DEPARTURE_COMFORT_MINUTES = 90;
 
 /**
  * Move the nearest-to-exit city to the last position when the current last
@@ -328,7 +378,7 @@ function appendReturnCityIfNeeded(
   if (!nearestCity || lastCity === nearestCity) return cities;
 
   const time = travelTimeFromEntryPoint(effectiveExit, lastCity);
-  if (time !== undefined && time > 120) {
+  if (time !== undefined && time > DEPARTURE_COMFORT_MINUTES) {
     cities.push(nearestCity);
   }
   return cities;
