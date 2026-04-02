@@ -266,7 +266,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
       </div>
 
       {/* Right (40%) — Airport selection */}
-      <div className="flex flex-1 flex-col px-6 py-8 lg:w-[40%] lg:justify-center lg:px-12">
+      <div className="flex flex-1 flex-col px-6 py-8 lg:w-[40%] lg:justify-center lg:pl-6 lg:pr-12">
         <div className="w-full max-w-md">
           <p className="eyebrow-editorial text-brand-primary">
             STEP 02
