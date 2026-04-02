@@ -379,7 +379,7 @@ function appendReturnCityIfNeeded(
 
   const time = travelTimeFromEntryPoint(effectiveExit, lastCity);
   if (time !== undefined && time > DEPARTURE_COMFORT_MINUTES) {
-    cities.push(nearestCity);
+    return [...cities, nearestCity];
   }
   return cities;
 }
