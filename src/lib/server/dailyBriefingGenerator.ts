@@ -40,7 +40,7 @@ function buildBriefingPrompt(
       .filter((a) => a.kind === "place" && !a.isAnchor)
       .map((a) => {
         const parts = [a.title];
-        if (a.kind === "place" && a.category) parts.push(`(${a.category})`);
+        if (a.kind === "place" && a.mealType) parts.push(`(${a.mealType})`);
         if (a.kind === "place" && a.schedule?.arrivalTime)
           parts.push(`at ${a.schedule.arrivalTime}`);
         if (a.kind === "place" && a.tags?.includes("cash-only"))
@@ -110,7 +110,7 @@ DENY LIST (never use these words): amazing, incredible, breathtaking, stunning, 
 TRIP CONTEXT:
 - Cities: ${uniqueCities.join(" \u2192 ")}
 - ${days.length} days total
-- Pace: ${builderData.pace ?? "moderate"}
+- Pace: ${builderData.style ?? "balanced"}
 - Group: ${builderData.group?.type ?? "solo"}
 
 DAILY SCHEDULE:

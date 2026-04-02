@@ -368,7 +368,7 @@ describe("POST /api/routing/estimate", () => {
 
       expect(response.status).toBe(500);
       const data = await response.json();
-      expect(data.error).toContain("API quota exceeded");
+      expect(data.error).toContain("Routing estimate unavailable");
     });
   });
 });

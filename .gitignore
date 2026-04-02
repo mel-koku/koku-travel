@@ -189,3 +189,7 @@ query_*.js
 # Seed/enrichment data (already imported into DB, not used at runtime)
 data/
 !src/data/
+
+# Internal notes / temp files (never commit)
+weekly-update*.md
+temp-*.json

@@ -36,7 +36,7 @@ export function getTripLevelTips(
   const hasTemplesOrShrines = days.some((d) =>
     d.activities.some((a) =>
       a.kind === "place" &&
-      ["temple", "shrine"].includes(a.category ?? ""),
+      a.tags?.some((t) => ["temple", "shrine"].includes(t)),
     ),
   );
 

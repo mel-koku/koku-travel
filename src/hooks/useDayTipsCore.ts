@@ -209,7 +209,6 @@ export function useDayTipsCore(
         a.travelFromPrevious &&
         TRANSIT_MODES.has(a.travelFromPrevious.mode),
     );
-    const hasTransit = transitSegments.length > 0;
 
     // Day 1 only: Luggage drop-off tip when arriving at an airport
     if (dayIndex === 0) {

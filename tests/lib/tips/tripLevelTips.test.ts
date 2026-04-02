@@ -115,7 +115,7 @@ describe("getTripLevelTips", () => {
       days: [
         createTestItineraryDay({
           activities: [
-            createTestPlaceActivity({ category: "temple" }),
+            createTestPlaceActivity({ tags: ["temple"] }),
           ],
         }),
       ],
@@ -130,7 +130,7 @@ describe("getTripLevelTips", () => {
       days: [
         createTestItineraryDay({
           activities: [
-            createTestPlaceActivity({ category: "restaurant" }),
+            createTestPlaceActivity({ tags: ["restaurant"] }),
           ],
         }),
       ],

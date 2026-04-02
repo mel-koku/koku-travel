@@ -38,7 +38,7 @@ export function DragHandle({
   listeners,
   displayLabel,
   colorScheme: _colorScheme,
-  isSelected,
+  isSelected: _isSelected,
 }: DragHandleProps) {
   const dragAttributeProps = (attributes ?? {}) as Record<string, unknown>;
   const dragHandleListeners = (() => {
