@@ -340,7 +340,7 @@ describe("POST /api/routing/route", () => {
 
       expect(response.status).toBe(500);
       const data = await response.json();
-      expect(data.error).toContain("No route found");
+      expect(data.error).toBe("An internal error occurred");
     });
 
     it("should handle non-Error exceptions gracefully", async () => {
