@@ -38,6 +38,9 @@ type EnvConfig = {
   GOOGLE_GENERATIVE_AI_API_KEY?: string;
   ENABLE_CHAT?: string;
 
+  // NAVITIME (Japan transit routing via RapidAPI)
+  NAVITIME_RAPIDAPI_KEY?: string;
+
   // Email (Resend)
   RESEND_API_KEY?: string;
 };
@@ -101,6 +104,7 @@ function createLenientConfig(): EnvConfig {
     CHEAP_MODE: process.env.CHEAP_MODE,
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     ENABLE_CHAT: process.env.ENABLE_CHAT,
+    NAVITIME_RAPIDAPI_KEY: process.env.NAVITIME_RAPIDAPI_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
 }
@@ -166,6 +170,7 @@ function validateEnv(): EnvConfig {
     CHEAP_MODE: getOptionalEnv("CHEAP_MODE"),
     GOOGLE_GENERATIVE_AI_API_KEY: getOptionalEnv("GOOGLE_GENERATIVE_AI_API_KEY"),
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
+    NAVITIME_RAPIDAPI_KEY: getOptionalEnv("NAVITIME_RAPIDAPI_KEY"),
     RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
   };
 }
@@ -230,6 +235,9 @@ export const env = {
   },
   get isChatEnabled() {
     return envConfig.ENABLE_CHAT !== "false";
+  },
+  get navitimeRapidApiKey() {
+    return envConfig.NAVITIME_RAPIDAPI_KEY;
   },
   get resendApiKey() {
     return envConfig.RESEND_API_KEY;

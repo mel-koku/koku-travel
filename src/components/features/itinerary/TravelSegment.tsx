@@ -29,6 +29,38 @@ const VEHICLE_ICON: Record<string, string> = {
   FERRY: "\u26F4\uFE0F",
 };
 
+function TransferIndicator({ stationName }: { stationName?: string }) {
+  return (
+    <div className="flex items-center gap-2 py-0.5 pl-1">
+      <span className="rounded bg-sand/60 px-1.5 py-px text-[10px] font-medium uppercase tracking-wide text-foreground-secondary">
+        Transfer{stationName ? ` at ${stationName}` : ""}
+      </span>
+    </div>
+  );
+}
+
+function isTransferPoint(
+  steps: TransitStep[],
+  index: number
+): string | false {
+  const current = steps[index];
+  if (!current || current.type !== "transit" || index === 0) return false;
+
+  // Walk backward to find the previous transit step
+  for (let i = index - 1; i >= 0; i--) {
+    const prev = steps[i];
+    if (prev?.type === "transit") {
+      const prevLine = prev.lineName ?? prev.lineShortName;
+      const currLine = current.lineName ?? current.lineShortName;
+      if (prevLine && currLine && prevLine !== currLine) {
+        return current.departureStop ?? prev.arrivalStop ?? false;
+      }
+      return false;
+    }
+  }
+  return false;
+}
+
 function TransitStepRow({ step }: { step: TransitStep }) {
   if (step.type === "walk") {
     const label = step.walkInstruction ?? `Walk ${step.walkMinutes ?? ""}min`;
@@ -258,16 +290,32 @@ export function TravelSegment({
           <div className="relative space-y-0">
             {/* Vertical connector line */}
             <div className="absolute left-[8px] top-3 bottom-3 w-px bg-sage/30" />
-            {segment.transitSteps!.map((step, i) => (
-              <div key={i} className="relative pl-6">
-                <div
-                  className={`absolute left-[5px] top-2.5 h-[7px] w-[7px] rounded-full ${
-                    step.type === "transit" ? "bg-sage" : "bg-stone"
-                  }`}
-                />
-                <TransitStepRow step={step} />
-              </div>
-            ))}
+            {segment.transitSteps!.map((step, i) => {
+              const transferStation = isTransferPoint(
+                segment.transitSteps!,
+                i
+              );
+              return (
+                <div key={i}>
+                  {transferStation !== false && (
+                    <div className="relative pl-6">
+                      <div className="absolute left-1 top-1.5 h-2.25 w-2.25 rounded-sm border-2 border-sage bg-background" />
+                      <TransferIndicator
+                        stationName={transferStation || undefined}
+                      />
+                    </div>
+                  )}
+                  <div className="relative pl-6">
+                    <div
+                      className={`absolute left-[5px] top-2.5 h-[7px] w-[7px] rounded-full ${
+                        step.type === "transit" ? "bg-sage" : "bg-stone"
+                      }`}
+                    />
+                    <TransitStepRow step={step} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

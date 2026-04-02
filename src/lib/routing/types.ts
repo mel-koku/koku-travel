@@ -1,6 +1,6 @@
 import type { ItineraryTravelMode } from "@/types/itinerary";
 
-export type RoutingProviderName = "mapbox" | "openrouteservice" | "google" | "mock";
+export type RoutingProviderName = "mapbox" | "openrouteservice" | "google" | "navitime" | "mock";
 
 /**
  * Standard routing modes expected by external routing APIs.

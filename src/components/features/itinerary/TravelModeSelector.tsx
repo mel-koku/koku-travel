@@ -96,8 +96,26 @@ export function TravelModeSelector({
       return newEstimates;
     });
 
-    // Fetch routes for all modes in parallel via API
-    const fetchPromises = TRAVEL_MODES.map(async (option) => {
+    // Transit sub-modes (train, subway, bus, transit) all resolve to the same
+    // Google Directions "transit" mode server-side. Fetch once and share the result.
+    const TRANSIT_MODES = new Set<ItineraryTravelMode>(["train", "subway", "bus", "transit"]);
+
+    // Deduplicate: pick one canonical mode per routing backend mode
+    const toFetch: TravelModeOption[] = [];
+    const transitModes: TravelModeOption[] = [];
+    for (const option of TRAVEL_MODES) {
+      if (TRANSIT_MODES.has(option.mode)) {
+        transitModes.push(option);
+      } else {
+        toFetch.push(option);
+      }
+    }
+    // Only fetch one transit mode; share result with siblings
+    if (transitModes.length > 0) {
+      toFetch.push(transitModes[0]!);
+    }
+
+    const fetchPromises = toFetch.map(async (option) => {
       try {
         const request: RoutingRequest = {
           origin,
@@ -123,26 +141,33 @@ export function TravelModeSelector({
           distanceMeters?: number;
         };
 
-        // Update estimate for this mode
+        // For transit modes, share the result across all sub-modes
+        const modesToUpdate = TRANSIT_MODES.has(option.mode) ? transitModes : [option];
+
         setEstimates((prevEstimates) => {
           const updated = new Map(prevEstimates);
-          updated.set(option.mode, {
-            mode: option.mode,
-            durationMinutes: data.durationMinutes,
-            isLoading: false,
-          });
+          for (const m of modesToUpdate) {
+            updated.set(m.mode, {
+              mode: m.mode,
+              durationMinutes: data.durationMinutes,
+              isLoading: false,
+            });
+          }
           return updated;
         });
       } catch (error) {
-        // Update estimate with error for this mode
+        const modesToUpdate = TRANSIT_MODES.has(option.mode) ? transitModes : [option];
+
         setEstimates((prevEstimates) => {
           const updated = new Map(prevEstimates);
-          updated.set(option.mode, {
-            mode: option.mode,
-            durationMinutes: 0,
-            isLoading: false,
-            error: error instanceof Error ? error.message : "Failed to fetch route",
-          });
+          for (const m of modesToUpdate) {
+            updated.set(m.mode, {
+              mode: m.mode,
+              durationMinutes: 0,
+              isLoading: false,
+              error: error instanceof Error ? error.message : "Failed to fetch route",
+            });
+          }
           return updated;
         });
       }

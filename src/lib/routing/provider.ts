@@ -1,6 +1,7 @@
 import { estimateHeuristicRoute } from "./heuristic";
 import { fetchGoogleRoute } from "./google";
 import { fetchMapboxRoute } from "./mapbox";
+import { fetchNavitimeRoute } from "./navitime";
 import { getCachedRoute, setCachedRoute } from "./cache";
 import type { RoutingRequest, RoutingResult, RoutingProviderName, RoutingFetchFn } from "./types";
 import { toRoutingMode } from "./types";
@@ -13,6 +14,11 @@ type ProviderConfig = {
 };
 
 const PROVIDERS: ProviderConfig[] = [
+  {
+    name: "navitime",
+    handler: fetchNavitimeRoute,
+    isEnabled: () => Boolean(process.env.NAVITIME_RAPIDAPI_KEY),
+  },
   {
     name: "mapbox",
     handler: fetchMapboxRoute,
@@ -31,8 +37,10 @@ const PROVIDERS: ProviderConfig[] = [
 ];
 
 function resolveProvider(mode?: string): ProviderConfig | null {
-  // Always prefer Google for transit — Mapbox lacks transit support entirely
+  // Prefer NAVITIME for transit (Japan-native data), fall back to Google
   if (mode === "transit") {
+    const navitime = PROVIDERS.find((p) => p.name === "navitime");
+    if (navitime?.isEnabled()) return navitime;
     const google = PROVIDERS.find((p) => p.name === "google");
     if (google?.isEnabled()) return google;
   }
