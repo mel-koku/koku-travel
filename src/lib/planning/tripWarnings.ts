@@ -155,11 +155,11 @@ function isDateInPeriod(
 
   // Handle periods that cross year boundary (e.g., Dec 28 - Jan 4)
   if (startMonth > endMonth) {
-    // Check if in Dec portion or Jan portion
+    // Months fully inside the wrapped range (e.g., Jan in a Nov-Feb span)
+    if (month > startMonth || month < endMonth) return true;
+    // Boundary months: check day
     if (month === startMonth && day >= startDay) return true;
-    if (month > startMonth) return true;
     if (month === endMonth && day <= endDay) return true;
-    if (month < endMonth) return true;
     return false;
   }
 
