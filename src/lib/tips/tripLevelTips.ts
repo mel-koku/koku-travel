@@ -1,0 +1,151 @@
+import type { Itinerary } from "@/types/itinerary";
+import { getActiveHolidays } from "@/data/crowdPatterns";
+import { getSeasonalFoods, formatSeasonalFoodTip } from "@/data/seasonalFoods";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
+
+export type TripLevelTip = {
+  id: string;
+  title: string;
+  summary: string;
+  icon: string;
+};
+
+/**
+ * Generate tips that apply to the entire trip and should only be shown once
+ * in the "Travel Essentials" section, not repeated per-day.
+ */
+export function getTripLevelTips(
+  itinerary: Itinerary,
+  tripStartDate?: string,
+): TripLevelTip[] {
+  const tips: TripLevelTip[] = [];
+  const days = itinerary.days;
+  if (days.length === 0) return tips;
+
+  const hasTransit = days.some((d) =>
+    d.activities.some(
+      (a) =>
+        a.kind === "place" &&
+        a.travelFromPrevious &&
+        ["train", "subway", "bus", "tram", "ferry", "transit"].includes(
+          a.travelFromPrevious.mode,
+        ),
+    ),
+  );
+  const hasMultipleCities = new Set(days.map((d) => d.cityId)).size > 1;
+  const hasTemplesOrShrines = days.some((d) =>
+    d.activities.some((a) =>
+      a.kind === "place" &&
+      ["temple", "shrine"].includes(a.category ?? ""),
+    ),
+  );
+
+  // IC Card
+  if (hasTransit) {
+    tips.push({
+      id: "trip-ic-card",
+      title: "Get an IC Card",
+      summary:
+        "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
+      icon: "\uD83D\uDE83",
+    });
+  }
+
+  // JR Pass
+  if (hasMultipleCities && hasTransit) {
+    tips.push({
+      id: "trip-jr-pass",
+      title: "Consider a rail pass",
+      summary:
+        "Multi-city trips often save money with a Japan Rail Pass or regional pass (Kansai Area Pass, Hokkaido Pass). Compare pass cost vs individual tickets before your trip.",
+      icon: "\uD83D\uDE85",
+    });
+  }
+
+  // Escalator etiquette
+  if (hasTransit) {
+    tips.push({
+      id: "trip-escalator",
+      title: "Escalator etiquette",
+      summary:
+        "Stand on the left in Tokyo (right in Osaka/Kyoto). Keep the other side clear for people walking past.",
+      icon: "\uD83D\uDEB6",
+    });
+  }
+
+  // Goshuin etiquette
+  if (hasTemplesOrShrines) {
+    tips.push({
+      id: "trip-goshuin",
+      title: "Goshuin etiquette",
+      summary:
+        "Many temples and shrines offer goshuin (\u5FA1\u6731\u5370), hand-brushed calligraphy stamps. Bring a goshuincho (stamp book) and present it open to the correct page. Typical cost: \u00A5300-500.",
+      icon: "\uD83D\uDCD6",
+    });
+  }
+
+  // Holiday awareness
+  if (tripStartDate) {
+    const startDate = parseLocalDate(tripStartDate);
+    if (startDate) {
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + days.length - 1);
+      const holidays = getActiveHolidays(
+        startDate.getMonth() + 1,
+        startDate.getDate(),
+        endDate.getMonth() + 1,
+        endDate.getDate(),
+      );
+      for (const holiday of holidays) {
+        tips.push({
+          id: `trip-holiday-${holiday.id}`,
+          title: holiday.name,
+          summary: `${holiday.description} Expect larger crowds at popular destinations during this period.`,
+          icon: "\uD83D\uDD34",
+        });
+      }
+    }
+  }
+
+  // Seasonal food overview
+  if (tripStartDate) {
+    const startDate = parseLocalDate(tripStartDate);
+    if (startDate) {
+      const month = startDate.getMonth() + 1;
+      const allCities = [...new Set(days.map((d) => d.cityId).filter(Boolean))];
+      const allFoods = allCities.flatMap((c) => getSeasonalFoods(month, c!));
+      const uniqueFoods = [
+        ...new Map(allFoods.map((f) => [f.name, f])).values(),
+      ];
+      if (uniqueFoods.length > 0) {
+        tips.push({
+          id: "trip-seasonal-food",
+          title: "What's in season",
+          summary: formatSeasonalFoodTip(uniqueFoods.slice(0, 6)),
+          icon: "\uD83C\uDF7D\uFE0F",
+        });
+      }
+    }
+  }
+
+  // Cash-only locations
+  const cashOnlyActivities = days.flatMap((d) =>
+    d.activities.filter(
+      (a) => a.kind === "place" && a.tags?.includes("cash-only"),
+    ),
+  );
+  if (cashOnlyActivities.length > 0) {
+    const names = [...new Set(cashOnlyActivities.map((a) => a.title))].slice(
+      0,
+      4,
+    );
+    tips.push({
+      id: "trip-cash-only",
+      title: "Bring cash",
+      summary: `${names.join(", ")}${cashOnlyActivities.length > 4 ? ` and ${cashOnlyActivities.length - 4} more` : ""} ${cashOnlyActivities.length === 1 ? "is" : "are"} cash-only. Withdraw yen at any 7-Eleven or post office ATM.`,
+      icon: "\uD83D\uDCB4",
+    });
+  }
+
+  return tips;
+}

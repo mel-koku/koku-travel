@@ -35,6 +35,7 @@ export function createTripRecord(input: CreateTripInput): StoredTrip {
     builderData: input.builderData,
     dayIntros: input.dayIntros,
     guideProse: input.guideProse,
+    dailyBriefings: input.dailyBriefings,
   };
 }
 
@@ -188,6 +189,9 @@ export function sanitizeTrips(raw: unknown): StoredTrip[] {
       }
       if (record.guideProse && typeof record.guideProse === "object") {
         trip.guideProse = record.guideProse as StoredTrip["guideProse"];
+      }
+      if (record.dailyBriefings && typeof record.dailyBriefings === "object") {
+        trip.dailyBriefings = record.dailyBriefings as StoredTrip["dailyBriefings"];
       }
       return trip;
     })

@@ -89,6 +89,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
         itinerary: cachedResult.itinerary,
         dayIntros: cachedResult.dayIntros,
         guideProse: cachedResult.guideProse,
+        dailyBriefings: cachedResult.dailyBriefings,
         validation: tripValidation,
         itineraryValidation: {
           valid: itineraryValidation.valid,
@@ -144,10 +145,10 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       elapsedMs,
     });
 
-    const { trip, itinerary, dayIntros, guideProse } = generationResult;
+    const { trip, itinerary, dayIntros, guideProse, dailyBriefings } = generationResult;
 
     // Cache the generated itinerary for future requests
-    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse);
+    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse, dailyBriefings);
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
@@ -171,6 +172,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       itinerary,
       dayIntros,
       guideProse,
+      dailyBriefings,
       validation: tripValidation,
       itineraryValidation: {
         valid: itineraryValidation.valid,

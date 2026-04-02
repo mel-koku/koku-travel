@@ -32,20 +32,22 @@ type DayTipsProps = {
   embedded?: boolean;
   /** Callback fired when tip count changes (for parent badge) */
   onTipCount?: (count: number) => void;
-  /** Next day's activities — used for cash-only advance warning */
-  nextDayActivities?: ItineraryDay["activities"];
   /** Whether this is the traveler's first time visiting Japan */
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
   hasLuggagePrompt?: boolean;
   /** DB tip IDs already surfaced as smart prompts — suppress from day tips */
   surfacedGuidanceIds?: Set<string>;
+  /** Tip IDs already shown on prior days — used for cross-day dedup */
+  previousDaysTipIds?: Set<string>;
+  /** Callback fired with emitted tip IDs (for cross-day dedup tracking) */
+  onTipsEmitted?: (dayIndex: number, tipIds: string[]) => void;
   /** When true, runs fetch logic and fires onTipCount but renders nothing */
   countOnly?: boolean;
 };
 
 
-export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, surfacedGuidanceIds, countOnly }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, isFirstTimeVisitor, hasLuggagePrompt, surfacedGuidanceIds, previousDaysTipIds, onTipsEmitted, countOnly }: DayTipsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => getDismissedTips());
@@ -60,10 +62,10 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
   }, []);
 
   const { allTips: coreTips, isLoading } = useDayTipsCore(day, tripStartDate, dayIndex, {
-    nextDayActivities,
     isFirstTimeVisitor,
     hasLuggagePrompt,
     surfacedGuidanceIds,
+    previousDaysTipIds,
   });
 
   const allTips = useMemo(
@@ -75,6 +77,13 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
   useEffect(() => {
     onTipCount?.(allTips.length);
   }, [allTips.length, onTipCount]);
+
+  // Report emitted tip IDs for cross-day dedup
+  useEffect(() => {
+    if (onTipsEmitted && allTips.length > 0) {
+      onTipsEmitted(dayIndex, allTips.map((t) => t.id));
+    }
+  }, [allTips, dayIndex, onTipsEmitted]);
 
   // Count-only mode: run fetch + report count, but render nothing
   if (countOnly) {

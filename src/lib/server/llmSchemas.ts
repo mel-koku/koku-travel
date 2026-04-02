@@ -95,3 +95,21 @@ export function buildGuideProseSchema(
     ),
   });
 }
+
+// ── Pass 4: Daily Briefings (dynamic schema) ─────────────────────
+
+/**
+ * Builds a dynamic daily briefing schema with exact day IDs from the itinerary.
+ */
+export function buildDailyBriefingSchema(
+  dayIds: string[],
+) {
+  return z.object({
+    days: z.array(
+      z.object({
+        dayId: dayIds.length > 0 ? z.enum(dayIds as [string, ...string[]]) : z.string(),
+        briefing: z.string(),
+      }),
+    ),
+  });
+}

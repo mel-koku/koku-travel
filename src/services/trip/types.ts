@@ -4,7 +4,7 @@
 
 import type { Itinerary, ItineraryEdit } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-import type { GeneratedGuide } from "@/types/llmConstraints";
+import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 
 export type StoredTrip = {
   id: string;
@@ -15,6 +15,7 @@ export type StoredTrip = {
   builderData: TripBuilderData;
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
+  dailyBriefings?: GeneratedBriefings;
 };
 
 export type CreateTripInput = {
@@ -23,6 +24,7 @@ export type CreateTripInput = {
   builderData: TripBuilderData;
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
+  dailyBriefings?: GeneratedBriefings;
 };
 
 export type EditHistoryState = {

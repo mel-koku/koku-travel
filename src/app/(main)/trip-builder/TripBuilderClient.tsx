@@ -14,13 +14,14 @@ import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
-import type { GeneratedGuide } from "@/types/llmConstraints";
+import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 
 type PlanApiResponse = {
   trip: { id: string };
   itinerary: Itinerary;
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
+  dailyBriefings?: GeneratedBriefings;
   validation: { valid: boolean; issues: string[] };
 };
 
@@ -92,6 +93,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         builderData: data as TripBuilderData,
         dayIntros: result.dayIntros,
         guideProse: result.guideProse,
+        dailyBriefings: result.dailyBriefings,
       });
 
       // Track vibe selections for learned preferences

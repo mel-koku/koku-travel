@@ -17,7 +17,7 @@ import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
-import type { GeneratedGuide } from "@/types/llmConstraints";
+import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 import { DaySelector } from "./DaySelector";
 
 import { LocationSearchBar } from "./LocationSearchBar";
@@ -78,6 +78,7 @@ type ItineraryShellProps = {
   tripBuilderData?: TripBuilderData;
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
+  dailyBriefings?: GeneratedBriefings;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -106,6 +107,7 @@ export const ItineraryShell = ({
   tripBuilderData,
   dayIntros,
   guideProse,
+  dailyBriefings,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -863,6 +865,7 @@ export const ItineraryShell = ({
                   onAcceptDayTrip={handleAcceptDayTrip}
                   isAcceptingDayTrip={isAcceptingDayTrip}
                   suggestions={suggestions}
+                  dailyBriefings={dailyBriefings}
                 />
               </div>
             )}

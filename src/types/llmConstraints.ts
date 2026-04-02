@@ -95,3 +95,15 @@ export type GeneratedGuide = {
   tripOverview: string;
   days: GeneratedDayGuide[];
 };
+
+// ── Pass 4: Daily Briefings ──────────────────────────────────────
+
+/** Context-aware per-day tips as prose */
+export type DayBriefing = {
+  dayId: string;
+  briefing: string;
+};
+
+export type GeneratedBriefings = {
+  days: DayBriefing[];
+};

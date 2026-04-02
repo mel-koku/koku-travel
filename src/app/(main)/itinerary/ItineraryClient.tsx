@@ -258,6 +258,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           tripBuilderData={selectedTrip?.builderData}
           dayIntros={selectedTrip?.dayIntros}
           guideProse={selectedTrip?.guideProse}
+          dailyBriefings={selectedTrip?.dailyBriefings}
           suggestions={smartPrompts.gaps}
           onAcceptSuggestion={handleSmartPromptAccept}
           onSkipSuggestion={handleSmartPromptSkip}

@@ -7,8 +7,6 @@ import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { getRegionForCity } from "@/data/regions";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 import { LAST_TRAIN_TIMES, formatLastTrainTime } from "@/lib/constants/lastTrainTimes";
-import { getSeasonalFoods, formatSeasonalFoodTip } from "@/data/seasonalFoods";
-import { getActiveHolidays } from "@/data/crowdPatterns";
 import { getFestivalsForDay } from "@/data/festivalCalendar";
 import { getEkibenForCity } from "@/data/ekibenGuide";
 import { getOmiyageForCity } from "@/data/omiyageGuide";
@@ -52,8 +50,6 @@ export function toDisplayTip(tip: TravelGuidance): DisplayTip {
 
 /** Keywords used to detect DB tips that overlap with hardcoded pro tips. */
 export const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
-  // Transit cards
-  "pro-ic-card": ["ic card", "suica", "pasmo", "icoca", "mobile suica"],
   // Luggage forwarding
   "pro-city-transition": [
     "takkyubin", "luggage forwarding", "luggage delivery",
@@ -61,33 +57,36 @@ export const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
   ],
   // Last train
   "pro-last-train": ["last train", "shuden"],
-  // Rail passes
+  // Rail passes (DB tips about rail passes should still be suppressed)
   "pro-jr-pass": ["rail pass", "jr pass", "japan rail"],
-  // Cash / payment
-  "pro-cash-tomorrow": ["cash", "yen", "atm", "coins", "cashless"],
   // Rush hour
   "pro-rush-hour-morning": ["rush hour", "crowded train", "avoid rush"],
   "pro-rush-hour-evening": ["rush hour", "crowded train", "avoid rush"],
-  // Escalator convention
-  "pro-escalator": ["escalator", "stand on the left", "stand on the right"],
-  // Holidays / crowd events
-  "pro-holiday-crowd": ["golden week", "obon", "new year", "oshogatsu"],
-  // Seasonal food
-  "pro-seasonal-food": ["seasonal food", "seasonal dish"],
-  // Goshuin
-  "pro-goshuin-etiquette": ["goshuin", "stamp book", "temple stamp"],
 };
+
+/**
+ * Keywords for tips that moved to trip-level. DB tips matching these
+ * are suppressed unconditionally (not just when a matching pro tip fires).
+ */
+const TRIP_LEVEL_SUPPRESSION_KEYWORDS = [
+  "ic card", "suica", "pasmo", "icoca", "mobile suica",
+  "escalator", "stand on the left", "stand on the right",
+  "golden week", "obon", "new year", "oshogatsu",
+  "seasonal food", "seasonal dish", "what's in season",
+  "goshuin", "stamp book", "temple stamp",
+];
 
 /** Festival dedup keywords (pro tip IDs are dynamic: pro-festival-{id}) */
 const FESTIVAL_DEDUP_KEYWORDS = ["matsuri", "festival"];
 
 export type UseDayTipsCoreOptions = {
-  nextDayActivities?: ItineraryDay["activities"];
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active -- suppress the "Send luggage ahead" pro tip */
   hasLuggagePrompt?: boolean;
   /** DB tip IDs already surfaced as smart prompts -- suppress from day tips */
   surfacedGuidanceIds?: Set<string>;
+  /** Tip IDs already shown on prior days -- used for cross-day dedup */
+  previousDaysTipIds?: Set<string>;
 };
 
 export function useDayTipsCore(
@@ -96,10 +95,10 @@ export function useDayTipsCore(
   dayIndex: number,
   options?: UseDayTipsCoreOptions,
 ): { proTips: DisplayTip[]; dbTips: DisplayTip[]; allTips: DisplayTip[]; isLoading: boolean } {
-  const nextDayActivities = options?.nextDayActivities;
   const isFirstTimeVisitor = options?.isFirstTimeVisitor;
   const hasLuggagePrompt = options?.hasLuggagePrompt;
   const surfacedGuidanceIds = options?.surfacedGuidanceIds;
+  const previousDaysTipIds = options?.previousDaysTipIds;
   const [rawDbTips, setRawDbTips] = useState<TravelGuidance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -212,42 +211,6 @@ export function useDayTipsCore(
     );
     const hasTransit = transitSegments.length > 0;
 
-    // Day 1 only: IC Card tip
-    if (dayIndex === 0 && hasTransit) {
-      tips.push({
-        id: "pro-ic-card",
-        title: "Get an IC Card",
-        summary:
-          "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
-        icon: "\uD83D\uDE83",
-      });
-    }
-
-    // Day 1: JR Pass / transit pass tip for multi-city trips
-    if (dayIndex === 0) {
-      const hasCityTransition = day.cityTransition;
-      if (hasCityTransition || hasTransit) {
-        tips.push({
-          id: "pro-jr-pass",
-          title: "Consider a rail pass",
-          summary:
-            "Multi-city trips often save money with a Japan Rail Pass or regional pass (Kansai Area Pass, Hokkaido Pass). Compare pass cost vs individual tickets before your trip.",
-          icon: "\uD83C\uDFAB",
-        });
-      }
-    }
-
-    // Day 1: Escalator convention
-    if (dayIndex === 0 && hasTransit) {
-      tips.push({
-        id: "pro-escalator",
-        title: "Escalator etiquette",
-        summary:
-          "Stand on the left in Tokyo (right in Osaka/Kyoto). Keep the other side clear for people walking past.",
-        icon: "\uD83D\uDEB6",
-      });
-    }
-
     // Day 1 only: Luggage drop-off tip when arriving at an airport
     if (dayIndex === 0) {
       const hasAirportAnchor = activities.some(
@@ -275,18 +238,21 @@ export function useDayTipsCore(
       });
     }
 
-    // Heavy transit day (3+ segments)
+    // Heavy transit day (3+ segments) -- scoped by city
     if (transitSegments.length >= 3) {
-      tips.push({
-        id: "pro-heavy-transit",
-        title: "Heavy transit day",
-        summary:
-          "You'll be using trains between most stops today. Keep your IC card handy and check platform signs for express vs local trains.",
-        icon: "\uD83D\uDE89",
-      });
+      const heavyTransitId = `pro-heavy-transit:${day.cityId ?? "unknown"}`;
+      if (!previousDaysTipIds?.has(heavyTransitId)) {
+        tips.push({
+          id: heavyTransitId,
+          title: "Heavy transit day",
+          summary:
+            "You'll be using trains between most stops today. Keep your IC card handy and check platform signs for express vs local trains.",
+          icon: "\uD83D\uDE89",
+        });
+      }
     }
 
-    // Rush hour warning
+    // Rush hour warning -- scoped by city
     let hasMorningRush = false;
     let hasEveningRush = false;
     for (const a of activities) {
@@ -300,25 +266,31 @@ export function useDayTipsCore(
       if (depMinutes >= 1050 && depMinutes <= 1140) hasEveningRush = true;
     }
     if (hasMorningRush) {
-      tips.push({
-        id: "pro-rush-hour-morning",
-        title: "Morning rush hour",
-        summary:
-          "Expect crowded trains between 7:30 and 9:30. Stand to the side at platform doors and let passengers off first.",
-        icon: "\u23F0",
-      });
+      const rushMorningId = `pro-rush-hour-morning:${day.cityId ?? "unknown"}`;
+      if (!previousDaysTipIds?.has(rushMorningId)) {
+        tips.push({
+          id: rushMorningId,
+          title: "Morning rush hour",
+          summary:
+            "Expect crowded trains between 7:30 and 9:30. Stand to the side at platform doors and let passengers off first.",
+          icon: "\u23F0",
+        });
+      }
     }
     if (hasEveningRush) {
-      tips.push({
-        id: "pro-rush-hour-evening",
-        title: "Evening rush hour",
-        summary:
-          "Trains get packed again between 17:30 and 19:00. Consider timing your travel just before or after this window.",
-        icon: "\u23F0",
-      });
+      const rushEveningId = `pro-rush-hour-evening:${day.cityId ?? "unknown"}`;
+      if (!previousDaysTipIds?.has(rushEveningId)) {
+        tips.push({
+          id: rushEveningId,
+          title: "Evening rush hour",
+          summary:
+            "Trains get packed again between 17:30 and 19:00. Consider timing your travel just before or after this window.",
+          icon: "\u23F0",
+        });
+      }
     }
 
-    // Long train ride
+    // Long train ride -- show once total (not city-scoped)
     const hasLongTrain = activities.some(
       (a) =>
         a.kind === "place" &&
@@ -326,7 +298,7 @@ export function useDayTipsCore(
         (a.travelFromPrevious.mode === "train" || a.travelFromPrevious.mode === "transit") &&
         a.travelFromPrevious.durationMinutes >= 60,
     );
-    if (hasLongTrain) {
+    if (hasLongTrain && !previousDaysTipIds?.has("pro-shinkansen")) {
       tips.push({
         id: "pro-shinkansen",
         title: "Long train ride today",
@@ -334,15 +306,18 @@ export function useDayTipsCore(
           "Book reserved seats on the Shinkansen if you haven't already. Oversized luggage needs a reservation for the last-row space.",
         icon: "\uD83D\uDE85",
       });
+    }
 
-      // Ekiben tip for long train rides
-      if (day.cityId) {
+    // Ekiben tip for long train rides -- scoped by city
+    if (hasLongTrain && day.cityId) {
+      const ekibenId = `pro-ekiben:${day.cityId}`;
+      if (!previousDaysTipIds?.has(ekibenId)) {
         const ekiben = getEkibenForCity(day.cityId);
         if (ekiben.length > 0) {
           const top = ekiben.slice(0, 2);
           const names = top.map((e) => `${e.name} (${e.nameJa})`).join(", ");
           tips.push({
-            id: "pro-ekiben",
+            id: ekibenId,
             title: "Grab an ekiben",
             summary: `Pick up a station bento before boarding: ${names}. Available at ${top[0]!.station} Station.`,
             icon: "\uD83C\uDF71",
@@ -351,45 +326,30 @@ export function useDayTipsCore(
       }
     }
 
-    // Last train warning
+    // Last train warning -- scoped by city
     if (day.cityId) {
-      const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
-      if (lastTrainTime) {
-        const hasLateTransit = activities.some((a) => {
-          if (a.kind !== "place") return false;
-          const seg = a.travelToNext ?? a.travelFromPrevious;
-          if (!seg?.departureTime) return false;
-          const [dh, dm] = seg.departureTime.split(":").map(Number);
-          if (dh === undefined || dm === undefined) return false;
-          const depMin = dh * 60 + dm;
-          return depMin > lastTrainTime - 30;
-        });
-        if (hasLateTransit) {
-          tips.push({
-            id: "pro-last-train",
-            title: `Last train from ${day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1)}`,
-            summary: `Last trains leave around ${formatLastTrainTime(lastTrainTime)}. Plan your evening around this or budget for a taxi.`,
-            icon: "\uD83D\uDEA8",
+      const lastTrainId = `pro-last-train:${day.cityId}`;
+      if (!previousDaysTipIds?.has(lastTrainId)) {
+        const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
+        if (lastTrainTime) {
+          const hasLateTransit = activities.some((a) => {
+            if (a.kind !== "place") return false;
+            const seg = a.travelToNext ?? a.travelFromPrevious;
+            if (!seg?.departureTime) return false;
+            const [dh, dm] = seg.departureTime.split(":").map(Number);
+            if (dh === undefined || dm === undefined) return false;
+            const depMin = dh * 60 + dm;
+            return depMin > lastTrainTime - 30;
           });
+          if (hasLateTransit) {
+            tips.push({
+              id: lastTrainId,
+              title: `Last train from ${day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1)}`,
+              summary: `Last trains leave around ${formatLastTrainTime(lastTrainTime)}. Plan your evening around this or budget for a taxi.`,
+              icon: "\uD83D\uDEA8",
+            });
+          }
         }
-      }
-    }
-
-    // Cash-only warning for next day
-    if (nextDayActivities) {
-      const cashOnlyNames = nextDayActivities
-        .filter((a) => a.kind === "place" && a.tags?.includes("cash-only"))
-        .map((a) => a.title);
-      if (cashOnlyNames.length > 0) {
-        const names = cashOnlyNames.length <= 2
-          ? cashOnlyNames.join(" and ")
-          : `${cashOnlyNames.length} spots`;
-        tips.push({
-          id: "pro-cash-tomorrow",
-          title: "Withdraw cash tonight",
-          summary: `Tomorrow: ${names} ${cashOnlyNames.length === 1 ? "is" : "are"} cash-only. Find a 7-Eleven ATM (international cards accepted 24/7).`,
-          icon: "\uD83D\uDCB4",
-        });
       }
     }
 
@@ -402,37 +362,6 @@ export function useDayTipsCore(
           "Pick up a pocket Wi-Fi or SIM at the airport, grab an IC card at the nearest station, and download Google Maps offline for your cities.",
         icon: "\u2708\uFE0F",
       });
-    }
-
-    // Seasonal food tip
-    const month = dayDate.getMonth() + 1;
-    const hasRestaurant = dayCategories.some((c) => ["restaurant", "cafe", "market"].includes(c));
-    if (hasRestaurant && day.cityId) {
-      const seasonalFoods = getSeasonalFoods(month, day.cityId);
-      if (seasonalFoods.length > 0) {
-        const foodText = formatSeasonalFoodTip(seasonalFoods.slice(0, 3));
-        tips.push({
-          id: "pro-seasonal-food",
-          title: "What's in season",
-          summary: `Try local seasonal picks: ${foodText}`,
-          icon: "\uD83C\uDF7D\uFE0F",
-        });
-      }
-    }
-
-    // Holiday crowd warning -- show on all days (not just Day 1)
-    {
-      const dayOfMonth = dayDate.getDate();
-      const holidays = getActiveHolidays(month, dayOfMonth, month, dayOfMonth);
-      if (holidays.length > 0) {
-        const holiday = holidays[0]!;
-        tips.push({
-          id: "pro-holiday-crowd",
-          title: holiday.name,
-          summary: holiday.description,
-          icon: "\uD83C\uDFEE",
-        });
-      }
     }
 
     // Omiyage tip -- on city transition days
@@ -450,18 +379,9 @@ export function useDayTipsCore(
       }
     }
 
-    // Goshuin etiquette tip -- Day 1 when itinerary has temples/shrines
-    if (dayIndex === 0 && (dayCategories.includes("temple") || dayCategories.includes("shrine"))) {
-      tips.push({
-        id: "pro-goshuin-etiquette",
-        title: "Goshuin etiquette",
-        summary: "Bring a goshuincho (stamp book) to collect temple and shrine seals. Present it open to the correct page, pay \u00A5300-500, and wait quietly. Keep temple stamps separate from tourist stamps, as some temples may decline a mixed book.",
-        icon: "\u26E9\uFE0F",
-      });
-    }
-
     // Festival tip
     if (day.cityId) {
+      const month = dayDate.getMonth() + 1;
       const dayOfMonth = dayDate.getDate();
       const festivals = getFestivalsForDay(month, dayOfMonth, day.cityId);
       if (festivals.length > 0) {
@@ -477,13 +397,13 @@ export function useDayTipsCore(
     }
 
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories, previousDaysTipIds]);
 
   // DB tips converted to DisplayTip format
   const dbTips = useMemo<DisplayTip[]>(() => rawDbTips.map(toDisplayTip), [rawDbTips]);
 
   // Combined display list -- dedup DB tips that overlap with active pro tips, cap total
-  const MAX_TIPS_PER_DAY = 6;
+  const MAX_TIPS_PER_DAY = 4;
 
   const allTips = useMemo<DisplayTip[]>(() => {
     const activeProIds = new Set(proTips.map((p) => p.id));
@@ -494,9 +414,17 @@ export function useDayTipsCore(
       const summaryLower = tip.summary.toLowerCase();
       const text = `${titleLower} ${summaryLower}`;
 
-      // Static keyword dedup: suppress DB tips that overlap with active pro tips
+      // Unconditional suppression: DB tips that overlap with trip-level content
+      if (TRIP_LEVEL_SUPPRESSION_KEYWORDS.some((kw) => text.includes(kw))) {
+        return false;
+      }
+
+      // Static keyword dedup: suppress DB tips that overlap with active pro tips.
+      // Pro tip IDs may be city-scoped (e.g., "pro-rush-hour-morning:osaka"),
+      // so match by prefix against PRO_TIP_DEDUP_KEYWORDS keys.
       for (const [proId, keywords] of Object.entries(PRO_TIP_DEDUP_KEYWORDS)) {
-        if (!activeProIds.has(proId)) continue;
+        const isActive = [...activeProIds].some((id) => id === proId || id.startsWith(`${proId}:`));
+        if (!isActive) continue;
         if (keywords.some((kw) => text.includes(kw))) {
           return false;
         }

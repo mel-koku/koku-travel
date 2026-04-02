@@ -15,12 +15,13 @@ import { generateDayIntros } from "./dayIntroGenerator";
 import { extractTripIntent } from "./intentExtractor";
 import { generateGuideProse } from "./guideProseGenerator";
 import { refineDays } from "./dayRefinement";
+import { generateDailyBriefings } from "./dailyBriefingGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
-import type { GeneratedGuide } from "@/types/llmConstraints";
+import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -182,6 +183,7 @@ export type GeneratedTripResult = {
   itinerary: Itinerary;
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
+  dailyBriefings?: GeneratedBriefings;
 };
 
 /**
@@ -458,15 +460,17 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Run planItinerary (routing) and Gemini guide prose in parallel.
+  // Run planItinerary (routing), guide prose, and daily briefings in parallel.
   // Guide prose replaces both day intros and template-based guide text.
-  // Falls back to standalone day intros, then to templates.
-  const [plannedItinerary, guideProse] = await Promise.all([
+  // Daily briefings replace per-day tip cards with concise prose.
+  // Both fall back gracefully on failure.
+  const [plannedItinerary, guideProse, dailyBriefings] = await Promise.all([
     planItinerary(optimizedItinerary, {
       defaultDayStart: builderData.dayStartTime ?? "09:00",
       defaultDayEnd: builderData.accommodationStyle === "ryokan" ? "17:00" : undefined,
     }, dayEntryPoints),
     generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
+    generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
   ]);
 
   // Extract day intros from guide prose, or fall back to standalone Gemini call
@@ -491,6 +495,7 @@ export async function generateTripFromBuilderData(
     dayStartTime: builderData.dayStartTime ?? "09:00",
     hasIntentConstraints: !!intentResult,
     hasGuideProse: !!guideProse,
+    hasDailyBriefings: !!dailyBriefings,
   });
 
   // Attach seasonal highlight if trip dates overlap a known event
@@ -519,6 +524,7 @@ export async function generateTripFromBuilderData(
     itinerary,
     dayIntros: dayIntros ?? undefined,
     guideProse: guideProse ?? undefined,
+    dailyBriefings: dailyBriefings ?? undefined,
   };
 }
 

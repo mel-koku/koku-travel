@@ -6,11 +6,13 @@ import type { Itinerary } from "@/types/itinerary";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
 import type { TripBuilderData } from "@/types/trip";
+import type { GeneratedBriefings } from "@/types/llmConstraints";
 import { vibesToInterests } from "@/data/vibes";
 import type { DetectedGap } from "@/lib/smartPrompts/detectors/types";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
 
 import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/utils";
 import {
   calculateTripHealth,
   formatItineraryForExport,
@@ -23,6 +25,7 @@ import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { DayTripSection } from "./DayTripSection";
 import { DayTips } from "./DayTips";
 import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
+import { getTripLevelTips } from "@/lib/tips/tripLevelTips";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -40,6 +43,8 @@ type TripConfidenceDashboardProps = {
   isAcceptingDayTrip?: boolean;
   /** Smart prompt suggestions -- used to suppress duplicate tips */
   suggestions?: DetectedGap[];
+  /** LLM-generated daily briefings (Pass 4) */
+  dailyBriefings?: GeneratedBriefings;
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
@@ -57,6 +62,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   onAcceptDayTrip,
   isAcceptingDayTrip,
   suggestions,
+  dailyBriefings,
 }: TripConfidenceDashboardProps) {
   // IDs of DB tips already promoted to smart prompts -- suppress from DayTips
   const surfacedGuidanceIds = useMemo(() => {
@@ -79,6 +85,11 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
     [itinerary, conflicts],
+  );
+
+  const tripLevelTips = useMemo(
+    () => getTripLevelTips(itinerary, tripStartDate),
+    [itinerary, tripStartDate],
   );
 
   const accessibility = useMemo(() => {
@@ -193,8 +204,30 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       {/* Route Summary */}
       <RouteSummary itinerary={itinerary} tripStartDate={tripStartDate} onSelectDay={onSelectDay} onClose={onClose} />
 
+      {/* Travel Essentials — trip-level tips shown once */}
+      {tripLevelTips.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="eyebrow-editorial">
+            Travel Essentials
+          </h3>
+          <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
+            {tripLevelTips.map((tip) => (
+              <div key={tip.id} className="flex items-start gap-3 px-4 py-3">
+                <span className="text-base mt-0.5 shrink-0">{tip.icon}</span>
+                <div className="min-w-0">
+                  <p className={typography({ intent: "utility-label" })}>{tip.title}</p>
+                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-0.5")}>
+                    {tip.summary}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Travel Tips — per-day tips moved from timeline */}
-      <TravelTipsSection itinerary={itinerary} tripStartDate={tripStartDate} surfacedGuidanceIds={surfacedGuidanceIds} luggagePromptDays={luggagePromptDays} />
+      <TravelTipsSection itinerary={itinerary} tripStartDate={tripStartDate} surfacedGuidanceIds={surfacedGuidanceIds} luggagePromptDays={luggagePromptDays} dailyBriefings={dailyBriefings} />
 
       {/* Day Trip Suggestions */}
       {dayTripSuggestions && dayTripSuggestions.length > 0 && onAcceptDayTrip && (
@@ -456,14 +489,17 @@ function TravelTipsSection({
   tripStartDate,
   surfacedGuidanceIds,
   luggagePromptDays,
+  dailyBriefings,
 }: {
   itinerary: Itinerary;
   tripStartDate?: string;
   surfacedGuidanceIds?: Set<string>;
   luggagePromptDays?: Set<number>;
+  dailyBriefings?: GeneratedBriefings;
 }) {
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [tipCounts, setTipCounts] = useState<Map<number, number>>(new Map());
+  const [emittedTipIds, setEmittedTipIds] = useState<Map<number, string[]>>(new Map());
 
   const handleTipCount = useCallback((dayIndex: number, count: number) => {
     setTipCounts((prev) => {
@@ -474,23 +510,88 @@ function TravelTipsSection({
     });
   }, []);
 
+  const handleTipsEmitted = useCallback((dayIndex: number, tipIds: string[]) => {
+    setEmittedTipIds((prev) => {
+      const next = new Map(prev);
+      next.set(dayIndex, tipIds);
+      return next;
+    });
+  }, []);
+
+  /** Build the set of tip IDs shown on days before dayIndex */
+  const getPreviousTipIds = useCallback((dayIndex: number): Set<string> => {
+    const ids = new Set<string>();
+    for (let i = 0; i < dayIndex; i++) {
+      const dayTips = emittedTipIds.get(i);
+      if (dayTips) dayTips.forEach((id) => ids.add(id));
+    }
+    return ids;
+  }, [emittedTipIds]);
+
   const totalTips = useMemo(() => {
     let sum = 0;
     for (const c of tipCounts.values()) sum += c;
     return sum;
   }, [tipCounts]);
 
+  // Build a map of dayId -> briefing for quick lookup
+  const briefingMap = useMemo(() => {
+    if (!dailyBriefings) return null;
+    const map = new Map<string, string>();
+    for (const b of dailyBriefings.days) {
+      map.set(b.dayId, b.briefing);
+    }
+    return map;
+  }, [dailyBriefings]);
+
+  const hasBriefings = !!briefingMap;
+
   return (
     <div className="space-y-2">
       <h3 className="eyebrow-editorial">
-        Travel Tips{totalTips > 0 && <span className="ml-1.5 text-stone">{totalTips}</span>}
+        {hasBriefings ? "Daily Briefings" : <>Travel Tips{totalTips > 0 && <span className="ml-1.5 text-stone">{totalTips}</span>}</>}
       </h3>
       <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
         {itinerary.days.map((day, i) => {
-          const count = tipCounts.get(i) ?? 0;
           const isExpanded = expandedDay === i;
           const label = buildDayLabel(i, { tripStartDate, cityId: day.cityId });
+          const briefing = briefingMap?.get(day.id);
 
+          if (hasBriefings) {
+            // LLM briefing mode: show prose paragraph per day
+            return (
+              <div key={day.id ?? i}>
+                <button
+                  type="button"
+                  onClick={() => setExpandedDay(isExpanded ? null : i)}
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+                >
+                  <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
+                    {i + 1}
+                  </span>
+                  <span className="flex-1 min-w-0 text-sm text-foreground truncate">
+                    {label}
+                  </span>
+                  <svg
+                    className={`h-3.5 w-3.5 text-stone transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isExpanded && briefing && (
+                  <div className="px-4 pb-3">
+                    <p className={cn(typography({ intent: "utility-body" }), "text-foreground-body leading-relaxed")}>
+                      {briefing}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // Fallback: consolidated rule-based tips with cross-day dedup
+          const count = tipCounts.get(i) ?? 0;
           return (
             <div key={day.id ?? i}>
               <button
@@ -524,10 +625,11 @@ function TravelTipsSection({
                     dayIndex={i}
                     tripStartDate={tripStartDate}
                     embedded
-                    nextDayActivities={itinerary.days[i + 1]?.activities}
                     onTipCount={(c) => handleTipCount(i, c)}
                     hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
                     surfacedGuidanceIds={surfacedGuidanceIds}
+                    previousDaysTipIds={getPreviousTipIds(i)}
+                    onTipsEmitted={handleTipsEmitted}
                   />
                 </div>
               )}
@@ -539,10 +641,11 @@ function TravelTipsSection({
                   dayIndex={i}
                   tripStartDate={tripStartDate}
                   countOnly
-                  nextDayActivities={itinerary.days[i + 1]?.activities}
                   onTipCount={(c) => handleTipCount(i, c)}
                   hasLuggagePrompt={luggagePromptDays?.has(i) ?? false}
                   surfacedGuidanceIds={surfacedGuidanceIds}
+                  previousDaysTipIds={getPreviousTipIds(i)}
+                  onTipsEmitted={handleTipsEmitted}
                 />
               )}
             </div>
