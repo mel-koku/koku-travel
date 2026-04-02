@@ -187,11 +187,14 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     );
   }, [activeItinerary]);
 
+  // Memoize used location IDs to avoid new array reference each render
+  const usedLocationIds = useMemo(() => getUsedLocationIds(), [getUsedLocationIds]);
+
   // Day trip suggestions (fetched once on mount)
   const dayTripSuggestions = useDayTripSuggestions(
     activeItinerary,
     selectedTrip?.builderData,
-    getUsedLocationIds(),
+    usedLocationIds,
   );
 
   // Smart prompt actions hook

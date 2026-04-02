@@ -45,7 +45,7 @@ export function useDayTripSuggestions(
 
   useEffect(() => {
     if (!hasEligibleCity || cities.length === 0) {
-      setSuggestions([]);
+      setSuggestions((prev) => (prev.length === 0 ? prev : []));
       return;
     }
     // Don't re-fetch if the key hasn't changed
