@@ -147,7 +147,7 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
                 {rest.map((testimonial, i) => (
                   <div
                     key={i}
-                    className="rounded-lg border border-border bg-white p-7 shadow-[var(--shadow-card)]"
+                    className="rounded-lg border border-border bg-surface p-7 shadow-[var(--shadow-card)]"
                   >
                     <blockquote>
                       <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>

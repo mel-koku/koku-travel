@@ -75,7 +75,7 @@ function QAPill({
         top: scatter.y,
       }}
     >
-      <div className="rounded-2xl border border-border bg-white px-5 py-3.5 shadow-[var(--shadow-card)]">
+      <div className="rounded-lg border border-border bg-surface px-5 py-3.5 shadow-[var(--shadow-card)]">
         <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium")}>
           {q}
         </p>
@@ -141,7 +141,7 @@ export function AskKokuPreview() {
                 delay: 0.1 + i * 0.08,
                 ease: [...easeReveal] as [number, number, number, number],
               }}
-              className="rounded-2xl border border-border bg-white px-5 py-3.5 shadow-[var(--shadow-card)]"
+              className="rounded-lg border border-border bg-surface px-5 py-3.5 shadow-[var(--shadow-card)]"
             >
               <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium")}>
                 {chat.q}

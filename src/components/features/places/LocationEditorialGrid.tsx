@@ -132,7 +132,7 @@ const PlacesCard = memo(function PlacesCard({
       <Link
         href={`/places/${location.id}`}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-        className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-white transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
+        className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-surface transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative w-full overflow-hidden aspect-[4/3]">
