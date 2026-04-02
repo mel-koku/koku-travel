@@ -7,6 +7,8 @@ import { useSearchParams } from "next/navigation";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxZoomIn, durationBase } from "@/lib/motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 export const dynamic = "force-dynamic";
 
@@ -126,7 +128,7 @@ function AuthErrorContent() {
 
           <SplitText
             as="h1"
-            className="mt-6 justify-center font-serif text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
+            className={cn(typography({ intent: "editorial-h2" }), "text-white")}
             splitBy="word"
             animation="clipY"
             staggerDelay={0.04}

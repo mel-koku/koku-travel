@@ -6,6 +6,8 @@ import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { durationBase, staggerWord } from "@/lib/motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type NotFoundClientProps = {
@@ -72,7 +74,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
 
           <SplitText
             as="h1"
-            className="mt-6 justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
+            className={cn(typography({ intent: "editorial-h1" }), "mt-6 justify-center text-white")}
             splitBy="word"
             animation="clipY"
             staggerDelay={staggerWord}
@@ -82,7 +84,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
 
           <ScrollReveal delay={0.4} distance={15}>
             <p className="mx-auto mt-8 max-w-md text-base text-white/80">
-              {content?.notFoundDescription ?? "This path leads nowhere — but Japan still has thousands waiting for you."}
+              {content?.notFoundDescription ?? "This path leads nowhere, but Japan still has thousands waiting for you."}
             </p>
           </ScrollReveal>
 
