@@ -531,8 +531,7 @@ async function planItineraryDay(
               departureTime,
               timezone: dayTimezone,
             });
-          },
-          ),
+          }),
         )
       : [];
 

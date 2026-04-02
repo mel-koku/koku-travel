@@ -6,6 +6,7 @@ import { getCachedRoute, setCachedRoute } from "./cache";
 import type { RoutingRequest, RoutingResult, RoutingProviderName, RoutingFetchFn } from "./types";
 import { toRoutingMode } from "./types";
 import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
 
 type ProviderConfig = {
   name: RoutingProviderName;
@@ -97,6 +98,9 @@ export async function requestRoute(request: RoutingRequest): Promise<RoutingResu
 
   try {
     // Add timeout to prevent hanging on slow API responses
+    if (process.env.NODE_ENV === "development") {
+      logger.debug(`[Routing] Using provider "${provider.name}" for mode "${routingMode}"`);
+    }
     const result = await withTimeout(
       provider.handler(request),
       ROUTING_TIMEOUT_MS,
@@ -112,12 +116,15 @@ export async function requestRoute(request: RoutingRequest): Promise<RoutingResu
     setCachedRoute(request, result);
     return result;
   } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      logger.error(`[Routing] ${provider.name} failed`, error instanceof Error ? error : new Error(String(error)));
+    }
     const fallback = estimateHeuristicRoute(request);
     fallback.warnings = [
       ...(fallback.warnings ?? []),
       `Fell back to heuristic estimate after ${provider.name} error: ${(error as Error).message}`,
     ];
-    setCachedRoute(request, fallback);
+    // Don't cache error fallbacks -- the provider may recover on next attempt
     return fallback;
   }
 }
