@@ -580,29 +580,16 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           onFocus={handleHover}
         >
           <div className="flex items-start gap-3 p-3">
-            {/* Left column: stop number + time */}
+            {/* Left column: stop number + time + drag handle */}
             <div className="flex w-10 shrink-0 flex-col items-center pt-0.5">
-              {!hideDragHandle && !isReadOnly ? (
-                <DragHandle
-                  variant="place"
-                  label={dragHandleLabel}
-                  isDragging={isDragging}
-                  attributes={attributes}
-                  listeners={listeners}
-                  displayLabel={displayLabel}
-                  colorScheme={colorScheme}
-                  isSelected={isSelected}
-                />
-              ) : (
-                displayLabel !== undefined && (
-                  <span
-                    className={`font-mono text-xl font-bold ${
-                      isSelected ? "text-sage" : "text-foreground/20"
-                    }`}
-                  >
-                    {String(displayLabel).padStart(2, "0")}
-                  </span>
-                )
+              {displayLabel !== undefined && (
+                <span
+                  className={`font-mono text-xl font-bold ${
+                    isSelected ? "text-sage" : "text-foreground/20"
+                  }`}
+                >
+                  {String(displayLabel).padStart(2, "0")}
+                </span>
               )}
               {/* Time below number */}
               <div className="relative mt-1 flex flex-col items-center">
@@ -685,6 +672,18 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </div>
                 )}
               </div>
+              {!hideDragHandle && !isReadOnly && (
+                <DragHandle
+                  variant="place"
+                  label={dragHandleLabel}
+                  isDragging={isDragging}
+                  attributes={attributes}
+                  listeners={listeners}
+                  displayLabel={displayLabel}
+                  colorScheme={colorScheme}
+                  isSelected={isSelected}
+                />
+              )}
             </div>
 
             {/* Thumbnail — fills card height */}

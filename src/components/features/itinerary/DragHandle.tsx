@@ -88,14 +88,14 @@ export function DragHandle({
 
   const isPlace = variant === "place";
 
-  // Place variant with stop number: large monospace number + grip icon on hover
+  // Place variant with stop number: number rendered separately, this is just the grip icon
   if (isPlace && displayLabel !== undefined) {
     return (
       <button
         type="button"
         aria-label={label}
         data-dragging={isDragging}
-        className={`group/drag flex flex-col items-center gap-0.5 transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.95] active:scale-[0.97]`}
+        className="mt-0.5 flex items-center justify-center rounded-md py-1 px-0.5 text-stone/30 transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.95] active:scale-[0.97]"
         {...dragAttributeProps}
         {...dragHandleListeners}
         onClick={(event) => {
@@ -103,13 +103,8 @@ export function DragHandle({
           event.stopPropagation();
         }}
       >
-        <span className={`font-mono text-xl font-bold ${
-          isSelected ? "text-sage" : "text-foreground/20 group-hover/drag:text-foreground/40"
-        }`}>
-          {String(displayLabel).padStart(2, "0")}
-        </span>
         <svg
-          className="h-3.5 w-3.5 text-stone/0 transition-colors group-hover:text-stone/30"
+          className="h-7 w-7"
           viewBox="0 0 16 16"
           fill="currentColor"
         >
