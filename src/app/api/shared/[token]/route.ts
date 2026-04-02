@@ -97,11 +97,25 @@ export async function GET(
           });
         });
 
+      // Sanitize builderData: strip sensitive personal fields
+      const sanitizedBuilderData = trip.builder_data
+        ? {
+            ...trip.builder_data,
+            accessibility: trip.builder_data.accessibility
+              ? {
+                  ...trip.builder_data.accessibility,
+                  notes: undefined,  // Strip free-text accessibility notes
+                }
+              : undefined,
+            dietaryOther: undefined,  // Strip free-text dietary notes
+          }
+        : null;
+
       const response = NextResponse.json({
         trip: {
           name: trip.name,
           itinerary: trip.itinerary,
-          builderData: trip.builder_data,
+          builderData: sanitizedBuilderData,
           createdAt: trip.created_at,
           updatedAt: trip.updated_at,
         },
