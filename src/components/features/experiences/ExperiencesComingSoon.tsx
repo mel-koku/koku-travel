@@ -141,7 +141,7 @@ export function ExperiencesComingSoon({ variant }: Props) {
               "inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white active:scale-[0.98] transition-all",
               isA
                 ? "btn-koku rounded-lg bg-brand-primary shadow-[var(--shadow-glow)] hover:bg-brand-secondary"
-                : "rounded-xl bg-[var(--primary)] hover:brightness-110"
+                : "rounded-lg bg-[var(--primary)] hover:brightness-110"
             )}
           >
             Browse Places
@@ -150,7 +150,7 @@ export function ExperiencesComingSoon({ variant }: Props) {
             href={`${basePath}/guides`}
             className={cn(
               "inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all",
-              isA ? "rounded-lg" : "rounded-xl"
+              isA ? "rounded-lg" : "rounded-lg"
             )}
           >
             Read Guides
