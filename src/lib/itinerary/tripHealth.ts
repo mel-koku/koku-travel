@@ -23,6 +23,8 @@ export type ChecklistItem = {
   category: "reservation" | "cash" | "hours" | "transport" | "accessibility";
   dayIndex: number;
   activityTitle: string;
+  /** Location ID for linking to place detail / reservation info */
+  locationId?: string;
 };
 
 export type TripHealthResult = {
@@ -143,6 +145,7 @@ export function calculateTripHealth(
           category: "reservation",
           dayIndex,
           activityTitle: activity.title,
+          locationId: activity.locationId,
         });
       }
     }

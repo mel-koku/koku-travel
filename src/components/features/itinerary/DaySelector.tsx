@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useRef, useState, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { buildDayLabel } from "@/lib/itinerary/dayLabel";
 
 /** Track whether the scrollable list can scroll further down */
 function useCanScrollDown(ref: React.RefObject<HTMLDivElement | null>, open: boolean) {
@@ -34,6 +35,8 @@ type DaySelectorProps = {
   selected: number;
   onChange: (idx: number) => void;
   labels?: string[];
+  /** City IDs per day for label generation */
+  cityIds?: (string | undefined)[];
   /** Trip start date in ISO format (yyyy-mm-dd) */
   tripStartDate?: string;
   /** Auto-scroll to today on mount */
@@ -79,6 +82,7 @@ export const DaySelector = ({
   selected,
   onChange,
   labels = [],
+  cityIds,
   tripStartDate,
   autoScrollToToday = true,
   dayHealthLevels,
@@ -93,38 +97,21 @@ export const DaySelector = ({
   );
 
   const days = useMemo(() => {
-    const monthDayFormatter = new Intl.DateTimeFormat(undefined, {
-      month: "short",
-      day: "numeric",
-    });
-
     return Array.from({ length: totalDays }).map((_, index) => {
-      let dateStr = `Day ${index + 1}`;
-
-      if (tripStartDate) {
-        try {
-          const [year, month, day] = tripStartDate.split("-").map(Number);
-          if (year && month && day) {
-            const date = new Date(year, month - 1, day);
-            date.setDate(date.getDate() + index);
-            dateStr = monthDayFormatter.format(date);
-          }
-        } catch {
-          // Fall back to Day X format
-        }
-      }
-
-      // Extract city from label format "... (City)"
-      const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
-      const city = cityMatch ? cityMatch[1] : null;
+      // Use cityIds if provided, otherwise extract from legacy labels
+      const cityId = cityIds?.[index]
+        ?? (() => {
+          const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
+          return cityMatch ? cityMatch[1]?.toLowerCase() : undefined;
+        })();
 
       return {
         index,
-        label: city ? `${dateStr} (${city})` : dateStr,
+        label: buildDayLabel(index, { tripStartDate, cityId }),
         isToday: index === todayIndex,
       };
     });
-  }, [labels, totalDays, todayIndex, tripStartDate]);
+  }, [labels, cityIds, totalDays, todayIndex, tripStartDate]);
 
   // Auto-select today on mount
   useEffect(() => {

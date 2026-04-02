@@ -1,7 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 
-import { typography } from "@/lib/typography-system";
-import { cn } from "@/lib/cn";
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
@@ -68,8 +66,8 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
   isPlanning = false,
   startPoint,
   endPoint,
-  tripStartDate,
-  dayLabel,
+  tripStartDate: _tripStartDate,
+  dayLabel: _dayLabel,
 }: ItineraryMapPanelProps) {
   const useMapbox = featureFlags.enableMapbox && mapboxService.isEnabled();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -522,51 +520,9 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
   }, []);
 
   // Format the day's date and extract city from label
-  const dayDateLabel = useMemo(() => {
-    let dateStr = `Day ${day + 1}`;
-
-    if (tripStartDate) {
-      try {
-        const [year, month, dayNum] = tripStartDate.split("-").map(Number);
-        if (year && month && dayNum) {
-          const date = new Date(year, month - 1, dayNum);
-          date.setDate(date.getDate() + day);
-
-          const monthDayFormatter = new Intl.DateTimeFormat(undefined, {
-            month: "short",
-            day: "numeric",
-          });
-          const weekdayFormatter = new Intl.DateTimeFormat(undefined, {
-            weekday: "short",
-          });
-
-          dateStr = `${monthDayFormatter.format(date)}, ${weekdayFormatter.format(date)}`;
-        }
-      } catch {
-        // Keep default
-      }
-    }
-
-    // Extract city from dayLabel (format: "Day X (City)")
-    const cityMatch = dayLabel?.match(/\(([^)]+)\)/);
-    const city = cityMatch ? cityMatch[1] : null;
-
-    return city ? `${dateStr} · ${city}` : dateStr;
-  }, [tripStartDate, day, dayLabel]);
-
   return (
     <>
-      <aside className="flex h-full flex-col p-4">
-      <header className="mb-4">
-        <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>{dayDateLabel}</h2>
-        <p className="text-sm text-stone">
-          Your stops for the day, mapped out.
-        </p>
-        {endPoint && (
-          <p className="text-xs text-stone/70">Ending at {endPoint.name}</p>
-        )}
-      </header>
-      <div className="relative flex-1 w-full overflow-hidden rounded-lg border border-border bg-surface">
+      <aside className="relative h-full">
         {useMapbox ? (
           <ItineraryMap
             day={{ id: `day-${day}`, dateLabel: `Day ${day + 1}`, activities: activities ?? [] } as ItineraryDay}
@@ -609,7 +565,6 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             </div>
           </div>
         ) : null}
-      </div>
       </aside>
       <style jsx global>{`
         .leaflet-marker-icon.${SELECTED_MARKER_CLASS},

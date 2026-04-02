@@ -11,7 +11,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
-import { PlaneLanding, PlaneTakeoff, Clock } from "lucide-react";
+import { PlaneLanding, PlaneTakeoff } from "lucide-react";
 import {
   getShortOverview,
   getLocationRating,
@@ -228,6 +228,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       reservationRequired?: boolean;
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
+    const [insiderTipOpen, setInsiderTipOpen] = useState(false);
     const prefersReducedMotion = useReducedMotion();
     const timePickerRef = useReactRef<HTMLDivElement>(null);
 
@@ -516,7 +517,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       );
     }
 
-    // Anchor activities (airport arrival/departure) — dedicated minimal card
+    // Anchor activities (airport arrival/departure) — compact inline strip
     if (activity.isAnchor) {
       const isArrival = activity.title.startsWith("Arrive");
       const PlaneIcon = isArrival ? PlaneLanding : PlaneTakeoff;
@@ -529,50 +530,17 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           data-kind="place"
           data-activity-id={activity.id}
         >
-          <div className="group relative cursor-default rounded-lg bg-background shadow-[var(--shadow-card)]">
-            <div className="flex items-start gap-3 p-3">
-              {/* Left column: stop number + time (matches PlaceActivityRow layout) */}
-              <div className="flex w-10 shrink-0 flex-col items-center pt-0.5">
-                {displayLabel !== undefined && (
-                  <span className="font-mono text-xl font-bold text-foreground/20">
-                    {String(displayLabel).padStart(2, "0")}
-                  </span>
-                )}
-                <div className="mt-1 flex flex-col items-center">
-                  <span className="font-mono text-[11px] font-semibold text-foreground-secondary">
-                    {displayArrivalTime ?? activity.timeOfDay ?? "—"}
-                  </span>
-                  {schedule?.departureTime && (
-                    <span className="font-mono text-[10px] text-stone">
-                      {schedule.departureTime}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Plane icon circle */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
-                <PlaneIcon className="h-5 w-5 text-brand-primary" />
-              </div>
-
-              {/* Title + duration */}
-              <div className="min-w-0 flex-1 pt-0.5">
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {activity.title}
-                </p>
-                {durationLabel && (
-                  <div className="mt-0.5 flex items-center gap-1 text-xs text-foreground-secondary">
-                    <Clock className="h-3 w-3" />
-                    <span>{durationLabel}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Arrival / Departure badge */}
-              <span className="shrink-0 rounded-full bg-brand-primary/10 px-2.5 py-1 text-[11px] font-semibold text-brand-primary">
-                {isArrival ? "Arrival" : "Departure"}
-              </span>
-            </div>
+          <div className="flex items-center gap-2.5 rounded-md bg-surface px-3 py-2">
+            <PlaneIcon className="h-4 w-4 shrink-0 text-brand-primary" />
+            <p className="min-w-0 truncate text-xs font-medium text-foreground">
+              {activity.title}
+            </p>
+            <span className="ml-auto shrink-0 font-mono text-xs text-foreground-secondary">
+              {displayArrivalTime ?? "—"}
+            </span>
+            {durationLabel && (
+              <span className="shrink-0 text-xs text-stone">{durationLabel}</span>
+            )}
           </div>
         </div>
       );
@@ -770,16 +738,25 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </div>
               )}
 
-              {/* Insider Tip */}
+              {/* Insider Tip — collapsed by default, expand on click */}
               {placeLocation?.insiderTip && (
-                <div className="mt-3 rounded-lg bg-yuzu-tint p-2.5">
-                  <p className="mb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
-                    Insider tip
-                  </p>
-                  <p className="text-xs leading-relaxed text-foreground-body">
-                    {placeLocation.insiderTip}
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setInsiderTipOpen(!insiderTipOpen); }}
+                  className="mt-2 w-full text-left"
+                >
+                  {insiderTipOpen ? (
+                    <div className="rounded-md bg-surface p-2">
+                      <p className="text-xs leading-relaxed text-foreground-secondary">
+                        {placeLocation.insiderTip}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-stone hover:text-foreground-secondary transition-colors">
+                      {"💡"} Insider tip available
+                    </p>
+                  )}
+                </button>
               )}
             </div>
 

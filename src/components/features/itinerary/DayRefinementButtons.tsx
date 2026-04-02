@@ -12,6 +12,10 @@ type DayRefinementButtonsProps = {
   builderData?: TripBuilderData;
   itinerary?: Itinerary;
   onRefine: (refinedDay: ItineraryDay) => void;
+  /** Current day start time (e.g., "09:00") */
+  currentStartTime?: string;
+  /** Callback to change the day start time */
+  onStartTimeChange?: (time: string) => void;
 };
 
 const REFINEMENT_OPTIONS: Array<{
@@ -64,12 +68,16 @@ const REFINEMENT_OPTIONS: Array<{
   },
 ];
 
+const START_TIME_OPTIONS = ["08:00", "09:00", "10:00", "11:00"];
+
 export function DayRefinementButtons({
   dayIndex,
   tripId,
   builderData,
   itinerary,
   onRefine,
+  currentStartTime = "09:00",
+  onStartTimeChange,
 }: DayRefinementButtonsProps) {
   const [isRefining, setIsRefining] = useState(false);
   const [refinementError, setRefinementError] = useState<string | null>(null);
@@ -145,6 +153,30 @@ export function DayRefinementButtons({
 
       {open && (
         <div className="absolute right-0 top-full z-30 mt-1.5 w-72 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-elevated)]">
+          {/* Day start time */}
+          {onStartTimeChange && (
+            <div className="mb-3 pb-3 border-b border-border/50">
+              <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-stone">
+                Start time
+              </p>
+              <div className="flex gap-1.5">
+                {START_TIME_OPTIONS.map((time) => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => onStartTimeChange(time)}
+                    className={`rounded-md px-2.5 py-1 font-mono text-xs font-medium transition ${
+                      currentStartTime === time
+                        ? "bg-sage/15 text-sage"
+                        : "text-foreground-secondary hover:bg-surface hover:text-foreground"
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-stone">
             Adjust this day
           </p>

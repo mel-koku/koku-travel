@@ -19,10 +19,11 @@ import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { GeneratedGuide } from "@/types/llmConstraints";
 import { DaySelector } from "./DaySelector";
+
 import { LocationSearchBar } from "./LocationSearchBar";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
-import { WhatsNextCard } from "./WhatsNextCard";
+
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { logger } from "@/lib/logger";
@@ -97,8 +98,8 @@ export const ItineraryShell = ({
   tripId,
   onItineraryChange,
   headingRef,
-  createdLabel,
-  updatedLabel,
+  createdLabel: _createdLabel,
+  updatedLabel: _updatedLabel,
   isUsingMock,
   isReadOnly,
   tripStartDate,
@@ -399,6 +400,26 @@ export const ItineraryShell = ({
     [tripId, currentDay, setCityAccommodation],
   );
 
+  // Handler: change day start time
+  const handleDayStartTimeChange = useCallback(
+    (startTime: string) => {
+      applyModelUpdate((current) => {
+        const nextDays = current.days.map((entry, index) => {
+          if (index !== safeSelectedDay) return entry;
+          return {
+            ...entry,
+            bounds: {
+              ...(entry.bounds ?? {}),
+              startTime,
+            },
+          };
+        });
+        return { ...current, days: nextDays };
+      });
+    },
+    [safeSelectedDay, applyModelUpdate],
+  );
+
   // Filter suggestions for the current day
   const currentDaySuggestions = useMemo(() => {
     if (!suggestions || !currentDay) return [];
@@ -643,19 +664,14 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-  const totalActivities = useMemo(
-    () => days.reduce((sum, d) => sum + d.activities.filter((a) => a.kind === "place").length, 0),
-    [days]
-  );
-
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <PrintHeader tripName={tripName} dateRange={printDateRange} cities={printCities} />
-    <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl lg:h-[calc(100dvh-80px)] lg:overflow-hidden">
+    <section className="mx-auto min-h-[calc(100dvh-var(--header-h))] max-w-screen-2xl lg:h-[calc(100dvh-var(--header-h))] lg:overflow-hidden">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
         <motion.div
-          animate={{ height: viewMode === "discover" ? "50vh" : mapExpanded ? "100dvh" : "30vh" }}
+          animate={{ height: viewMode === "discover" ? "50dvh" : mapExpanded ? "100dvh" : "30dvh" }}
           transition={{
             duration: durationSlow,
             ease: easePageTransitionMut,
@@ -727,17 +743,17 @@ export const ItineraryShell = ({
       </div>
 
       <div className="flex flex-col lg:h-full lg:flex-row lg:gap-4 lg:p-4">
-        {/* Left: Cards Panel (50%) */}
-        <div className="flex flex-col lg:w-1/2 lg:min-h-0 lg:overflow-y-auto" data-lenis-prevent>
+        {/* Left: Cards Panel (60%) */}
+        <div className="flex flex-col lg:w-3/5 lg:min-h-0 lg:overflow-y-auto" data-lenis-prevent>
           {/* Header bar */}
           <div
-            className={`border-b border-border bg-background px-4 pb-3 lg:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
+            className={`border-b border-border bg-background px-4 pb-2.5 lg:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
             style={{
-              paddingTop: headerCollapsed ? "0.5rem" : "1rem",
+              paddingTop: headerCollapsed ? "0.375rem" : "0.75rem",
               transition: "padding-top 0.25s ease",
             }}
           >
-            {/* Collapsible: Trip name + stats (hidden on scroll down) */}
+            {/* Collapsible: Trip name + tabs + share (single row) */}
             <div
               style={{
                 maxHeight: headerCollapsed ? 0 : 200,
@@ -746,18 +762,23 @@ export const ItineraryShell = ({
                 transition: "max-height 0.25s ease, opacity 0.2s ease",
               }}
             >
-              {/* Row 1: Trip name + view mode tabs + share */}
-              <div className="flex items-start justify-between gap-3">
+              {/* Unified toolbar: title | tabs + share */}
+              <div className="flex items-center justify-between gap-2">
                 <h1
                   ref={finalHeadingRef}
                   tabIndex={-1}
-                  className={cn(typography({ intent: "editorial-h3" }), "min-w-0 text-lg md:text-lg tracking-[-0.02em] leading-snug focus:outline-none sm:text-xl")}
+                  className="min-w-0 truncate font-serif text-base font-semibold tracking-heading leading-snug text-foreground focus:outline-none sm:text-lg"
                 >
                   {tripName}
                 </h1>
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 items-center gap-1">
+                  {isUsingMock && (
+                    <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                      Mock
+                    </span>
+                  )}
                   {!isReadOnly && (
-                    <div className="flex h-[42px] shrink-0 items-center rounded-lg border border-border bg-surface p-0.5">
+                    <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
                       {(
                         [
                           { key: "timeline", label: "Timeline" },
@@ -769,7 +790,7 @@ export const ItineraryShell = ({
                           key={tab.key}
                           type="button"
                           onClick={() => setViewMode(tab.key)}
-                          className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                          className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
                             viewMode === tab.key
                               ? "bg-brand-primary text-white"
                               : "text-stone hover:text-foreground"
@@ -785,44 +806,21 @@ export const ItineraryShell = ({
                   )}
                 </div>
               </div>
-
-              {/* Row 2: Stats line */}
-              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-stone">
-              {days.length > 0 && <span>{days.length} {days.length === 1 ? "day" : "days"}</span>}
-              {totalActivities > 0 && <span aria-hidden="true">&middot;</span>}
-              {totalActivities > 0 && <span>{totalActivities} {totalActivities === 1 ? "stop" : "stops"}</span>}
-              {updatedLabel && <span aria-hidden="true">&middot;</span>}
-              {updatedLabel && <span>Upd {updatedLabel}</span>}
-              {!updatedLabel && createdLabel && <span aria-hidden="true">&middot;</span>}
-              {!updatedLabel && createdLabel && <span>Saved {createdLabel}</span>}
-              {isUsingMock && (
-                <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
-                  Mock
-                </span>
-              )}
-            </div>
             </div>
 
             {/* Day selector + search + adjust — timeline only */}
             {viewMode === "timeline" && (
-              <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }} className="flex items-start gap-2">
+              <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }} className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <DaySelector
                   totalDays={days.length}
                   selected={safeSelectedDay}
                   onChange={handleSelectDayChange}
-                  labels={days.map((day) => {
-                    const label = day.dateLabel ?? "";
-                    if (label && !label.includes("(") && day.cityId) {
-                      const city = day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
-                      return `${label} (${city})`;
-                    }
-                    return label;
-                  })}
+                  cityIds={days.map((day) => day.cityId)}
                   tripStartDate={tripStartDate}
                   dayHealthLevels={dayHealthLevels}
                 />
                 {!isReadOnly && !isUsingMock && currentDay && (
-                  <>
+                  <div className="flex items-center gap-2">
                     <div className="min-w-0 flex-1">
                       <LocationSearchBar
                         dayActivities={currentDay.activities}
@@ -836,9 +834,11 @@ export const ItineraryShell = ({
                         builderData={tripBuilderData}
                         itinerary={model}
                         onRefine={handleRefineDay}
+                        currentStartTime={currentDay.bounds?.startTime ?? "09:00"}
+                        onStartTimeChange={handleDayStartTimeChange}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             )}
@@ -895,18 +895,23 @@ export const ItineraryShell = ({
           )}
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
-            {/* Timeline banners (scroll with content) */}
-            {model.seasonalHighlight && (
-              <SeasonalBanner highlight={model.seasonalHighlight} />
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible lg:rounded-lg lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
+            {/* Compact notification strips */}
+            {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
+              <div className="mb-3 space-y-1">
+                {model.seasonalHighlight && (
+                  <SeasonalBanner highlight={model.seasonalHighlight} />
+                )}
+                {dayTripSuggestions && dayTripSuggestions.length > 0 && (
+                  <DayTripBanner
+                    suggestions={dayTripSuggestions}
+                    tripId={tripId}
+                    onViewDashboard={() => setViewMode("dashboard")}
+                  />
+                )}
+              </div>
             )}
-            {dayTripSuggestions && dayTripSuggestions.length > 0 && (
-              <DayTripBanner
-                suggestions={dayTripSuggestions}
-                tripId={tripId}
-                onViewDashboard={() => setViewMode("dashboard")}
-              />
-            )}
+
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -923,17 +928,6 @@ export const ItineraryShell = ({
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* What's Next Card */}
-            {currentDay && tripStartDate && (
-              <WhatsNextCard
-                day={currentDay}
-                tripStartDate={tripStartDate}
-                dayIndex={safeSelectedDay}
-                onActivityClick={handleSelectActivity}
-                className="mb-3"
-              />
-            )}
 
             {/* Timeline */}
             {currentDay ? (
@@ -1012,8 +1006,8 @@ export const ItineraryShell = ({
           </div>
         </div>
 
-        {/* Right: Sticky Map — desktop only (50%) */}
-        <div className="hidden lg:block lg:w-1/2">
+        {/* Right: Sticky Map — desktop only (40%) */}
+        <div className="hidden lg:block lg:w-2/5">
           <div className="h-full lg:rounded-lg lg:overflow-hidden lg:border lg:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (

@@ -53,13 +53,13 @@ export function AccommodationPicker({
           icon={<StartIcon className="h-3.5 w-3.5" />}
           value={startLocation}
           onChange={onStartChange}
-          placeholder="Start: hotel, address..."
+          placeholder="Starting from (hotel, ryokan...)"
         />
         <LocationField
           icon={<EndIcon className="h-3.5 w-3.5" />}
           value={endLocation}
           onChange={onEndChange}
-          placeholder={startLocation ? "End: same as start" : "End: hotel, address..."}
+          placeholder={startLocation ? "Returning to same place" : "Returning to (hotel, ryokan...)"}
           linkedValue={startLocation}
         />
       </div>

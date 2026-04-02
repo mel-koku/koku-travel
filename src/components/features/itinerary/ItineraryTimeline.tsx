@@ -49,23 +49,13 @@ import { AccommodationBookend } from "./AccommodationBookend";
 import { LateArrivalCard } from "./LateArrivalCard";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
-import { REGIONS } from "@/data/regions";
+
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { AvailabilityAlert } from "./AvailabilityAlert";
 import { easeCinematicCSS } from "@/lib/motion";
 import { logger } from "@/lib/logger";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
-
-function formatCityName(cityId: string): string {
-  for (const region of REGIONS) {
-    const city = region.cities.find((c) => c.id === cityId);
-    if (city) {
-      return city.name;
-    }
-  }
-  // Fallback: capitalize first letter
-  return cityId.charAt(0).toUpperCase() + cityId.slice(1);
-}
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 type ItineraryTimelineProps = {
   day: ItineraryDay;
@@ -122,22 +112,22 @@ export const ItineraryTimeline = ({
   tripId,
   onReorder,
   onReplace,
-  tripBuilderData,
-  suggestions,
-  onAcceptSuggestion,
-  onSkipSuggestion,
-  loadingSuggestionId,
+  tripBuilderData: _tripBuilderData,
+  suggestions: _suggestions,
+  onAcceptSuggestion: _onAcceptSuggestion,
+  onSkipSuggestion: _onSkipSuggestion,
+  loadingSuggestionId: _loadingSuggestionId,
   conflicts,
   conflictsResult,
   guide,
   onBeforeDragReorder,
   onAfterDragReorder,
-  previewState,
-  onConfirmPreview,
-  onShowAnother,
-  onCancelPreview,
-  onFilterChange,
-  isPreviewLoading,
+  previewState: _previewState,
+  onConfirmPreview: _onConfirmPreview,
+  onShowAnother: _onShowAnother,
+  onCancelPreview: _onCancelPreview,
+  onFilterChange: _onFilterChange,
+  isPreviewLoading: _isPreviewLoading,
   isReadOnly,
   startLocation,
   endLocation,
@@ -538,25 +528,6 @@ export const ItineraryTimeline = ({
     });
   }, [dayIndex, setModel]);
 
-  const handleDayStartTimeChange = useCallback(
-    (startTime: string) => {
-      setModel((current) => {
-        const nextDays = current.days.map((entry, index) => {
-          if (index !== dayIndex) return entry;
-          return {
-            ...entry,
-            bounds: {
-              ...(entry.bounds ?? {}),
-              startTime,
-            },
-          };
-        });
-        return { ...current, days: nextDays };
-      });
-    },
-    [dayIndex, setModel]
-  );
-
 
 
   // ── Accommodation bookend travel estimates ──
@@ -619,26 +590,10 @@ export const ItineraryTimeline = ({
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-6">
-        {/* Day Header */}
+        {/* Day Header (conflicts + accommodation only) */}
           <DayHeader
             day={day}
-            dayIndex={dayIndex}
-            tripStartDate={tripStartDate}
-            tripId={isReadOnly ? undefined : tripId}
-            builderData={tripBuilderData}
-            itinerary={model}
-            suggestions={isReadOnly ? undefined : suggestions}
-            onAcceptSuggestion={isReadOnly ? undefined : onAcceptSuggestion}
-            onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
-            loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
             conflicts={conflicts}
-            onDayStartTimeChange={isReadOnly ? undefined : handleDayStartTimeChange}
-            previewState={isReadOnly ? undefined : previewState}
-            onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
-            onShowAnother={isReadOnly ? undefined : onShowAnother}
-            onCancelPreview={isReadOnly ? undefined : onCancelPreview}
-            onFilterChange={isReadOnly ? undefined : onFilterChange}
-            isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
             startLocation={startLocation}
             endLocation={endLocation}
             onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
@@ -809,14 +764,19 @@ export const ItineraryTimeline = ({
                 ) ?? [];
 
                 // Find guide segments that should appear before this activity (prep content)
-                const guideSegmentsBefore = guide?.segments.filter(
+                // For anchor activities (arrival/departure), shift "before" segments to render
+                // after instead, so they don't sit between accommodation pickers and the anchor card.
+                const rawSegmentsBefore = guide?.segments.filter(
                   (seg) => seg.beforeActivityId === activity.id,
                 ) ?? [];
+                const isAnchor = activity.kind === "place" && activity.isAnchor;
+                const guideSegmentsBefore = isAnchor ? [] : rawSegmentsBefore;
+                const guideSegmentsAfterAnchor = isAnchor ? rawSegmentsBefore : [];
 
                 const fragmentKey = activity.id;
                 // Render guide segments before with card-width offset
                 const guideBeforeElement = !activeId && guideSegmentsBefore.length > 0 ? (
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     {guideSegmentsBefore.map((seg) => (
                       <GuideSegmentCard key={seg.id} segment={seg} />
                     ))}
@@ -872,6 +832,12 @@ export const ItineraryTimeline = ({
                         />
                       </li>
                     )}
+                    {/* Guide segments shifted from before anchor to after (below bookend + late arrival) */}
+                    {!activeId && guideSegmentsAfterAnchor.map((seg) => (
+                      <li key={seg.id} className="list-none">
+                        <GuideSegmentCard segment={seg} />
+                      </li>
+                    ))}
                   </Fragment>
                 );
               })}

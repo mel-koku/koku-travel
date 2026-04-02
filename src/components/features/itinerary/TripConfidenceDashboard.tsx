@@ -9,7 +9,7 @@ import type { TripBuilderData } from "@/types/trip";
 import { vibesToInterests } from "@/data/vibes";
 import type { DetectedGap } from "@/lib/smartPrompts/detectors/types";
 import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
-import { REGIONS } from "@/data/regions";
+
 import { typography } from "@/lib/typography-system";
 import {
   calculateTripHealth,
@@ -22,6 +22,7 @@ import { easeReveal, durationBase } from "@/lib/motion";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { DayTripSection } from "./DayTripSection";
 import { DayTips } from "./DayTips";
+import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -44,7 +45,7 @@ type TripConfidenceDashboardProps = {
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   itinerary,
   conflicts,
-  conflictsResult,
+  conflictsResult: _conflictsResult,
   tripStartDate,
   tripCities,
   onClose,
@@ -166,15 +167,14 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
                 item={item}
                 checked={checkedItems.has(item.id)}
                 onToggle={() => toggleChecked(item.id)}
+                dayLabel={buildDayLabel(item.dayIndex, {
+                  tripStartDate,
+                  cityId: itinerary.days[item.dayIndex]?.cityId,
+                })}
               />
             ))}
           </div>
         </div>
-      )}
-
-      {/* Scheduling Notes */}
-      {conflictsResult && conflictsResult.summary.total > 0 && onSelectDay && (
-        <SchedulingNotesBanner conflictsResult={conflictsResult} onSelectDay={onSelectDay} />
       )}
 
       {/* Packing Checklist */}
@@ -241,6 +241,10 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
                   item={item}
                   checked={checkedItems.has(item.id)}
                   onToggle={() => toggleChecked(item.id)}
+                  dayLabel={buildDayLabel(item.dayIndex, {
+                    tripStartDate,
+                    cityId: itinerary.days[item.dayIndex]?.cityId,
+                  })}
                 />
               ))}
             </div>
@@ -300,13 +304,6 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   );
 });
 
-function formatCityName(cityId: string): string {
-  for (const region of REGIONS) {
-    const city = region.cities.find((c) => c.id === cityId);
-    if (city) return city.name;
-  }
-  return cityId.charAt(0).toUpperCase() + cityId.slice(1);
-}
 
 /**
  * Visual route summary showing city sequence with day counts.
@@ -376,29 +373,47 @@ function ChecklistRow({
   item,
   checked,
   onToggle,
+  dayLabel,
 }: {
   item: ChecklistItem;
   checked: boolean;
   onToggle: () => void;
+  dayLabel: string;
 }) {
   return (
-    <label className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-surface/30 transition">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onToggle}
-        className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary/20 accent-brand-primary"
-      />
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm ${checked ? "text-stone line-through" : "text-foreground"}`}>
-          {item.label}
-        </p>
-        <p className="text-[10px] text-stone font-mono">
-          Day {item.dayIndex + 1}
-        </p>
-      </div>
+    <div className="flex items-center gap-3 px-3 py-2.5">
+      <label className="flex flex-1 items-center gap-3 cursor-pointer min-w-0">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onToggle}
+          className="h-4 w-4 shrink-0 rounded border-border text-brand-primary focus:ring-brand-primary/20 accent-brand-primary"
+        />
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm ${checked ? "text-stone line-through" : "text-foreground"}`}>
+            {item.label}
+          </p>
+          <p className="text-[10px] text-stone font-mono mt-0.5">
+            {dayLabel}
+            {item.category === "reservation" && item.locationId && (
+              <span className="font-sans font-normal tracking-normal">
+                {" · "}
+                <a
+                  href={`/places/${item.locationId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-brand-primary hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  View contact details
+                </a>
+              </span>
+            )}
+          </p>
+        </div>
+      </label>
       <CategoryIcon category={item.category} />
-    </label>
+    </div>
   );
 }
 
@@ -472,9 +487,9 @@ function TravelTipsSection({
       </h3>
       <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
         {itinerary.days.map((day, i) => {
-          const cityName = day.cityId ? formatCityName(day.cityId) : undefined;
           const count = tipCounts.get(i) ?? 0;
           const isExpanded = expandedDay === i;
+          const label = buildDayLabel(i, { tripStartDate, cityId: day.cityId });
 
           return (
             <div key={day.id ?? i}>
@@ -487,7 +502,7 @@ function TravelTipsSection({
                   {i + 1}
                 </span>
                 <span className="flex-1 min-w-0 text-sm text-foreground truncate">
-                  {cityName ?? `Day ${i + 1}`}
+                  {label}
                 </span>
                 {count > 0 && (
                   <span className="rounded-full bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage">
@@ -551,55 +566,3 @@ function saveChecklist(checked: Set<string>) {
   setLocal(CONFIDENCE_CHECKLIST_STORAGE_KEY, [...checked]);
 }
 
-function SchedulingNotesBanner({
-  conflictsResult,
-  onSelectDay,
-}: {
-  conflictsResult: ItineraryConflictsResult;
-  onSelectDay: (dayIndex: number) => void;
-}) {
-  const total = conflictsResult.summary.total;
-
-  // Group conflict count per day
-  const dayEntries: { dayIndex: number; count: number }[] = [];
-  const seen = new Set<number>();
-  for (const c of conflictsResult.conflicts) {
-    if (!seen.has(c.dayIndex)) {
-      seen.add(c.dayIndex);
-      dayEntries.push({
-        dayIndex: c.dayIndex,
-        count: conflictsResult.conflicts.filter((x) => x.dayIndex === c.dayIndex).length,
-      });
-    }
-  }
-
-  return (
-    <div className="space-y-2">
-      <h3 className="eyebrow-editorial">Scheduling Notes</h3>
-      <div className="rounded-lg border border-warning/20 bg-warning/5 px-4 py-3">
-        <div className="flex items-start gap-2.5">
-          <svg className="mt-0.5 h-4 w-4 shrink-0 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-          <div>
-            <p className="text-sm font-medium text-foreground">
-              {total} {total === 1 ? "note" : "notes"} across your trip
-            </p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {dayEntries.map(({ dayIndex, count }) => (
-                <button
-                  key={dayIndex}
-                  type="button"
-                  onClick={() => onSelectDay(dayIndex)}
-                  className="rounded-lg bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning transition hover:bg-warning/20"
-                >
-                  Day {dayIndex + 1} ({count})
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

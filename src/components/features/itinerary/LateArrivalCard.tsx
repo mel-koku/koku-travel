@@ -13,32 +13,25 @@ export function LateArrivalCard({ city, onDismiss, className }: LateArrivalCardP
   return (
     <div
       className={cn(
-        "rounded-lg border border-border bg-surface p-4",
+        "rounded-md bg-surface px-3 py-2",
         className,
       )}
     >
-      <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage/10">
-          <Moon className="h-5 w-5 text-sage" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-medium text-foreground">
-            You get in late today
-          </h4>
-          <p className="mt-1 text-xs leading-relaxed text-stone">
-            Take it easy tonight and start fresh tomorrow — or we can suggest
-            something open late in {city}.
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <Moon className="h-3.5 w-3.5 shrink-0 text-sage" />
+          <p className="text-xs text-foreground-secondary">
+            <span className="font-medium text-foreground">Late arrival.</span>
+            {" "}Take it easy tonight in {city}.
           </p>
-          <div className="mt-3">
-            <button
-              type="button"
-              onClick={onDismiss}
-              className="rounded-lg bg-surface px-3.5 py-1.5 text-xs font-medium text-foreground-secondary transition-colors hover:bg-border hover:text-foreground"
-            >
-              Rest Tonight
-            </button>
-          </div>
         </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0 rounded-md px-2 py-0.5 text-[11px] font-medium text-stone transition-colors hover:bg-border hover:text-foreground"
+        >
+          Got it
+        </button>
       </div>
     </div>
   );
