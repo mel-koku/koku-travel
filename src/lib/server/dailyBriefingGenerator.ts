@@ -31,7 +31,7 @@ function buildBriefingPrompt(
 
   const dayContexts = days.map((day, i) => {
     const date = startDate
-      ? new Date(startDate.getTime() + i * 86400000)
+      ? new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i)
       : null;
     const dayMonth = date ? date.getMonth() + 1 : month;
     const dayDate = date ? date.getDate() : null;
