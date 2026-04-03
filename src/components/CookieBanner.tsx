@@ -5,40 +5,49 @@ import { hasResponded, setConsent } from "@/lib/cookieConsent";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!hasResponded()) setVisible(true);
+    if (!hasResponded()) {
+      setVisible(true);
+      // Delay mount animation to next frame so CSS transition triggers
+      requestAnimationFrame(() => setMounted(true));
+    }
   }, []);
 
   if (!visible) return null;
 
-  function handleAccept() {
-    setConsent(true);
-    setVisible(false);
-  }
-
-  function handleDecline() {
-    setConsent(false);
-    setVisible(false);
+  function dismiss(granted: boolean) {
+    setConsent(granted);
+    setMounted(false);
+    // Wait for exit animation before unmounting
+    setTimeout(() => setVisible(false), 300);
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface p-4 shadow-[var(--shadow-elevated)] sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-      <p className="text-sm text-foreground-secondary">
-        We use cookies for analytics to improve your experience. No personal data is shared with third parties.
+    <div
+      className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-lg bg-charcoal p-4 shadow-[var(--shadow-elevated)] transition-all duration-300 ease-out sm:bottom-6 sm:right-6"
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? "translateY(0)" : "translateY(12px)",
+      }}
+    >
+      <p className="text-[13px] leading-relaxed text-white/80">
+        We use cookies for analytics to improve your experience. No personal
+        data is shared with third parties.
       </p>
-      <div className="mt-3 flex gap-3 sm:mt-0 sm:shrink-0">
+      <div className="mt-3 flex items-center gap-3">
         <button
-          onClick={handleDecline}
-          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground-secondary transition hover:bg-canvas active:scale-[0.98]"
+          onClick={() => dismiss(true)}
+          className="rounded-md bg-white/15 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-white/25 active:scale-[0.98]"
         >
-          Decline
+          Got it
         </button>
         <button
-          onClick={handleAccept}
-          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-secondary active:scale-[0.98]"
+          onClick={() => dismiss(false)}
+          className="text-[13px] text-white/50 transition hover:text-white/70"
         >
-          Accept
+          Decline
         </button>
       </div>
     </div>

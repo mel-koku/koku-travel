@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskKokuPanel } from "./AskKokuPanel";
 import { useAppState } from "@/state/AppState";
 import { serializeTripContext } from "@/lib/chat/serializeTripContext";
+import { hasResponded, CONSENT_EVENT } from "@/lib/cookieConsent";
 import type { AskKokuContext } from "./AskKokuSuggestions";
 
 const HIDDEN_PATHS = ["/studio", "/places"];
@@ -26,6 +27,15 @@ export function AskKokuButton() {
   const searchParams = useSearchParams();
   const { trips } = useAppState();
 
+  const [consentResolved, setConsentResolved] = useState(() => hasResponded());
+
+  useEffect(() => {
+    if (consentResolved) return;
+    const handler = () => setConsentResolved(true);
+    window.addEventListener(CONSENT_EVENT, handler);
+    return () => window.removeEventListener(CONSENT_EVENT, handler);
+  }, [consentResolved]);
+
   const context = deriveContext(pathname);
 
   // Serialize trip context when on itinerary page
@@ -38,8 +48,8 @@ export function AskKokuButton() {
     return serializeTripContext(trip);
   }, [context, searchParams, trips]);
 
-  // Hide on studio and explore
-  if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) {
+  // Hide on studio and explore, or while cookie banner is showing
+  if (HIDDEN_PATHS.some((p) => pathname.startsWith(p)) || !consentResolved) {
     return null;
   }
 
@@ -50,7 +60,7 @@ export function AskKokuButton() {
       {/* FAB */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={`fixed right-6 z-50 flex h-11 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] ${open ? "w-11" : "gap-2 px-4"} ${isTripBuilder ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"}`}
+        className={`fixed right-6 z-50 flex h-11 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] ${open ? "w-11" : "px-4"} ${isTripBuilder ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"}`}
         aria-label={open ? "Close chat" : "Ask Koku"}
         aria-expanded={open}
         aria-controls="ask-koku-panel"
@@ -75,7 +85,6 @@ export function AskKokuButton() {
               transition={{ duration: 0.15, ease: easeReveal }}
               className="flex items-center gap-2"
             >
-              <MessageCircle className="h-4.5 w-4.5" />
               <span className="text-sm font-medium">Ask Koku</span>
             </motion.div>
           )}
