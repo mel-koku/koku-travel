@@ -122,7 +122,6 @@ export function DatePicker({
               selected={selected}
               onSelect={handleSelect}
               defaultMonth={selected ?? fromDate ?? new Date()}
-              startMonth={fromDate}
               disabled={[
                 ...(fromDate ? [{ before: fromDate }] : []),
                 ...(toDate ? [{ after: toDate }] : []),
