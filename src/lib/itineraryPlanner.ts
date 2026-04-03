@@ -86,6 +86,13 @@ export function parseEstimatedDuration(text?: string | null): number | null {
   if (!text) {
     return null;
   }
+  // Bare integer (minutes) — most common format after normalization
+  const trimmed = text.trim();
+  const asInt = Number.parseInt(trimmed, 10);
+  if (!Number.isNaN(asInt) && String(asInt) === trimmed && asInt > 0) {
+    return asInt;
+  }
+  // Legacy text formats ("2 hours", "90 min", "1.5 hr 30 min")
   const hoursMatch = text.match(/([\d.]+)\s*(hour|hr)/i);
   const minutesMatch = text.match(/(\d+)\s*min/i);
   let totalMinutes = 0;

@@ -216,4 +216,45 @@ describe("planItinerary", () => {
   });
 });
 
+describe("parseEstimatedDuration", () => {
+  // Import the function directly since it's exported for testing
+  let parseEstimatedDuration: (text?: string | null) => number | null;
+
+  beforeEach(async () => {
+    const mod = await import("../itineraryPlanner");
+    parseEstimatedDuration = mod.parseEstimatedDuration;
+  });
+
+  it("parses bare integer as minutes", () => {
+    expect(parseEstimatedDuration("90")).toBe(90);
+    expect(parseEstimatedDuration("45")).toBe(45);
+    expect(parseEstimatedDuration("120")).toBe(120);
+    expect(parseEstimatedDuration("15")).toBe(15);
+  });
+
+  it("parses hours format", () => {
+    expect(parseEstimatedDuration("2 hours")).toBe(120);
+    expect(parseEstimatedDuration("1.5 hr")).toBe(90);
+  });
+
+  it("parses minutes format", () => {
+    expect(parseEstimatedDuration("45 min")).toBe(45);
+    expect(parseEstimatedDuration("30 minutes")).toBe(30);
+  });
+
+  it("returns null for empty/null", () => {
+    expect(parseEstimatedDuration("")).toBeNull();
+    expect(parseEstimatedDuration(null)).toBeNull();
+    expect(parseEstimatedDuration(undefined)).toBeNull();
+  });
+
+  it("returns null for non-numeric text", () => {
+    expect(parseEstimatedDuration("varies")).toBeNull();
+  });
+
+  it("rejects zero and negative", () => {
+    expect(parseEstimatedDuration("0")).toBeNull();
+  });
+});
+
 
