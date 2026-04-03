@@ -63,6 +63,27 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Discover Otsu on Lake Biwa. Ancient temples, scenic lakeside walks, and a peaceful escape near Kyoto.",
   },
 
+  himeji: {
+    id: "himeji",
+    name: "Himeji",
+    nameJapanese: "姫路",
+    tagline: "The white castle that survived everything",
+    description:
+      "Himeji Castle stands as the finest original castle in Japan. Brilliant white walls and layered roofs rise above the city, untouched by war, earthquake, or fire. The surrounding gardens shift with the seasons. Below the castle, the city moves at a pace that lets you actually look up.",
+    ogDescription:
+      "Visit Himeji Castle, Japan's most spectacular original castle. A UNESCO World Heritage site and easy stop between Osaka and Hiroshima.",
+  },
+  wakayama: {
+    id: "wakayama",
+    name: "Wakayama",
+    nameJapanese: "和歌山",
+    tagline: "Pilgrimage trails and the coast where Japan begins",
+    description:
+      "The Kumano Kodo pilgrimage trails start here, threading through mountains to ancient shrines. The coastline is dramatic. Shirahama's white sand beach sits beside onsen that have been flowing for 1,300 years. Wakayama is also home to Koyasan, the mountaintop monastery where you sleep among the monks.",
+    ogDescription:
+      "Explore Wakayama's Kumano Kodo pilgrimage, Koyasan monasteries, and Shirahama coastal onsen. Southern Kansai's spiritual heartland.",
+  },
+
   // --- Kanto ---
   tokyo: {
     id: "tokyo",
@@ -115,6 +136,17 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Explore Hakone's hot springs, Lake Ashi, and Mt. Fuji views. Your guide to the best onsen town near Tokyo.",
   },
 
+  kawaguchiko: {
+    id: "kawaguchiko",
+    name: "Kawaguchiko",
+    nameJapanese: "河口湖",
+    tagline: "Fuji reflected in still water",
+    description:
+      "Lake Kawaguchi is where Japan's most famous mountain meets its own reflection. The Fuji Five Lakes area offers the postcard view, but also lavender fields, lava caves, and ropeway rides to panoramic viewpoints. In autumn, the Momiji Corridor turns crimson. In winter, Fuji's snow cap hangs over frozen stillness.",
+    ogDescription:
+      "Discover Kawaguchiko's iconic Mt. Fuji views, lake shores, and seasonal landscapes. The best base for experiencing Fuji up close.",
+  },
+
   // --- Chubu ---
   nagoya: {
     id: "nagoya",
@@ -165,6 +197,27 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Japan's best rice grows here, and where the rice goes, sake follows. Over 90 breweries line the prefecture. Beyond the paddies, Sado Island preserves traditions the mainland forgot, and the Fuji Rock Festival draws crowds to the mountains each summer.",
     ogDescription:
       "Explore Niigata's sake breweries, rice paddies, and Sado Island. Japan's most underrated stretch of the Sea of Japan coast.",
+  },
+
+  ise: {
+    id: "ise",
+    name: "Ise",
+    nameJapanese: "伊勢",
+    tagline: "Japan's most sacred shrine and the street that feeds it",
+    description:
+      "Ise Grand Shrine is the spiritual center of Shinto, rebuilt every 20 years for over a millennium. The inner shrine sits deep in a cryptomeria forest, hushed and immense. Oharai-machi and Okage Yokocho, the streets leading to the shrine, are lined with mochi shops, teahouses, and Ise udon stalls.",
+    ogDescription:
+      "Visit Ise Grand Shrine, the spiritual heart of Shinto Japan. Explore the sacred forests and traditional food streets of Ise.",
+  },
+  toyama: {
+    id: "toyama",
+    name: "Toyama",
+    nameJapanese: "富山",
+    tagline: "Glass art, fresh sushi, and a wall of snow",
+    description:
+      "The Tateyama Kurobe Alpine Route carves through 20-meter snow walls in spring. Toyama Bay delivers some of Japan's freshest sushi, especially the translucent white shrimp found nowhere else. The city itself is compact and modern, with a world-class glass art museum and a tram network that makes everything walkable.",
+    ogDescription:
+      "Explore Toyama's Alpine Route snow walls, Toyama Bay sushi, and glass art. Gateway to the Japanese Alps' most dramatic scenery.",
   },
 
   // --- Kyushu ---
@@ -227,6 +280,27 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Cedar trees thousands of years old stand wrapped in moss on this round, mountainous island south of Kyushu. Jomon Sugi, the oldest, has lived for millennia. The forests inspired Princess Mononoke. Waterfalls, sea turtles, and more rain than almost anywhere in Japan.",
     ogDescription:
       "Trek Yakushima's ancient cedar forests, see Jomon Sugi, and discover the island that inspired Princess Mononoke.",
+  },
+
+  miyazaki: {
+    id: "miyazaki",
+    name: "Miyazaki",
+    nameJapanese: "宮崎",
+    tagline: "Gorges, coastal shrines, and year-round warmth",
+    description:
+      "Takachiho Gorge cuts deep into volcanic rock, its waterfall dropping into an emerald river you can boat through. Aoshima's shrine sits on a tiny island ringed by wave-carved rock formations called the Devil's Washboard. Miyazaki is warmer than the rest of Kyushu, with palm-lined streets and a surf culture that keeps going through winter.",
+    ogDescription:
+      "Discover Miyazaki's Takachiho Gorge, Aoshima shrine, and subtropical coastline. Kyushu's warmest corner and a surfer's paradise.",
+  },
+  kitakyushu: {
+    id: "kitakyushu",
+    name: "Kitakyūshū",
+    nameJapanese: "北九州",
+    tagline: "Industrial grit turned into gardens and street food",
+    description:
+      "Kokura Castle anchors the old town, where covered shopping streets serve some of Kyushu's best yakiudon. Kawachi Fujien's wisteria tunnels explode in purple every spring. The Kanmon Strait connects Kyushu to Honshu, and you can walk the undersea tunnel to Shimonoseki. A working city with genuine character.",
+    ogDescription:
+      "Visit Kitakyushu's Kokura Castle, Kawachi Fujien wisteria, and Kanmon Strait. The gateway between Kyushu and Honshu.",
   },
 
   // --- Hokkaido ---
@@ -333,6 +407,27 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Explore Akita's samurai district, Lake Tazawa, and magical winter festivals. Deep rural Japan in Tohoku's west.",
   },
 
+  yamagata: {
+    id: "yamagata",
+    name: "Yamagata",
+    nameJapanese: "山形",
+    tagline: "Snow monsters, sacred mountains, and cherry blossoms by the river",
+    description:
+      "Zao's juhyo (snow monsters) are trees encased in ice and snow, forming surreal sculptures across the mountainside every winter. Dewa Sanzan's three sacred mountains have drawn yamabushi pilgrims for centuries. In spring, the Kajo Park moat fills with cherry blossoms. Yamagata beef rivals Kobe, and the soba is some of Japan's finest.",
+    ogDescription:
+      "Explore Yamagata's Zao snow monsters, Dewa Sanzan pilgrimage, and legendary beef. Tohoku's most scenic mountain prefecture.",
+  },
+  aizuwakamatsu: {
+    id: "aizuwakamatsu",
+    name: "Aizu-Wakamatsu",
+    nameJapanese: "会津若松",
+    tagline: "Samurai loyalty, lacquerware, and mountain sake",
+    description:
+      "Tsuruga Castle's red-tiled roof is unique in Japan. The Aizu samurai made their last stand here, and that stubborn loyalty still defines the city's character. Nanukamachi's warehouses hold lacquerware workshops. Kitakata, nearby, serves ramen for breakfast. Over 30 sake breweries line the streets, fed by pure mountain water.",
+    ogDescription:
+      "Visit Aizu-Wakamatsu's Tsuruga Castle, samurai heritage, and sake breweries. The proud heart of Fukushima Prefecture.",
+  },
+
   // --- Chugoku ---
   hiroshima: {
     id: "hiroshima",
@@ -375,6 +470,17 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "Visit Tottori's stunning sand dunes, fresh crab, and Sea of Japan coastline. Japan's most surprising landscape.",
   },
 
+  shimonoseki: {
+    id: "shimonoseki",
+    name: "Shimonoseki",
+    nameJapanese: "下関",
+    tagline: "Fugu capital at the tip of Honshu",
+    description:
+      "Shimonoseki is where Honshu ends and the Kanmon Strait begins. Karato Market's auction floor opens to the public for sushi breakfast. This is Japan's fugu (pufferfish) capital, where the deadly delicacy is an everyday food. The undersea tunnel to Kyushu is a 15-minute walk. Dan-no-ura, where the samurai era began, happened in these waters.",
+    ogDescription:
+      "Discover Shimonoseki's fugu cuisine, Karato Market, and the Kanmon Strait. Where Honshu meets Kyushu at Japan's western tip.",
+  },
+
   // --- Shikoku ---
   matsuyama: {
     id: "matsuyama",
@@ -415,6 +521,17 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
       "The Sunday Market has run for over 300 years. Katsuo no tataki, bonito seared over straw flames, is the signature dish. Kōchi is the wildest corner of Shikoku, where rivers run clear, capes jut into the Pacific, and people drink more sake per capita than anywhere in Japan.",
     ogDescription:
       "Visit Kōchi's 300-year-old Sunday Market, flame-seared bonito, and Pacific coastline. Shikoku's spirited southern capital.",
+  },
+
+  iyavalley: {
+    id: "iyavalley",
+    name: "Iya Valley",
+    nameJapanese: "祖谷",
+    tagline: "Vine bridges over emerald gorges",
+    description:
+      "The Iya Valley is one of Japan's three most secluded regions. Kazurabashi vine bridges sway over the gorge, rebuilt every three years using mountain vines. The water runs a green so deep it looks lit from below. Thatched-roof farmhouses cling to impossibly steep slopes. Getting here takes effort. That's the point.",
+    ogDescription:
+      "Explore the Iya Valley's vine bridges, emerald gorges, and remote thatched farmhouses. Shikoku's most dramatic hidden landscape.",
   },
 
   // --- Okinawa ---

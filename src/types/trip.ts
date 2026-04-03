@@ -40,14 +40,14 @@ export type TripStyle = "relaxed" | "balanced" | "fast";
  * may have additional IDs not in this union.
  */
 export type KnownCityId =
-  | "kyoto" | "osaka" | "nara" | "kobe" | "otsu"  // Kansai
-  | "tokyo" | "yokohama" | "kamakura" | "nikko" | "hakone"  // Kanto
-  | "nagoya" | "kanazawa" | "takayama" | "nagano" | "niigata"  // Chubu
-  | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita" | "yakushima"  // Kyushu
+  | "kyoto" | "osaka" | "nara" | "kobe" | "otsu" | "himeji" | "wakayama"  // Kansai
+  | "tokyo" | "yokohama" | "kamakura" | "nikko" | "hakone" | "kawaguchiko"  // Kanto
+  | "nagoya" | "kanazawa" | "takayama" | "nagano" | "niigata" | "ise" | "toyama"  // Chubu
+  | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita" | "yakushima" | "miyazaki" | "kitakyushu"  // Kyushu
   | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"  // Hokkaido
-  | "sendai" | "morioka" | "aomori" | "akita"  // Tohoku
-  | "hiroshima" | "okayama" | "matsue" | "tottori"  // Chugoku
-  | "matsuyama" | "takamatsu" | "tokushima" | "kochi"  // Shikoku
+  | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"  // Tohoku
+  | "hiroshima" | "okayama" | "matsue" | "tottori" | "shimonoseki"  // Chugoku
+  | "matsuyama" | "takamatsu" | "tokushima" | "kochi" | "iyavalley"  // Shikoku
   | "naha" | "ishigaki" | "miyako" | "amami";  // Okinawa
 
 /**
