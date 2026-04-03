@@ -69,7 +69,7 @@ export function StatsSection({
       {/* Content */}
       <div className="relative z-10 flex min-h-[40vh] flex-col items-center justify-center px-6 py-12 sm:py-16 lg:py-20 text-center">
         <ScrollReveal>
-          <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
+          <p className="text-xs font-medium uppercase tracking-ultra text-white/60">
             {content?.dashboardActivityEyebrow ?? "Activity"}
           </p>
         </ScrollReveal>
@@ -88,7 +88,7 @@ export function StatsSection({
                 value={savedCount}
                 className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
               />
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
+              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/60">
                 Saved
               </p>
               {!isAuthenticated && savedCount > 0 && (
@@ -96,7 +96,7 @@ export function StatsSection({
               )}
               <Link
                 href={savedCount > 0 ? "/saved" : "/places"}
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 {savedCount > 0 ? "View saved" : "Explore places"}
               </Link>
@@ -109,12 +109,12 @@ export function StatsSection({
                 value={guideBookmarksCount}
                 className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
               />
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
+              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/60">
                 Guides
               </p>
               <Link
                 href="/guides/bookmarks"
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 View guides
               </Link>
@@ -127,12 +127,12 @@ export function StatsSection({
                 value={tripsCount}
                 className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
               />
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
+              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/60">
                 Trips
               </p>
               <Link
                 href="#trips"
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 View trips
               </Link>

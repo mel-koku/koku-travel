@@ -65,7 +65,7 @@ export function MenuPanel() {
         <p className="font-serif text-xl text-white/90">
           {tagline}
         </p>
-        <p className="mt-2 text-sm text-white/50">
+        <p className="mt-2 text-sm text-white/60">
           {image.label} Region
         </p>
       </div>

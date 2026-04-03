@@ -83,7 +83,6 @@ export function AskKokuButton() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.15, ease: easeReveal }}
-              className="flex items-center gap-2"
             >
               <span className="text-sm font-medium">Ask Koku</span>
             </motion.div>

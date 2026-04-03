@@ -457,15 +457,15 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
                         <div className="text-center">
                           <p className="font-mono text-lg text-white/80">01</p>
-                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Day-by-day timeline</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/60">Day-by-day timeline</p>
                         </div>
                         <div className="text-center">
                           <p className="font-mono text-lg text-white/80">02</p>
-                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Routes and travel times</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/60">Routes and travel times</p>
                         </div>
                         <div className="text-center">
                           <p className="font-mono text-lg text-white/80">03</p>
-                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Share with a link</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/60">Share with a link</p>
                         </div>
                       </div>
                     </ScrollReveal>

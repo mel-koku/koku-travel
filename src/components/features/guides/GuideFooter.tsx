@@ -71,7 +71,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
 
             {/* Overlay text */}
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
-              <p className="mb-2 font-mono text-[10px] uppercase tracking-ultra text-white/50">
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-ultra text-white/60">
                 {GUIDE_TYPE_LABELS[relatedGuide.guideType]}
                 {relatedGuide.city && ` \u00b7 ${relatedGuide.city}`}
                 {relatedGuide.readingTimeMinutes &&

@@ -159,7 +159,7 @@ export function ExperiencesComingSoon({ variant }: Props) {
 
         {/* Launch date */}
         <motion.p
-          className="mt-8 text-[11px] uppercase tracking-[0.2em] text-white/50"
+          className="mt-8 text-[11px] uppercase tracking-[0.2em] text-white/60"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: durationBase, delay: 1.2 }}

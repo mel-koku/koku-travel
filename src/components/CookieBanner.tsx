@@ -45,7 +45,7 @@ export default function CookieBanner() {
         </button>
         <button
           onClick={() => dismiss(false)}
-          className="text-[13px] text-white/50 transition hover:text-white/70"
+          className="text-[13px] text-white/60 transition hover:text-white/80"
         >
           Decline
         </button>

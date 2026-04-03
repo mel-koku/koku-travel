@@ -113,14 +113,14 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                       sizes="100vw"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-charcoal/60" />
+                    <div className="absolute inset-0 bg-charcoal/70" />
                     <div className="absolute inset-0 flex items-center justify-center px-16">
                       <div className="max-w-lg text-center">
                         <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
                         <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
                           {act.title}
                         </h2>
-                        <p className="mt-5 text-base leading-relaxed text-white/80">
+                        <p className="mt-5 text-base leading-relaxed text-white/90">
                           {act.description}
                         </p>
                       </div>

@@ -67,7 +67,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
       <div className="relative z-10 flex min-h-[100dvh] items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         <div className="max-w-2xl">
           <ScrollReveal distance={10}>
-            <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/50">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/60">
               {content?.notFoundEyebrow ?? "Page not found"}
             </p>
           </ScrollReveal>

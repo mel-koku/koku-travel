@@ -76,7 +76,7 @@ export function ExperienceFooter({
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <p className="mb-1.5 font-mono text-[10px] uppercase tracking-ultra text-white/50">
+                  <p className="mb-1.5 font-mono text-[10px] uppercase tracking-ultra text-white/60">
                     {EXPERIENCE_TYPE_LABELS[related.experienceType]}
                     {related.city && ` \u00b7 ${related.city}`}
                     {related.duration && ` \u00b7 ${related.duration}`}

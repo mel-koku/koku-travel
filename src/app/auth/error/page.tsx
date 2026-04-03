@@ -121,7 +121,7 @@ function AuthErrorContent() {
       <div className="relative z-10 flex min-h-[100dvh] items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         <div className="max-w-2xl">
           <ScrollReveal distance={10}>
-            <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/50">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/60">
               Authentication error
             </p>
           </ScrollReveal>
@@ -159,7 +159,7 @@ function AuthErrorContent() {
             {error.action && (
               <a
                 href="/signin"
-                className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
+                className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/70 transition-colors hover:text-white/90"
               >
                 {error.action}
               </a>

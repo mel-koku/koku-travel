@@ -31,7 +31,7 @@ function FeatureShowcase() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-charcoal/60" />
+        <div className="absolute inset-0 bg-charcoal/70" />
 
         <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28 text-center">
           <p className="eyebrow-editorial text-brand-primary">What you get</p>
@@ -107,7 +107,7 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
         ) : (
           <div className="absolute inset-0 bg-charcoal" />
         )}
-        <div className="absolute inset-0 bg-charcoal/60" />
+        <div className="absolute inset-0 bg-charcoal/70" />
 
         <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28">
           <span className="mb-4 block select-none font-serif text-[4rem] leading-none text-white/15 sm:text-[6rem]">
@@ -131,7 +131,7 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
             <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium text-white")}>
               {featured.author}
             </p>
-            <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5 text-white/70")}>
+            <p className={cn(typography({ intent: "utility-meta" }), "mt-0.5 text-white/80")}>
               {featured.location}
             </p>
           </div>
