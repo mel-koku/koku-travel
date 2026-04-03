@@ -50,7 +50,7 @@ export default function Footer({ settings }: FooterProps) {
 
   return (
     <footer className="bg-charcoal text-white border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:py-20 lg:py-28">
         {/* Top: Brand + Navigation */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}

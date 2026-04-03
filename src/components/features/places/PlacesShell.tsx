@@ -384,7 +384,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
           flyToLocation={flyToLocation}
         />
       ) : isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-8 sm:pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {Array.from({ length: 12 }).map((_, index) => (
               <div key={index} className="rounded-lg bg-surface animate-pulse">
@@ -399,7 +399,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
           </div>
         </div>
       ) : (
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-8 sm:pb-16">
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
           <LocationEditorialGrid
             locations={visibleLocations}
             onSelect={handleSelectLocation}

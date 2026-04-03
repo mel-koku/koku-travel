@@ -32,20 +32,20 @@ export default function CookieBanner() {
         transform: mounted ? "translateY(0)" : "translateY(12px)",
       }}
     >
-      <p className="text-[13px] leading-relaxed text-white/80">
+      <p className="text-sm leading-relaxed text-white/80">
         We use cookies for analytics to improve your experience. No personal
         data is shared with third parties.
       </p>
       <div className="mt-3 flex items-center gap-3">
         <button
           onClick={() => dismiss(true)}
-          className="rounded-md bg-white/15 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-white/25 active:scale-[0.98]"
+          className="rounded-md bg-white/15 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-white/25 active:scale-[0.98]"
         >
           Got it
         </button>
         <button
           onClick={() => dismiss(false)}
-          className="text-[13px] text-white/60 transition hover:text-white/80"
+          className="text-sm text-white/60 transition hover:text-white/80"
         >
           Decline
         </button>

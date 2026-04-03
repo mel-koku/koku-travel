@@ -31,7 +31,7 @@ export function SavedClient({ content }: SavedClientProps) {
 
       {/* Collection count strip */}
       {count > 0 && (
-        <section className="bg-background py-8 sm:py-12">
+        <section className="bg-background py-8 sm:py-12 lg:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-4 sm:gap-8">
               <ScrollReveal>
