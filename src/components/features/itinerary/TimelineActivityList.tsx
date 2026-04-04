@@ -18,6 +18,7 @@ import { GuideSegmentCard } from "./GuideSegmentCard";
 import { DayBookingCards } from "./DayBookingCards";
 import { SortableActivity } from "./SortableActivity";
 import { AccommodationBookend } from "./AccommodationBookend";
+import { AccommodationPicker } from "./AccommodationPicker";
 import { LateArrivalCard } from "./LateArrivalCard";
 import { AvailabilityAlert } from "./AvailabilityAlert";
 import type { useDayAvailability } from "@/hooks/useDayAvailability";
@@ -59,6 +60,10 @@ type TimelineActivityListProps = {
   onViewDetails?: (location: Location) => void;
   handleAddNote: () => void;
   TravelSegmentWrapper: React.ComponentType<TravelSegmentWrapperProps>;
+  /** Accommodation callbacks for rendering picker after arrival anchor */
+  onStartLocationChange?: (location: EntryPoint | undefined) => void;
+  onEndLocationChange?: (location: EntryPoint | undefined) => void;
+  onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
 };
 
 export const TimelineActivityList = memo(function TimelineActivityList({
@@ -84,8 +89,12 @@ export const TimelineActivityList = memo(function TimelineActivityList({
   onViewDetails,
   handleAddNote,
   TravelSegmentWrapper,
+  onStartLocationChange,
+  onEndLocationChange,
+  onCityAccommodationChange,
 }: TimelineActivityListProps) {
   const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
+  const [accommodationExpanded, setAccommodationExpanded] = useState(false);
 
   if (extendedActivities.length === 0) {
     return (
@@ -241,15 +250,42 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     <GuideSegmentCard segment={seg} />
                   </li>
                 ))}
-                {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && startLocation && (
-                  <li className="list-none">
-                    <AccommodationBookend
-                      location={startLocation}
-                      variant="start"
-                      travelMinutes={bookendEstimates.start?.travelMinutes}
-                      distanceMeters={bookendEstimates.start?.distanceMeters}
-                    />
-                  </li>
+                {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && (
+                  startLocation ? (
+                    <li className="list-none">
+                      <AccommodationBookend
+                        location={startLocation}
+                        variant="start"
+                        travelMinutes={bookendEstimates.start?.travelMinutes}
+                        distanceMeters={bookendEstimates.start?.distanceMeters}
+                      />
+                    </li>
+                  ) : onStartLocationChange && !isReadOnly ? (
+                    <li className="list-none">
+                      {!accommodationExpanded ? (
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationExpanded(true)}
+                          className="flex items-center gap-1.5 text-xs text-stone transition-colors hover:text-foreground"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                          </svg>
+                          Add your accommodation to route from
+                        </button>
+                      ) : (
+                        <AccommodationPicker
+                          startLocation={startLocation}
+                          endLocation={endLocation}
+                          cityId={day.cityId}
+                          onStartChange={onStartLocationChange}
+                          onEndChange={onEndLocationChange ?? (() => {})}
+                          onSetCityAccommodation={onCityAccommodationChange}
+                          isReadOnly={false}
+                        />
+                      )}
+                    </li>
+                  ) : null
                 )}
                 {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isLateArrival && !lateArrivalDismissed && (
                   <li className="list-none mt-3">

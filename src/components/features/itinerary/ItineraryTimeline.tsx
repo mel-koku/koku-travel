@@ -579,15 +579,23 @@ export const ItineraryTimeline = ({
     >
       <div className="space-y-6">
         {/* Day Header (conflicts + accommodation only) */}
-          <DayHeader
-            day={day}
-            conflicts={conflicts}
-            startLocation={startLocation}
-            endLocation={endLocation}
-            onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
-            onEndLocationChange={isReadOnly ? undefined : onEndLocationChange}
-            onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
-          />
+        {/* On arrival day, accommodation picker moves below the anchor card */}
+        {(() => {
+          const hasArrivalAnchor = extendedActivities.some(
+            (a) => a.kind === "place" && a.isAnchor && a.id.startsWith("anchor-arrival"),
+          );
+          return (
+            <DayHeader
+              day={day}
+              conflicts={conflicts}
+              startLocation={hasArrivalAnchor ? undefined : startLocation}
+              endLocation={hasArrivalAnchor ? undefined : endLocation}
+              onStartLocationChange={hasArrivalAnchor || isReadOnly ? undefined : onStartLocationChange}
+              onEndLocationChange={hasArrivalAnchor || isReadOnly ? undefined : onEndLocationChange}
+              onCityAccommodationChange={hasArrivalAnchor || isReadOnly ? undefined : onCityAccommodationChange}
+            />
+          );
+        })()}
 
         {day.cityTransition && (
           <TimelineCityTransition cityTransition={day.cityTransition} />
@@ -630,6 +638,9 @@ export const ItineraryTimeline = ({
           onViewDetails={onViewDetails}
           handleAddNote={handleAddNote}
           TravelSegmentWrapper={TravelSegmentWrapper}
+          onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
+          onEndLocationChange={isReadOnly ? undefined : onEndLocationChange}
+          onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
         />
       </div>
 
