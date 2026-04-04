@@ -32,7 +32,6 @@ export function getTripLevelTips(
         ),
     ),
   );
-  const hasMultipleCities = new Set(days.map((d) => d.cityId)).size > 1;
   const hasTemplesOrShrines = days.some((d) =>
     d.activities.some((a) =>
       a.kind === "place" &&
@@ -48,17 +47,6 @@ export function getTripLevelTips(
       summary:
         "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
       icon: "\uD83D\uDE83",
-    });
-  }
-
-  // JR Pass
-  if (hasMultipleCities && hasTransit) {
-    tips.push({
-      id: "trip-jr-pass",
-      title: "Consider a rail pass",
-      summary:
-        "Multi-city trips often save money with a Japan Rail Pass or regional pass (Kansai Area Pass, Hokkaido Pass). Compare pass cost vs individual tickets before your trip.",
-      icon: "\uD83D\uDE85",
     });
   }
 
