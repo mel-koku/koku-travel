@@ -26,14 +26,8 @@ import { ItineraryTimeline } from "./ItineraryTimeline";
 
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
-import { logger } from "@/lib/logger";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
-import {
-  useReplacementCandidates,
-  locationToActivity,
-  type ReplacementCandidate,
-} from "@/hooks/useReplacementCandidates";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
@@ -52,6 +46,10 @@ import { PrintFooter } from "./PrintFooter";
 import { REGIONS } from "@/data/regions";
 import { useItineraryDiscover } from "./hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanel } from "./ItineraryDiscoverPanel";
+import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
+import { useReplacementState } from "@/hooks/useReplacementState";
+import { useDayTripActions } from "@/hooks/useDayTripActions";
+import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -146,23 +144,37 @@ export const ItineraryShell = ({
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
-  const [headerCollapsed, setHeaderCollapsed] = useState(false);
-  const lastScrollTopRef = useRef(0);
-  const headerCooldownRef = useRef(false);
-  const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
-  const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
-  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
 
-  // Mutation hook for fetching replacement candidates
-  const replacementMutation = useReplacementCandidates();
-  const isLoadingReplacements = replacementMutation.isPending;
+  const headerCollapsed = useHeaderCollapse(viewMode);
 
   const currentTrip = useMemo(() => {
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
+
+  const {
+    replacementActivityId,
+    setReplacementActivityId,
+    replacementCandidates,
+    setReplacementCandidates,
+    expandedLocation,
+    isLoadingReplacements,
+    handleReplace,
+    handleReplaceSelect,
+    handleViewDetails,
+    handleCloseExpanded,
+  } = useReplacementState({
+    tripId,
+    isUsingMock,
+    currentTrip,
+    model,
+    selectedDay,
+    replaceActivity,
+    setModelState,
+    scheduleUserPlanningRef,
+  });
 
   const handleReorder = useCallback(
     (dayId: string, activityIds: string[]) => {
@@ -171,82 +183,6 @@ export const ItineraryShell = ({
       }
     },
     [tripId, isUsingMock, reorderActivities],
-  );
-
-  const handleReplace = useCallback(
-    (activityId: string) => {
-      if (!tripId || isUsingMock || !currentTrip) return;
-
-      const currentDay = model.days[selectedDay];
-      if (!currentDay) return;
-
-      const activity = currentDay.activities.find((a) => a.id === activityId);
-      if (!activity || activity.kind !== "place") return;
-
-      setReplacementActivityId(activityId);
-
-      // Find replacement candidates via API
-      replacementMutation.mutate(
-        {
-          activity,
-          tripData: currentTrip.builderData,
-          allActivities: model.days.flatMap((d) => d.activities),
-          dayActivities: currentDay.activities,
-          currentDayIndex: selectedDay,
-          maxCandidates: 10,
-        },
-        {
-          onSuccess: (options) => {
-            setReplacementCandidates(options.candidates);
-          },
-          onError: (error) => {
-            logger.error("Failed to find replacement candidates", error);
-            setReplacementCandidates([]);
-          },
-        },
-      );
-    },
-    [tripId, isUsingMock, currentTrip, model, selectedDay, replacementMutation],
-  );
-
-  const handleReplaceSelect = useCallback(
-    (candidate: ReplacementCandidate) => {
-      if (!tripId || isUsingMock || !replacementActivityId) return;
-
-      const currentDay = model.days[selectedDay];
-      if (!currentDay) return;
-
-      const activity = currentDay.activities.find((a) => a.id === replacementActivityId);
-      if (!activity || activity.kind !== "place") return;
-
-      const newActivity = locationToActivity(candidate.location, activity);
-
-      if (tripId && !isUsingMock) {
-        replaceActivity(tripId, currentDay.id, replacementActivityId, newActivity);
-      }
-
-      // Build the updated itinerary for replanning
-      const nextDays = model.days.map((d) => {
-        if (d.id !== currentDay.id) return d;
-        return {
-          ...d,
-          activities: d.activities.map((a) => (a.id === replacementActivityId ? newActivity : a)),
-        };
-      });
-      const nextItinerary = { ...model, days: nextDays };
-
-      // Update local model
-      setModelState(nextItinerary);
-
-      // Schedule replanning after state update to recalculate travel times
-      setTimeout(() => {
-        scheduleUserPlanningRef.current?.(nextItinerary);
-      }, 0);
-
-      setReplacementActivityId(null);
-      setReplacementCandidates([]);
-    },
-    [tripId, isUsingMock, replacementActivityId, model, selectedDay, replaceActivity, setModelState, scheduleUserPlanningRef],
   );
 
   useEffect(() => {
@@ -276,52 +212,6 @@ export const ItineraryShell = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [tripId, isUsingMock, isReadOnly, undo, redo, canUndo, canRedo]);
-
-  // Header collapse on scroll (scroll down → collapse title, scroll up → expand)
-  useEffect(() => {
-    setHeaderCollapsed(false);
-    lastScrollTopRef.current = 0;
-    // On desktop, the left panel scrolls; on mobile, the activities div scrolls
-    const el = document.querySelector("[data-itinerary-activities]")?.closest("[data-lenis-prevent]") ?? document.querySelector("[data-itinerary-activities]");
-    if (!el) return;
-
-    const THRESHOLD = 30;
-    const COOLDOWN_MS = 300;
-    const handleScroll = () => {
-      const top = el.scrollTop;
-
-      // Always expand at the top, even during cooldown
-      if (top < 10) {
-        setHeaderCollapsed(false);
-        lastScrollTopRef.current = top;
-        return;
-      }
-
-      if (headerCooldownRef.current) return;
-      const delta = top - lastScrollTopRef.current;
-
-      const nearBottom = el.scrollHeight - top - el.clientHeight < 50;
-      if (nearBottom) {
-        lastScrollTopRef.current = top;
-        return;
-      }
-
-      if (delta > THRESHOLD) {
-        setHeaderCollapsed(true);
-        lastScrollTopRef.current = top;
-        headerCooldownRef.current = true;
-        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
-      } else if (delta < -THRESHOLD) {
-        setHeaderCollapsed(false);
-        lastScrollTopRef.current = top;
-        headerCooldownRef.current = true;
-        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
-      }
-    };
-
-    el.addEventListener("scroll", handleScroll, { passive: true });
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, [viewMode]);
 
   const days = model.days ?? [];
   const safeSelectedDay =
@@ -422,11 +312,13 @@ export const ItineraryShell = ({
     [safeSelectedDay, applyModelUpdate],
   );
 
-  // Filter suggestions for the current day
-  const currentDaySuggestions = useMemo(() => {
-    if (!suggestions || !currentDay) return [];
-    return suggestions.filter((gap) => gap.dayIndex === safeSelectedDay);
-  }, [suggestions, currentDay, safeSelectedDay]);
+  const { currentDaySuggestions, handleAcceptSuggestion } = useSmartSuggestions({
+    suggestions,
+    currentDay,
+    safeSelectedDay,
+    onAcceptSuggestion,
+    setIsPlanning,
+  });
 
   // Detect scheduling conflicts in the itinerary
   const conflictsResult = useMemo(() => {
@@ -470,32 +362,6 @@ export const ItineraryShell = ({
     setSelectedActivityId(null);
   }, [model.days, setSelectedActivityId]);
 
-  // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
-  // replanning via the serializedItinerary effect
-  const handleAcceptSuggestion = useCallback(
-    async (gap: DetectedGap) => {
-      if (!onAcceptSuggestion) return;
-
-      const result = await onAcceptSuggestion(gap);
-
-      // Activity was added to AppState. The itinerary prop will update and trigger
-      // the effect which calls planItineraryClient to recalculate times.
-      if (result.success) {
-        // Force immediate UI update by triggering planning indicator
-        setIsPlanning(true);
-      }
-    },
-    [onAcceptSuggestion, setIsPlanning],
-  );
-
-  const handleViewDetails = useCallback((location: Location) => {
-    setExpandedLocation(location);
-  }, []);
-
-  const handleCloseExpanded = useCallback(() => {
-    setExpandedLocation(null);
-  }, []);
-
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
     (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
@@ -534,83 +400,17 @@ export const ItineraryShell = ({
   );
 
   // ── Day trip accept handler ──
-  const [isAcceptingDayTrip, setIsAcceptingDayTrip] = useState(false);
-
-  const handleAcceptDayTrip = useCallback(
-    async (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
-      if (!onItineraryChange || isUsingMock) return;
-      const target = model.days[dayIndex];
-      if (!target) return;
-
-      setIsAcceptingDayTrip(true);
-      try {
-        const res = await fetch("/api/day-trips/plan", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            baseCityId: suggestion.baseCityId,
-            targetLocationId: suggestion.targetLocationId,
-            dayIndex,
-            dayId: target.id,
-            vibes: tripBuilderData?.vibes || [],
-            usedLocationIds: model.days.flatMap((d) =>
-              d.activities
-                .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
-                .map((a) => a.locationId)
-                .filter(Boolean),
-            ),
-            tripDate: tripStartDate,
-          }),
-        });
-
-        if (!res.ok) return;
-        const plan = await res.json();
-
-        // Swap through edit history so Cmd+Z works
-        updateDayActivities(
-          tripId,
-          target.id,
-          (itinerary) => ({
-            ...itinerary,
-            days: itinerary.days.map((d, i) =>
-              i === dayIndex
-                ? {
-                    ...d,
-                    activities: plan.activities,
-                    isDayTrip: true,
-                    baseCityId: suggestion.baseCityId,
-                    cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
-                    dayTripTravelMinutes: plan.totalTravelMinutes,
-                    dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
-                  }
-                : d,
-            ),
-          }),
-          { dayIndex, targetLocationId: suggestion.targetLocationId },
-        );
-
-        // Sync local model state and trigger travel time replanning
-        const nextDays = [...model.days];
-        nextDays[dayIndex] = {
-          ...target,
-          activities: plan.activities,
-          isDayTrip: true,
-          baseCityId: suggestion.baseCityId,
-          cityId: plan.targetCityId || suggestion.targetCity.toLowerCase(),
-          dayTripTravelMinutes: plan.totalTravelMinutes,
-          dateLabel: plan.dayLabel || `Day ${dayIndex + 1} (Day Trip: ${suggestion.baseCityName} \u2192 ${suggestion.targetLocationName})`,
-        };
-        const nextItinerary = { ...model, days: nextDays };
-        setModelState(nextItinerary);
-        setTimeout(() => {
-          scheduleUserPlanningRef.current?.(nextItinerary);
-        }, 0);
-      } finally {
-        setIsAcceptingDayTrip(false);
-      }
-    },
-    [model, tripId, isUsingMock, onItineraryChange, tripBuilderData, tripStartDate, updateDayActivities, setModelState, scheduleUserPlanningRef],
-  );
+  const { isAcceptingDayTrip, handleAcceptDayTrip } = useDayTripActions({
+    model,
+    tripId,
+    isUsingMock,
+    onItineraryChange,
+    tripBuilderData,
+    tripStartDate,
+    updateDayActivities,
+    setModelState,
+    scheduleUserPlanningRef,
+  });
 
   // ── Discover mode ──
   const discover = useItineraryDiscover({

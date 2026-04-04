@@ -12,7 +12,6 @@ import {
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
-import { JRPassCard } from "./JRPassCard";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 
 import { motion } from "framer-motion";
@@ -470,9 +469,6 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               )}
             </div>
           </div>
-
-          {/* JR Pass */}
-          <JRPassCard duration={data.duration} cities={data.cities} />
 
           {/* Duration Warning */}
           {durationWarning && (

@@ -15,8 +15,8 @@ import type { Trip } from "@/types/tripDomain";
 import type { Itinerary } from "@/types/itinerary";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 
-/** Cache TTL: 24 hours in seconds */
-const CACHE_TTL_SECONDS = 24 * 60 * 60;
+/** Cache TTL: 6 hours in seconds (reduced from 24h for data freshness after tip/location updates) */
+const CACHE_TTL_SECONDS = 6 * 60 * 60;
 
 /** Redis key prefix for itinerary cache */
 const CACHE_KEY_PREFIX = "@koku-travel/itinerary";

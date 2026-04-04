@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import { REGIONS } from "@/data/regions";
 import type { CityId } from "@/types/trip";
 
 type RegionCitySelectorProps = {
@@ -26,6 +27,17 @@ export function RegionCitySelector({
   variant = "desktop",
 }: RegionCitySelectorProps) {
   const [search, setSearch] = useState("");
+
+  // Display name lookup from REGIONS (handles compound names like "Iya Valley", "Aizu-Wakamatsu")
+  const cityDisplayNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const r of REGIONS) {
+      for (const c of r.cities) {
+        map.set(c.id, c.name);
+      }
+    }
+    return map;
+  }, []);
 
   // All cities in this region, sorted by locationCount descending (default from getAllCities)
   const regionCities = useMemo(() => {
@@ -122,7 +134,7 @@ export function RegionCitySelector({
                       isSelected ? "text-foreground" : "text-foreground-secondary"
                     )}
                   >
-                    {titleCase(city.city)}
+                    {cityDisplayNames.get(city.city) ?? titleCase(city.city)}
                   </span>
                   <span className="text-[11px] tabular-nums text-stone">
                     {city.locationCount} {city.locationCount === 1 ? "place" : "places"}

@@ -1,18 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
-import {
-  BookOpen,
-  Camera,
-  Gamepad2,
-  Leaf,
-  Mountain,
-  Palette,
-  Smile,
-  Sparkles,
-  Utensils,
-  type LucideIcon,
-} from "lucide-react";
 
 import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
@@ -23,41 +11,8 @@ import { typography } from "@/lib/typography-system";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
-function ToriiIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M4 5h16" />
-      <path d="M6 5v16" />
-      <path d="M18 5v16" />
-      <path d="M2 8h20" />
-      <path d="M9 8v13" />
-      <path d="M15 8v13" />
-    </svg>
-  );
-}
-
-const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
-  Torii: ToriiIcon,
-  Utensils: Utensils,
-  Camera: Camera,
-  Sparkles: Sparkles,
-  Mountain: Mountain,
-  Leaf: Leaf,
-  Gamepad2: Gamepad2,
-  Smile: Smile,
-  BookOpen: BookOpen,
-  Palette: Palette,
-};
-
 const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
+
 
 export type VibeStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -104,10 +59,28 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
     [setData],
   );
 
+  const renderVibe = (vibe: (typeof TRIP_BUILDER_VIBES)[number], i: number) => {
+    const isSelected = selectedVibes.includes(vibe.id);
+    const isDisabled = isMaxSelected && !isSelected;
+    const sanityVibe = sanityVibeMap?.get(vibe.id);
+
+    return (
+      <VibeCard
+        key={vibe.id}
+        name={sanityVibe?.name ?? vibe.name}
+        description={sanityVibe?.description ?? vibe.description}
+        index={i}
+        isSelected={isSelected}
+        isDisabled={isDisabled}
+        onToggle={() => toggleVibe(vibe.id)}
+      />
+    );
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-background">
       {/* Header */}
-      <div className="px-6 pt-20 text-center sm:pt-28 lg:pt-32">
+      <div className="px-6 pt-20 text-center sm:pt-20 lg:pt-20">
         <p className="eyebrow-editorial text-brand-primary">
           STEP 03
         </p>
@@ -115,55 +88,57 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
           {sanityConfig?.vibeStepHeading ?? "How do you want to spend your days?"}
         </motion.h2>
 
-        <p className="mt-2 text-sm text-stone">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-2 text-sm text-stone"
+        >
           {sanityConfig?.vibeStepDescription ?? "Pick up to 3. These shape what we schedule."}
-        </p>
+        </motion.p>
 
         <div aria-live="polite">
-          <p className="mt-2 font-mono text-sm text-stone">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-3 font-mono text-xs tracking-wide text-stone/70"
+          >
             {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
-          </p>
+          </motion.p>
           {hasPrefilledVibes && (
             <p className="mt-1 text-xs text-stone">Pre-selected from your profile</p>
           )}
         </div>
       </div>
 
-      {/* Card grid */}
-      <div className="mx-auto mt-8 w-full max-w-4xl px-4 pb-24 sm:px-6 lg:mt-10">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
-          {TRIP_BUILDER_VIBES.map((vibe, i) => {
-            const isSelected = selectedVibes.includes(vibe.id);
-            const isDisabled = isMaxSelected && !isSelected;
-            const sanityVibe = sanityVibeMap?.get(vibe.id);
-            const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
-
-            return (
-              <VibeCard
-                key={vibe.id}
-                name={sanityVibe?.name ?? vibe.name}
-                description={sanityVibe?.description ?? vibe.description}
-                icon={Icon}
-                index={i}
-                isSelected={isSelected}
-                isDisabled={isDisabled}
-                onToggle={() => toggleVibe(vibe.id)}
-              />
-            );
-          })}
-        </div>
+      {/* Vibe list */}
+      <div className="mx-auto mt-6 w-full max-w-2xl px-4 pb-24 sm:px-6 lg:mt-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="overflow-hidden rounded-lg border border-border bg-card divide-y divide-border"
+        >
+          {TRIP_BUILDER_VIBES.map((vibe, i) => renderVibe(vibe, i))}
+        </motion.div>
 
         {/* Warning when max reached */}
         {isMaxSelected && (
-          <p className="mt-6 text-center text-sm text-warning">
+          <motion.p
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-4 text-center text-sm text-warning"
+          >
             {(sanityConfig?.vibeStepMaxWarning ?? "All {max} picked. Tap one to swap it.").replace("{max}", String(MAX_VIBE_SELECTION))}
-          </p>
+          </motion.p>
         )}
       </div>
     </div>

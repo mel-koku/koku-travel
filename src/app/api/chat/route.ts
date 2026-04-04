@@ -13,6 +13,8 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
 
+export const maxDuration = 60;
+
 const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
 
 const chatRequestSchema = z.object({

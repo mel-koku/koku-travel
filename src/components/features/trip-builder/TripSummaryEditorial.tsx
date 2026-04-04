@@ -10,6 +10,7 @@ import { getVibeById } from "@/data/vibes";
 import { deriveRegionsFromCities, REGIONS } from "@/data/regions";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
 import { getDepartureDistanceWarning, optimizeCitySequence } from "@/lib/routing/citySequence";
+import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import { SortableCityList } from "./SortableCityList";
 import type { CityId, TripBuilderData } from "@/types/trip";
@@ -104,6 +105,31 @@ export function TripSummaryEditorial({
     if (cities.length < 2 || !duration || duration <= 0) return undefined;
     return data.cityDays ?? computeDefaultCityDays(cities, duration);
   }, [data.cities, data.duration, data.cityDays]);
+
+  // Warn when a city has too few locations for its allocated days
+  const thinCityWarnings = useMemo(() => {
+    const cities = data.cities ?? [];
+    if (!effectiveCityDays || cities.length === 0) return [];
+    const LOCATIONS_PER_DAY_THRESHOLD = 5;
+    const warnings: Array<{ cityName: string; days: number; locationCount: number }> = [];
+    for (let i = 0; i < cities.length; i++) {
+      const cityId = cities[i];
+      if (!cityId) continue;
+      const days = effectiveCityDays[i] ?? 1;
+      if (days < 3) continue; // Only warn for 3+ day stays
+      const meta = getCityMetadata(cityId);
+      if (!meta) continue;
+      if (meta.locationCount < days * LOCATIONS_PER_DAY_THRESHOLD) {
+        const cityEntry = REGIONS.flatMap((r) => r.cities).find((c) => c.id === cityId);
+        warnings.push({
+          cityName: cityEntry?.name ?? cityId,
+          days,
+          locationCount: meta.locationCount,
+        });
+      }
+    }
+    return warnings;
+  }, [data.cities, effectiveCityDays]);
 
   // Day change handler — adjusts target entry and adjacent entry to keep total constant
   const handleDaysChange = useCallback(
@@ -339,6 +365,11 @@ export function TripSummaryEditorial({
                     {departureWarning.cityName} is about {departureWarning.timeStr} from {departureWarning.airportName}. Consider ending your trip in a city closer to your departure airport to keep your last day relaxed.
                   </p>
                 )}
+                {thinCityWarnings.map((w) => (
+                  <p key={w.cityName} className="mt-2 text-xs text-warning">
+                    {w.cityName} has {w.locationCount} places for {w.days} days. Your itinerary there may feel thin. Consider reducing to {Math.max(1, Math.floor(w.locationCount / 5))} days or adding a nearby city as a day trip.
+                  </p>
+                ))}
               </>
             ) : (
               <span className="text-stone">Not set</span>

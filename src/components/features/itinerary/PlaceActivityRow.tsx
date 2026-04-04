@@ -28,6 +28,18 @@ import { PlaceActivityHeader } from "./PlaceActivityHeader";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { FALLBACK_IMAGES, DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/fallbackImages";
 
+/**
+ * Recover a readable title for anchor activities whose title was corrupted
+ * by the refine route's round-trip conversion (locationId leaked as title).
+ * Pattern: "unknown-anchor-arrival-{code}" → "Arrive at {CODE}"
+ */
+function recoverAnchorTitle(title: string, activityId: string): string {
+  if (!title.startsWith("unknown-")) return title;
+  const isArrival = activityId.startsWith("anchor-arrival");
+  const code = activityId.replace(/^anchor-(arrival|departure)-/, "").toUpperCase();
+  return isArrival ? `Arrive at ${code}` : `Depart from ${code}`;
+}
+
 function buildFallbackLocation(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
 ): Location {
@@ -487,7 +499,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             {/* Category color dot / Plane icon for anchors */}
             {activity.isAnchor ? (
               (() => {
-                const PlaneIcon = activity.title.startsWith("Arrive") ? PlaneLanding : PlaneTakeoff;
+                const compactTitle = recoverAnchorTitle(activity.title, activity.id);
+                const PlaneIcon = compactTitle.startsWith("Arrive") ? PlaneLanding : PlaneTakeoff;
                 return <PlaneIcon className="h-3.5 w-3.5 shrink-0 text-brand-primary" />;
               })()
             ) : (
@@ -503,7 +516,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
             {/* Title */}
             <span className="min-w-0 truncate text-sm font-medium text-foreground">
-              {activity.title}
+              {activity.isAnchor ? recoverAnchorTitle(activity.title, activity.id) : activity.title}
             </span>
 
             {/* Neighborhood */}
@@ -519,7 +532,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     // Anchor activities (airport arrival/departure) — compact inline strip
     if (activity.isAnchor) {
-      const isArrival = activity.title.startsWith("Arrive");
+      const anchorTitle = recoverAnchorTitle(activity.title, activity.id);
+      const isArrival = anchorTitle.startsWith("Arrive");
       const PlaneIcon = isArrival ? PlaneLanding : PlaneTakeoff;
 
       return (
@@ -533,7 +547,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <div className="flex items-center gap-2.5 rounded-md bg-surface px-3 py-2">
             <PlaneIcon className="h-4 w-4 shrink-0 text-brand-primary" />
             <p className="min-w-0 truncate text-xs font-medium text-foreground">
-              {activity.title}
+              {anchorTitle}
             </p>
             <span className="ml-auto shrink-0 font-mono text-xs text-foreground-secondary">
               {displayArrivalTime ?? "-"}

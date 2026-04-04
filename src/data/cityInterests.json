@@ -1,507 +1,624 @@
 {
-  "generatedAt": "2026-03-26T06:04:03.720Z",
-  "totalLocations": 6251,
-  "totalCities": 43,
+  "generatedAt": "2026-04-04T04:11:58.248Z",
+  "totalLocations": 6140,
+  "totalCities": 54,
   "cities": {
-    "kochi": {
-      "wellness": 2,
-      "nature": 32,
-      "food": 8,
-      "shopping": 1,
-      "history": 13,
-      "culture": 23,
-      "nightlife": 3,
-      "craft": 1
-    },
-    "matsue": {
-      "history": 37,
-      "food": 44,
-      "culture": 50,
+    "kyoto": {
       "wellness": 6,
-      "nightlife": 3,
-      "nature": 37,
-      "shopping": 4
+      "nature": 47,
+      "food": 67,
+      "culture": 167,
+      "history": 58,
+      "shopping": 5,
+      "nightlife": 4,
+      "craft": 14
     },
-    "sendai": {
-      "culture": 58,
+    "wakayama": {
+      "culture": 41,
+      "nature": 32,
       "history": 26,
-      "nature": 65,
-      "wellness": 26,
-      "food": 49,
-      "shopping": 1,
-      "nightlife": 4,
-      "craft": 4
-    },
-    "morioka": {
-      "food": 39,
-      "nature": 36,
-      "nightlife": 4,
-      "culture": 24,
-      "wellness": 17,
-      "history": 20,
-      "craft": 1,
+      "wellness": 11,
+      "food": 4,
       "shopping": 1
     },
-    "nara": {
-      "food": 54,
-      "wellness": 11,
-      "culture": 100,
-      "nature": 43,
+    "kawaguchiko": {
+      "culture": 48,
+      "nature": 73,
+      "shopping": 2,
+      "wellness": 5,
+      "history": 31,
+      "nightlife": 5,
+      "food": 5
+    },
+    "hiroshima": {
+      "food": 46,
       "history": 30,
+      "nature": 47,
+      "culture": 48,
+      "shopping": 3,
+      "nightlife": 1,
+      "wellness": 1
+    },
+    "kumamoto": {
+      "nature": 44,
+      "history": 32,
+      "food": 41,
+      "culture": 33,
+      "nightlife": 6,
+      "wellness": 9,
+      "shopping": 3
+    },
+    "tokyo": {
+      "shopping": 14,
+      "culture": 89,
+      "nightlife": 10,
+      "food": 53,
+      "nature": 48,
+      "history": 47,
+      "wellness": 11,
+      "craft": 9
+    },
+    "kagoshima": {
+      "wellness": 9,
+      "nature": 35,
+      "food": 43,
+      "culture": 23,
+      "history": 17,
+      "nightlife": 2,
+      "craft": 1
+    },
+    "okayama": {
+      "culture": 19,
+      "nature": 19,
+      "history": 20,
+      "food": 42,
+      "shopping": 3,
+      "craft": 4,
+      "nightlife": 1
+    },
+    "hakodate": {
+      "food": 46,
+      "culture": 7,
+      "nightlife": 2,
+      "history": 18,
+      "wellness": 5,
+      "shopping": 1,
+      "nature": 6,
+      "craft": 1
+    },
+    "naha": {
+      "culture": 22,
+      "food": 43,
+      "history": 40,
+      "nature": 91,
+      "nightlife": 8,
+      "shopping": 3,
+      "craft": 5
+    },
+    "yakushima": {
+      "wellness": 4,
+      "nature": 21,
+      "history": 4,
+      "culture": 1
+    },
+    "kochi": {
+      "culture": 21,
+      "nature": 25,
+      "food": 7,
+      "wellness": 1,
+      "history": 10,
+      "nightlife": 3,
+      "shopping": 1,
+      "craft": 1
+    },
+    "nagasaki": {
+      "history": 53,
+      "shopping": 3,
+      "food": 43,
+      "culture": 39,
+      "nature": 62,
+      "wellness": 6,
+      "craft": 6,
+      "nightlife": 1
+    },
+    "toyama": {
+      "nature": 20,
+      "culture": 24,
+      "wellness": 2,
+      "history": 14,
+      "food": 2,
+      "craft": 3,
+      "shopping": 2
+    },
+    "himeji": {
+      "culture": 8,
+      "nature": 5,
+      "history": 13,
+      "food": 1
+    },
+    "matsuyama": {
+      "culture": 39,
+      "wellness": 4,
+      "history": 23,
+      "nature": 21,
+      "food": 41,
+      "shopping": 8,
+      "nightlife": 2,
+      "craft": 1
+    },
+    "nikko": {
+      "wellness": 17,
+      "nature": 53,
+      "culture": 31,
+      "history": 24,
+      "craft": 9,
+      "food": 10,
+      "nightlife": 3
+    },
+    "tokushima": {
+      "history": 12,
+      "food": 26,
+      "shopping": 4,
+      "culture": 26,
+      "craft": 5,
+      "nature": 18,
+      "nightlife": 3,
+      "wellness": 1
+    },
+    "sapporo": {
+      "nature": 47,
+      "food": 94,
+      "nightlife": 7,
+      "history": 30,
+      "culture": 24,
+      "craft": 4,
+      "shopping": 4,
+      "wellness": 1
+    },
+    "abashiri": {
+      "nature": 16,
+      "wellness": 5,
+      "history": 5,
+      "culture": 4
+    },
+    "osaka": {
+      "culture": 30,
+      "craft": 1,
+      "food": 47,
+      "history": 35,
+      "nature": 20,
+      "wellness": 7,
+      "shopping": 6,
+      "nightlife": 5
+    },
+    "oita": {
+      "history": 25,
+      "nature": 23,
+      "food": 5,
+      "culture": 30,
+      "nightlife": 2,
+      "shopping": 1,
+      "wellness": 14
+    },
+    "hakone": {
+      "wellness": 11,
+      "culture": 23,
+      "nature": 42,
+      "history": 10,
+      "nightlife": 2,
+      "craft": 2,
+      "food": 2,
+      "shopping": 1
+    },
+    "aomori": {
+      "nature": 49,
+      "food": 37,
+      "history": 25,
+      "culture": 21,
+      "wellness": 8,
+      "shopping": 2,
+      "nightlife": 2,
+      "craft": 1
+    },
+    "nagano": {
+      "wellness": 21,
+      "nature": 49,
+      "culture": 28,
+      "food": 20,
+      "history": 32,
+      "shopping": 3,
+      "nightlife": 10
+    },
+    "sendai": {
+      "food": 47,
+      "nature": 24,
+      "culture": 33,
+      "wellness": 6,
+      "history": 17,
+      "nightlife": 2,
+      "craft": 1
+    },
+    "kamakura": {
+      "nature": 18,
+      "culture": 33,
+      "shopping": 1,
+      "history": 3,
+      "food": 21,
+      "craft": 3
+    },
+    "matsue": {
+      "nightlife": 3,
+      "culture": 53,
+      "food": 42,
+      "nature": 38,
+      "history": 38,
+      "shopping": 4,
+      "wellness": 6
+    },
+    "niigata": {
+      "history": 14,
+      "food": 5,
+      "nature": 26,
+      "culture": 24,
+      "shopping": 1,
+      "nightlife": 3,
+      "wellness": 4
+    },
+    "fukuoka": {
+      "culture": 52,
+      "nature": 38,
+      "food": 52,
+      "history": 34,
+      "wellness": 3,
+      "shopping": 4,
+      "craft": 5,
+      "nightlife": 3
+    },
+    "otsu": {
+      "culture": 63,
+      "nightlife": 1,
+      "history": 25,
+      "wellness": 2,
+      "nature": 24,
+      "craft": 4,
+      "food": 4
+    },
+    "nara": {
+      "nature": 25,
+      "culture": 79,
+      "food": 50,
+      "wellness": 4,
+      "history": 18,
       "craft": 3,
       "nightlife": 2
     },
     "takamatsu": {
-      "history": 20,
-      "culture": 40,
-      "food": 56,
-      "nightlife": 3,
-      "nature": 41,
+      "nature": 35,
+      "food": 52,
+      "culture": 34,
+      "history": 15,
       "wellness": 2,
-      "shopping": 3
-    },
-    "nagano": {
-      "nature": 62,
-      "nightlife": 11,
-      "culture": 32,
-      "food": 20,
-      "history": 37,
-      "wellness": 22,
-      "shopping": 3
-    },
-    "hiroshima": {
-      "nature": 61,
-      "food": 47,
-      "culture": 57,
-      "history": 44,
-      "nightlife": 2,
       "shopping": 3,
-      "wellness": 2,
-      "craft": 1
-    },
-    "fukuoka": {
-      "food": 54,
-      "nature": 53,
-      "culture": 72,
-      "history": 58,
-      "craft": 5,
-      "shopping": 4,
-      "nightlife": 2,
-      "wellness": 5
-    },
-    "kumamoto": {
-      "culture": 33,
-      "food": 41,
-      "nature": 45,
-      "nightlife": 6,
-      "history": 32,
-      "wellness": 10,
-      "shopping": 2
-    },
-    "nikko": {
-      "nature": 65,
-      "culture": 39,
-      "food": 11,
-      "shopping": 2,
-      "wellness": 23,
-      "history": 30,
-      "craft": 9,
-      "nightlife": 3
-    },
-    "nagoya": {
-      "nature": 55,
-      "food": 29,
-      "culture": 77,
-      "history": 53,
-      "nightlife": 5,
-      "craft": 16,
-      "shopping": 2,
-      "wellness": 1
-    },
-    "kobe": {
-      "nature": 17,
-      "food": 40,
-      "wellness": 6,
-      "history": 27,
-      "culture": 40,
-      "craft": 2,
-      "shopping": 6,
-      "nightlife": 1
-    },
-    "hakodate": {
-      "food": 47,
-      "history": 19,
-      "culture": 7,
-      "nightlife": 1,
-      "nature": 6,
-      "wellness": 5,
-      "craft": 1,
-      "shopping": 1
-    },
-    "sapporo": {
-      "nature": 49,
-      "nightlife": 8,
-      "food": 93,
-      "culture": 23,
-      "craft": 4,
-      "history": 31,
-      "wellness": 1,
-      "shopping": 4
-    },
-    "abashiri": {
-      "nature": 16,
-      "culture": 4,
-      "history": 5,
-      "wellness": 5
-    },
-    "tottori": {
-      "food": 8,
-      "wellness": 18,
-      "culture": 21,
-      "history": 13,
-      "nature": 32,
-      "craft": 1,
-      "nightlife": 1
-    },
-    "naha": {
-      "nature": 89,
-      "history": 42,
-      "culture": 22,
-      "food": 43,
-      "shopping": 4,
-      "nightlife": 9,
-      "craft": 5
-    },
-    "osaka": {
-      "food": 48,
-      "wellness": 10,
-      "nature": 31,
-      "culture": 50,
-      "shopping": 6,
-      "history": 47,
-      "craft": 1,
-      "nightlife": 4
-    },
-    "takayama": {
-      "food": 20,
-      "nature": 61,
-      "culture": 35,
-      "history": 28,
-      "wellness": 9,
-      "craft": 6,
-      "nightlife": 2,
-      "shopping": 3
-    },
-    "tokyo": {
-      "nature": 60,
-      "history": 52,
-      "culture": 95,
-      "food": 54,
-      "nightlife": 10,
-      "shopping": 14,
-      "wellness": 13,
-      "craft": 9
-    },
-    "kyoto": {
-      "culture": 189,
-      "nature": 58,
-      "food": 67,
-      "history": 70,
-      "wellness": 7,
-      "nightlife": 4,
-      "shopping": 5,
-      "craft": 15
-    },
-    "hakone": {
-      "culture": 62,
-      "history": 35,
-      "nature": 95,
-      "wellness": 15,
-      "nightlife": 5,
-      "craft": 2,
-      "food": 5,
-      "shopping": 3
-    },
-    "yakushima": {
-      "nature": 21,
-      "wellness": 4,
-      "history": 4,
-      "culture": 1
-    },
-    "otsu": {
-      "culture": 66,
-      "nature": 25,
-      "history": 26,
-      "wellness": 2,
-      "craft": 3,
-      "food": 4,
-      "nightlife": 1
-    },
-    "ishigaki": {
-      "food": 35,
-      "nature": 25,
-      "history": 4,
-      "culture": 3,
-      "nightlife": 1
+      "nightlife": 2
     },
     "asahikawa": {
       "nightlife": 1,
-      "history": 5,
-      "food": 3,
-      "culture": 3,
       "nature": 19,
+      "culture": 3,
       "wellness": 3,
-      "shopping": 2
+      "history": 5,
+      "shopping": 2,
+      "food": 2
     },
-    "oita": {
-      "history": 25,
-      "food": 5,
-      "nature": 27,
-      "culture": 36,
-      "wellness": 16,
-      "nightlife": 2,
-      "shopping": 1
+    "amami": {
+      "history": 3,
+      "culture": 2,
+      "nature": 22,
+      "wellness": 1
     },
-    "yokohama": {
+    "nagoya": {
+      "food": 25,
+      "craft": 8,
+      "history": 41,
+      "nature": 31,
+      "culture": 63,
       "nightlife": 6,
-      "food": 40,
-      "nature": 18,
-      "history": 9,
-      "culture": 18,
-      "shopping": 2
+      "shopping": 2,
+      "wellness": 1
     },
     "akita": {
-      "history": 16,
-      "nature": 27,
-      "culture": 21,
-      "nightlife": 2,
+      "history": 13,
+      "nature": 26,
+      "culture": 19,
+      "wellness": 3,
       "food": 6,
-      "wellness": 3
+      "nightlife": 2
     },
     "kushiro": {
       "nature": 25,
       "food": 2,
       "culture": 8,
       "history": 7,
-      "shopping": 1,
-      "wellness": 2
-    },
-    "niigata": {
-      "nature": 39,
-      "food": 6,
-      "history": 18,
-      "wellness": 6,
-      "culture": 26,
-      "nightlife": 3,
+      "wellness": 2,
       "shopping": 1
     },
-    "tokushima": {
-      "culture": 29,
-      "nature": 39,
-      "history": 21,
-      "craft": 5,
-      "food": 28,
-      "shopping": 4,
-      "wellness": 4,
-      "nightlife": 3
-    },
-    "nagasaki": {
-      "food": 43,
-      "history": 53,
-      "nature": 61,
-      "culture": 38,
-      "shopping": 3,
-      "wellness": 6,
-      "craft": 6,
-      "nightlife": 1
-    },
-    "aomori": {
-      "food": 37,
-      "nature": 50,
-      "wellness": 8,
-      "history": 24,
-      "culture": 21,
-      "craft": 1,
-      "nightlife": 1,
-      "shopping": 2
-    },
-    "okayama": {
+    "shimonoseki": {
+      "history": 25,
       "nature": 21,
-      "history": 22,
-      "food": 43,
-      "culture": 19,
+      "culture": 26,
+      "wellness": 3,
+      "food": 3,
       "nightlife": 1,
-      "craft": 4,
-      "shopping": 3
-    },
-    "kagoshima": {
-      "nature": 45,
-      "food": 44,
-      "culture": 34,
-      "history": 24,
-      "nightlife": 3,
-      "wellness": 9,
       "craft": 1
     },
-    "amami": {
-      "history": 3,
-      "nature": 20,
-      "culture": 2,
-      "wellness": 1
+    "kitakyushu": {
+      "culture": 4,
+      "history": 11,
+      "nature": 5
     },
-    "kamakura": {
-      "food": 21,
-      "nature": 18,
-      "culture": 32,
-      "shopping": 1,
-      "history": 3,
-      "craft": 3
-    },
-    "matsuyama": {
-      "culture": 39,
-      "nature": 21,
-      "history": 23,
-      "food": 41,
-      "wellness": 4,
-      "shopping": 8,
+    "morioka": {
+      "wellness": 17,
+      "nightlife": 5,
+      "food": 39,
+      "culture": 25,
+      "nature": 36,
+      "history": 19,
       "craft": 1,
-      "nightlife": 2
+      "shopping": 1
+    },
+    "miyazaki": {
+      "nightlife": 1,
+      "nature": 12,
+      "culture": 14,
+      "history": 7,
+      "food": 1
+    },
+    "aizuwakamatsu": {
+      "culture": 11,
+      "nature": 46,
+      "history": 14,
+      "food": 3,
+      "shopping": 2,
+      "nightlife": 1,
+      "wellness": 8,
+      "craft": 1
+    },
+    "yokohama": {
+      "nature": 18,
+      "culture": 16,
+      "history": 9,
+      "food": 40,
+      "nightlife": 6,
+      "shopping": 2
     },
     "kanazawa": {
-      "culture": 61,
-      "history": 33,
-      "nature": 26,
-      "food": 30,
+      "craft": 14,
+      "food": 27,
+      "history": 21,
+      "wellness": 8,
+      "nature": 17,
+      "culture": 40,
+      "shopping": 3
+    },
+    "yamagata": {
+      "culture": 21,
+      "nature": 22,
+      "wellness": 19,
+      "history": 7,
+      "nightlife": 1,
+      "shopping": 1,
+      "craft": 1,
+      "food": 1
+    },
+    "kobe": {
+      "food": 38,
+      "nature": 13,
+      "wellness": 5,
+      "history": 14,
+      "culture": 22,
+      "shopping": 5,
+      "nightlife": 1,
+      "craft": 2
+    },
+    "takayama": {
+      "history": 24,
+      "nature": 54,
+      "nightlife": 3,
+      "culture": 31,
       "wellness": 9,
-      "shopping": 4,
-      "craft": 9
+      "food": 20,
+      "craft": 6,
+      "shopping": 2
+    },
+    "tottori": {
+      "nature": 31,
+      "culture": 21,
+      "craft": 1,
+      "wellness": 16,
+      "food": 8,
+      "history": 11,
+      "nightlife": 1
+    },
+    "ishigaki": {
+      "food": 34,
+      "nature": 25,
+      "history": 4,
+      "nightlife": 1,
+      "culture": 3
+    },
+    "iyavalley": {
+      "culture": 8,
+      "nature": 22,
+      "wellness": 1,
+      "history": 9,
+      "food": 5,
+      "nightlife": 1
+    },
+    "miyako": {
+      "nature": 5,
+      "history": 2
+    },
+    "ise": {
+      "nature": 27,
+      "culture": 18,
+      "food": 6,
+      "history": 8,
+      "nightlife": 2
     },
     "wakkanai": {
       "nature": 3,
       "history": 3,
       "food": 1,
       "wellness": 1
-    },
-    "miyako": {
-      "nature": 5,
-      "history": 2
     }
   },
   "metadata": {
-    "kochi": {
-      "locationCount": 83,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.9213454,
-        "lng": 133.81737189999998
-      }
-    },
-    "matsue": {
-      "locationCount": 181,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 36.2243336,
-        "lng": 133.3079517
-      }
-    },
-    "sendai": {
-      "locationCount": 233,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 38.3720098,
-        "lng": 141.0598105
-      }
-    },
-    "morioka": {
-      "locationCount": 142,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 39.6924207,
-        "lng": 141.1599609
-      }
-    },
-    "nara": {
-      "locationCount": 243,
+    "kyoto": {
+      "locationCount": 368,
       "region": "Kansai",
       "coordinates": {
-        "lat": 33.62615280000001,
-        "lng": 135.94365489999998
+        "lat": 35.0448,
+        "lng": 135.7438
       }
     },
-    "takamatsu": {
-      "locationCount": 165,
-      "region": "Shikoku",
+    "wakayama": {
+      "locationCount": 115,
+      "region": "Kansai",
       "coordinates": {
-        "lat": 34.5156402,
-        "lng": 134.3006589
+        "lat": 34.213265799999995,
+        "lng": 135.5864925
       }
     },
-    "nagano": {
-      "locationCount": 187,
-      "region": "Chubu",
+    "kawaguchiko": {
+      "locationCount": 169,
+      "region": "Kanto",
       "coordinates": {
-        "lat": 36.7194362,
-        "lng": 138.4828316
+        "lat": 35.862097,
+        "lng": 138.336313
       }
     },
     "hiroshima": {
-      "locationCount": 217,
+      "locationCount": 176,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 34.2902245,
-        "lng": 132.32497189999998
-      }
-    },
-    "fukuoka": {
-      "locationCount": 253,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 33.3141007,
-        "lng": 130.5224757
+        "lat": 34.392907199999996,
+        "lng": 132.4612036
       }
     },
     "kumamoto": {
-      "locationCount": 169,
+      "locationCount": 168,
       "region": "Kyushu",
       "coordinates": {
-        "lat": 32.2080251,
-        "lng": 130.7560986
+        "lat": 33.0333,
+        "lng": 131.05
       }
     },
-    "nikko": {
-      "locationCount": 182,
+    "tokyo": {
+      "locationCount": 281,
       "region": "Kanto",
       "coordinates": {
-        "lat": 36.8102726,
-        "lng": 140.373776
+        "lat": 35.7120444,
+        "lng": 139.7948301
       }
     },
-    "nagoya": {
-      "locationCount": 238,
-      "region": "Chubu",
+    "kagoshima": {
+      "locationCount": 130,
+      "region": "Kyushu",
       "coordinates": {
-        "lat": 35.090508799999995,
-        "lng": 136.8784377
+        "lat": 31.8927807,
+        "lng": 130.82663639999998
       }
     },
-    "kobe": {
-      "locationCount": 139,
-      "region": "Kansai",
+    "okayama": {
+      "locationCount": 108,
+      "region": "Chugoku",
       "coordinates": {
-        "lat": 34.7328452,
-        "lng": 135.2043559
+        "lat": 34.47875210000001,
+        "lng": 133.3459509
       }
     },
     "hakodate": {
-      "locationCount": 87,
+      "locationCount": 86,
       "region": "Hokkaido",
       "coordinates": {
-        "lat": 41.771691100000005,
-        "lng": 140.7322447
+        "lat": 41.8245,
+        "lng": 140.652
+      }
+    },
+    "naha": {
+      "locationCount": 212,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 26.2167,
+        "lng": 127.6833
+      }
+    },
+    "yakushima": {
+      "locationCount": 30,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 30.3558,
+        "lng": 130.5108
+      }
+    },
+    "kochi": {
+      "locationCount": 69,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.512444099999996,
+        "lng": 133.4095061
+      }
+    },
+    "nagasaki": {
+      "locationCount": 213,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 33.3161319,
+        "lng": 129.465738
+      }
+    },
+    "toyama": {
+      "locationCount": 67,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 36.694469999999995,
+        "lng": 137.21258899999998
+      }
+    },
+    "himeji": {
+      "locationCount": 27,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 34.831317,
+        "lng": 134.693964
+      }
+    },
+    "matsuyama": {
+      "locationCount": 139,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.885051,
+        "lng": 132.714991
+      }
+    },
+    "nikko": {
+      "locationCount": 147,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 36.9652,
+        "lng": 139.8248
+      }
+    },
+    "tokushima": {
+      "locationCount": 95,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.2278498,
+        "lng": 134.40343579999998
       }
     },
     "sapporo": {
-      "locationCount": 213,
+      "locationCount": 211,
       "region": "Hokkaido",
       "coordinates": {
         "lat": 43.0316221,
@@ -516,112 +633,136 @@
         "lng": 144.281085
       }
     },
-    "tottori": {
-      "locationCount": 94,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 35.5414363,
-        "lng": 134.2389005
-      }
-    },
-    "naha": {
-      "locationCount": 214,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.3315494,
-        "lng": 126.8077903
-      }
-    },
     "osaka": {
-      "locationCount": 197,
+      "locationCount": 151,
       "region": "Kansai",
       "coordinates": {
-        "lat": 34.6720725,
-        "lng": 135.50198980000002
+        "lat": 34.7999842,
+        "lng": 135.3602593
       }
     },
-    "takayama": {
-      "locationCount": 164,
-      "region": "Chubu",
+    "oita": {
+      "locationCount": 100,
+      "region": "Kyushu",
       "coordinates": {
-        "lat": 35.5972363,
-        "lng": 137.88437109999998
-      }
-    },
-    "tokyo": {
-      "locationCount": 307,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.685176299999995,
-        "lng": 139.7100517
-      }
-    },
-    "kyoto": {
-      "locationCount": 415,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.0302799,
-        "lng": 135.7773755
+        "lat": 33.5936,
+        "lng": 131.4647
       }
     },
     "hakone": {
-      "locationCount": 222,
+      "locationCount": 93,
       "region": "Kanto",
       "coordinates": {
-        "lat": 35.2037,
-        "lng": 139.0222
+        "lat": 35.099151,
+        "lng": 139.075727
       }
     },
-    "yakushima": {
-      "locationCount": 30,
+    "aomori": {
+      "locationCount": 145,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 40.5579033,
+        "lng": 139.96602869999998
+      }
+    },
+    "nagano": {
+      "locationCount": 163,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 36.6355,
+        "lng": 138.5055
+      }
+    },
+    "sendai": {
+      "locationCount": 130,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 38.2614,
+        "lng": 140.8728
+      }
+    },
+    "kamakura": {
+      "locationCount": 79,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 34.900370099999996,
+        "lng": 139.8881733
+      }
+    },
+    "matsue": {
+      "locationCount": 184,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 35.2912046,
+        "lng": 133.63520219999998
+      }
+    },
+    "niigata": {
+      "locationCount": 77,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 37.632823699999996,
+        "lng": 138.9534761
+      }
+    },
+    "fukuoka": {
+      "locationCount": 191,
       "region": "Kyushu",
       "coordinates": {
-        "lat": 30.3258653,
-        "lng": 130.6143744
+        "lat": 33.5935997,
+        "lng": 130.40520859999998
       }
     },
     "otsu": {
-      "locationCount": 127,
+      "locationCount": 123,
       "region": "Kansai",
       "coordinates": {
         "lat": 35.408919499999996,
         "lng": 136.2825014
       }
     },
-    "ishigaki": {
-      "locationCount": 68,
-      "region": "Okinawa",
+    "nara": {
+      "locationCount": 181,
+      "region": "Kansai",
       "coordinates": {
-        "lat": 24.356516000000003,
-        "lng": 124.13026570000001
+        "lat": 34.473935,
+        "lng": 135.917777
+      }
+    },
+    "takamatsu": {
+      "locationCount": 143,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.3117352,
+        "lng": 133.80876659999998
       }
     },
     "asahikawa": {
-      "locationCount": 36,
+      "locationCount": 35,
       "region": "Hokkaido",
       "coordinates": {
         "lat": 43.3249606,
         "lng": 142.3532411
       }
     },
-    "oita": {
-      "locationCount": 112,
-      "region": "Kyushu",
+    "amami": {
+      "locationCount": 28,
+      "region": "Okinawa",
       "coordinates": {
-        "lat": 33.315883299999996,
-        "lng": 131.4696745
+        "lat": 28.3419211,
+        "lng": 129.44660439999998
       }
     },
-    "yokohama": {
-      "locationCount": 93,
-      "region": "Kanto",
+    "nagoya": {
+      "locationCount": 177,
+      "region": "Chubu",
       "coordinates": {
-        "lat": 35.4481821,
-        "lng": 139.63000399999999
+        "lat": 35.4507486,
+        "lng": 136.68736149999998
       }
     },
     "akita": {
-      "locationCount": 75,
+      "locationCount": 69,
       "region": "Tohoku",
       "coordinates": {
         "lat": 39.59926180000001,
@@ -636,92 +777,108 @@
         "lng": 144.4318361
       }
     },
-    "niigata": {
-      "locationCount": 99,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 37.6009417,
-        "lng": 140.0722501
-      }
-    },
-    "tokushima": {
-      "locationCount": 133,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.2460733,
-        "lng": 134.3637559
-      }
-    },
-    "nagasaki": {
-      "locationCount": 211,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 32.7441,
-        "lng": 129.8762
-      }
-    },
-    "aomori": {
-      "locationCount": 144,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 40.827357299999996,
-        "lng": 140.73964310000002
-      }
-    },
-    "okayama": {
-      "locationCount": 113,
+    "shimonoseki": {
+      "locationCount": 80,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 34.6651179,
-        "lng": 133.78465989999998
+        "lat": 34.4281942,
+        "lng": 131.4183022
       }
     },
-    "kagoshima": {
-      "locationCount": 160,
+    "kitakyushu": {
+      "locationCount": 20,
       "region": "Kyushu",
       "coordinates": {
-        "lat": 31.91945,
-        "lng": 130.845763
+        "lat": 33.838011699999996,
+        "lng": 130.8106187
       }
     },
-    "amami": {
-      "locationCount": 26,
-      "region": "Okinawa",
+    "morioka": {
+      "locationCount": 143,
+      "region": "Tohoku",
       "coordinates": {
-        "lat": 27.802071,
-        "lng": 128.889429
+        "lat": 39.436549299999996,
+        "lng": 141.0159616
       }
     },
-    "kamakura": {
-      "locationCount": 78,
+    "miyazaki": {
+      "locationCount": 35,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 31.992932899999996,
+        "lng": 131.2353559
+      }
+    },
+    "aizuwakamatsu": {
+      "locationCount": 86,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 37.607831,
+        "lng": 140.35228
+      }
+    },
+    "yokohama": {
+      "locationCount": 91,
       "region": "Kanto",
       "coordinates": {
-        "lat": 35.3114,
-        "lng": 139.5398
-      }
-    },
-    "matsuyama": {
-      "locationCount": 139,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.6338389,
-        "lng": 132.6494507
+        "lat": 35.183524999999996,
+        "lng": 140.35447689999998
       }
     },
     "kanazawa": {
-      "locationCount": 172,
+      "locationCount": 130,
       "region": "Chubu",
       "coordinates": {
-        "lat": 36.7502377,
-        "lng": 137.00512519999998
+        "lat": 36.5598,
+        "lng": 136.651
       }
     },
-    "wakkanai": {
-      "locationCount": 8,
-      "region": "Hokkaido",
+    "yamagata": {
+      "locationCount": 73,
+      "region": "Tohoku",
       "coordinates": {
-        "lat": 45.180588799999995,
-        "lng": 141.2411723
+        "lat": 38.7059242,
+        "lng": 139.9632695
+      }
+    },
+    "kobe": {
+      "locationCount": 100,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 34.6922,
+        "lng": 135.1915
+      }
+    },
+    "takayama": {
+      "locationCount": 149,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 35.7530576,
+        "lng": 136.96145239999998
+      }
+    },
+    "tottori": {
+      "locationCount": 89,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 35.590433499999996,
+        "lng": 134.325065
+      }
+    },
+    "ishigaki": {
+      "locationCount": 67,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 24.3398,
+        "lng": 124.1525
+      }
+    },
+    "iyavalley": {
+      "locationCount": 46,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.0354189,
+        "lng": 133.723446
       }
     },
     "miyako": {
@@ -731,6 +888,1022 @@
         "lat": 24.7179032,
         "lng": 125.24005229999999
       }
+    },
+    "ise": {
+      "locationCount": 61,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 34.1023448,
+        "lng": 136.2085883
+      }
+    },
+    "wakkanai": {
+      "locationCount": 8,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 45.180588799999995,
+        "lng": 141.2411723
+      }
     }
+  },
+  "childCities": {
+    "wakayama": [
+      "Arida",
+      "Aridagawa",
+      "Hidakagawa",
+      "Iwade",
+      "Izumisano",
+      "Katsuragi",
+      "Kinokawa",
+      "Kitayama",
+      "Kobe",
+      "Koya",
+      "Kozagawa",
+      "Kudoyama",
+      "Kumano",
+      "Kushimoto",
+      "Kyoto",
+      "Mihama",
+      "Nachi-Katsuura",
+      "Nara",
+      "Osaka",
+      "Shingu",
+      "Shirahama",
+      "Sumoto",
+      "Tanabe",
+      "Tokushima",
+      "Totsukawa"
+    ],
+    "kawaguchiko": [
+      "Chichibu",
+      "Fujikawa",
+      "Fujikawaguchiko",
+      "Fujimi",
+      "Fujinomiya",
+      "Fujioka",
+      "Fujiyoshida",
+      "Gotenba",
+      "Hakone",
+      "Hara",
+      "Hayakawa",
+      "Hokuto",
+      "Iida",
+      "Ina",
+      "Kai",
+      "Kakegawa",
+      "Kawanehon",
+      "Kofu",
+      "Koshu",
+      "Matsukawa",
+      "Minamikoma",
+      "Minobu",
+      "Nagano",
+      "Narusawa",
+      "Naruwasa",
+      "Ogano",
+      "Okutama",
+      "Ome",
+      "Oshino",
+      "Otsuki",
+      "Oyama",
+      "Sagamihara",
+      "Shimada",
+      "Shizuoka",
+      "Susono",
+      "Takayama",
+      "Tokyo",
+      "Tsuru",
+      "Yamanakako",
+      "Yokohama"
+    ],
+    "kumamoto": [
+      "Amakusa",
+      "Arao",
+      "Aso",
+      "Fukuoka",
+      "Hita",
+      "Hitoyoshi",
+      "Kikuchi",
+      "Kuma",
+      "Minamata",
+      "Minamiaso",
+      "Nagasaki",
+      "Oguni",
+      "Omuta",
+      "Shimabara",
+      "Takachiho",
+      "Takamori",
+      "Uchinomaki",
+      "Uki",
+      "Uto",
+      "Waifu",
+      "Yamaga",
+      "Yamato",
+      "Yatsushiro"
+    ],
+    "kagoshima": [
+      "Ebino",
+      "Ibusuki",
+      "Isa",
+      "Izumi",
+      "Kirishima",
+      "Kobayashi",
+      "Minamikyushu",
+      "Minamiosumi",
+      "Minamisatsuma",
+      "Tarumizu",
+      "Yusui"
+    ],
+    "okayama": [
+      "Bizen",
+      "Fukuyama",
+      "Hiroshima",
+      "Ibara",
+      "Kasaoka",
+      "Kurashiki",
+      "Maniwa",
+      "Mimasaka",
+      "Misaki",
+      "Niimi",
+      "Setouchi",
+      "Shobara",
+      "Shoo",
+      "Soja",
+      "Takahashi",
+      "Tamano",
+      "Tsuyama",
+      "Wake",
+      "Yakage"
+    ],
+    "hakodate": [
+      "Date",
+      "Esashi",
+      "Hokuto",
+      "Matsumae",
+      "Mori",
+      "Mutsu",
+      "Nanae",
+      "Oma",
+      "Sai",
+      "Shikabe",
+      "Yakumo"
+    ],
+    "kochi": [
+      "Aki",
+      "Hidaka",
+      "Ino",
+      "Kami",
+      "Kitagawa",
+      "Konan",
+      "Kuroshio",
+      "Motoyama",
+      "Muroto",
+      "Nakatosa",
+      "Nankoku",
+      "Niihama",
+      "Niyodogawa",
+      "Ochi",
+      "Shimanto",
+      "Sukumo",
+      "Tosa",
+      "Tosashimizu",
+      "Yasuda"
+    ],
+    "nagasaki": [
+      "Amakusa",
+      "Arita",
+      "Goto",
+      "Higashisonogi",
+      "Hirado",
+      "Imari",
+      "Kashima",
+      "Kumamoto",
+      "Minamishimabara",
+      "Oguni",
+      "Ojika",
+      "Omura",
+      "Sasebo",
+      "Shinkamigoto",
+      "Takeo",
+      "Tara",
+      "Unzen"
+    ],
+    "nikko": [
+      "Ashikaga",
+      "Daigo",
+      "Fujioka",
+      "Hinoemata",
+      "Hitachi",
+      "Hitachinaka",
+      "Hitachiota",
+      "Isesaki",
+      "Kanuma",
+      "Kasama",
+      "Katashina",
+      "Kusatsu",
+      "Maebashi",
+      "Mashiko",
+      "Minakami",
+      "Minamiuonuma",
+      "Mito",
+      "Moka",
+      "Motegi",
+      "Nagano",
+      "Naka",
+      "Nasu",
+      "Nasushiobara",
+      "Numata",
+      "Oarai",
+      "Ota",
+      "Otawara",
+      "Shibukawa",
+      "Takahagi",
+      "Takasaki",
+      "Tatebayashi",
+      "Tochigi",
+      "Uonuma",
+      "Utsunomiya"
+    ],
+    "tokushima": [
+      "Aizumi",
+      "Anan",
+      "Awa",
+      "Higashikagawa",
+      "Itano",
+      "Kamiita",
+      "Kamikatsu",
+      "Kamiyama",
+      "Katsuura",
+      "Komatsushima",
+      "Matsushige",
+      "Minami",
+      "Minamiawaji",
+      "Mugi",
+      "Naruto",
+      "Takamatsu",
+      "Yoshinogawa"
+    ],
+    "abashiri": [
+      "Betsukai",
+      "Bihoro",
+      "Kiyosato",
+      "Kushiro",
+      "Mombetsu",
+      "Monbetsu",
+      "Ozora",
+      "Rausu",
+      "Shari",
+      "Teshikaga"
+    ],
+    "osaka": [
+      "Amagasaki",
+      "Fujiidera",
+      "Habikino",
+      "Hirakata",
+      "Itami",
+      "Kishiwada",
+      "Minoh",
+      "Minoo",
+      "Moriguchi",
+      "Nagaokakyo",
+      "Nishinomiya",
+      "Sakai",
+      "Suita",
+      "Takarazuka"
+    ],
+    "oita": [
+      "Beppu",
+      "Bungo-Ono",
+      "Bungotakada",
+      "Himeshima",
+      "Kitsuki",
+      "Kokonoe",
+      "Kumamoto",
+      "Kunisaki",
+      "Minamioguni",
+      "Nakatsu",
+      "Otsuki",
+      "Sukumo",
+      "Takeda",
+      "Taketa",
+      "Usa",
+      "Usuki",
+      "Yufu",
+      "Yufuin"
+    ],
+    "hakone": [
+      "Ashigarashimo",
+      "Atami",
+      "Gotemba",
+      "Gotenba",
+      "Hachijo Town",
+      "Hadano",
+      "Hakodate",
+      "Higashiizu",
+      "Isehara",
+      "Ito",
+      "Izu",
+      "Izu Oshima",
+      "Izunokuni",
+      "Kawazu",
+      "Manazuru",
+      "Minamiizu",
+      "Mishima",
+      "Miyake",
+      "Niijima",
+      "Nishiizu",
+      "Numazu",
+      "Odawara",
+      "Oiso",
+      "Omaezaki",
+      "Oshima",
+      "Shimoda",
+      "Shizuoka",
+      "Susono",
+      "Yokohama"
+    ],
+    "aomori": [
+      "Akita",
+      "Fukaura",
+      "Goshogawara",
+      "Hachimantai",
+      "Hachinohe",
+      "Hirosaki",
+      "Kazuno",
+      "Kuroishi",
+      "Misawa",
+      "Nakatsugaru",
+      "Nishimeya",
+      "Odate",
+      "Shichinohe",
+      "Shingo",
+      "Sotogahama",
+      "Towada",
+      "Tsugaru",
+      "Tsuruta"
+    ],
+    "nagano": [
+      "Agatsuma",
+      "Annaka",
+      "Aoki",
+      "Azumi",
+      "Azumino",
+      "Chikuma",
+      "Chino",
+      "Hakuba",
+      "Joetsu",
+      "Karuizawa",
+      "Kitaazumi",
+      "Kitasaku",
+      "Komoro",
+      "Kusatsu",
+      "Matsumoto",
+      "Myoko",
+      "Nakanojo",
+      "Nakauonuma",
+      "Niigata",
+      "Nozawaonsen",
+      "Obuse",
+      "Omachi",
+      "Shibukawa",
+      "Shimonita",
+      "Shiomotakai",
+      "Suwa",
+      "Takasaki",
+      "Tokamachi",
+      "Tomioka",
+      "Tsumagoi",
+      "Tsunan",
+      "Ueda",
+      "Yamanouchi",
+      "Yuzawa"
+    ],
+    "kamakura": [
+      "Fujisawa",
+      "Futtsu",
+      "Kyonan",
+      "Minamiboso",
+      "Miura",
+      "Ogasawara",
+      "Samukawa",
+      "Tateyama",
+      "Yokohama",
+      "Yokosuka"
+    ],
+    "matsue": [
+      "Daisen",
+      "Hoki",
+      "Houki",
+      "Izumo",
+      "Kotoura",
+      "Maniwa",
+      "Nambu",
+      "Nishinoshima",
+      "Oda",
+      "Oki",
+      "Okinoshima",
+      "Okuizumo",
+      "Ounanchou",
+      "Saihaku",
+      "Sakaiminato",
+      "Shobara",
+      "Tottori",
+      "Unnan",
+      "Urago Nishinoshima",
+      "Yasugi",
+      "Yonago"
+    ],
+    "sapporo": [
+      "Akaigawa",
+      "Bibai",
+      "Chitose",
+      "Date",
+      "Hakodate",
+      "Ishikari",
+      "Kamoenai",
+      "Kushiro",
+      "Kutchan",
+      "Kyogoku",
+      "Noboribetsu",
+      "Otaru",
+      "Rusutsu",
+      "Shakotan",
+      "Shinhidaka",
+      "Shiraoi",
+      "Sobetsu",
+      "Tomakomai",
+      "Toyako",
+      "Yoichi"
+    ],
+    "niigata": [
+      "Agano",
+      "Gosen",
+      "Nagaoka",
+      "Ojiya",
+      "Sado",
+      "Sanjo",
+      "Shibata",
+      "Tsubame",
+      "Yahiko"
+    ],
+    "otsu": [
+      "Aisho",
+      "Higashiomi",
+      "Hikone",
+      "Iga",
+      "Kameyama",
+      "Koka",
+      "Kyoto",
+      "Mihama",
+      "Moriyama",
+      "Nagahama",
+      "Omihachiman",
+      "Takashima",
+      "Tsuruga",
+      "Uji",
+      "Wakasa"
+    ],
+    "nara": [
+      "Asuka",
+      "Gose",
+      "Hashimoto",
+      "Heguri",
+      "Iga",
+      "Ikaruga",
+      "Ikoma",
+      "Kasagi",
+      "Kashiba",
+      "Kashihara",
+      "Katano",
+      "Katsuragi",
+      "Kyoto",
+      "Nabari",
+      "Osaka",
+      "Otsu",
+      "Sakurai",
+      "Takatori",
+      "Tenkawa",
+      "Tenri",
+      "Uda",
+      "Wazuka",
+      "Yamatokoriyama",
+      "Yoshino"
+    ],
+    "takamatsu": [
+      "Ayagawa",
+      "Kasaoka",
+      "Kotohira",
+      "Kurashiki",
+      "Marugame",
+      "Marugame (Near Takamatsu)",
+      "Mitoyo",
+      "Mitoyo (Near Takamatsu)",
+      "Naoshima",
+      "Okayama",
+      "Sakaide",
+      "Sanuki",
+      "Shodoshima",
+      "Tadotsu",
+      "Tonosho",
+      "Utazu",
+      "Zentsuji"
+    ],
+    "asahikawa": [
+      "Biei",
+      "Bifuka",
+      "Furano",
+      "Higashikawa",
+      "Hokuryu",
+      "Kamifurano",
+      "Kamikawa",
+      "Kamishihoro",
+      "Nakafurano",
+      "Shimizu",
+      "Shimukappu",
+      "Tomamae"
+    ],
+    "nagoya": [
+      "Achi",
+      "Ena",
+      "Fukuroi",
+      "Fuwa",
+      "Gamagori",
+      "Gifu",
+      "Hamamatsu",
+      "Ichinomiya",
+      "Ikeda",
+      "Inazawa",
+      "Inuyama",
+      "Kakamigahara",
+      "Kiyosu",
+      "Komaki",
+      "Komono",
+      "Kuwana",
+      "Minamichita",
+      "Mino",
+      "Motosu",
+      "Nagakute",
+      "Nakatsugawa",
+      "Nishio",
+      "Nisshin",
+      "Ogaki",
+      "Okazaki",
+      "Seki",
+      "Sekigahara",
+      "Seto",
+      "Shinshiro",
+      "Shitara",
+      "Suzuka",
+      "Tajimi",
+      "Takayama",
+      "Tokoname",
+      "Toyohashi",
+      "Toyota",
+      "Tsushima",
+      "Yokkaichi",
+      "Yoro"
+    ],
+    "akita": [
+      "Daisen",
+      "Kitaakita",
+      "Nikaho",
+      "Noshiro",
+      "Oga",
+      "Sakata",
+      "Semboku",
+      "Senboku",
+      "Ugo",
+      "Yokote",
+      "Yuza",
+      "Yuzawa"
+    ],
+    "matsuyama": [
+      "Hiroshima",
+      "Imabari",
+      "Iyo",
+      "Kamijima",
+      "Kochi",
+      "Kumakogen",
+      "Kure",
+      "Matsuno",
+      "Niihama",
+      "Onomichi",
+      "Ozu",
+      "Saijo",
+      "Seiyo",
+      "Shimanto",
+      "Suo-Oshima",
+      "Tobe",
+      "Toon",
+      "Uchiko",
+      "Uwajima",
+      "Yawatahama (Day trip)",
+      "Yusuhara"
+    ],
+    "shimonoseki": [
+      "Hagi",
+      "Hofu",
+      "Kitakyushu",
+      "Mine",
+      "Nagato",
+      "Ube",
+      "Yamaguchi"
+    ],
+    "morioka": [
+      "Akita",
+      "Aomori",
+      "Hachimantai",
+      "Hanamaki",
+      "Hiraizumi",
+      "Ichinohe",
+      "Ichinoseki",
+      "Iwaizumi",
+      "Kamaishi",
+      "Kazuno",
+      "Kuji",
+      "Miyako",
+      "Ofunato",
+      "Oshu",
+      "Rikuzentakata",
+      "Semboku",
+      "Senboku",
+      "Shizukuishi",
+      "Takizawa",
+      "Tanohata",
+      "Tono"
+    ],
+    "naha": [
+      "Aguni",
+      "Chatan",
+      "Ginowan",
+      "Higashi",
+      "Higashi Village",
+      "Ie",
+      "Iheya",
+      "Itoma",
+      "Itoman",
+      "Izena",
+      "Kin",
+      "Kitanakagusuku",
+      "Kumejima",
+      "Kunigami",
+      "Motobu",
+      "Nago",
+      "Nakijin",
+      "Nanjo",
+      "Nishihara",
+      "Ogimi",
+      "Okinawa",
+      "Onna",
+      "Shimajiri",
+      "Tokashiki",
+      "Tomigusuku",
+      "Tonaki",
+      "Urasoe",
+      "Uruma",
+      "Yomitan",
+      "Yoron",
+      "Zamami"
+    ],
+    "miyazaki": [
+      "Aya",
+      "Hyuga",
+      "Kagoshima",
+      "Kobayashi",
+      "Kushima",
+      "Miyakonojo",
+      "Mizukami",
+      "Nichinan",
+      "Saito",
+      "Sekinoo"
+    ],
+    "aizuwakamatsu": [
+      "Bandai",
+      "Fukushima",
+      "Inawashiro",
+      "Iwaki",
+      "Kitakata",
+      "Kitashiobara",
+      "Koriyama",
+      "Miharu",
+      "Minami Aizu",
+      "Mishima",
+      "Nasu",
+      "Nasushiobara",
+      "Nihonmatsu",
+      "Nikko",
+      "Ono",
+      "Sendai",
+      "Shimogo",
+      "Tamura",
+      "Yama",
+      "Yanaizu",
+      "Yonezawa"
+    ],
+    "yokohama": [
+      "Chiba",
+      "Futtsu",
+      "Hakone",
+      "Ichihara",
+      "Kamakura",
+      "Katsuura",
+      "Kawasaki",
+      "Kimitsu",
+      "Kisarazu",
+      "Mobara",
+      "Ohara",
+      "Onjuku",
+      "Otaki",
+      "Tokyo"
+    ],
+    "tokyo": [
+      "Arakawa",
+      "Asakusa",
+      "Bunkyo",
+      "Chiba",
+      "Chichibu",
+      "Chiyoda",
+      "Choshi",
+      "Chuo",
+      "Gyoda",
+      "Hanno",
+      "Hidaka",
+      "Itako",
+      "Kashima",
+      "Kasugabe",
+      "Katori",
+      "Kawagoe",
+      "Kawasaki",
+      "Kita",
+      "Koto",
+      "Kujukuri",
+      "Kumagaya",
+      "Meguro",
+      "Minato",
+      "Musashino",
+      "Nagatoro",
+      "Narita",
+      "Noda",
+      "Ogawa",
+      "Omiya",
+      "Saitama",
+      "Sakae",
+      "Satte",
+      "Setagaya",
+      "Shinjuku",
+      "Suginami",
+      "Sumida",
+      "Taito",
+      "Toshima",
+      "Tsukuba",
+      "Urayasu",
+      "Ushiku"
+    ],
+    "yamagata": [
+      "Fukushima",
+      "Kaminoyama",
+      "Nanyo",
+      "Nishikawa",
+      "Obanazawa",
+      "Okura",
+      "Sakata",
+      "Sendai",
+      "Shinjo",
+      "Shiroishi",
+      "Tendo",
+      "Tozawa",
+      "Tsuruoka",
+      "Yonezawa",
+      "Yuzawa",
+      "Zao"
+    ],
+    "hiroshima": [
+      "Akiota",
+      "Hamada",
+      "Hatsukaichi",
+      "Higashihiroshima",
+      "Hikari",
+      "Iwakuni",
+      "Kumano",
+      "Kure",
+      "Masuda",
+      "Matsue",
+      "Mihara",
+      "Miyoshi",
+      "Oda",
+      "Onomichi",
+      "Otake",
+      "Ounanchou",
+      "Sera",
+      "Shimonoseki",
+      "Takehara",
+      "Tsuwano"
+    ],
+    "sendai": [
+      "Hachinohe",
+      "Hiraizumi",
+      "Ichinoseki",
+      "Ishinomaki",
+      "Iwanuma",
+      "Kesennuma",
+      "Kurihara",
+      "Matsushima",
+      "Ogawara",
+      "Osaki",
+      "Shibata",
+      "Shiogama",
+      "Soma",
+      "Tagajo",
+      "Yamamoto",
+      "Yuzawa"
+    ],
+    "amami": ["Kitadaitō", "Minamidaito", "Okinoerabujima", "Tokunoshima"],
+    "fukuoka": [
+      "Asakura",
+      "Bungo-Ono",
+      "Dazaifu",
+      "Fukutsu",
+      "Genkai",
+      "Hita",
+      "Iki",
+      "Itoshima",
+      "Karatsu",
+      "Kurume",
+      "Munakata",
+      "Nagasaki",
+      "Ogi",
+      "Okinoshima",
+      "Saga",
+      "Sasaguri",
+      "Shingu",
+      "Takeo",
+      "Taku",
+      "Tsushima",
+      "Ukiha",
+      "Yame",
+      "Yanagawa",
+      "Yoshinogari"
+    ],
+    "takayama": [
+      "Agematsu",
+      "Gero",
+      "Gujo",
+      "Hakusan",
+      "Hida",
+      "Iijima",
+      "Kanazawa",
+      "Kiso",
+      "Komagane",
+      "Matsumoto",
+      "Miyada",
+      "Nagano",
+      "Nakatsugawa",
+      "Shiojiri",
+      "Shirakawa"
+    ],
+    "tottori": [
+      "Asago",
+      "Chizu",
+      "Hokuei",
+      "Iwami",
+      "Kagamino",
+      "Kobe",
+      "Kotoura",
+      "Kurayoshi",
+      "Kyotango",
+      "Kyoto",
+      "Maniwa",
+      "Matsue",
+      "Misasa",
+      "Shin-Onsen",
+      "Tohaku",
+      "Toyooka",
+      "Wakasa",
+      "Yabu",
+      "Yosano",
+      "Yurihama"
+    ],
+    "kitakyushu": [
+      "Fukuoka",
+      "Nakama",
+      "Nakatsu",
+      "Shimonoseki",
+      "Soeda",
+      "Tagawa"
+    ],
+    "iyavalley": [
+      "Awa",
+      "Ikeda",
+      "Kaiyo",
+      "Kamiyama",
+      "Kanonji",
+      "Mima",
+      "Mitoyo",
+      "Miyoshi",
+      "Miyoshi (Iya Valley)",
+      "Naka",
+      "Shikokuchuo",
+      "Tokushima",
+      "Tsurugi",
+      "Yoshinogawa"
+    ],
+    "kyoto": [
+      "Fushimi",
+      "Ine",
+      "Kameoka",
+      "Keihoku",
+      "Kibune",
+      "Kobe",
+      "Kora",
+      "Maizuru",
+      "Mikatakaminaka",
+      "Miyazu",
+      "Morioka",
+      "Nantan",
+      "Obama",
+      "Oi",
+      "Otsu",
+      "Uji",
+      "Wakasa"
+    ],
+    "ishigaki": ["Iriomote", "Taketomi", "Yaeyama", "Yonaguni"],
+    "miyako": ["Miyakojima"],
+    "toyama": [
+      "Asahi",
+      "Himi",
+      "Imizu",
+      "Kanazawa",
+      "Kurobe",
+      "Nagano",
+      "Nakaniikawa",
+      "Namerikawa",
+      "Nanao",
+      "Nanto",
+      "Noto",
+      "Suzu",
+      "Takaoka",
+      "Takayama",
+      "Tateyama",
+      "Tonami",
+      "Uozu",
+      "Wajima"
+    ],
+    "yakushima": ["Kagoshima", "Minamitane"],
+    "ise": [
+      "Kameyama",
+      "Kumano",
+      "Matsusaka",
+      "Minami-Ise",
+      "Nagoya",
+      "Nara",
+      "Nishio",
+      "Odai",
+      "Otsu",
+      "Owase",
+      "Shima",
+      "Suzuka",
+      "Taki",
+      "Toba",
+      "Toyohashi",
+      "Tsu"
+    ],
+    "kushiro": [
+      "Akkeshi",
+      "Ashoro",
+      "Erimo",
+      "Hidaka",
+      "Ikeda",
+      "Makubetsu",
+      "Nemuro",
+      "Obihiro",
+      "Otofuke"
+    ],
+    "kanazawa": [
+      "Awara",
+      "Echizen",
+      "Eiheiji",
+      "Fukui",
+      "Hakui",
+      "Kaga",
+      "Katsuyama",
+      "Komatsu",
+      "Nanto",
+      "Nomi",
+      "Ono",
+      "Sabae",
+      "Sakai",
+      "Shika",
+      "Takayama"
+    ],
+    "kobe": [
+      "Akashi",
+      "Awaji",
+      "Himeji",
+      "Nishinomiya",
+      "Takarazuka",
+      "Tamba-Sasayama"
+    ],
+    "himeji": ["Ako", "Asago", "Bizen", "Kakogawa", "Kobe", "Taishi"],
+    "wakkanai": ["Rebun", "Rishiri", "Rishirifuji", "Sarufutsu", "Toyotomi"]
   }
 }

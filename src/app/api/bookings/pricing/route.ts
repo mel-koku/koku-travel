@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { calculatePrice } from "@/lib/bookings/pricingService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest } from "@/lib/api/errors";
 
 /**
  * GET /api/bookings/pricing?personId=&groupSize=&experienceSlug=&date=
@@ -17,7 +18,7 @@ export const GET = withApiHandler(
     const date = url.searchParams.get("date") ?? undefined;
 
     if (!personId) {
-      return NextResponse.json({ error: "Missing personId" }, { status: 400 });
+      return badRequest("Missing personId");
     }
 
     const price = await calculatePrice(personId, groupSize, experienceSlug, date);

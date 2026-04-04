@@ -268,6 +268,24 @@ export function getCityMetadata(city: string): {
 }
 
 /**
+ * Get the child-city-to-planning-city mapping.
+ * Returns a map where keys are lowercase child city names and values are planning city IDs.
+ * e.g., "matsushima" -> "sendai", "kawagoe" -> "tokyo"
+ */
+export function getChildCityMapping(): Map<string, { planningCity: string; childName: string }> {
+  const data = getCityInterestsData();
+  const mapping = new Map<string, { planningCity: string; childName: string }>();
+  const childCities = (data as Record<string, unknown>).childCities as Record<string, string[]> | undefined;
+  if (!childCities) return mapping;
+  for (const [planningCity, children] of Object.entries(childCities)) {
+    for (const child of children) {
+      mapping.set(child.toLowerCase(), { planningCity, childName: child });
+    }
+  }
+  return mapping;
+}
+
+/**
  * Get total statistics from the city interests data.
  */
 export function getCityInterestsStats(): {

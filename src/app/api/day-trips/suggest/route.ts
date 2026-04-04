@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { badRequest } from "@/lib/api/errors";
+import { badRequest, internalError } from "@/lib/api/errors";
 import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
@@ -177,7 +177,7 @@ export const POST = withApiHandler(
       .limit(2000);
 
     if (error) {
-      return NextResponse.json({ error: "Failed to query locations" }, { status: 500 });
+      return internalError("Failed to query locations");
     }
 
     if (!rows || rows.length === 0) {

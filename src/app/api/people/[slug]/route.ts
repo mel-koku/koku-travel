@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPersonWithExperiences } from "@/lib/people/peopleService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { notFound } from "@/lib/api/errors";
 
 /**
  * GET /api/people/:slug
@@ -18,7 +19,7 @@ export async function GET(
       const person = await getPersonWithExperiences(slug);
 
       if (!person) {
-        return NextResponse.json({ error: "Person not found" }, { status: 404 });
+        return notFound("Person not found");
       }
 
       return NextResponse.json(

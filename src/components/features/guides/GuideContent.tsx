@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 type GuideContentProps = {
   body: string;
@@ -91,7 +92,7 @@ const markdownComponents = {
   ),
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
     <a
-      href={href}
+      href={isSafeUrl(href) ? href : undefined}
       className="link-reveal text-brand-primary"
       target={href?.startsWith("http") ? "_blank" : undefined}
       rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
