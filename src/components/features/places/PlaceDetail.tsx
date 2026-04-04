@@ -10,7 +10,6 @@ import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
-import { useExperiencePeople } from "@/hooks/useExperiencePeople";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
@@ -98,7 +97,6 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
   const router = useRouter();
   const { status, details, fetchedLocation } = useLocationDetailsQuery(initialLocation.id);
   const location = fetchedLocation ?? initialLocation;
-  const people = useExperiencePeople(location.sanitySlug, location.id);
   const { isInSaved, toggleSave } = useSaved();
   const showFirstSaveToast = useFirstSaveToast();
 
@@ -404,65 +402,6 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           />
         )}
 
-        {/* Artisan / Guide profile */}
-        {people.length > 0 && (
-          <motion.section {...sectionReveal} className="space-y-3">
-            <h2 className="eyebrow-editorial">
-              {people[0]!.type === "guide" ? "Your Guide" : people[0]!.type === "interpreter" ? "Your Interpreter" : "Meet the Artisan"}
-            </h2>
-            {people.map((person) => (
-              <div
-                key={person.id}
-                className="flex items-start gap-4 rounded-lg bg-surface p-4"
-              >
-                {person.photo_url && (
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
-                    <Image
-                      src={person.photo_url}
-                      alt={person.name}
-                      fill
-                      className="object-cover"
-                      sizes="56px"
-                    />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">{person.name}</p>
-                    {person.name_japanese && (
-                      <span className="text-xs text-foreground-secondary">{person.name_japanese}</span>
-                    )}
-                  </div>
-                  {person.bio && (
-                    <p className="mt-1 text-xs leading-relaxed text-foreground-secondary line-clamp-3">
-                      {person.bio}
-                    </p>
-                  )}
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {person.years_experience && (
-                      <span className="text-[11px] text-stone">
-                        {person.years_experience}+ years
-                      </span>
-                    )}
-                    {person.specialties.length > 0 && person.specialties.slice(0, 3).map((s) => (
-                      <span
-                        key={s}
-                        className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-secondary"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                  {person.languages.length > 0 && (
-                    <p className="mt-1.5 text-[11px] text-stone">
-                      Speaks {person.languages.join(", ")}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </motion.section>
-        )}
 
         {/* Local tips */}
         {tips.length > 0 && (
