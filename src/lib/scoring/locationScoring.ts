@@ -21,7 +21,6 @@ import {
   scoreDietaryFit,
   scoreCrowdFit,
   scorePhotoFit,
-  scoreGoshuinFit,
   scoreTagMatch,
   scoreAccommodationBonus,
   scoreUnescoBonus,
@@ -64,7 +63,7 @@ export function scoreLocation(
         budgetFit: 0, accessibilityFit: 0, diversityBonus: 0,
         neighborhoodDiversity: 0, weatherFit: 0, timeOptimization: 0,
         groupFit: 0, seasonalFit: 0, contentFit: 0, dietaryFit: 0,
-        crowdFit: 0, photoFit: 0, tagMatch: 0, goshuinFit: 0,
+        crowdFit: 0, photoFit: 0, tagMatch: 0,
         accommodationBonus: 0, unescoBonus: 0,
       },
       reasoning: [interestResult.reasoning, ratingResult.reasoning, logisticalResult.reasoning],
@@ -114,9 +113,6 @@ export function scoreLocation(
   // Photo timing fit scoring
   const photoResult = scorePhotoFit(location, criteria);
 
-  // Goshuin fit scoring
-  const goshuinResult = scoreGoshuinFit(location, criteria.collectGoshuin);
-
   // Tag match scoring (AI intent preferred tags)
   const tagMatchResult = scoreTagMatch(location, criteria.preferredTags);
 
@@ -146,7 +142,6 @@ export function scoreLocation(
     crowdFit: crowdResult.score,
     photoFit: photoResult.score,
     tagMatch: tagMatchResult.score,
-    goshuinFit: goshuinResult.score,
     accommodationBonus,
     unescoBonus: unesco.total,
   };
@@ -168,7 +163,6 @@ export function scoreLocation(
     breakdown.crowdFit +
     breakdown.photoFit +
     breakdown.tagMatch +
-    breakdown.goshuinFit +
     accommodationBonus +
     hiddenGem.total +
     unesco.total;
@@ -191,7 +185,6 @@ export function scoreLocation(
     ...(crowdResult.reasoning ? [crowdResult.reasoning] : []),
     ...(photoResult.reasoning ? [photoResult.reasoning] : []),
     ...(tagMatchResult.reasoning ? [tagMatchResult.reasoning] : []),
-    ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
     ...(hiddenGem.localSecretsBonus > 0 ? [`Hidden gem + local_secrets vibe: +${hiddenGem.localSecretsBonus}`] : []),
     ...(hiddenGem.tagBonus > 0 ? [`Hidden gem + tag preference match: +${hiddenGem.tagBonus}`] : []),
     ...(hiddenGem.iconicPenalty < 0 ? [`Iconic location penalty (local_secrets): ${hiddenGem.iconicPenalty}`] : []),

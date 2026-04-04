@@ -242,11 +242,6 @@ export type TripBuilderData = {
    */
   accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
   /**
-   * Whether the user wants to collect goshuin (temple stamps).
-   * Boosts temples/shrines with notable goshuin in scoring.
-   */
-  collectGoshuin?: boolean;
-  /**
    * When true, the generator respects data.cities array order instead of
    * auto-optimizing via nearest-neighbor routing. Set when the user manually
    * reorders cities in the trip builder.

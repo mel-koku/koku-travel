@@ -111,7 +111,6 @@ export async function findReplacementCandidates(
     timeSlot: activity.timeOfDay,
     date: options?.date,
     group: tripData.group,
-    collectGoshuin: tripData.collectGoshuin,
     hasPhotographyVibe: tripData.vibes?.includes("local_secrets"),
     hasLocalSecretsVibe: tripData.vibes?.includes("local_secrets"),
     hasNatureAdventureVibe: tripData.vibes?.includes("nature_adventure"),

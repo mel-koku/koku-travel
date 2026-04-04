@@ -4,4 +4,4 @@ export { scoreRatingQuality, scoreBudgetFit, scoreAccessibilityFit, parsePriceLe
 export { scoreLogisticalFit } from "./logisticalScoring";
 export { scoreDiversity, scoreNeighborhoodDiversity } from "./diversityScoring";
 export { scoreSeasonalMatch, scoreContentFit, scoreDietaryFit, scoreCrowdFit } from "./contextScoring";
-export { scorePhotoFit, scoreGoshuinFit, scoreTagMatch, scoreAccommodationBonus, scoreUnescoBonus, scoreHiddenGemBonus } from "./specialScoring";
+export { scorePhotoFit, scoreTagMatch, scoreAccommodationBonus, scoreUnescoBonus, scoreHiddenGemBonus } from "./specialScoring";

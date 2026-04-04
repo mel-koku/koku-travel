@@ -46,7 +46,6 @@ const FACTOR_META: Record<
   crowdFit: { label: "Crowd level", maxMagnitude: 8 },
   photoFit: { label: "Photo timing", maxMagnitude: 5 },
   tagMatch: { label: "Tag match", maxMagnitude: 8 },
-  goshuinFit: { label: "Goshuin", maxMagnitude: 5 },
   accommodationBonus: { label: "Accommodation style", maxMagnitude: 5 },
   unescoBonus: { label: "UNESCO World Heritage", maxMagnitude: 10 },
 };

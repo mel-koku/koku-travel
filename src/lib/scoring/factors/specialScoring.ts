@@ -1,8 +1,6 @@
 import type { Location } from "@/types/location";
 import type { LocationScoringCriteria, ScoringResult } from "@/lib/scoring/types";
 import { getPhotoTiming, isPhotoOptimalTime } from "@/data/photoSpotTiming";
-import { hasGoshuin, isNotableGoshuin } from "@/data/goshuinData";
-
 /**
  * Score photo timing fit — bonus when activity is scheduled at optimal photo time.
  * Range: 0 to +5 points. Only active when photography vibe is selected.
@@ -39,34 +37,7 @@ export function scorePhotoFit(
   return { score: 0, reasoning: "" };
 }
 
-/**
- * Score goshuin (temple stamp) availability — bonus for temples/shrines
- * when collectGoshuin is enabled.
- * Range: 0 to +5 points.
- */
-export function scoreGoshuinFit(
-  location: Location,
-  collectGoshuin?: boolean,
-): ScoringResult {
-  if (!collectGoshuin) {
-    return { score: 0, reasoning: "" };
-  }
 
-  const GOSHUIN_CATEGORIES = new Set(["temple", "shrine"]);
-  if (!location.category || !GOSHUIN_CATEGORIES.has(location.category)) {
-    return { score: 0, reasoning: "" };
-  }
-
-  if (isNotableGoshuin(location.id)) {
-    return { score: 5, reasoning: "Notable goshuin available" };
-  }
-
-  if (hasGoshuin(location.id)) {
-    return { score: 3, reasoning: "Goshuin available" };
-  }
-
-  return { score: 0, reasoning: "" };
-}
 
 /**
  * Score tag overlap between location tags and AI-extracted preferred tags.
