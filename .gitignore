@@ -193,3 +193,9 @@ data/
 # Internal notes / temp files (never commit)
 weekly-update*.md
 temp-*.json
+
+# Dev-only design system playground (not user-facing)
+src/app/(main)/ui/
+
+# VPS worker facade (not yet deployed)
+src/workers/
