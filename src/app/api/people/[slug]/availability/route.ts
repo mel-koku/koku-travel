@@ -4,6 +4,7 @@ import { getPersonAvailability } from "@/lib/people/availabilityService";
 import { getPersonBookedSlots } from "@/lib/bookings/bookingService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest, notFound } from "@/lib/api/errors";
 
 /**
  * GET /api/people/[slug]/availability?month=YYYY-MM&includeBooked=true
@@ -23,7 +24,7 @@ export async function GET(
       const includeBooked = req.nextUrl.searchParams.get("includeBooked") === "true";
 
       if (!monthParam || !/^\d{4}-\d{2}$/.test(monthParam)) {
-        return NextResponse.json({ error: "month param required (YYYY-MM)" }, { status: 400 });
+        return badRequest("month param required (YYYY-MM)");
       }
 
       const parts = monthParam.split("-");
@@ -32,7 +33,7 @@ export async function GET(
 
       const person = await getPersonBySlug(slug);
       if (!person) {
-        return NextResponse.json({ error: "Person not found" }, { status: 404 });
+        return notFound("Person not found");
       }
 
       const available = await getPersonAvailability(person.id, year, month);

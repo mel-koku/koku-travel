@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getExperienceInterpreters } from "@/lib/people/availabilityService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest } from "@/lib/api/errors";
 
 /**
  * GET /api/availability/experience?slug=...&date=YYYY-MM-DD
@@ -14,7 +15,7 @@ export const GET = withApiHandler(
     const date = request.nextUrl.searchParams.get("date");
 
     if (!slug || !date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return NextResponse.json({ error: "slug and date (YYYY-MM-DD) required" }, { status: 400 });
+      return badRequest("slug and date (YYYY-MM-DD) required");
     }
 
     const interpreters = await getExperienceInterpreters(slug, date);

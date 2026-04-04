@@ -19,6 +19,8 @@ import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/p
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 
+export const maxDuration = 60;
+
 /** Build a cache key from day activities + refinement type */
 function buildRefineCacheKey(dayActivities: string[], refinementType: string, cityId?: string): string {
   const payload = JSON.stringify({ activities: dayActivities.sort(), refinementType, cityId });

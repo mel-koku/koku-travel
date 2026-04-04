@@ -71,7 +71,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
   try {
     // Check cache first (before expensive generation)
     // Skip cache when user has saved places or content context — these are personalized
-    const hasPersonalization = (savedIds && savedIds.length > 0) || builderData.contentContext;
+    const hasPersonalization = (savedIds && savedIds.length > 0) || builderData.contentContext || !!builderData.accessibility?.notes?.trim() || !!builderData.accessibility?.dietaryOther?.trim();
     const cachedResult = !hasPersonalization
       ? await getCachedItinerary(builderData)
       : null;

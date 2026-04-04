@@ -14,6 +14,8 @@ import type { ItineraryActivity, ItineraryTravelSegment } from "@/types/itinerar
 import type { VibeId } from "@/data/vibes";
 import { v4 as uuid } from "uuid";
 
+export const maxDuration = 60;
+
 const NEARBY_RADIUS_KM = 15;
 const MAX_ACTIVITIES = 3;
 

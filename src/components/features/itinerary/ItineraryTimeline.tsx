@@ -2,7 +2,6 @@
 
 import {
   DndContext,
-  DragOverlay,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -12,11 +11,6 @@ import {
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {
-  Fragment,
   memo,
   useState,
   useEffect,
@@ -38,24 +32,19 @@ import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
-import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
-import { GuideSegmentCard } from "./GuideSegmentCard";
-import { DayBookingCards } from "./DayBookingCards";
-import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
 import { AccommodationBookend } from "./AccommodationBookend";
-import { LateArrivalCard } from "./LateArrivalCard";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 
 import { useDayAvailability } from "@/hooks/useDayAvailability";
-import { AvailabilityAlert } from "./AvailabilityAlert";
-import { easeCinematicCSS } from "@/lib/motion";
 import { logger } from "@/lib/logger";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
-import { formatCityName } from "@/lib/itinerary/dayLabel";
+import { TimelineCityTransition } from "./TimelineCityTransition";
+import { TimelineDragOverlay } from "./TimelineDragOverlay";
+import { TimelineActivityList } from "./TimelineActivityList";
 
 type ItineraryTimelineProps = {
   day: ItineraryDay;
@@ -137,7 +126,6 @@ export const ItineraryTimeline = ({
   onViewDetails,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const isMountedRef = useRef(true);
   const availabilityIssues = useDayAvailability(day, dayIndex, tripStartDate);
 
@@ -601,58 +589,8 @@ export const ItineraryTimeline = ({
             onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
           />
 
-        {/* City Transition Display */}
         {day.cityTransition && (
-          <div className="rounded-lg border-2 border-dashed border-sage/30 bg-sage/10 p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-sage"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-semibold text-foreground">
-                  Traveling from {formatCityName(day.cityTransition.fromCityId)} to{" "}
-                  {formatCityName(day.cityTransition.toCityId)}
-                </h4>
-                <div className="mt-1 space-y-1 text-sm text-foreground-secondary">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Mode:</span>
-                    <span className="capitalize">{day.cityTransition.mode}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Duration:</span>
-                    <span className="font-mono">
-                      {day.cityTransition.durationMinutes} minute
-                      {day.cityTransition.durationMinutes !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  {day.cityTransition.departureTime && day.cityTransition.arrivalTime && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Time:</span>
-                      <span className="font-mono">
-                        {day.cityTransition.departureTime} → {day.cityTransition.arrivalTime}
-                      </span>
-                    </div>
-                  )}
-                  {day.cityTransition.notes && (
-                    <p className="text-xs text-sage">{day.cityTransition.notes}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <TimelineCityTransition cityTransition={day.cityTransition} />
         )}
 
         {/* Accommodation: Start bookend — skip if day starts with an arrival anchor (rendered inline after anchor instead) */}
@@ -669,276 +607,34 @@ export const ItineraryTimeline = ({
           );
         })()}
 
-        {/* Simple list of activities with travel segments */}
-        {extendedActivities.length > 0 ? (
-          <>
-          <SortableContext
-            items={extendedActivities.map((activity) => activity.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {/* Confirmed bookings for this day */}
-            <DayBookingCards
-              tripStartDate={tripStartDate}
-              dayIndex={dayIndex}
-              totalDays={model.days.length}
-            />
-
-            <ul className="space-y-3">
-              {extendedActivities.map((activity, index) => {
-                // Calculate place number (only for non-anchor place activities, 1-indexed to match map pins)
-                let placeNumber: number | undefined = undefined;
-                if (activity.kind === "place" && !activity.isAnchor) {
-                  // Count non-anchor place activities before this index, starting from 1
-                  let placeCounter = 1;
-                  for (let i = 0; i < index; i++) {
-                    const prev = extendedActivities[i];
-                    if (prev?.kind === "place" && !prev.isAnchor) {
-                      placeCounter++;
-                    }
-                  }
-                  placeNumber = placeCounter;
-                }
-
-                // Get previous place activity for travel segment
-                let previousActivity: ItineraryActivity | null = null;
-                for (let i = index - 1; i >= 0; i--) {
-                  const prev = extendedActivities[i];
-                  if (prev && prev.kind === "place") {
-                    previousActivity = prev;
-                    break;
-                  }
-                }
-
-                const originCoordinates =
-                  previousActivity && previousActivity.kind === "place"
-                    ? getActivityCoordinates(previousActivity)
-                    : null;
-
-                const destinationCoordinates =
-                  activity.kind === "place" ? getActivityCoordinates(activity) : null;
-
-                const travelFromPrevious =
-                  activity.kind === "place" ? activity.travelFromPrevious : null;
-
-                // Show travel segment if we have both coordinates and a previous place activity
-                const shouldShowTravelSegment =
-                  activity.kind === "place" &&
-                  previousActivity !== null &&
-                  previousActivity.kind === "place" &&
-                  originCoordinates &&
-                  destinationCoordinates;
-
-                // Create a default travel segment if one doesn't exist
-                const displayTravelSegment = travelFromPrevious ?? (shouldShowTravelSegment ? {
-                  mode: "transit" as const,
-                  durationMinutes: 0,
-                  distanceMeters: undefined,
-                  departureTime: undefined,
-                  arrivalTime: undefined,
-                  instructions: undefined,
-                  path: undefined,
-                } : null);
-
-                // Count travel segments before this index (for staggered auto-fetch)
-                const travelSegmentIndex = extendedActivities.slice(0, index).filter((a, i) => {
-                  if (a.kind !== "place") return false;
-                  // Check if this activity has a previous place activity
-                  for (let j = i - 1; j >= 0; j--) {
-                    if (extendedActivities[j]?.kind === "place") return true;
-                  }
-                  return false;
-                }).length;
-
-                // Render travel segment between activities
-                const travelSegmentElement =
-                  shouldShowTravelSegment && displayTravelSegment && previousActivity && previousActivity.kind === "place" ? (
-                    <TravelSegmentWrapper
-                      activity={activity}
-                      previousActivity={previousActivity}
-                      travelFromPrevious={displayTravelSegment}
-                      originCoordinates={originCoordinates!}
-                      destinationCoordinates={destinationCoordinates!}
-                      dayTimezone={day.timezone}
-                      onUpdate={handleUpdate}
-                      segmentIndex={travelSegmentIndex}
-                    />
-                  ) : undefined;
-
-                // Get conflicts for this specific activity
-                const activityConflicts = conflictsResult
-                  ? getActivityConflicts(conflictsResult, activity.id)
-                  : [];
-
-                // Find guide segments that should appear after this activity
-                const guideSegmentsAfter = guide?.segments.filter(
-                  (seg) => seg.afterActivityId === activity.id,
-                ) ?? [];
-
-                // Find guide segments that should appear before this activity (prep content)
-                // For anchor activities (arrival/departure), shift "before" segments to render
-                // after instead, so they don't sit between accommodation pickers and the anchor card.
-                const rawSegmentsBefore = guide?.segments.filter(
-                  (seg) => seg.beforeActivityId === activity.id,
-                ) ?? [];
-                const isAnchor = activity.kind === "place" && activity.isAnchor;
-                const guideSegmentsBefore = isAnchor ? [] : rawSegmentsBefore;
-                const guideSegmentsAfterAnchor = isAnchor ? rawSegmentsBefore : [];
-
-                const fragmentKey = activity.id;
-                // Render guide segments before with card-width offset
-                const guideBeforeElement = !activeId && guideSegmentsBefore.length > 0 ? (
-                  <div className="space-y-1">
-                    {guideSegmentsBefore.map((seg) => (
-                      <GuideSegmentCard key={seg.id} segment={seg} />
-                    ))}
-                  </div>
-                ) : undefined;
-
-                return (
-                  <Fragment key={fragmentKey}>
-                    <SortableActivity
-                      activity={activity}
-                      allActivities={extendedActivities}
-                      dayTimezone={day.timezone}
-                      onDelete={isReadOnly ? () => {} : () => handleDelete(activity.id)}
-                      onUpdate={isReadOnly ? () => {} : (patch) => handleUpdate(activity.id, patch)}
-                      isSelected={activity.id === selectedActivityId}
-                      onSelect={onSelectActivity}
-                      placeNumber={placeNumber}
-                      travelSegment={travelSegmentElement}
-                      guideSegmentsBefore={guideBeforeElement}
-                      tripId={tripId}
-                      dayId={day.id}
-                      onReplace={!isReadOnly && onReplace ? () => onReplace(activity.id) : undefined}
-                      conflicts={activityConflicts}
-                      isReadOnly={isReadOnly}
-                      activeDragId={activeId}
-                      onViewDetails={onViewDetails}
-                      tripStartDate={tripStartDate}
-                      dayIndex={dayIndex}
-                    />
-                    {/* Guide segments after this activity */}
-                    {!activeId && guideSegmentsAfter.map((seg) => (
-                      <li key={seg.id} className="list-none">
-                        <GuideSegmentCard segment={seg} />
-                      </li>
-                    ))}
-                    {/* Inline accommodation bookend after arrival anchor */}
-                    {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && startLocation && (
-                      <li className="list-none">
-                        <AccommodationBookend
-                          location={startLocation}
-                          variant="start"
-                          travelMinutes={bookendEstimates.start?.travelMinutes}
-                          distanceMeters={bookendEstimates.start?.distanceMeters}
-                        />
-                      </li>
-                    )}
-                    {/* Late arrival card after hotel bookend */}
-                    {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isLateArrival && !lateArrivalDismissed && (
-                      <li className="list-none mt-3">
-                        <LateArrivalCard
-                          city={day.cityId ?? "your destination"}
-                          onDismiss={() => setLateArrivalDismissed(true)}
-                        />
-                      </li>
-                    )}
-                    {/* Guide segments shifted from before anchor to after (below bookend + late arrival) */}
-                    {!activeId && guideSegmentsAfterAnchor.map((seg) => (
-                      <li key={seg.id} className="list-none">
-                        <GuideSegmentCard segment={seg} />
-                      </li>
-                    ))}
-                  </Fragment>
-                );
-              })}
-            </ul>
-
-          </SortableContext>
-
-          {/* Availability Alert */}
-          {!activeId && availabilityIssues && availabilityIssues.summary.total > 0 && (
-            <AvailabilityAlert
-              issues={availabilityIssues}
-              onFindAlternative={
-                !isReadOnly && onReplace
-                  ? (activityId) => onReplace(activityId)
-                  : undefined
-              }
-              className="mt-3"
-            />
-          )}
-
-          {/* Accommodation: End bookend — skip if day ends with a departure anchor */}
-          {endLocation && !activeId && (() => {
-            const lastPlace = [...extendedActivities].reverse().find((a) => a.kind === "place");
-            if (lastPlace?.kind === "place" && lastPlace.isAnchor) return null;
-            return (
-              <AccommodationBookend
-                location={endLocation}
-                variant="end"
-                travelMinutes={bookendEstimates.end?.travelMinutes}
-                distanceMeters={bookendEstimates.end?.distanceMeters}
-              />
-            );
-          })()}
-          </>
-        ) : (
-          <div className="rounded-lg border-2 border-dashed border-border p-6 text-center text-stone">
-            <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open. Add a note to get started."}</p>
-            {!isReadOnly && (
-              <button
-                type="button"
-                onClick={handleAddNote}
-                className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-              >
-                + Add note
-              </button>
-            )}
-          </div>
-        )}
+        <TimelineActivityList
+          day={day}
+          dayIndex={dayIndex}
+          totalDays={model.days.length}
+          extendedActivities={extendedActivities}
+          activeId={activeId}
+          selectedActivityId={selectedActivityId}
+          onSelectActivity={onSelectActivity}
+          tripStartDate={tripStartDate}
+          tripId={tripId}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+          onReplace={onReplace}
+          conflictsResult={conflictsResult}
+          guide={guide}
+          isReadOnly={isReadOnly}
+          startLocation={startLocation}
+          endLocation={endLocation}
+          bookendEstimates={bookendEstimates}
+          availabilityIssues={availabilityIssues}
+          onViewDetails={onViewDetails}
+          handleAddNote={handleAddNote}
+          TravelSegmentWrapper={TravelSegmentWrapper}
+        />
       </div>
 
-      {/* Drag Preview Overlay - Compact card preview */}
       {!isReadOnly && (
-      <DragOverlay dropAnimation={{ duration: 250, easing: easeCinematicCSS }}>
-        {activeActivity && activeActivity.kind === "place" && (
-          <div className="pointer-events-none w-[320px] max-w-[90vw]">
-            <div className="rounded-lg border-2 border-brand-primary/50 bg-background p-3 shadow-[var(--shadow-elevated)] ring-4 ring-brand-primary/20 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                {/* Drag indicator */}
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10">
-                  <svg className="h-5 w-5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                  </svg>
-                </div>
-                {/* Activity info */}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {activeActivity.title}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    {activeActivity.schedule?.arrivalTime && (
-                      <span className="font-mono text-xs text-sage">
-                        {activeActivity.schedule.arrivalTime}
-                      </span>
-                    )}
-                    {activeActivity.neighborhood && (
-                      <span className="truncate text-xs text-stone">
-                        {activeActivity.neighborhood}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {/* Visual indicator that it's being dragged */}
-                <div className="shrink-0 rounded-full bg-sage/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-sage">
-                  Moving
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </DragOverlay>
+        <TimelineDragOverlay activeActivity={activeActivity} />
       )}
     </DndContext>
   );

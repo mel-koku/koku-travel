@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import type { UIMessage } from "ai";
 import { AskKokuLocationCard } from "./AskKokuLocationCard";
 import { AskKokuTripPlanCard, type TripPlanData } from "./AskKokuTripPlanCard";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 
 type AskKokuMessageProps = {
@@ -182,7 +183,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
                   }
                   return (
                     <a
-                      href={href}
+                      href={isSafeUrl(href) ? href : undefined}
                       className="text-brand-primary underline"
                       target="_blank"
                       rel="noopener noreferrer"
