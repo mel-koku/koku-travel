@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkOpeningHoursFit, scoreTimeOfDayFit } from "../timeOptimization";
+import { checkOpeningHoursFit, scoreTimeOfDayFit, EVENING_APPROPRIATE_CATEGORIES } from "../timeOptimization";
 import type { Location } from "@/types/location";
 
 describe("Time Optimization", () => {
@@ -340,6 +340,63 @@ describe("Time Optimization", () => {
       const result = scoreTimeOfDayFit(location, "morning");
       expect(result.scoreAdjustment).toBe(0);
       expect(result.reasoning).toContain("No specific time preference");
+    });
+  });
+
+  describe("EVENING_APPROPRIATE_CATEGORIES", () => {
+    it("includes evening-appropriate categories", () => {
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("restaurant")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("bar")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("entertainment")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("theater")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("onsen")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("wellness")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("shopping")).toBe(true);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("viewpoint")).toBe(true);
+    });
+
+    it("excludes daytime categories", () => {
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("landmark")).toBe(false);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("museum")).toBe(false);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("temple")).toBe(false);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("shrine")).toBe(false);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("castle")).toBe(false);
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("nature")).toBe(false);
+    });
+  });
+
+  describe("scoreTimeOfDayFit evening penalties", () => {
+    const makeLocation = (category: string): Location => ({
+      id: "test",
+      name: "Test",
+      city: "Tokyo",
+      region: "Kanto",
+      category,
+    });
+
+    it("gives strong penalty for landmark in evening slot", () => {
+      const result = scoreTimeOfDayFit(makeLocation("landmark"), "evening");
+      expect(result.scoreAdjustment).toBeLessThanOrEqual(-10);
+    });
+
+    it("gives strong penalty for museum in evening slot", () => {
+      const result = scoreTimeOfDayFit(makeLocation("museum"), "evening");
+      expect(result.scoreAdjustment).toBeLessThanOrEqual(-10);
+    });
+
+    it("gives positive score for restaurant in evening slot", () => {
+      const result = scoreTimeOfDayFit(makeLocation("restaurant"), "evening");
+      expect(result.scoreAdjustment).toBeGreaterThan(0);
+    });
+
+    it("gives positive score for bar in evening slot", () => {
+      const result = scoreTimeOfDayFit(makeLocation("bar"), "evening");
+      expect(result.scoreAdjustment).toBeGreaterThan(0);
+    });
+
+    it("gives positive score for landmark in afternoon slot", () => {
+      const result = scoreTimeOfDayFit(makeLocation("landmark"), "afternoon");
+      expect(result.scoreAdjustment).toBeGreaterThan(0);
     });
   });
 });

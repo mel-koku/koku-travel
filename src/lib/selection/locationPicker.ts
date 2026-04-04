@@ -10,7 +10,7 @@ import type { InterestId, TripBuilderData } from "@/types/trip";
 import type { WeatherForecast } from "@/types/weather";
 import { scoreLocation, type LocationScoringCriteria, type ScoreBreakdown } from "@/lib/scoring/locationScoring";
 import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
-import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
+import { checkOpeningHoursFit, EVENING_APPROPRIATE_CATEGORIES } from "@/lib/scoring/timeOptimization";
 import { isLocationAvailableOnDate } from "@/lib/scoring/seasonalAvailability";
 import { logger } from "@/lib/logger";
 
@@ -127,6 +127,33 @@ export function pickLocationForTimeSlot(
         date,
         unusedCount: unused.length,
       });
+      return undefined;
+    }
+  }
+
+  // After 6 PM: hard-exclude daytime-only categories
+  // Evening slot starts with ~240 min available. When availableMinutes <= 180
+  // (60 min elapsed), we're past the 6 PM boundary.
+  if (timeSlot === "evening" && availableMinutes <= 180) {
+    const beforeCount = candidates.length;
+    candidates = candidates.filter((loc) => {
+      const cat = loc.category?.toLowerCase() ?? "";
+      if (EVENING_APPROPRIATE_CATEGORIES.has(cat)) return true;
+      // Daytime categories need confirmed evening operating hours
+      if (date) {
+        const hoursCheck = checkOpeningHoursFit(loc, "evening", date);
+        return hoursCheck.fits && hoursCheck.reasoning !== "No opening hours information available";
+      }
+      return false;
+    });
+    if (beforeCount > candidates.length) {
+      logger.info("Filtered daytime-only categories after 6 PM", {
+        before: beforeCount,
+        after: candidates.length,
+        availableMinutes,
+      });
+    }
+    if (candidates.length === 0) {
       return undefined;
     }
   }
