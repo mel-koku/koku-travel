@@ -191,9 +191,6 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     };
   }
 
-  // Goshuin collection affects temple/shrine scoring
-  if (data.collectGoshuin) normalized.collectGoshuin = true;
-
   // First time visitor affects pro tips and guidance
   if (data.isFirstTimeVisitor !== undefined) normalized.isFirstTimeVisitor = data.isFirstTimeVisitor;
 

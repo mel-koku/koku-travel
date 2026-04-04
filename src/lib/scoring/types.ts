@@ -99,11 +99,6 @@ export interface LocationScoringCriteria {
    */
   hasPhotographyVibe?: boolean;
   /**
-   * Whether the user wants to collect goshuin (temple stamps).
-   * Boosts temples/shrines with notable goshuin.
-   */
-  collectGoshuin?: boolean;
-  /**
    * Preferred tags from AI intent extraction (e.g. ["quiet", "outdoor"]).
    * Each overlapping tag = +2, capped at +8.
    */
@@ -149,7 +144,6 @@ export interface ScoreBreakdown {
   crowdFit: number;
   photoFit: number;
   tagMatch: number;
-  goshuinFit: number;
   accommodationBonus: number;
   /** UNESCO World Heritage Site bonus (0-10) */
   unescoBonus: number;

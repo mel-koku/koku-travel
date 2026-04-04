@@ -260,33 +260,6 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             </button>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
-            <div>
-              <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
-              <p className="text-xs text-stone">Temples and shrines with goshuincho priority.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setData((prev) => ({
-                  ...prev,
-                  collectGoshuin: !prev.collectGoshuin,
-                }))
-              }
-              className={cn(
-                "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-                data.collectGoshuin ? "bg-brand-primary" : "bg-border"
-              )}
-            >
-              <span
-                className={cn(
-                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
-                  data.collectGoshuin && "translate-x-5"
-                )}
-              />
-            </button>
-          </div>
-
           {hasProfileDefaults && (
             <p className="text-xs text-stone">Some fields pre-filled from your profile.</p>
           )}

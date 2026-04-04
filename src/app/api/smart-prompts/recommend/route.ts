@@ -395,7 +395,6 @@ export const POST = withApiHandler(
       return dow === 0 || dow === 6;
     })();
     const hasPhotographyVibe = tripBuilderData?.vibes?.includes("local_secrets") || undefined;
-    const collectGoshuin = tripBuilderData?.collectGoshuin;
     const accommodationStyle = tripBuilderData?.accommodationStyle;
 
     let recommendation: Location | null = null;
@@ -551,7 +550,6 @@ export const POST = withApiHandler(
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
-          collectGoshuin,
           hasPhotographyVibe,
           isWeekend,
           accommodationStyle,
@@ -619,7 +617,6 @@ export const POST = withApiHandler(
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
-          collectGoshuin,
           hasPhotographyVibe,
           isWeekend,
           accommodationStyle,
@@ -681,7 +678,6 @@ export const POST = withApiHandler(
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot,
-          collectGoshuin,
           hasPhotographyVibe,
           isWeekend,
           accommodationStyle,
@@ -743,7 +739,6 @@ export const POST = withApiHandler(
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
-          collectGoshuin,
           hasPhotographyVibe,
           isWeekend,
           accommodationStyle,
