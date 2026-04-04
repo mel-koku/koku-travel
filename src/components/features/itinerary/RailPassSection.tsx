@@ -188,9 +188,11 @@ export function RailPassSection({ itinerary, tripStartDate }: RailPassSectionPro
                   {recommendation.journeys.map((journey, i) => {
                     const dayIndex = journeyDayMap.get(i);
                     const dayLabel =
-                      dayIndex !== undefined
+                      dayIndex !== undefined && tripStartDate
                         ? `Day ${dayIndex + 1} \u00B7 ${buildDayLabel(dayIndex, { tripStartDate }).split(" \u00B7 ")[0]}`
-                        : null;
+                        : dayIndex !== undefined
+                          ? `Day ${dayIndex + 1}`
+                          : null;
 
                     return (
                       <div key={i} className="flex items-center justify-between text-xs">
