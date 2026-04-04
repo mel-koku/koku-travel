@@ -254,6 +254,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 key={src}
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
+                aria-label={`View photo ${i + 1} of ${allPhotos.length}`}
                 className={cn(
                   "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
                   i === activePhotoIndex

@@ -15,6 +15,8 @@ import type { TripBuilderData } from "@/types/trip";
 import { vibesToInterests } from "@/data/vibes";
 import type { Location } from "@/types/location";
 
+export const maxDuration = 60;
+
 interface AiRecommendation {
   id: string;
   name: string;

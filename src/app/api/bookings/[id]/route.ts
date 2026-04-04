@@ -5,6 +5,7 @@ import { cancelBooking } from "@/lib/bookings/bookingService";
 import { sendBookingCancellation } from "@/lib/email/bookingEmails";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest, forbidden } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 
 const cancelSchema = z.object({
@@ -22,7 +23,7 @@ export async function PATCH(
 
   const uuidResult = z.string().uuid().safeParse(id);
   if (!uuidResult.success) {
-    return NextResponse.json({ error: "Invalid booking ID format" }, { status: 400 });
+    return badRequest("Invalid booking ID format");
   }
 
   return withApiHandler(
@@ -38,8 +39,9 @@ export async function PATCH(
       const result = await cancelBooking(id, user!.id, body.reason);
 
       if ("error" in result) {
-        const status = result.error === "Not authorized" ? 403 : 400;
-        return NextResponse.json({ error: result.error }, { status });
+        return result.error === "Not authorized"
+          ? forbidden(result.error)
+          : badRequest(result.error);
       }
 
       // Send cancellation email async

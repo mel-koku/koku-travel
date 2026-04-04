@@ -9,6 +9,7 @@ import {
 } from "@/lib/email/bookingEmails";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { createErrorResponse } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 
 const createBookingSchema = z.object({
@@ -77,7 +78,7 @@ export const POST = withApiHandler(
     });
 
     if ("error" in result) {
-      return NextResponse.json({ error: result.error }, { status: 409 });
+      return createErrorResponse(result.error, 409, "CONFLICT");
     }
 
     // Send emails async (non-blocking)

@@ -2,6 +2,23 @@ import type { Location } from "@/types/location";
 import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
 
 /**
+ * Categories appropriate for scheduling after 6 PM.
+ * All other categories are considered daytime-only and will be
+ * hard-filtered from evening slots (after 6 PM) unless they have
+ * operating hours explicitly confirming evening availability.
+ */
+export const EVENING_APPROPRIATE_CATEGORIES = new Set([
+  "restaurant",
+  "bar",
+  "entertainment",
+  "theater",
+  "onsen",
+  "wellness",
+  "shopping",
+  "viewpoint",
+]);
+
+/**
  * Optimal time of day for different location categories
  */
 const OPTIMAL_TIMES_BY_CATEGORY: Record<string, Array<"morning" | "afternoon" | "evening">> = {
@@ -55,6 +72,17 @@ export function scoreTimeOfDayFit(
     return {
       scoreAdjustment: 8,
       reasoning: `${timeSlot} is an optimal time to visit ${category} (less crowded, better experience)`,
+    };
+  }
+
+  // Stronger penalty for daytime categories scheduled in evening slot
+  // This check runs before the adjacent-optimal boost so it takes priority
+  const isEveningDaytimeMismatch =
+    timeSlot === "evening" && !EVENING_APPROPRIATE_CATEGORIES.has(category);
+  if (isEveningDaytimeMismatch) {
+    return {
+      scoreAdjustment: -15,
+      reasoning: `${category} is a daytime activity, not suitable for evening scheduling`,
     };
   }
 

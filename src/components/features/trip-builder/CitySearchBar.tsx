@@ -3,9 +3,19 @@
 import { useState, useEffect, useRef, useId, useCallback, useMemo } from "react";
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import { getAllCities, getChildCityMapping } from "@/lib/tripBuilder/cityRelevance";
+import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
 import type { CityId } from "@/types/trip";
+
+type SearchResult = {
+  cityId: string;
+  displayName: string;
+  locationCount: number;
+  region?: string;
+  /** When set, this result was matched via a child city name */
+  matchedChildCity?: string;
+};
 
 type CitySearchBarProps = {
   selectedCities: Set<CityId>;
@@ -22,17 +32,58 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
   const listboxId = useId();
   const { showToast } = useToast();
 
-  // Lazy-load all 640 cities (cached after first call)
+  // Lazy-load all cities + child mapping (cached after first call)
   const allCities = useMemo(() => getAllCities(), []);
+  const childMapping = useMemo(() => getChildCityMapping(), []);
+  const cityDisplayNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const r of REGIONS) {
+      for (const c of r.cities) map.set(c.id, c.name);
+    }
+    return map;
+  }, []);
 
-  // Client-side filtering
-  const filteredCities = useMemo(() => {
+  // Client-side filtering: search planning cities + child city names
+  const filteredCities = useMemo((): SearchResult[] => {
     const q = searchInput.trim().toLowerCase();
     if (!q) return [];
-    return allCities
-      .filter((c) => c.city.toLowerCase().includes(q))
-      .slice(0, 8);
-  }, [allCities, searchInput]);
+    const results: SearchResult[] = [];
+    const seen = new Set<string>();
+
+    // 1. Direct planning city matches (highest priority)
+    for (const c of allCities) {
+      const name = cityDisplayNames.get(c.city) ?? c.city;
+      if (name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)) {
+        seen.add(c.city);
+        results.push({
+          cityId: c.city,
+          displayName: name,
+          locationCount: c.locationCount,
+          region: c.region,
+        });
+      }
+    }
+
+    // 2. Child city matches (show parent planning city with annotation)
+    for (const [childKey, { planningCity, childName }] of childMapping) {
+      if (seen.has(planningCity)) continue; // Already showing this planning city
+      if (childKey.includes(q)) {
+        seen.add(planningCity);
+        const parent = allCities.find((c) => c.city === planningCity);
+        if (parent) {
+          results.push({
+            cityId: planningCity,
+            displayName: cityDisplayNames.get(planningCity) ?? planningCity,
+            locationCount: parent.locationCount,
+            region: parent.region,
+            matchedChildCity: childName,
+          });
+        }
+      }
+    }
+
+    return results.slice(0, 8);
+  }, [allCities, childMapping, cityDisplayNames, searchInput]);
 
   // Click-outside dismiss
   useEffect(() => {
@@ -51,12 +102,12 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
   }, []);
 
   const selectCity = useCallback(
-    (cityName: string) => {
-      const cityId = cityName.toLowerCase() as CityId;
+    (result: SearchResult) => {
+      const cityId = result.cityId.toLowerCase() as CityId;
       const wasSelected = selectedCities.has(cityId);
       onSelectCity(cityId);
       showToast(
-        wasSelected ? `Removed ${cityName}` : `Added ${cityName}`,
+        wasSelected ? `Removed ${result.displayName}` : `Added ${result.displayName}`,
         { variant: wasSelected ? "info" : "success", duration: 2000 },
       );
       setSearchInput("");
@@ -92,7 +143,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
       case "Enter":
         e.preventDefault();
         if (highlightedIndex >= 0 && filteredCities[highlightedIndex]) {
-          selectCity(filteredCities[highlightedIndex].city);
+          selectCity(filteredCities[highlightedIndex]);
         }
         break;
       case "Escape":
@@ -142,15 +193,14 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
           role="listbox"
           id={listboxId}
         >
-          {filteredCities.map((city, index) => {
-            const cityId = city.city.toLowerCase();
-            const isSelected = selectedCities.has(cityId);
+          {filteredCities.map((result, index) => {
+            const isSelected = selectedCities.has(result.cityId.toLowerCase() as CityId);
             return (
               <button
-                key={city.city}
+                key={`${result.cityId}-${result.matchedChildCity ?? ""}`}
                 id={`city-option-${index}`}
                 type="button"
-                onClick={() => selectCity(city.city)}
+                onClick={() => selectCity(result)}
                 className={cn(
                   "flex w-full min-h-[44px] items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
                   index === highlightedIndex
@@ -169,10 +219,13 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
                     "block font-medium",
                     isSelected ? "text-foreground-secondary" : "text-foreground",
                   )}>
-                    {city.city}
+                    {result.displayName}
                   </span>
                   <span className="block text-xs text-stone">
-                    {city.locationCount} locations · {city.region}
+                    {result.matchedChildCity
+                      ? `Includes ${result.matchedChildCity} · ${result.locationCount} locations · ${result.region}`
+                      : `${result.locationCount} locations · ${result.region}`
+                    }
                   </span>
                 </div>
               </button>

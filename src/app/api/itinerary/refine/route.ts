@@ -19,6 +19,8 @@ import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/p
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 
+export const maxDuration = 60;
+
 /** Build a cache key from day activities + refinement type */
 function buildRefineCacheKey(dayActivities: string[], refinementType: string, cityId?: string): string {
   const payload = JSON.stringify({ activities: dayActivities.sort(), refinementType, cityId });
@@ -137,12 +139,13 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
 const mapTripActivityToItineraryActivity = (
   activity: TripActivity,
+  originalTitle?: string,
 ): Extract<ItineraryActivity, { kind: "place" }> => {
   const location = activity.location;
   return {
     kind: "place",
     id: activity.id,
-    title: location?.name ?? activity.locationId,
+    title: location?.name ?? originalTitle ?? activity.locationId,
     timeOfDay: activity.timeSlot,
     durationMin: activity.duration,
     locationId: activity.locationId,
@@ -184,7 +187,14 @@ const mapTripDayToItineraryDay = (
     : {}),
   id: day.id,
   cityId: day.cityId,
-  activities: day.activities.map(mapTripActivityToItineraryActivity),
+  activities: day.activities.map((activity) => {
+    // Recover original title for anchor activities (airports) that have no DB location
+    const originalActivity = originalDay?.activities.find(
+      (a) => a.kind === "place" && a.id === activity.id,
+    );
+    const originalTitle = originalActivity?.kind === "place" ? originalActivity.title : undefined;
+    return mapTripActivityToItineraryActivity(activity, originalTitle);
+  }),
 });
 
 /**

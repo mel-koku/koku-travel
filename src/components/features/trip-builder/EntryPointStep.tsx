@@ -2,22 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, Search, X } from "lucide-react";
+import { Plane } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
-import { durationFast, easeReveal } from "@/lib/motion";
+import { easeReveal } from "@/lib/motion";
 import type { EntryPoint, KnownRegionId } from "@/types/trip";
 import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
-import { PlaneLanding, Clock, ClipboardPaste, Check } from "lucide-react";
+import { PlaneLanding } from "lucide-react";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
-import { TimePicker } from "@/components/ui/TimePicker";
+import { AirportSearch } from "./AirportSearch";
+import { FlightPasteSection } from "./FlightPasteSection";
+import { TimePickerSection } from "./TimePickerSection";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
@@ -314,32 +316,17 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 </div>
 
                 {/* Arrival time */}
-                <div className="mt-3 flex items-center gap-3 border-t border-sage/10 pt-3">
-                  <Clock className="h-4 w-4 shrink-0 text-stone" />
-                  <div className="flex flex-1 items-center gap-2">
-                    <label className="text-xs text-stone whitespace-nowrap">Landing at</label>
-                    <TimePicker
-                      value={data.arrivalTime}
-                      onChange={handleArrivalTimeChange}
-                      accent="sage"
-                      placeholder="Set time"
-                    />
-                    {data.arrivalTime && (
-                      <button
-                        type="button"
-                        onClick={() => setData((prev) => ({ ...prev, arrivalTime: undefined }))}
-                        className="text-xs text-stone hover:text-foreground-secondary"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
+                <div className="mt-3 border-t border-sage/10 pt-3">
+                  <TimePickerSection
+                    label="Landing at"
+                    value={data.arrivalTime}
+                    onChange={handleArrivalTimeChange}
+                    onClear={() => setData((prev) => ({ ...prev, arrivalTime: undefined }))}
+                    accent="sage"
+                    hint={arrivalHint}
+                    hintColorClass="text-sage"
+                  />
                 </div>
-                {arrivalHint && (
-                  <p className="mt-1.5 pl-7 text-xs text-sage">
-                    {arrivalHint}
-                  </p>
-                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -420,94 +407,15 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                           </div>
                         ) : (
                           <div className="mt-3">
-                            {/* Search */}
-                            <div className="relative">
-                              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
-                                <Search className="h-4 w-4" />
-                              </div>
-                              <input
-                                type="text"
-                                value={exitSearchQuery}
-                                onChange={(e) => setExitSearchQuery(e.target.value)}
-                                placeholder="Search departure airport..."
-                                className="h-12 w-full rounded-md border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                              />
-                              {exitSearchQuery && (
-                                <button
-                                  type="button"
-                                  onClick={() => setExitSearchQuery("")}
-                                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-stone hover:text-foreground-secondary"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
-                              )}
-                            </div>
-
-                            {/* Search results */}
-                            <AnimatePresence>
-                              {exitSearchQuery && filteredExitAirports.length > 0 && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: durationFast, ease: easeReveal }}
-                                  className="overflow-hidden"
-                                >
-                                  <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-border bg-background">
-                                    {filteredExitAirports.map((airport) => (
-                                      <button
-                                        key={airport.id}
-                                        type="button"
-                                        onClick={() => handleSelectExitAirport(airport)}
-                                        className="flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left hover:bg-surface"
-                                      >
-                                        <div>
-                                          <p className="text-sm font-medium text-foreground">{airport.name}</p>
-                                          <p className="text-xs text-stone">{airport.city}</p>
-                                        </div>
-                                        <span className="rounded bg-surface px-2 py-0.5 font-mono text-xs text-stone">
-                                          {airport.iataCode}
-                                        </span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-
-                            {exitSearchQuery && filteredExitAirports.length === 0 && (
-                              <p className="mt-2 text-center text-sm text-stone">No airports found</p>
-                            )}
-
-                            {/* Popular airports grid */}
-                            {!exitSearchQuery && (
-                              <>
-                                <p className="mb-2 mt-3 text-xs font-medium uppercase tracking-wide text-stone">
-                                  Popular airports
-                                </p>
-                                <div className="grid grid-cols-2 gap-2">
-                                  {topAirports.map((airport) => (
-                                    <button
-                                      key={airport.id}
-                                      type="button"
-                                      onClick={() => handleSelectExitAirport(airport)}
-                                      className={cn(
-                                        "group flex cursor-pointer flex-col rounded-lg border p-3 text-left transition-all",
-                                        "border-border bg-background hover:border-brand-primary/20 hover:bg-brand-primary/5",
-                                      )}
-                                    >
-                                      <span className="font-mono text-lg font-bold text-brand-primary">
-                                        {airport.iataCode}
-                                      </span>
-                                      <span className="mt-0.5 text-sm font-medium text-foreground">
-                                        {airport.shortName}
-                                      </span>
-                                      <span className="text-xs text-stone">{airport.city}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                              </>
-                            )}
+                            <AirportSearch
+                              searchQuery={exitSearchQuery}
+                              onSearchQueryChange={setExitSearchQuery}
+                              filteredAirports={filteredExitAirports}
+                              topAirports={topAirports}
+                              onSelectAirport={handleSelectExitAirport}
+                              placeholder="Search departure airport..."
+                              accentColor="brand-primary"
+                            />
                           </div>
                         )}
                       </motion.div>
@@ -515,32 +423,18 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   </AnimatePresence>
 
                   {/* Departure time */}
-                  <div className="mt-4 flex items-center gap-3">
-                    <Clock className="h-4 w-4 shrink-0 text-stone" />
-                    <div className="flex flex-1 items-center gap-2">
-                      <label className="text-xs text-stone whitespace-nowrap">Departing at</label>
-                      <TimePicker
-                        value={data.departureTime}
-                        onChange={handleDepartureTimeChange}
-                        accent="brand-primary"
-                        placeholder="Set time"
-                      />
-                      {data.departureTime && (
-                        <button
-                          type="button"
-                          onClick={() => setData((prev) => ({ ...prev, departureTime: undefined }))}
-                          className="text-xs text-stone hover:text-foreground-secondary"
-                        >
-                          Clear
-                        </button>
-                      )}
-                    </div>
+                  <div className="mt-4">
+                    <TimePickerSection
+                      label="Departing at"
+                      value={data.departureTime}
+                      onChange={handleDepartureTimeChange}
+                      onClear={() => setData((prev) => ({ ...prev, departureTime: undefined }))}
+                      accent="brand-primary"
+                      hint={departureHint}
+                      hintPrefix="Last activity wraps up around "
+                      hintColorClass="text-brand-primary"
+                    />
                   </div>
-                  {departureHint && (
-                    <p className="mt-1.5 pl-7 text-xs text-brand-primary">
-                      Last activity wraps up around {departureHint}
-                    </p>
-                  )}
                 </div>
               </motion.div>
             )}
@@ -554,162 +448,30 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
               transition={{ delay: 0.2 }}
               className="mt-5"
             >
-              {/* Paste flight details */}
-              <div className="mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowFlightPaste((v) => !v);
-                    setFlightParseMessage(null);
-                  }}
-                  className="flex items-center gap-1.5 text-xs text-stone transition-colors hover:text-foreground-secondary"
-                >
-                  <ClipboardPaste className="h-3.5 w-3.5" />
-                  {showFlightPaste ? "Hide" : "Or paste your flight details"}
-                </button>
+              <FlightPasteSection
+                showFlightPaste={showFlightPaste}
+                onToggleFlightPaste={() => {
+                  setShowFlightPaste((v) => !v);
+                  setFlightParseMessage(null);
+                }}
+                flightPasteText={flightPasteText}
+                onFlightPasteTextChange={setFlightPasteText}
+                flightParseMessage={flightParseMessage}
+                onClearParseMessage={() => setFlightParseMessage(null)}
+                onFlightParse={handleFlightParse}
+              />
 
-                <AnimatePresence>
-                  {showFlightPaste && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25, ease: easeReveal }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-2">
-                        <textarea
-                          value={flightPasteText}
-                          onChange={(e) => {
-                            setFlightPasteText(e.target.value);
-                            setFlightParseMessage(null);
-                          }}
-                          placeholder={"e.g. NH203 NRT 14:30\nor: Landing Narita 2:30 PM, Departing KIX 18:00"}
-                          rows={3}
-                          className="w-full resize-none rounded-md border border-border bg-surface p-3 text-base text-foreground placeholder:text-stone focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleFlightParse}
-                          disabled={!flightPasteText.trim()}
-                          className="mt-2 rounded-md bg-sage/10 px-4 py-2 text-sm font-medium text-sage transition-colors hover:bg-sage/20 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          Auto-fill
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Parse result message */}
-                <AnimatePresence>
-                  {flightParseMessage && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className={cn(
-                        "mt-2 text-xs",
-                        flightParseMessage.type === "success"
-                          ? "flex items-center gap-1 text-sage"
-                          : "text-stone",
-                      )}
-                    >
-                      {flightParseMessage.type === "success" && <Check className="h-3.5 w-3.5" />}
-                      {flightParseMessage.text}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Search input — always visible above cards */}
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
-                  <Search className="h-4 w-4" />
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={sanityConfig?.entryPointSearchPlaceholder ?? "Search by name, city, or code..."}
-                  className="h-12 w-full rounded-md border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-stone hover:text-foreground-secondary"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-
-              {/* Search results dropdown */}
-              <AnimatePresence>
-                {searchQuery && filteredAirports.length > 0 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: durationFast, ease: easeReveal }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-border bg-background">
-                      {filteredAirports.map((airport) => (
-                        <button
-                          key={airport.id}
-                          type="button"
-                          onClick={() => handleSelectAirport(airport)}
-                          className="flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left hover:bg-surface"
-                        >
-                          <div>
-                            <p className="text-sm font-medium text-foreground">{airport.name}</p>
-                            <p className="text-xs text-stone">{airport.city}</p>
-                          </div>
-                          <span className="rounded bg-surface px-2 py-0.5 font-mono text-xs text-stone">
-                            {airport.iataCode}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {searchQuery && filteredAirports.length === 0 && (
-                <p className="mt-2 text-center text-sm text-stone">{sanityConfig?.entryPointNoResults ?? "No airports found"}</p>
-              )}
-
-              {/* Popular airports grid — shown when not searching */}
-              {!searchQuery && (
-                <>
-                  <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-stone">
-                    {sanityConfig?.entryPointPopularLabel ?? "Popular airports"}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {topAirports.map((airport) => (
-                      <button
-                        key={airport.id}
-                        type="button"
-                        onClick={() => handleSelectAirport(airport)}
-                        className={cn(
-                          "group flex cursor-pointer flex-col rounded-lg border p-3 text-left transition-all",
-                          "border-border bg-background hover:border-sage/30 hover:bg-sage/5"
-                        )}
-                      >
-                        <span className="font-mono text-lg font-bold text-brand-primary">
-                          {airport.iataCode}
-                        </span>
-                        <span className="mt-0.5 text-sm font-medium text-foreground">
-                          {airport.shortName}
-                        </span>
-                        <span className="text-xs text-stone">{airport.city}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+              <AirportSearch
+                searchQuery={searchQuery}
+                onSearchQueryChange={setSearchQuery}
+                filteredAirports={filteredAirports}
+                topAirports={topAirports}
+                onSelectAirport={handleSelectAirport}
+                placeholder={sanityConfig?.entryPointSearchPlaceholder ?? "Search by name, city, or code..."}
+                popularLabel={sanityConfig?.entryPointPopularLabel ?? "Popular airports"}
+                noResultsText={sanityConfig?.entryPointNoResults ?? "No airports found"}
+                popularLabelClassName="mb-2 mt-4"
+              />
             </motion.div>
           )}
 
