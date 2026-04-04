@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo } from "react";
 import {
   BookOpen,
   Camera,
+  Flower2,
+  Frame,
   Gamepad2,
   Leaf,
   Mountain,
@@ -51,6 +53,8 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Sparkles: Sparkles,
   Mountain: Mountain,
   Leaf: Leaf,
+  Frame: Frame,
+  Flower2: Flower2,
   Gamepad2: Gamepad2,
   Smile: Smile,
   BookOpen: BookOpen,
