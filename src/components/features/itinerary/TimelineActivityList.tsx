@@ -222,8 +222,21 @@ export const TimelineActivityList = memo(function TimelineActivityList({
               </div>
             ) : undefined;
 
+            const isDepartureAnchor = activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-departure");
+
             return (
               <Fragment key={fragmentKey}>
+                {/* End accommodation bookend before departure anchor (leave hotel → airport) */}
+                {!activeId && isDepartureAnchor && endLocation && (
+                  <li className="list-none">
+                    <AccommodationBookend
+                      location={endLocation}
+                      variant="end"
+                      travelMinutes={bookendEstimates.end?.travelMinutes}
+                      distanceMeters={bookendEstimates.end?.distanceMeters}
+                    />
+                  </li>
+                )}
                 <SortableActivity
                   activity={activity}
                   allActivities={extendedActivities}
