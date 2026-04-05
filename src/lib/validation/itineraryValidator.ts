@@ -108,6 +108,7 @@ export function validateItinerary(
   const allNeighborhoods: string[] = [];
 
   itinerary.days.forEach((day, dayIndex) => {
+    const dayCityId = day.cityId;
     day.activities.forEach((activity) => {
       if (activity.kind === "place") {
         allActivities.push({ activity, dayIndex });
@@ -123,11 +124,17 @@ export function validateItinerary(
           allCategories.push(activity.tags[0] ?? "unknown");
         }
 
-        // Track neighborhoods, ignoring obviously-bogus values written to the
-        // DB by past enrichment bugs (pure numeric strings, length <= 2).
-        // Those pollute the clustering signal because unrelated locations in
-        // different cities happen to share "1" as a neighborhood label.
-        if (activity.neighborhood && isValidNeighborhood(activity.neighborhood)) {
+        // Track neighborhoods for clustering analysis, skipping:
+        //  1. bogus legacy values ("1", single characters)
+        //  2. the day's own cityId — itineraryGenerator falls back to the
+        //     city name when location.neighborhood is null, which makes every
+        //     Tokyo activity appear "clustered in Tokyo" even though it's
+        //     just the default fallback.
+        if (
+          activity.neighborhood &&
+          isValidNeighborhood(activity.neighborhood) &&
+          !isCityNameFallback(activity.neighborhood, dayCityId)
+        ) {
           allNeighborhoods.push(activity.neighborhood);
         }
       }
@@ -302,6 +309,20 @@ function isValidNeighborhood(neighborhood: string): boolean {
   if (trimmed.length < 3) return false;
   if (/^\d+$/.test(trimmed)) return false;
   return true;
+}
+
+/**
+ * Detects the fallback-to-city-name case. itineraryGenerator writes
+ * `neighborhood: location.neighborhood ?? location.city` for activities, so
+ * locations without a granular neighborhood report the city as their
+ * neighborhood. Grouping those into NEIGHBORHOOD_CLUSTERING produces noise
+ * like "8 consecutive activities in Tokyo" on a Tokyo-only day.
+ */
+function isCityNameFallback(neighborhood: string, cityId?: string): boolean {
+  if (!cityId) return false;
+  const normalized = neighborhood.trim().toLowerCase().replace(/\s+/g, "");
+  const normalizedCity = cityId.trim().toLowerCase().replace(/\s+/g, "");
+  return normalized === normalizedCity;
 }
 
 /**
