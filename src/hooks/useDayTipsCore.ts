@@ -12,6 +12,17 @@ import { getEkibenForCity } from "@/data/ekibenGuide";
 import { getOmiyageForCity } from "@/data/omiyageGuide";
 import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
+// Heuristic: if the day has these activity categories, tipGenerator will fire
+// overlapping tips, so suppress the corresponding DB guidance types at day level
+const CATEGORY_SUPPRESSES_GUIDANCE: Record<string, string[]> = {
+  temple: ["etiquette"],
+  shrine: ["etiquette"],
+  onsen: ["etiquette"],
+  restaurant: ["food_culture"],
+  market: ["food_culture"],
+  cafe: ["food_culture"],
+};
+
 export type DisplayTip = {
   id: string;
   title: string;
@@ -121,17 +132,6 @@ export function useDayTipsCore(
     }
     return new Date();
   }, [tripStartDate, dayIndex]);
-
-  // Heuristic: if the day has these activity categories, tipGenerator will fire
-  // overlapping tips, so suppress the corresponding DB guidance types at day level
-  const CATEGORY_SUPPRESSES_GUIDANCE: Record<string, string[]> = {
-    temple: ["etiquette"],
-    shrine: ["etiquette"],
-    onsen: ["etiquette"],
-    restaurant: ["food_culture"],
-    market: ["food_culture"],
-    cafe: ["food_culture"],
-  };
 
   const suppressGuidanceTypes = useMemo(() => {
     const types = new Set<string>();
@@ -396,7 +396,7 @@ export function useDayTipsCore(
     }
 
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition, day.cityId, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories, previousDaysTipIds]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, isFirstTimeVisitor, hasLuggagePrompt, dayDate, previousDaysTipIds]);
 
   // DB tips converted to DisplayTip format
   const dbTips = useMemo<DisplayTip[]>(() => rawDbTips.map(toDisplayTip), [rawDbTips]);

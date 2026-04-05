@@ -163,6 +163,9 @@ export function TripBuilderProvider({ initialData, userPreferences, children }: 
       });
     }
     isHydrated.current = true;
+    // Mount-only hydration from localStorage; userPreferences is read as a
+    // snapshot for default seeding and should not re-trigger this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

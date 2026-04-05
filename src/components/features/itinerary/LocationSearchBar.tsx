@@ -183,6 +183,8 @@ export function LocationSearchBar({
                       >
                         {/* Thumbnail */}
                         {result.image ? (
+                          // 32x32 search result thumbnail, external URL.
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={result.image}
                             alt=""

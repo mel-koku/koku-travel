@@ -205,6 +205,10 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       setData((prev) => ({ ...prev, cities: optimized, regions: autoRegions }));
       hasAutoSelected.current = true;
     }
+    // data.exitPoint / data.sameAsEntry are read as snapshots for optimization;
+    // including them would re-run auto-selection when the user picks an exit
+    // airport and overwrite their manual city selections.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
 
   // City/day ratio validation
