@@ -39,6 +39,8 @@ function BookingCard({ booking, onCancel, isCancelling }: {
         {/* Avatar */}
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface text-sm font-semibold text-foreground-secondary">
           {booking.person.photo_url ? (
+            // 44x44 avatar, external URL. next/image overhead isn't worth it here.
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={booking.person.photo_url}
               alt=""

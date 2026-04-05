@@ -129,7 +129,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router, saved, setCityAccommodation, userPreferences, setUserPreferences]);
+  }, [data, createTrip, reset, saved, setCityAccommodation, userPreferences, setUserPreferences]);
 
   return (
     <>
