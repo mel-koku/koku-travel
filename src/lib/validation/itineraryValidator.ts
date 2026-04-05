@@ -123,8 +123,11 @@ export function validateItinerary(
           allCategories.push(activity.tags[0] ?? "unknown");
         }
 
-        // Track neighborhoods
-        if (activity.neighborhood) {
+        // Track neighborhoods, ignoring obviously-bogus values written to the
+        // DB by past enrichment bugs (pure numeric strings, length <= 2).
+        // Those pollute the clustering signal because unrelated locations in
+        // different cities happen to share "1" as a neighborhood label.
+        if (activity.neighborhood && isValidNeighborhood(activity.neighborhood)) {
           allNeighborhoods.push(activity.neighborhood);
         }
       }
@@ -285,6 +288,20 @@ export function validateItinerary(
       neighborhoodDiversityScore,
     },
   };
+}
+
+/**
+ * Filter out bogus neighborhood strings from clustering analysis.
+ * The DB contains some legacy rows where neighborhood got written as "1",
+ * a single character, or an empty-ish string. Including those in the
+ * clustering check produces nonsense warnings like "4 consecutive activities
+ * in '1'" across unrelated Tokyo, Osaka, and Kobe locations.
+ */
+function isValidNeighborhood(neighborhood: string): boolean {
+  const trimmed = neighborhood.trim();
+  if (trimmed.length < 3) return false;
+  if (/^\d+$/.test(trimmed)) return false;
+  return true;
 }
 
 /**
