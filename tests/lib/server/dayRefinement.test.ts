@@ -318,6 +318,29 @@ describe("applyPatches", () => {
       );
       expect(placeActivities[0]!.id).toBe("act-a");
     });
+
+    it("skips on duplicate activity IDs to prevent silent activity loss", () => {
+      // Regression: a patch like [act-a, act-a] for original [act-a, act-b]
+      // would silently drop act-b — the length check matches, every ID
+      // "exists" in the activity map, but act-b never makes it into the
+      // reordered list because the loop pulls act-a twice.
+      const patches: RefinementPatch[] = [
+        {
+          type: "reorder",
+          dayIndex: 0,
+          newOrder: ["act-a", "act-a"],
+          reason: "test",
+        },
+      ];
+      const result = applyPatches(makeItinerary(), patches, allLocations);
+      const placeActivities = result.days[0]!.activities.filter(
+        (a) => a.kind === "place",
+      );
+      // Both original activities must still be present in their original order
+      expect(placeActivities).toHaveLength(2);
+      expect(placeActivities[0]!.id).toBe("act-a");
+      expect(placeActivities[1]!.id).toBe("act-b");
+    });
   });
 
   describe("flag patches", () => {

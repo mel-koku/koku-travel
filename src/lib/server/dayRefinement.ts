@@ -154,8 +154,28 @@ ${runnerUpContext}
       return itinerary;
     }
 
-    // Apply patches to itinerary
-    return applyPatches(itinerary, refinement.patches, allLocations);
+    // Apply patches and sanity-check the result. If per-day activity counts
+    // dropped (which should never happen for swap/reorder/flag but is cheap
+    // to verify), fall back to the original itinerary. A silently-dropped
+    // activity is much worse than an un-refined day.
+    const refined = applyPatches(itinerary, refinement.patches, allLocations);
+    const countsMatch = itinerary.days.every((originalDay, i) => {
+      const refinedDay = refined.days[i];
+      if (!refinedDay) return false;
+      const originalCount = originalDay.activities.filter((a) => a.kind === "place").length;
+      const refinedCount = refinedDay.activities.filter((a) => a.kind === "place").length;
+      return originalCount === refinedCount;
+    });
+
+    if (!countsMatch) {
+      logger.warn("Day refinement lost activities, reverting to original", {
+        originalDayCounts: itinerary.days.map((d) => d.activities.filter((a) => a.kind === "place").length),
+        refinedDayCounts: refined.days.map((d) => d.activities.filter((a) => a.kind === "place").length),
+      });
+      return itinerary;
+    }
+
+    return refined;
   } catch (error) {
     clearTimeout(timeout);
     logger.warn("Day refinement failed, using original itinerary", {
@@ -235,6 +255,19 @@ export function applyPatches(
           logger.warn("Reorder patch has wrong activity count", {
             expected: placeActivities.length,
             got: patch.newOrder.length,
+          });
+          break;
+        }
+
+        // Reject duplicate IDs in newOrder. Without this check a patch like
+        // [A, B, B] for original [A, B, C] would silently drop C — the length
+        // matches, every ID "exists" in the map, but C never makes it into
+        // the reordered list. This was a real hazard with LLM-generated
+        // patches before the fix.
+        const uniqueIds = new Set(patch.newOrder);
+        if (uniqueIds.size !== patch.newOrder.length) {
+          logger.warn("Reorder patch has duplicate activity IDs", {
+            newOrder: patch.newOrder,
           });
           break;
         }

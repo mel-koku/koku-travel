@@ -56,7 +56,14 @@ export const dayRefinementSchema = z.object({
       z.object({
         type: z.literal("reorder"),
         dayIndex: z.number(),
-        newOrder: z.array(z.string()),
+        // Activity IDs must be unique — a reorder list with duplicates would
+        // silently drop the activities whose IDs get repeated. applyPatches
+        // enforces this defensively too but catching it at schema time means
+        // the LLM output fails validation and the whole patch is skipped.
+        newOrder: z.array(z.string()).refine(
+          (ids) => new Set(ids).size === ids.length,
+          { message: "newOrder must contain unique activity IDs" },
+        ),
         reason: z.string(),
       }),
       z.object({
