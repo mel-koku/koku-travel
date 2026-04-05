@@ -169,9 +169,16 @@ export function resolveCitySequence(
   if (data.customCityOrder && citiesToOptimize.length > 0) {
     citiesToOptimize.forEach((cityId) => addCityByKey(cityId, true));
   } else if (citiesToOptimize.length > 0) {
+    // Dedupe input in auto mode — the user just picked a bag of cities.
+    const uniqueInput = Array.from(new Set(citiesToOptimize));
     const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
-    const optimizedSequence = optimizeCitySequence(data.entryPoint, citiesToOptimize, effectiveExit);
-    optimizedSequence.forEach((cityId) => addCityByKey(cityId));
+    const optimizedSequence = optimizeCitySequence(data.entryPoint, uniqueInput, effectiveExit);
+    // Allow duplicates through the dedup pass because optimizeCitySequence may
+    // append the entry city at the end (appendReturnCityIfNeeded) when the
+    // trip would otherwise strand the traveler far from the exit airport.
+    // Input was already deduped above, so the only duplicate at this point is
+    // the intentional return leg.
+    optimizedSequence.forEach((cityId) => addCityByKey(cityId, true));
   }
 
   // Fallback if still empty

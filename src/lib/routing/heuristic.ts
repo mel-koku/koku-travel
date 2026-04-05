@@ -19,6 +19,30 @@ const AVERAGE_SPEED_KMH: Record<string, number> = {
   cycling: 15,
 };
 
+/**
+ * Transit/train heuristic breaks down at long distances: 28 km/h is realistic
+ * for urban legs, but for 800 km cross-country trips the real choice is
+ * shinkansen+connections or flight, not a local bus. Apply distance-tiered
+ * effective speeds when the routing providers all failed and we fell through
+ * to the heuristic.
+ */
+function effectiveSpeedKmh(mode: string, distanceKm: number): number {
+  const base = AVERAGE_SPEED_KMH[mode] ?? 25;
+  if (mode === "transit" || mode === "train" || mode === "subway") {
+    // Realistic averages accounting for transfers and platform time:
+    //   - short urban hops keep the base speed
+    //   - 50–250 km ≈ shinkansen + connections
+    //   - ≥ 250 km ≈ flight (includes airport overhead)
+    if (distanceKm >= 250) return 400;
+    if (distanceKm >= 50) return 110;
+  }
+  return base;
+}
+
+export function getEffectiveHeuristicSpeed(mode: string, distanceKm: number): number {
+  return effectiveSpeedKmh(mode, distanceKm);
+}
+
 function toRadians(deg: number) {
   return (deg * Math.PI) / 180;
 }
@@ -40,7 +64,7 @@ function haversineDistance(origin: RoutingRequest["origin"], destination: Routin
 
 export function estimateHeuristicRoute(request: RoutingRequest): RoutingResult {
   const distanceMeters = haversineDistance(request.origin, request.destination);
-  const speed = AVERAGE_SPEED_KMH[request.mode] ?? 25;
+  const speed = effectiveSpeedKmh(request.mode, distanceMeters / 1000);
   const durationSeconds = Math.round((distanceMeters / 1000 / speed) * 3600);
 
   return {
