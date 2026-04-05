@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import { detectCategoryStreak, detectNeighborhoodStreak } from "@/lib/scoring/diversityRules";
+import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
@@ -61,10 +62,16 @@ export interface ValidationOptions {
    * Maximum consecutive same neighborhood allowed (above triggers warning)
    */
   maxNeighborhoodStreak?: number;
+  /**
+   * Number of vibes the user selected. When ≤ 2 the validator relaxes the
+   * category-diversity threshold because themed trips (history_buff only,
+   * zen_wellness + temples_tradition, etc.) are intentionally narrow.
+   */
+  vibeCount?: number;
 }
 
-const DEFAULT_OPTIONS: Required<ValidationOptions> = {
-  minActivitiesPerDay: 2,
+const DEFAULT_OPTIONS: Required<Omit<ValidationOptions, "vibeCount">> = {
+  minActivitiesPerDay: 3,
   maxSameCategoryPercent: 50,
   maxCategoryStreak: 3,
   maxNeighborhoodStreak: 3,
@@ -86,6 +93,13 @@ export function validateItinerary(
 ): ItineraryValidationResult {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const issues: ValidationIssue[] = [];
+
+  // Themed trips (≤2 vibes) are intentionally narrow. A history buff visiting
+  // Hiroshima WANTS >50% historical content. Raise the tolerance so we only
+  // flag the truly monotonous cases.
+  const vibeCount = options.vibeCount ?? 0;
+  const sameCategoryThreshold = vibeCount > 0 && vibeCount <= 2 ? 75 : opts.maxSameCategoryPercent;
+  const categoryStreakThreshold = vibeCount > 0 && vibeCount <= 2 ? 5 : opts.maxCategoryStreak;
 
   // Collect all activities and their location IDs
   const allActivities: Array<{ activity: ItineraryActivity; dayIndex: number }> = [];
@@ -132,16 +146,21 @@ export function validateItinerary(
     }
   });
 
-  // Check minimum activities per day (WARNING)
+  // Check minimum activities per day (WARNING).
+  // Exclude anchor-only days (late arrival Day 1 or very early departure last
+  // day are intentional, not bugs). A day with just the airport arrival
+  // activity isn't "thin" — it's structural.
   itinerary.days.forEach((day, dayIndex) => {
     const placeActivities = day.activities.filter((a) => a.kind === "place");
-    if (placeActivities.length < opts.minActivitiesPerDay) {
+    const nonAnchorCount = placeActivities.filter((a) => !a.isAnchor).length;
+    const anchorOnly = nonAnchorCount === 0 && placeActivities.length > 0;
+    if (!anchorOnly && nonAnchorCount < opts.minActivitiesPerDay) {
       issues.push({
         severity: "warning",
         code: "FEW_ACTIVITIES",
-        message: `Day ${dayIndex + 1} has only ${placeActivities.length} ${placeActivities.length === 1 ? "activity" : "activities"} (minimum ${opts.minActivitiesPerDay} recommended)`,
+        message: `Day ${dayIndex + 1} has only ${nonAnchorCount} ${nonAnchorCount === 1 ? "activity" : "activities"} (minimum ${opts.minActivitiesPerDay} recommended)`,
         dayIndex,
-        details: { activityCount: placeActivities.length, minimum: opts.minActivitiesPerDay },
+        details: { activityCount: nonAnchorCount, minimum: opts.minActivitiesPerDay },
       });
     }
   });
@@ -149,32 +168,32 @@ export function validateItinerary(
   // Check category diversity (WARNING)
   const categoryDiversityScore = calculateCategoryDiversityScore(allCategories);
   const categoryPercentages = calculateCategoryPercentages(allCategories);
-  const dominantCategory = findDominantCategory(categoryPercentages, opts.maxSameCategoryPercent);
+  const dominantCategory = findDominantCategory(categoryPercentages, sameCategoryThreshold);
 
   if (dominantCategory) {
     issues.push({
       severity: "warning",
       code: "LOW_CATEGORY_DIVERSITY",
-      message: `${Math.round(dominantCategory.percentage)}% of activities are "${dominantCategory.category}" (recommend <${opts.maxSameCategoryPercent}% for variety)`,
+      message: `${Math.round(dominantCategory.percentage)}% of activities are "${dominantCategory.category}" (recommend <${sameCategoryThreshold}% for variety)`,
       details: {
         dominantCategory: dominantCategory.category,
         percentage: dominantCategory.percentage,
-        threshold: opts.maxSameCategoryPercent,
+        threshold: sameCategoryThreshold,
       },
     });
   }
 
   // Check category streaks (WARNING)
   const categoryStreak = detectCategoryStreak(allCategories);
-  if (categoryStreak.count > opts.maxCategoryStreak) {
+  if (categoryStreak.count > categoryStreakThreshold) {
     issues.push({
       severity: "warning",
       code: "CATEGORY_STREAK",
-      message: `${categoryStreak.count} consecutive "${categoryStreak.category}" activities detected (recommend max ${opts.maxCategoryStreak})`,
+      message: `${categoryStreak.count} consecutive "${categoryStreak.category}" activities detected (recommend max ${categoryStreakThreshold})`,
       details: {
         category: categoryStreak.category,
         streakLength: categoryStreak.count,
-        maxAllowed: opts.maxCategoryStreak,
+        maxAllowed: categoryStreakThreshold,
       },
     });
   }
@@ -207,6 +226,38 @@ export function validateItinerary(
       });
     }
   });
+
+  // Thin city warning: if a city is allocated 3+ days but has fewer than 5
+  // available locations per day, the generator will run out of content and
+  // produce light days. Surface this as a warning so clients and monitoring
+  // can react. Same logic as TripSummaryEditorial's client-side warning but
+  // lifted into the API response.
+  const dayCountByCity = new Map<string, number>();
+  for (const day of itinerary.days) {
+    if (!day.cityId) continue;
+    dayCountByCity.set(day.cityId, (dayCountByCity.get(day.cityId) ?? 0) + 1);
+  }
+  const THIN_CITY_MIN_DAYS = 3;
+  const THIN_CITY_LOCATIONS_PER_DAY = 5;
+  for (const [cityId, dayCount] of dayCountByCity) {
+    if (dayCount < THIN_CITY_MIN_DAYS) continue;
+    const meta = getCityMetadata(cityId);
+    if (!meta) continue;
+    const locationsPerDay = meta.locationCount / dayCount;
+    if (locationsPerDay < THIN_CITY_LOCATIONS_PER_DAY) {
+      issues.push({
+        severity: "warning",
+        code: "THIN_CITY",
+        message: `${cityId} has ${meta.locationCount} curated locations across ${dayCount} days (≈${locationsPerDay.toFixed(1)}/day). Consider fewer days here or adding a nearby day trip.`,
+        details: {
+          cityId,
+          locationCount: meta.locationCount,
+          dayCount,
+          locationsPerDay: Math.round(locationsPerDay * 10) / 10,
+        },
+      });
+    }
+  }
 
   // Calculate summary statistics
   const uniqueLocations = locationIdCounts.size;
