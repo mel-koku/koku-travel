@@ -1,15 +1,20 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { NextResponse } from "next/server";
 
-// Mock Redis before importing the module
+// Mock Redis before importing the module.
+// Use a plain class so `new Redis(...)` inside the module under test returns
+// an instance that exposes the mock methods. The older pattern
+// `Redis: vi.fn().mockImplementation(() => ({...}))` stopped behaving as a
+// constructor in vitest 4 — the implementation function no longer sets `this`
+// properly when called with `new`.
 const mockIncr = vi.fn();
 const mockExpire = vi.fn();
 
 vi.mock("@upstash/redis", () => ({
-  Redis: vi.fn().mockImplementation(() => ({
-    incr: mockIncr,
-    expire: mockExpire,
-  })),
+  Redis: class MockRedis {
+    incr = mockIncr;
+    expire = mockExpire;
+  },
 }));
 
 vi.mock("@/lib/env", () => ({
