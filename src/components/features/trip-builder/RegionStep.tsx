@@ -202,7 +202,13 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit, data.duration)
         : autoCities;
       const autoRegions = deriveRegionsFromCities(optimized);
-      setData((prev) => ({ ...prev, cities: optimized, regions: autoRegions }));
+      setData((prev) => ({
+        ...prev,
+        cities: optimized,
+        regions: autoRegions,
+        // City set changed -- clear stale cityDays so defaults recompute.
+        cityDays: optimized.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+      }));
       hasAutoSelected.current = true;
     }
     // data.exitPoint / data.sameAsEntry are read as snapshots for optimization;
@@ -236,7 +242,14 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         const cities = raw.length >= 2
           ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
+        return {
+          ...prev,
+          cities,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: false,
+          // City set changed -- drop stale cityDays so defaults recompute.
+          cityDays: cities.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+        };
       });
     },
     [setData]
@@ -262,7 +275,14 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         const cities = raw.length >= 2
           ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
+        return {
+          ...prev,
+          cities,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: false,
+          // City set changed -- drop stale cityDays so defaults recompute.
+          cityDays: cities.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+        };
       });
 
       const cityCount = knownCityIds.length;

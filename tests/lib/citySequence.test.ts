@@ -187,6 +187,27 @@ describe("citySequence", () => {
       expect(result).not.toContain("tokyo");
     });
 
+    it("appends Tokyo return city for multi-region round trip ending in Nikko", () => {
+      // Regression: 5-city NRT round trip with Nikko last used to render
+      // without a Tokyo return night because a latching `hasOptimized` ref in
+      // TripSummaryEditorial prevented the optimizer from re-running after
+      // duration changed. Verify the optimizer itself produces the right
+      // append so the fix above is the only thing needed.
+      const entry = makeEntryPoint(); // NRT -> tokyo
+      const result = optimizeCitySequence(
+        entry,
+        ["tokyo", "osaka", "nikko"],
+        entry,
+        8,
+      );
+      // Kanto has tokyo+nikko (round-trip branch fires). Nikko is 150min from
+      // NRT (>90 comfort threshold), 8 > 3*2 slack, so tokyo should be
+      // appended as a return night.
+      expect(result[0]).toBe("tokyo");
+      expect(result[result.length - 1]).toBe("tokyo");
+      expect(result.length).toBe(4);
+    });
+
     it("skips return city on same-region short trips (Nagoya + Ise, 4 days)", () => {
       // E11 regression: NGO entry, [nagoya, ise], 4 days. Ise is >90min from
       // NGO but the trip is too short to spare a return day.
