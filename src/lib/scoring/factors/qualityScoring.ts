@@ -69,10 +69,22 @@ export function scoreRatingQuality(
     };
   }
 
+  // Credibility cap: a 5★ rating with 2 reviews is statistical noise, not
+  // quality signal. Below 10 reviews, cap the effective rating at 4.0 so
+  // thin-review locations score around "neutral good" rather than "top tier."
+  // Above 10 reviews, the rating is trusted at face value. This prevents
+  // hand-seeded or fake-review locations from outranking genuinely well-
+  // reviewed places that happen to sit at 4.0-4.2★.
+  const MIN_REVIEW_CONFIDENCE = 10;
+  const effectiveRating =
+    reviewCount > 0 && reviewCount < MIN_REVIEW_CONFIDENCE
+      ? Math.min(rating, 4.0)
+      : rating;
+
   // Rating component: 0-14 points (sqrt curve flattens the top end)
   // sqrt(rating/5) compresses 3.5-5.0★ to just ~2.5pt spread:
   //   3.0★ = 10.8, 3.5★ = 11.7, 4.0★ = 12.5, 4.5★ = 13.3, 5.0★ = 14.0
-  const ratingScore = 14 * Math.sqrt(rating / 5);
+  const ratingScore = 14 * Math.sqrt(effectiveRating / 5);
 
   // Review count component: 0-6 points (credibility, not popularity)
   // Enough reviews to trust the rating is the signal; 10,000 reviews
@@ -93,9 +105,11 @@ export function scoreRatingQuality(
   const communityNote = communityRating
     ? ` (blended with community ${communityRating.toFixed(1)})`
     : "";
+  const thinReviewNote =
+    effectiveRating !== rating ? ` (capped at 4.0, only ${reviewCount} reviews)` : "";
   return {
     score: totalScore,
-    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews)${communityNote} - ${totalScore >= 17 ? "high quality" : totalScore >= 13 ? "good quality" : "moderate quality"}`,
+    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews)${communityNote}${thinReviewNote} - ${totalScore >= 17 ? "high quality" : totalScore >= 13 ? "good quality" : "moderate quality"}`,
   };
 }
 

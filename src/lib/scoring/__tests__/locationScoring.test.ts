@@ -119,6 +119,47 @@ describe("Location Scoring", () => {
       expect(result.breakdown.ratingQuality).toBeLessThan(20);
     });
 
+    it("should cap effective rating at 4.0 when review count is below 10", () => {
+      // 5★/2rv vs 5★/500rv should not score the same — thin-review
+      // locations get a 4.0-rating cap so they can't outrank genuinely
+      // well-reviewed places.
+      const thinButPerfect = { ...mockLocation, rating: 5.0, reviewCount: 2 };
+      const wellReviewed = { ...mockLocation, rating: 5.0, reviewCount: 500 };
+
+      const thinResult = scoreLocation(thinButPerfect, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+      const wellResult = scoreLocation(wellReviewed, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      expect(thinResult.breakdown.ratingQuality).toBeLessThan(
+        wellResult.breakdown.ratingQuality,
+      );
+      // Thin-review 5★ should score roughly as a 4★/low-review location
+      expect(thinResult.breakdown.ratingQuality).toBeLessThanOrEqual(15);
+    });
+
+    it("should not cap rating when review count meets the 10-review threshold", () => {
+      const atThreshold = { ...mockLocation, rating: 4.8, reviewCount: 10 };
+      const result = scoreLocation(atThreshold, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      // 4.8★ with 10 reviews should get close to full rating credit
+      // (14 * sqrt(0.96) + 4 = ~17.7)
+      expect(result.breakdown.ratingQuality).toBeGreaterThanOrEqual(17);
+    });
+
     it("should handle missing rating gracefully", () => {
       const noRating = { ...mockLocation, rating: undefined, reviewCount: undefined };
       const result = scoreLocation(noRating, {
