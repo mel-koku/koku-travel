@@ -168,6 +168,39 @@ describe("citySequence", () => {
       // The optimization should try to end near Tokyo
       expect(result.length).toBeGreaterThanOrEqual(2);
     });
+
+    it("appends return city when trip has slack (5 days, 2 cities)", () => {
+      // 5 days / 2 cities = slack of 1 day. Append is allowed.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 5);
+      expect(result.length).toBeGreaterThan(2);
+      expect(result[result.length - 1]).toBe("tokyo");
+    });
+
+    it("skips return city on tight short trips (4 days, 2 cities)", () => {
+      // 4 days / 2 cities = no slack (2 per city). Appending would steal
+      // a day, so keep the sequence at 2 and let the distance warning handle
+      // the far-from-exit situation.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 4);
+      expect(result.length).toBe(2);
+      expect(result).not.toContain("tokyo");
+    });
+
+    it("skips return city on same-region short trips (Nagoya + Ise, 4 days)", () => {
+      // E11 regression: NGO entry, [nagoya, ise], 4 days. Ise is >90min from
+      // NGO but the trip is too short to spare a return day.
+      const entry = ({
+        type: "airport" as const,
+        id: "NGO",
+        name: "Chubu Centrair International Airport",
+        coordinates: { lat: 34.8584, lng: 136.8052 },
+        cityId: "nagoya",
+        iataCode: "NGO",
+      });
+      const result = optimizeCitySequence(entry, ["nagoya", "ise"], entry, 4);
+      expect(result).toEqual(["nagoya", "ise"]);
+    });
   });
 
   // =========================================================

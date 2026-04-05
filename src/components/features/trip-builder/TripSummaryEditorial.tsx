@@ -49,12 +49,12 @@ export function TripSummaryEditorial({
     hasOptimized.current = true;
 
     const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
-    const optimized = optimizeCitySequence(data.entryPoint, cities, effectiveExit);
+    const optimized = optimizeCitySequence(data.entryPoint, cities, effectiveExit, data.duration);
 
     // Only update if the order actually changed
     if (optimized.length === cities.length && optimized.every((c, i) => c === cities[i])) return;
     setData((prev) => ({ ...prev, cities: optimized, regions: deriveRegionsFromCities(optimized) }));
-  }, [data.cities, data.customCityOrder, data.entryPoint, data.exitPoint, data.sameAsEntry, setData]);
+  }, [data.cities, data.customCityOrder, data.entryPoint, data.exitPoint, data.sameAsEntry, data.duration, setData]);
 
   // Format dates
   const formattedDates = useMemo(() => {

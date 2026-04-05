@@ -199,7 +199,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     if (autoCities.length > 0) {
       const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
       const optimized = autoCities.length >= 2 && data.entryPoint
-        ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit)
+        ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit, data.duration)
         : autoCities;
       const autoRegions = deriveRegionsFromCities(optimized);
       setData((prev) => ({ ...prev, cities: optimized, regions: autoRegions }));
@@ -234,7 +234,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         }
         const raw = Array.from(current);
         const cities = raw.length >= 2
-          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
         return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
@@ -260,7 +260,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         }
         const raw = Array.from(current);
         const cities = raw.length >= 2
-          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
         return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
