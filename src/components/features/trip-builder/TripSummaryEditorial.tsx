@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Calendar, Plane, Sparkles, MapPin, Search, X, Check } from "lucide-react";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -39,21 +39,32 @@ export function TripSummaryEditorial({
 }: TripSummaryEditorialProps) {
   const { data, setData } = useTripBuilder();
 
-  // One-time optimization: when cities were set without route optimization
-  // (e.g. auto-select, loaded from localStorage), apply circular route order.
-  const hasOptimized = useRef(false);
+  // Re-optimize whenever inputs change. Previously guarded by a `hasOptimized`
+  // ref that latched true after the first run -- that latch meant a subsequent
+  // duration bump (e.g. 10 -> 13 days) couldn't reach the auto-return-day
+  // branch in `appendReturnCityIfNeeded`, so trips ended far from the exit
+  // airport without a return city. The idempotent no-op guard below prevents
+  // infinite loops when optimization is a fixed point for the current inputs.
   useEffect(() => {
-    if (hasOptimized.current) return;
     const cities = data.cities ?? [];
     if (data.customCityOrder || cities.length < 2 || !data.entryPoint) return;
-    hasOptimized.current = true;
 
     const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
     const optimized = optimizeCitySequence(data.entryPoint, cities, effectiveExit, data.duration);
 
     // Only update if the order actually changed
     if (optimized.length === cities.length && optimized.every((c, i) => c === cities[i])) return;
-    setData((prev) => ({ ...prev, cities: optimized, regions: deriveRegionsFromCities(optimized) }));
+    setData((prev) => {
+      const prevLen = prev.cities?.length ?? 0;
+      return {
+        ...prev,
+        cities: optimized,
+        regions: deriveRegionsFromCities(optimized),
+        // Clear stale cityDays when the length changed (e.g. auto-return city
+        // was appended). Defaults will recompute on next render.
+        cityDays: optimized.length === prevLen ? prev.cityDays : undefined,
+      };
+    });
   }, [data.cities, data.customCityOrder, data.entryPoint, data.exitPoint, data.sameAsEntry, data.duration, setData]);
 
   // Format dates
