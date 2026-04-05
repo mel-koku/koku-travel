@@ -409,17 +409,20 @@ describe("citySequence", () => {
     });
 
     it("deduplicates cities when not custom order", () => {
+      // Use a compact Kansai round trip where the last city (kyoto) is within
+      // the 90-minute departure comfort window of KIX, so auto-return-day
+      // won't re-append osaka. That way any duplicate osaka in the output
+      // would have come from the input, which is what we want to dedupe.
       const data = {
-        cities: ["tokyo", "osaka", "tokyo"] as string[],
+        cities: ["osaka", "kyoto", "osaka"] as string[],
         customCityOrder: false,
         dates: { startDate: "2026-04-10", endDate: "2026-04-17" },
-        entryPoint: makeEntryPoint(),
+        entryPoint: makeOsakaEntryPoint(),
       };
-      const locationsByCity = makeLocationsByCityKey(["tokyo", "osaka"]);
+      const locationsByCity = makeLocationsByCityKey(["osaka", "kyoto"]);
       const result = resolveCitySequence(data, locationsByCity, []);
-      // Auto order deduplicates
       const keys = result.map((c) => c.key);
-      expect(keys.filter((k) => k === "tokyo").length).toBe(1);
+      expect(keys.filter((k) => k === "osaka").length).toBe(1);
     });
 
     it("falls back to default rotation when no cities selected", () => {

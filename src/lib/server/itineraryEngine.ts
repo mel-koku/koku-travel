@@ -683,8 +683,12 @@ export function validateTripConstraints(trip: Trip): {
   // Check for backtracking (simplified - would need routing data)
   // This is a placeholder for future implementation
 
-  // Check nap windows if children present
-  if (trip.travelerProfile.group.type === "family" && trip.travelerProfile.group.childrenAges) {
+  // Check nap windows only if a nap-aged child (≤4) is present. A 12-year-old
+  // doesn't need a 1–3pm rest window just because the group is flagged "family".
+  const hasNapAgedChild = (trip.travelerProfile.group.childrenAges ?? []).some(
+    (age) => age <= 4,
+  );
+  if (trip.travelerProfile.group.type === "family" && hasNapAgedChild) {
     trip.days.forEach((day, index) => {
       issues.push(...validateNapScheduling(day, index));
     });
