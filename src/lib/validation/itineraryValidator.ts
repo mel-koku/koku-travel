@@ -125,11 +125,12 @@ export function validateItinerary(
         }
 
         // Track neighborhoods for clustering analysis, skipping:
-        //  1. bogus legacy values ("1", single characters)
-        //  2. the day's own cityId — itineraryGenerator falls back to the
-        //     city name when location.neighborhood is null, which makes every
-        //     Tokyo activity appear "clustered in Tokyo" even though it's
-        //     just the default fallback.
+        //  1. bogus legacy values (pure numeric strings, length ≤ 2)
+        //  2. values matching the day's cityId — defensive against any DB
+        //     rows where `location.neighborhood === location.city`. The
+        //     itinerary generator no longer writes the city name as a
+        //     fallback, but a handful of legacy enriched rows may still
+        //     have the city name stored directly in `neighborhood`.
         if (
           activity.neighborhood &&
           isValidNeighborhood(activity.neighborhood) &&

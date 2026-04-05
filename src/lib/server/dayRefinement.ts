@@ -234,7 +234,7 @@ export function applyPatches(
           durationMin: original.durationMin,
           locationId: replacementLoc.id,
           coordinates: replacementLoc.coordinates,
-          neighborhood: replacementLoc.neighborhood ?? replacementLoc.city,
+          neighborhood: replacementLoc.neighborhood,
           tags: replacementLoc.category ? [replacementLoc.category] : [],
           notes: `Refined: ${patch.reason}`,
           schedule: original.schedule,

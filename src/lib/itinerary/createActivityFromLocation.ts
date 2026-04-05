@@ -52,7 +52,7 @@ export function createActivityFromLocation(
     title: location.name,
     timeOfDay: inferTimeOfDay(existingActivities),
     durationMin: duration,
-    neighborhood: location.neighborhood ?? location.city,
+    neighborhood: location.neighborhood,
     tags,
     locationId: location.id,
     coordinates: location.coordinates,
