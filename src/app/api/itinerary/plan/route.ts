@@ -81,7 +81,9 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       });
 
       // Validate cached itinerary
-      const itineraryValidation = validateItinerary(cachedResult.itinerary);
+      const itineraryValidation = validateItinerary(cachedResult.itinerary, {
+        vibeCount: builderData.vibes?.length,
+      });
       const tripValidation = validateTripConstraints(cachedResult.trip);
 
       return NextResponse.json({
@@ -153,8 +155,12 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
 
-    // Validate itinerary quality (post-generation validation)
-    const itineraryValidation = validateItinerary(itinerary);
+    // Validate itinerary quality (post-generation validation).
+    // Pass vibeCount so themed trips (1–2 vibes) get a relaxed category
+    // diversity threshold — users who pick history_buff expect history.
+    const itineraryValidation = validateItinerary(itinerary, {
+      vibeCount: builderData.vibes?.length,
+    });
 
     // Log any validation issues for monitoring
     if (!itineraryValidation.valid || itineraryValidation.issues.length > 0) {
