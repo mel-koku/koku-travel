@@ -90,7 +90,6 @@ function makeCityInfo(key: string, label?: string, regionId?: string): CityInfo 
 function makeLocationsByCityKey(cityKeys: string[]): Map<string, Location[]> {
   const map = new Map<string, Location[]>();
   for (const key of cityKeys) {
-    map.push;
     map.set(key, [{ city: key } as Location]);
   }
   return map;
@@ -166,8 +165,6 @@ describe("citySequence", () => {
       // The last city (Kansai) is >90min from Tokyo, so it should append return
       const entry = makeEntryPoint(); // Tokyo
       const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry);
-      // Should auto-append tokyo at the end as return city
-      const lastCity = result[result.length - 1];
       // The optimization should try to end near Tokyo
       expect(result.length).toBeGreaterThanOrEqual(2);
     });
