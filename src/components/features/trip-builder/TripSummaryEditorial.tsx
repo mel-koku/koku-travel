@@ -10,6 +10,7 @@ import { getVibeById } from "@/data/vibes";
 import { deriveRegionsFromCities, REGIONS } from "@/data/regions";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
 import { getDepartureDistanceWarning, optimizeCitySequence } from "@/lib/routing/citySequence";
+import { travelTimeFromEntryPoint } from "@/lib/travelTime";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import { SortableCityList } from "./SortableCityList";
@@ -108,6 +109,46 @@ export function TripSummaryEditorial({
 
     return { cityName, airportName, timeStr };
   }, [data.cities, data.entryPoint, data.exitPoint, data.sameAsEntry]);
+
+  // Auto-return-night notice. `appendReturnCityIfNeeded` quietly adds a
+  // duplicate entry city at the end of the sequence when the traveler would
+  // otherwise be stranded far from the departure airport. Surface it so users
+  // know why the route list has an extra stop. Pattern: first city === last
+  // city in non-custom-order mode (the only way this duplication occurs).
+  const autoReturnNote = useMemo(() => {
+    if (data.customCityOrder) return null;
+    const cities = data.cities ?? [];
+    if (cities.length < 3 || !data.entryPoint) return null;
+    const first = cities[0];
+    const last = cities[cities.length - 1];
+    if (!first || !last || first !== last) return null;
+
+    const farCityId = cities[cities.length - 2];
+    if (!farCityId) return null;
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const airport = effectiveExit ?? data.entryPoint;
+    const minutes = travelTimeFromEntryPoint(airport, farCityId);
+    if (minutes === undefined) return null;
+
+    const resolveName = (id: string) => {
+      for (const r of REGIONS) {
+        const c = r.cities.find((c) => c.id === id);
+        if (c) return c.name;
+      }
+      return id.charAt(0).toUpperCase() + id.slice(1);
+    };
+
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const timeStr = hours > 0 && mins > 0 ? `${hours}h ${mins}m` : hours > 0 ? `${hours}h` : `${mins}m`;
+
+    return {
+      returnCityName: resolveName(first),
+      farCityName: resolveName(farCityId),
+      airportName: airport.name,
+      timeStr,
+    };
+  }, [data.cities, data.customCityOrder, data.entryPoint, data.exitPoint, data.sameAsEntry]);
 
   // Effective per-city day allocation (parallel array)
   const effectiveCityDays = useMemo(() => {
@@ -371,7 +412,12 @@ export function TripSummaryEditorial({
                       : undefined
                   }
                 />
-                {departureWarning && (
+                {autoReturnNote && (
+                  <p className="mt-2 text-xs text-foreground-secondary">
+                    Added a night in {autoReturnNote.returnCityName} before your flight. {autoReturnNote.farCityName} is about {autoReturnNote.timeStr} from {autoReturnNote.airportName}, too far for a calm departure morning.
+                  </p>
+                )}
+                {departureWarning && !autoReturnNote && (
                   <p className="mt-2 text-xs text-warning">
                     {departureWarning.cityName} is about {departureWarning.timeStr} from {departureWarning.airportName}. Consider ending your trip in a city closer to your departure airport to keep your last day relaxed.
                   </p>
