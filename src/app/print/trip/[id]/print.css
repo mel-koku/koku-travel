@@ -1,0 +1,133 @@
+/*
+ * Print route stylesheet — A5 editorial book layout.
+ *
+ * This file defines only the page geometry, break behavior, and font metrics
+ * required for print rendering. All colors, typography families, and tokens
+ * come from globals.css (Tailwind @theme) so the book shares a single source
+ * of truth with the rest of the app.
+ *
+ * A5 = 148mm x 210mm. Each top-level .print-page is exactly one A5 page.
+ */
+
+@page {
+  size: 148mm 210mm;
+  margin: 0;
+}
+
+html,
+body {
+  background: var(--color-canvas);
+}
+
+/* Screen preview: stack pages vertically with a subtle shadow so the book
+   feels like a book in Chrome devtools at A5 viewport. */
+.print-book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12mm;
+  padding: 12mm 0;
+}
+
+.print-page {
+  width: 148mm;
+  min-height: 210mm;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  position: relative;
+  box-shadow: 0 4px 24px rgba(44, 40, 37, 0.08);
+  box-sizing: border-box;
+}
+
+/* Fixed-height pages for front matter (cover, colophon, TOC, back cover)
+   where we want exact A5 framing with vertical balance. Day chapters and
+   other long-form pages grow with content and let @page paginate naturally. */
+.print-page-fixed {
+  height: 210mm;
+  min-height: unset;
+  overflow: hidden;
+}
+
+/* Inner padding tier — editorial generous. Use .print-page-inner for text
+   pages; full-bleed covers skip this wrapper and paint edge-to-edge. */
+.print-page-inner {
+  padding: 18mm 16mm;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A spread is a logical pair of pages (opener + timeline). At screen preview
+   size each page still breaks individually; in print media they arrange
+   naturally left/right. */
+.print-spread {
+  display: contents;
+}
+
+/* Hairline rule — Sand color, 0.5pt. Never a boxed border. */
+.print-rule {
+  border: 0;
+  border-top: 0.5pt solid var(--color-border);
+  margin: 0;
+}
+
+.print-rule-vermilion {
+  border: 0;
+  border-top: 0.5pt solid var(--color-brand-primary);
+  margin: 0;
+  width: 12mm;
+}
+
+/* Folio — page number in mono, centered below the content area. Uses flex
+   auto-margin rather than absolute positioning so it sits at the true bottom
+   of pages that grow past one A5 sheet. */
+.print-folio {
+  margin-top: auto;
+  padding-top: 12mm;
+  text-align: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 8pt;
+  letter-spacing: 0.15em;
+  color: var(--color-foreground-secondary);
+  text-transform: uppercase;
+}
+
+/* Prevent individual timeline activities and city nodes from splitting
+   across physical page breaks. Each row stays together; the break falls
+   between rows instead. */
+.print-avoid-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Print-media rules: force each .print-page to its own physical page. */
+@media print {
+  html,
+  body {
+    background: var(--color-background) !important;
+  }
+
+  .print-book {
+    gap: 0;
+    padding: 0;
+  }
+
+  .print-page {
+    box-shadow: none;
+    page-break-after: always;
+    break-after: page;
+    margin: 0;
+  }
+
+  .print-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  /* Hide the screen-only download/close affordances when printing. */
+  .print-screen-only {
+    display: none !important;
+  }
+}

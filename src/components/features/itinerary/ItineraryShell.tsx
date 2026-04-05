@@ -37,6 +37,7 @@ import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
 import { ShareButton } from "./ShareButton";
+import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
@@ -604,7 +605,10 @@ export const ItineraryShell = ({
                     </div>
                   )}
                   {!isReadOnly && tripId && !isUsingMock && (
-                    <ShareButton tripId={tripId} />
+                    <>
+                      <DownloadBookButton tripId={tripId} />
+                      <ShareButton tripId={tripId} />
+                    </>
                   )}
                 </div>
               </div>
