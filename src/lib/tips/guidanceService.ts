@@ -5,7 +5,7 @@ import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 
 /** Explicit projection matching TravelGuidanceRow columns */
-const GUIDANCE_COLUMNS = "id, title, summary, content, icon, guidance_type, tags, categories, regions, cities, location_ids, seasons, valid_months, is_universal, priority, source_name, source_url, status, created_at, updated_at";
+const GUIDANCE_COLUMNS = "id, title, summary, content, icon, guidance_type, tags, categories, regions, cities, location_ids, seasons, valid_months, is_universal, priority, source_name, source_url, pillar_slug, status, created_at, updated_at";
 
 /** Minimal Supabase client interface for guidance queries */
 type SupabaseLike = {

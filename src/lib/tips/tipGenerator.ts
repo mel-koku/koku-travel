@@ -160,6 +160,7 @@ function guidanceToActivityTip(guidance: TravelGuidance): ActivityTip {
     priority: guidance.priority,
     icon: guidance.icon ?? "🙏",
     isImportant: guidance.priority >= 8,
+    pillar: guidance.pillarSlug ?? undefined,
   };
 }
 
