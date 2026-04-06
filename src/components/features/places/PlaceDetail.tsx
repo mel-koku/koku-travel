@@ -12,7 +12,7 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
+import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
@@ -206,11 +206,11 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     return pills;
   }, [location.goodForChildren, location.goodForGroups]);
 
-  // Guidance tips
+  // Location-specific guidance tips (only tips explicitly targeting this location)
   const [tips, setTips] = useState<TravelGuidance[]>([]);
   useEffect(() => {
     let cancelled = false;
-    fetchGuidanceForLocation(location)
+    fetchLocationSpecificGuidance(location)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -414,11 +414,18 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         )}
 
 
-        {/* Local tips */}
-        {tips.length > 0 && (
+        {/* Local tips: insider tip + location-specific guidance */}
+        {(location.insiderTip || tips.length > 0) && (
           <motion.section {...sectionReveal} className="space-y-3">
             <h2 className="eyebrow-editorial">Local tips</h2>
             <div className="space-y-2">
+              {location.insiderTip && (
+                <div className="rounded-lg bg-yuzu-tint p-3">
+                  <p className="text-sm leading-relaxed text-foreground-body">
+                    {location.insiderTip}
+                  </p>
+                </div>
+              )}
               {tips.map((tip) => (
                 <div
                   key={tip.id}
@@ -431,20 +438,6 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                   </div>
                 </div>
               ))}
-            </div>
-          </motion.section>
-        )}
-
-        {/* Insider Tip */}
-        {location.insiderTip && (
-          <motion.section {...sectionReveal}>
-            <div className="rounded-lg bg-yuzu-tint p-4">
-              <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
-                Insider tip
-              </p>
-              <p className="text-sm leading-relaxed text-foreground-body">
-                {location.insiderTip}
-              </p>
             </div>
           </motion.section>
         )}
