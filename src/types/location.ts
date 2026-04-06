@@ -435,6 +435,14 @@ export type Location = {
    */
   availability?: LocationAvailability[];
 
+  /**
+   * Months (1-12) when this location is operational.
+   * NULL/undefined = year-round. Complements the date-precise
+   * availability rules with a simpler month-level guard for
+   * businesses that operate seasonally (whale watching, ski resorts, etc.).
+   */
+  validMonths?: number[];
+
   // ============================================
   // Experience-specific fields (from experiences table)
   // ============================================
