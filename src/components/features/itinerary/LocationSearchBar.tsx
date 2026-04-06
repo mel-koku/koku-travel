@@ -183,6 +183,8 @@ export function LocationSearchBar({
                       >
                         {/* Thumbnail */}
                         {result.image ? (
+                          // 32x32 search result thumbnail, external URL.
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={result.image}
                             alt=""
@@ -207,7 +209,7 @@ export function LocationSearchBar({
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-stone">
-                            <span className="truncate">{result.city}</span>
+                            <span className="truncate">{result.parentName ? `${result.city} · in ${result.parentName}` : result.city}</span>
                             <span aria-hidden="true">&middot;</span>
                             <span className="capitalize">{result.category}</span>
                             {result.rating != null && (

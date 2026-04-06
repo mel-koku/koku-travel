@@ -33,6 +33,8 @@ function createCountQueryBuilder(getResponse: () => { count: number | null; erro
   const proxy = () => builder;
   builder.eq = proxy;
   builder.or = proxy;
+  builder.is = proxy;
+  builder.in = proxy;
   builder.ilike = proxy;
   builder.textSearch = proxy;
   builder.then = (resolve: (value: { count: number | null; error: unknown }) => void) => {
@@ -46,6 +48,8 @@ function createDataQueryBuilder(getResponse: () => { data: unknown[]; error: unk
   const proxy = () => builder;
   builder.eq = proxy;
   builder.or = proxy;
+  builder.is = proxy;
+  builder.in = proxy;
   builder.ilike = proxy;
   builder.textSearch = proxy;
   builder.order = proxy;

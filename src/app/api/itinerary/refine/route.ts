@@ -93,7 +93,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
   if (firstError) {
     const msg = `Failed to fetch locations from database: ${firstError.message}`;
-    logger.error(msg, { error: firstError.message });
+    logger.error(msg, firstError);
     throw new Error(msg);
   }
 

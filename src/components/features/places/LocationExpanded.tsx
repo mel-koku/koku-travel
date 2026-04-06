@@ -16,6 +16,12 @@ import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon } from "./LocationCard";
+import { useLocationHierarchy } from "@/hooks/useLocationHierarchy";
+import {
+  ChildLocationsSection,
+  SubExperiencesSection,
+  RelationshipsSection,
+} from "./HierarchySections";
 
 type LocationExpandedProps = {
   location: Location;
@@ -35,6 +41,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const isSaved = isInSaved(location.id);
   const wasSaved = useRef(isSaved);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const { data: hierarchy } = useLocationHierarchy(location.id);
 
   // Reset active photo when location changes
   useEffect(() => {
@@ -272,20 +279,22 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           </div>
         )}
 
-        {/* Action bar */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
-          <button
-            type="button"
-            onClick={handleToggleSave}
-            className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface shadow-[var(--shadow-sm)] transition-transform hover:scale-105 hover:bg-border/50"
-            aria-label={isSaved ? "Unsave" : "Save"}
-          >
-            <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
-          </button>
-          <span className="text-sm text-stone">
-            {isSaved ? "Saved" : "Save to include in your trip"}
-          </span>
-        </div>
+        {/* Action bar (hidden for container parents) */}
+        {locationWithDetails.parentMode !== "container" && (
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+            <button
+              type="button"
+              onClick={handleToggleSave}
+              className="flex h-11 w-11 items-center justify-center rounded-lg bg-surface shadow-[var(--shadow-sm)] transition-transform hover:scale-105 hover:bg-border/50"
+              aria-label={isSaved ? "Unsave" : "Save"}
+            >
+              <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
+            </button>
+            <span className="text-sm text-stone">
+              {isSaved ? "Saved" : "Save to include in your trip"}
+            </span>
+          </div>
+        )}
 
         {/* Detail content */}
         <div className="space-y-6 p-6">
@@ -607,6 +616,26 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 )}
               </ul>
             </section>
+          )}
+
+          {/* Hierarchy sections */}
+          {hierarchy && hierarchy.subExperiences.length > 0 && (
+            <div className="border-t border-border pt-6">
+              <SubExperiencesSection subExperiences={hierarchy.subExperiences} />
+            </div>
+          )}
+          {hierarchy && hierarchy.children.length > 0 && (
+            <div className="border-t border-border pt-6">
+              <ChildLocationsSection
+                childLocations={hierarchy.children}
+                parentName={locationWithDetails.name}
+              />
+            </div>
+          )}
+          {hierarchy && hierarchy.relationships.length > 0 && (
+            <div className="border-t border-border pt-6">
+              <RelationshipsSection relationships={hierarchy.relationships} />
+            </div>
           )}
         </div>
       </motion.div>

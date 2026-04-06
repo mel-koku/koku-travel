@@ -200,10 +200,9 @@ export async function autocompletePlaces(options: AutocompleteOptions): Promise<
 
   if (!response.ok) {
     const errorBody = await response.text();
-    logger.error(`Google Places SearchText API error`, {
+    logger.error(`Google Places SearchText API error`, new Error(errorBody), {
       status: response.status,
       input,
-      errorBody,
     });
     throw new Error(
       `Failed to search places for "${input}". Status ${response.status}. Body: ${errorBody}`,

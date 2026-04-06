@@ -72,6 +72,100 @@ const NEIGHBOR_OFFSETS: [number, number][] = [
   [1, -1],  [1, 0],  [1, 1],
 ];
 
+/**
+ * Choose a cell size that produces sensible zones for the given locations.
+ *
+ * Dense urban cities work well at 1.5 km (a walkable neighborhood). Rural
+ * "planning cities" that cover a whole prefecture at 100+ km across need
+ * larger cells or they fragment into 5+ evenly-sized zones that each trap
+ * a day into ~10 candidates.
+ *
+ * Returns the smallest cell size in [base, 2×base, 4×base, 8×base] that
+ * either (a) produces ≤ 3 zones, or (b) produces a dominant zone holding
+ * ≥ 50% of locations. Falls back to the largest tested size if nothing
+ * qualifies.
+ */
+function chooseAdaptiveCellSize(
+  locations: Location[],
+  baseCellSize: number,
+  minZoneSize: number,
+): number {
+  const candidates = [baseCellSize, baseCellSize * 2, baseCellSize * 4, baseCellSize * 8];
+  for (const size of candidates) {
+    const { zoneCount, largestZoneSize } = simulateZoning(locations, size, minZoneSize);
+    if (zoneCount <= 3) return size;
+    if (largestZoneSize / locations.length >= 0.5) return size;
+  }
+  return candidates[candidates.length - 1]!;
+}
+
+/**
+ * Fast dry-run of the grid clustering step. Returns zone count and largest
+ * zone size without building the full CityZoneMap. Used by the adaptive cell
+ * size heuristic to evaluate candidates without full flood-fill overhead for
+ * each trial.
+ */
+function simulateZoning(
+  locations: Location[],
+  cellSizeKm: number,
+  minZoneSize: number,
+): { zoneCount: number; largestZoneSize: number } {
+  let minLat = Infinity, maxLat = -Infinity;
+  let minLng = Infinity, maxLng = -Infinity;
+  let sumLat = 0;
+  for (const loc of locations) {
+    const { lat, lng } = loc.coordinates!;
+    if (lat < minLat) minLat = lat;
+    if (lat > maxLat) maxLat = lat;
+    if (lng < minLng) minLng = lng;
+    if (lng > maxLng) maxLng = lng;
+    sumLat += lat;
+  }
+  const { latDeg, lngDeg } = degreesPerKm(sumLat / locations.length);
+  const cellLatDeg = cellSizeKm * latDeg;
+  const cellLngDeg = cellSizeKm * lngDeg;
+
+  const cellCounts = new Map<string, number>();
+  for (const loc of locations) {
+    const { lat, lng } = loc.coordinates!;
+    const row = Math.floor((lat - minLat) / cellLatDeg);
+    const col = Math.floor((lng - minLng) / cellLngDeg);
+    const key = cellKey(row, col);
+    cellCounts.set(key, (cellCounts.get(key) ?? 0) + 1);
+  }
+
+  // Flood-fill cell counts into zones
+  const visited = new Set<string>();
+  const zoneSizes: number[] = [];
+  for (const key of cellCounts.keys()) {
+    if (visited.has(key)) continue;
+    let size = 0;
+    const queue = [key];
+    while (queue.length > 0) {
+      const current = queue.pop()!;
+      if (visited.has(current)) continue;
+      visited.add(current);
+      size += cellCounts.get(current) ?? 0;
+      const [r, c] = parseCellKey(current);
+      for (const [dr, dc] of NEIGHBOR_OFFSETS) {
+        const nk = cellKey(r + dr, c + dc);
+        if (!visited.has(nk) && cellCounts.has(nk)) {
+          queue.push(nk);
+        }
+      }
+    }
+    zoneSizes.push(size);
+  }
+
+  // Account for small-zone merging: small zones collapse into the nearest
+  // large one, so only count zones at or above minZoneSize as real zones.
+  const largeZoneCount = zoneSizes.filter((s) => s >= minZoneSize).length;
+  const effectiveCount = largeZoneCount > 0 ? largeZoneCount : zoneSizes.length;
+  const largestZoneSize = zoneSizes.length > 0 ? Math.max(...zoneSizes) : 0;
+
+  return { zoneCount: effectiveCount, largestZoneSize };
+}
+
 // ---------------------------------------------------------------------------
 // Core: cluster city locations into zones
 // ---------------------------------------------------------------------------
@@ -81,7 +175,6 @@ export function clusterCityLocations(
   _cityKey: string,
   options?: ClusterOptions,
 ): CityZoneMap | null {
-  const cellSizeKm = options?.cellSizeKm ?? 1.5;
   const minZoneSize = options?.minZoneSize ?? 3;
 
   // Filter locations with valid coordinates
@@ -93,6 +186,23 @@ export function clusterCityLocations(
     // Too few locations — zone filtering would be counterproductive
     return null;
   }
+
+  // Adaptive cell sizing. The default 1.5 km cells work well for dense urban
+  // cities (Tokyo, Kyoto, Osaka) where a tight walkable zone is meaningful.
+  // But some "planning cities" in the DB span 100+ km across rural prefectures
+  // (Ise covers Mie, Hakone pulls in satellite data, etc.), producing 5+ evenly
+  // sized zones that each trap a day into 10 candidates. That makes days thin
+  // because inter-zone travel is penalized by distance scoring.
+  //
+  // Heuristic: try the default cell size first. If the result has more than
+  // 3 zones AND no single zone holds at least half the locations, double the
+  // cell size and retry (up to 3 doublings → 12km cells). This collapses
+  // spread-out rural cities into one dominant zone without widening dense
+  // urban cities where 1.5km already finds a clear city center.
+  const baseCellSize = options?.cellSizeKm ?? 1.5;
+  const cellSizeKm = options?.cellSizeKm !== undefined
+    ? baseCellSize
+    : chooseAdaptiveCellSize(withCoords, baseCellSize, minZoneSize);
 
   // Compute bounding box
   let minLat = Infinity, maxLat = -Infinity;

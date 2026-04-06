@@ -239,7 +239,7 @@ export function useSmartPromptActions(
         setLoadingGapId(null);
       }
     },
-    [tripId, tripBuilderData, getDay, getUsedLocationIds, addActivity, showToast, fetchRecommendation, router]
+    [tripId, getDay, addActivity, showToast, fetchRecommendation, router]
   );
 
   /** Confirm the previewed recommendation — insert into itinerary */

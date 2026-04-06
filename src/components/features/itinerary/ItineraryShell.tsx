@@ -18,6 +18,7 @@ import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinera
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
 
 import { LocationSearchBar } from "./LocationSearchBar";
@@ -27,6 +28,7 @@ import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { BeforeYouLandTab } from "./before-you-land/BeforeYouLandTab";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
@@ -56,7 +58,7 @@ const DiscoverMap = dynamic(
   { ssr: false },
 );
 
-type ItineraryViewMode = "timeline" | "dashboard" | "discover";
+type ItineraryViewMode = "timeline" | "dashboard" | "discover" | "culture";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -77,6 +79,7 @@ type ItineraryShellProps = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: CulturalBriefing;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -106,6 +109,7 @@ export const ItineraryShell = ({
   dayIntros,
   guideProse,
   dailyBriefings,
+  culturalBriefing,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -144,6 +148,10 @@ export const ItineraryShell = ({
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
+  const [cultureTabSeen, setCultureTabSeen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("koku-culture-tab-seen") === "true";
+  });
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
@@ -190,6 +198,14 @@ export const ItineraryShell = ({
       finalHeadingRef.current.focus();
     }
   }, [finalHeadingRef]);
+
+  // Mark culture tab as seen on first visit
+  useEffect(() => {
+    if (viewMode === "culture" && !cultureTabSeen) {
+      setCultureTabSeen(true);
+      localStorage.setItem("koku-culture-tab-seen", "true");
+    }
+  }, [viewMode, cultureTabSeen]);
 
   // Keyboard shortcuts for undo/redo (Cmd+Z / Cmd+Shift+Z / Cmd+Y)
   useEffect(() => {
@@ -586,6 +602,7 @@ export const ItineraryShell = ({
                           { key: "timeline", label: "Timeline" },
                           { key: "dashboard", label: "Overview" },
                           ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
+                          ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
                         ] as { key: ItineraryViewMode; label: string }[]
                       ).map((tab) => (
                         <button
@@ -599,6 +616,9 @@ export const ItineraryShell = ({
                           }`}
                         >
                           {tab.label}
+                          {tab.key === "culture" && !cultureTabSeen && (
+                            <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
+                          )}
                         </button>
                       ))}
                     </div>
@@ -694,6 +714,13 @@ export const ItineraryShell = ({
                 geoLoading={discover.geoLocation.isLoading}
                 geoError={discover.geoLocation.error}
               />
+            </div>
+          )}
+
+          {/* Before You Land (Culture) Tab */}
+          {viewMode === "culture" && culturalBriefing && (
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+              <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
           )}
 

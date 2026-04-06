@@ -17,6 +17,12 @@ import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon, LocationCard } from "./LocationCard";
+import { useLocationHierarchy } from "@/hooks/useLocationHierarchy";
+import {
+  ChildLocationsSection,
+  SubExperiencesSection,
+  RelationshipsSection,
+} from "./HierarchySections";
 
 const staggerContainer = {
   hidden: {},
@@ -117,6 +123,9 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     () => (nearbyData?.data ?? []).filter((n) => n.id !== location.id).slice(0, 6),
     [nearbyData, location.id],
   );
+
+  // Hierarchy context (children, sub-experiences, relationships)
+  const { data: hierarchy } = useLocationHierarchy(location.id);
 
   // Photos
   const allPhotos = useMemo(() => {
@@ -343,22 +352,24 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           )}
         </motion.div>
 
-        {/* Save button */}
-        <motion.div variants={fadeUp} className="mt-5">
-          <button
-            type="button"
-            onClick={handleToggleSave}
-            className={cn(
-              "inline-flex h-11 items-center gap-2 rounded-lg px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
-              isSaved
-                ? "bg-brand-primary text-white"
-                : "bg-surface text-foreground hover:bg-border/50"
-            )}
-          >
-            <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
-            {isSaved ? "Saved" : "Save for trip"}
-          </button>
-        </motion.div>
+        {/* Save button (hidden for container parents -- they're not schedulable) */}
+        {location.parentMode !== "container" && (
+          <motion.div variants={fadeUp} className="mt-5">
+            <button
+              type="button"
+              onClick={handleToggleSave}
+              className={cn(
+                "inline-flex h-11 items-center gap-2 rounded-lg px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
+                isSaved
+                  ? "bg-brand-primary text-white"
+                  : "bg-surface text-foreground hover:bg-border/50"
+              )}
+            >
+              <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
+              {isSaved ? "Saved" : "Save for trip"}
+            </button>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Photo gallery */}
@@ -636,6 +647,36 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </a>
         </div>
       </section>
+
+      {/* Hierarchy: Sub-experiences */}
+      {hierarchy && hierarchy.subExperiences.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <SubExperiencesSection subExperiences={hierarchy.subExperiences} />
+          </div>
+        </section>
+      )}
+
+      {/* Hierarchy: Child locations */}
+      {hierarchy && hierarchy.children.length > 0 && (
+        <section className="bg-canvas py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <ChildLocationsSection
+              childLocations={hierarchy.children}
+              parentName={location.name}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Hierarchy: Relationships (In this area / Consider instead) */}
+      {hierarchy && hierarchy.relationships.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <RelationshipsSection relationships={hierarchy.relationships} />
+          </div>
+        </section>
+      )}
 
       {/* Explore Nearby */}
       {nearbyLocations.length > 0 && (

@@ -43,6 +43,8 @@ const eslintConfig = defineConfig([
     "coverage/**",
     // Allow console in scripts (development tools)
     "scripts/**",
+    // Scraped data dumps, never shipped
+    "tmp/**",
   ]),
 ]);
 

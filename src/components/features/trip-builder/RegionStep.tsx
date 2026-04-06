@@ -199,12 +199,22 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     if (autoCities.length > 0) {
       const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
       const optimized = autoCities.length >= 2 && data.entryPoint
-        ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit)
+        ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit, data.duration)
         : autoCities;
       const autoRegions = deriveRegionsFromCities(optimized);
-      setData((prev) => ({ ...prev, cities: optimized, regions: autoRegions }));
+      setData((prev) => ({
+        ...prev,
+        cities: optimized,
+        regions: autoRegions,
+        // City set changed -- clear stale cityDays so defaults recompute.
+        cityDays: optimized.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+      }));
       hasAutoSelected.current = true;
     }
+    // data.exitPoint / data.sameAsEntry are read as snapshots for optimization;
+    // including them would re-run auto-selection when the user picks an exit
+    // airport and overwrite their manual city selections.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
 
   // City/day ratio validation
@@ -230,9 +240,16 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         }
         const raw = Array.from(current);
         const cities = raw.length >= 2
-          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
+        return {
+          ...prev,
+          cities,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: false,
+          // City set changed -- drop stale cityDays so defaults recompute.
+          cityDays: cities.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+        };
       });
     },
     [setData]
@@ -256,9 +273,16 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         }
         const raw = Array.from(current);
         const cities = raw.length >= 2
-          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint, prev.duration)
           : raw;
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
+        return {
+          ...prev,
+          cities,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: false,
+          // City set changed -- drop stale cityDays so defaults recompute.
+          cityDays: cities.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
+        };
       });
 
       const cityCount = knownCityIds.length;

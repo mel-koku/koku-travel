@@ -9,10 +9,10 @@ Koku Travel is a Next.js application that helps travelers discover curated guide
 
 ## Environment Variables
 
-Copy `env.local.example` to `.env.local` and populate the values:
+Copy `.env.example` to `.env.local` and populate the values:
 
 ```bash
-cp env.local.example .env.local
+cp .env.example .env.local
 ```
 
 Required keys:
@@ -25,7 +25,6 @@ Required keys:
 - `src/lib/itineraryPlanner.ts` assembles day schedules by combining recommended visit durations, opening hours, and travel times. It defaults to heuristic estimates but will call the configured routing provider when credentials are present.
 - `src/lib/routing/` encapsulates routing providers and in-memory caching. Provide a Mapbox token to unlock richer directions; otherwise the planner supplies estimated timings.
 - The itinerary map now links marker clicks to the activity timeline (and vice versa) so travelers can orient themselves quickly. Travel segments and leave-by guidance appear directly on each activity card.
-
 
 ## Scripts
 

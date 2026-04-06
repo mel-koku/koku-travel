@@ -102,7 +102,7 @@ async function addSaved(
     );
 
   if (error) {
-    logger.error("Failed to add saved place", { error });
+    logger.error("Failed to add saved place", error);
     throw new Error(error.message);
   }
 }
@@ -122,7 +122,7 @@ async function removeSaved(
     .eq("place_id", placeId);
 
   if (error) {
-    logger.error("Failed to remove saved place", { error });
+    logger.error("Failed to remove saved place", error);
     throw new Error(error.message);
   }
 }

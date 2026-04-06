@@ -88,6 +88,10 @@ export type TravelGuidance = {
   /** URL of the source for attribution */
   sourceUrl?: string;
 
+  // Cultural pillar
+  /** Slug of the cultural pillar this tip relates to (e.g. "kegare", "omotenashi") */
+  pillarSlug?: string | null;
+
   // Management
   status: GuidanceStatus;
   createdAt: string;
@@ -115,6 +119,7 @@ export type TravelGuidanceRow = {
   priority: number;
   source_name: string | null;
   source_url: string | null;
+  pillar_slug: string | null;
   status: GuidanceStatus;
   created_at: string;
   updated_at: string;
@@ -142,6 +147,7 @@ export function rowToTravelGuidance(row: TravelGuidanceRow): TravelGuidance {
     priority: row.priority,
     sourceName: row.source_name ?? undefined,
     sourceUrl: row.source_url ?? undefined,
+    pillarSlug: row.pillar_slug,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

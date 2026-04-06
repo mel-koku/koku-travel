@@ -81,7 +81,9 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       });
 
       // Validate cached itinerary
-      const itineraryValidation = validateItinerary(cachedResult.itinerary);
+      const itineraryValidation = validateItinerary(cachedResult.itinerary, {
+        vibeCount: builderData.vibes?.length,
+      });
       const tripValidation = validateTripConstraints(cachedResult.trip);
 
       return NextResponse.json({
@@ -90,6 +92,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
         dayIntros: cachedResult.dayIntros,
         guideProse: cachedResult.guideProse,
         dailyBriefings: cachedResult.dailyBriefings,
+        culturalBriefing: cachedResult.culturalBriefing,
         validation: tripValidation,
         itineraryValidation: {
           valid: itineraryValidation.valid,
@@ -145,16 +148,20 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       elapsedMs,
     });
 
-    const { trip, itinerary, dayIntros, guideProse, dailyBriefings } = generationResult;
+    const { trip, itinerary, dayIntros, guideProse, dailyBriefings, culturalBriefing } = generationResult;
 
     // Cache the generated itinerary for future requests
-    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse, dailyBriefings);
+    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse, dailyBriefings, culturalBriefing);
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
 
-    // Validate itinerary quality (post-generation validation)
-    const itineraryValidation = validateItinerary(itinerary);
+    // Validate itinerary quality (post-generation validation).
+    // Pass vibeCount so themed trips (1–2 vibes) get a relaxed category
+    // diversity threshold — users who pick history_buff expect history.
+    const itineraryValidation = validateItinerary(itinerary, {
+      vibeCount: builderData.vibes?.length,
+    });
 
     // Log any validation issues for monitoring
     if (!itineraryValidation.valid || itineraryValidation.issues.length > 0) {
@@ -173,6 +180,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       dayIntros,
       guideProse,
       dailyBriefings,
+      culturalBriefing,
       validation: tripValidation,
       itineraryValidation: {
         valid: itineraryValidation.valid,
