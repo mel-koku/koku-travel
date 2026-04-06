@@ -130,6 +130,28 @@ export type Location = {
    * Used for geographic filtering in the explore page.
    */
   prefecture?: string;
+
+  // ============================================
+  // Hierarchy Fields
+  // ============================================
+
+  /**
+   * Parent location ID for child locations (e.g., Bamboo Grove -> Arashiyama).
+   * NULL for top-level locations (the default for all existing rows).
+   */
+  parentId?: string;
+
+  /**
+   * Only set on locations that ARE parents (have children pointing to them).
+   * - 'schedulable': Itinerary schedules the parent; children are guide content (Miyajima, Nikko Toshogu)
+   * - 'container': Never scheduled; children are the itinerary items (Dotonbori, Harajuku)
+   * - 'flexible': Can be scheduled as a block OR children individually (Arashiyama, Naramachi)
+   */
+  parentMode?: 'schedulable' | 'container' | 'flexible';
+
+  /** Ordering within a parent (lower = first). */
+  sortOrder?: number;
+
   category: string;
   image: string;
   /**
@@ -458,6 +480,43 @@ export type Location = {
 
   /** Difficulty level for experiences */
   difficulty?: string;
+};
+
+// ============================================
+// Sub-experiences (editorial content within a location)
+// ============================================
+
+export type SubExperienceType = 'highlight' | 'route_stop' | 'time_variant';
+
+export type SubExperience = {
+  id: string;
+  locationId: string;
+  name: string;
+  description: string;
+  timeEstimate?: number;
+  tip?: string;
+  image?: string;
+  sortOrder: number;
+  subType: SubExperienceType;
+  timeContext?: string;
+};
+
+// ============================================
+// Location relationships
+// ============================================
+
+export type LocationRelationshipType = 'cluster' | 'gateway' | 'alternative' | 'transit_line';
+
+export type LocationRelationship = {
+  id: string;
+  locationId: string;
+  relatedId: string;
+  relationshipType: LocationRelationshipType;
+  source: 'algorithmic' | 'curated';
+  editorialNote?: string;
+  transitLine?: string;
+  walkMinutes?: number;
+  sortOrder: number;
 };
 
 export type LocationReview = {
