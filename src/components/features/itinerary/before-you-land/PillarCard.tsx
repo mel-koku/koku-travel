@@ -29,11 +29,11 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
-            <span className={cn(typography({ intent: "editorial-h3" }), "leading-tight")}>
-              {pillar.japanese}
-            </span>
             <span className={typography({ intent: "utility-h2" })}>
               {pillar.name}
+            </span>
+            <span className="font-mono text-sm text-foreground-secondary">
+              {pillar.japanese}
             </span>
             <span className="text-xs text-foreground-secondary">
               ({pillar.pronunciation})
