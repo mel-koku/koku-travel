@@ -14,6 +14,7 @@ import type { TripBuilderData } from "@/types/trip";
 import type { Trip } from "@/types/tripDomain";
 import type { Itinerary } from "@/types/itinerary";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 
 /** Cache TTL: 6 hours in seconds (reduced from 24h for data freshness after tip/location updates) */
 const CACHE_TTL_SECONDS = 6 * 60 * 60;
@@ -28,6 +29,7 @@ type CachedItineraryResult = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: CulturalBriefing;
   cachedAt: string;
 };
 
@@ -214,7 +216,7 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
  */
 export async function getCachedItinerary(
   builderData: TripBuilderData,
-): Promise<{ trip: Trip; itinerary: Itinerary; dayIntros?: Record<string, string>; guideProse?: GeneratedGuide; dailyBriefings?: GeneratedBriefings } | null> {
+): Promise<{ trip: Trip; itinerary: Itinerary; dayIntros?: Record<string, string>; guideProse?: GeneratedGuide; dailyBriefings?: GeneratedBriefings; culturalBriefing?: CulturalBriefing } | null> {
   initializeRedis();
 
   if (!redisAvailable || !redisClient) {
@@ -234,6 +236,7 @@ export async function getCachedItinerary(
         dayIntros: cached.dayIntros,
         guideProse: cached.guideProse,
         dailyBriefings: cached.dailyBriefings,
+        culturalBriefing: cached.culturalBriefing,
       };
     }
 
@@ -262,6 +265,7 @@ export async function cacheItinerary(
   dayIntros?: Record<string, string>,
   guideProse?: GeneratedGuide,
   dailyBriefings?: GeneratedBriefings,
+  culturalBriefing?: CulturalBriefing,
 ): Promise<void> {
   initializeRedis();
 
@@ -278,6 +282,7 @@ export async function cacheItinerary(
       dayIntros,
       guideProse,
       dailyBriefings,
+      culturalBriefing,
       cachedAt: new Date().toISOString(),
     };
 

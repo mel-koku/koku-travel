@@ -22,6 +22,9 @@ import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawE
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import { assembleBriefing } from "@/lib/briefing/briefingAssembler";
+import { getCulturalPillars } from "@/lib/sanity/contentService";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -184,6 +187,7 @@ export type GeneratedTripResult = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: CulturalBriefing;
 };
 
 /**
@@ -473,6 +477,32 @@ export async function generateTripFromBuilderData(
     generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
   ]);
 
+  // Assemble cultural briefing from Sanity pillars + trip categories
+  let culturalBriefing: CulturalBriefing | undefined;
+  try {
+    const pillars = await getCulturalPillars();
+    if (pillars && pillars.length > 0) {
+      const locationMap = new Map(allLocations.map((l) => [l.id, l]));
+      const tripCategories = [
+        ...new Set(
+          optimizedItinerary.days.flatMap((d) =>
+            d.activities
+              .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
+              .map((a) => a.locationId ? locationMap.get(a.locationId)?.category : undefined)
+              .filter((c): c is string => Boolean(c)),
+          ),
+        ),
+      ];
+      culturalBriefing = assembleBriefing(
+        pillars,
+        tripCategories,
+        guideProse?.culturalBriefingIntro,
+      );
+    }
+  } catch {
+    // Non-blocking: briefing is optional enhancement
+  }
+
   // Extract day intros from guide prose, or fall back to standalone Gemini call
   const dayIntros = guideProse
     ? Object.fromEntries(guideProse.days.map(d => [d.dayId, d.intro]))
@@ -525,6 +555,7 @@ export async function generateTripFromBuilderData(
     dayIntros: dayIntros ?? undefined,
     guideProse: guideProse ?? undefined,
     dailyBriefings: dailyBriefings ?? undefined,
+    culturalBriefing,
   };
 }
 
