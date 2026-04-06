@@ -31,6 +31,7 @@ import {
   resolveCitySequence,
 } from "@/lib/routing/citySequence";
 import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
+import { fetchRelationshipLookup, reorderByTransitLine } from "@/lib/itinerary/relationshipBonus";
 import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
 
 // Import from generation sub-modules
@@ -408,6 +409,11 @@ export async function generateItinerary(
       }
     }
 
+    // Fetch cluster + transit-line relationships for this city's locations
+    const relationshipLookup = await fetchRelationshipLookup(
+      availableLocations.map((loc) => loc.id),
+    );
+
     const dayActivities: Itinerary["days"][number]["activities"] = [];
     const dayCityUsage = new Map<string, number>();
 
@@ -638,9 +644,12 @@ export async function generateItinerary(
         ] as const;
         const communityRatings = options?.communityRatings;
         const dietaryRestrictions = data.accessibility?.dietary;
+        const clusterCtx = relationshipLookup.clusterPairs.size > 0
+          ? { clusterPairs: relationshipLookup.clusterPairs, scheduledIds: dayActivities.filter((a) => a.kind === "place" && a.locationId).map((a) => (a as { locationId: string }).locationId) }
+          : undefined;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe, clusterCtx)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -648,13 +657,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe, clusterCtx);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags, hasLocalSecretsVibe, hasNatureAdventureVibe, hasHeritageVibe, clusterCtx);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult
@@ -850,12 +859,15 @@ export async function generateItinerary(
       weekday = "wednesday"; // Mid-week default, most venues open
     }
 
+    // Reorder activities within the day to group transit-line neighbors
+    const reorderedActivities = reorderByTransitLine(dayActivities, relationshipLookup.transitLineMap);
+
     days.push({
       id: dayId,
       dateLabel,
       weekday,
       cityId: dayCityId,
-      activities: dayActivities,
+      activities: reorderedActivities,
       // Add metadata about day trip if applicable
       ...(activeDayTrip && {
         isDayTrip: true,

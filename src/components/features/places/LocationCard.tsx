@@ -14,30 +14,27 @@ import type { Location } from "@/types/location";
 type LocationCardProps = {
   location: Location;
   onSelect?: (location: Location) => void;
-  variant?: "default" | "tall";
+  variant?: "default" | "tall" | "compact";
+  /** Optional meta text shown below the name (e.g., "5 min walk") */
+  meta?: string;
 };
 
-export const LocationCard = memo(function LocationCard({ location, onSelect, variant = "default" }: LocationCardProps) {
+export const LocationCard = memo(function LocationCard({ location, onSelect, variant = "default", meta }: LocationCardProps) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
   const prefersReducedMotion = useReducedMotion();
-  // Use location name directly - no need to fetch details just for display name
   const displayName = location.name;
-  // Use local data for summary - details are fetched when modal opens
   const summary = getShortOverview(location, null);
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);
   const showFirstSaveToast = useFirstSaveToast();
   const buttonRef = useRef<HTMLDivElement | null>(null);
-  // Use primary photo URL from database if available, otherwise fall back to image field
-  // Request 800px for card thumbnails instead of 1600px (saves bandwidth)
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
 
   const [heartAnimating, setHeartAnimating] = useState(false);
   const wasSaved = useRef(active);
 
-  // Track when location is auto-saved to trigger animation
   useEffect(() => {
     if (active && !wasSaved.current) {
       setHeartAnimating(true);
@@ -47,6 +44,70 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
     wasSaved.current = active;
   }, [active]);
 
+  if (variant === "compact") {
+    return (
+      <motion.article
+        className="group relative text-foreground"
+        initial={prefersReducedMotion ? {} : { y: 12, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, margin: "-5%" }}
+        transition={{ duration: durationBase, ease: easeReveal }}
+      >
+        <button
+          type="button"
+          onClick={() => onSelect?.(location)}
+          className="flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left shadow-[var(--shadow-sm)] transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5"
+        >
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-canvas">
+            <Image
+              src={imageSrc || FALLBACK_IMAGE_SRC}
+              alt={displayName}
+              fill
+              className="object-cover"
+              sizes="64px"
+              priority={false}
+            />
+          </div>
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <h3 className="text-sm font-medium text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-brand-primary">
+              {displayName}
+            </h3>
+            <div className="flex items-center gap-1.5 text-xs text-stone">
+              <span className="capitalize">{location.category}</span>
+              {rating ? (
+                <>
+                  <span aria-hidden="true">&middot;</span>
+                  <StarIcon />
+                  <span>{rating.toFixed(1)}</span>
+                </>
+              ) : null}
+              {meta && (
+                <>
+                  <span aria-hidden="true">&middot;</span>
+                  <span>{meta}</span>
+                </>
+              )}
+            </div>
+          </div>
+          {location.parentMode !== "container" && (
+            <div
+              role="button"
+              tabIndex={-1}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!active) showFirstSaveToast();
+                toggleSave(location.id);
+              }}
+              className="shrink-0 p-1"
+            >
+              <HeartIcon active={active} animating={heartAnimating} className="h-4 w-4" />
+            </div>
+          )}
+        </button>
+      </motion.article>
+    );
+  }
+
   return (
     <motion.article
       className="group relative text-foreground"
@@ -55,11 +116,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: durationBase, ease: easeReveal }}
     >
-      {/* Unified Card Container */}
       <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
-        {/* Image Area */}
         <div className="relative">
-          {/* Clickable image area */}
           <div
             role="button"
             tabIndex={0}
@@ -68,7 +126,6 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
             ref={buttonRef}
             className="relative block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-inset"
           >
-            {/* Image - 4:3 aspect ratio (tall variant gets taller) */}
             <div className={`relative w-full overflow-hidden bg-surface ${variant === "tall" ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
               <Image
                 src={imageSrc || FALLBACK_IMAGE_SRC}
@@ -78,14 +135,10 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
                 priority={false}
               />
-              {/* Hover gradient overlay — intensifies on hover */}
               <div className="absolute inset-0 scrim-50 opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
             </div>
           </div>
-
-          {/* Overlay Actions - Grouped bottom-right */}
           <div className="absolute bottom-3 right-3 flex items-center gap-2 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none">
-            {/* Heart Button with label */}
             <button
               type="button"
               onClick={(event) => {
@@ -103,8 +156,6 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
             </button>
           </div>
         </div>
-
-        {/* Content Inside Card */}
         <button
           type="button"
           onClick={() => onSelect?.(location)}
@@ -129,14 +180,12 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 </span>
               ) : null}
             </div>
-
             <p className="text-sm text-stone">
-              {location.city}, {location.region}
+              {location.parentName
+                ? `${location.city} \u00b7 in ${location.parentName}`
+                : `${location.city}, ${location.region}`}
             </p>
-
             <p className="text-sm text-stone line-clamp-2">{summary}</p>
-
-            {/* Category Pill, Duration, JTA Badge */}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
               <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-md">
                 {location.category}
@@ -153,7 +202,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
               )}
               {estimatedDuration ? (
                 <>
-                  <span className="text-border">·</span>
+                  <span className="text-border">&middot;</span>
                   <span className="flex items-center gap-1 text-sm text-stone">
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <circle cx="12" cy="12" r="10" />
@@ -212,31 +261,18 @@ const FALLBACK_IMAGE_SRC =
 
 function getShortOverview(location: Location, cachedSummary: string | null): string {
   const trimmedCachedSummary = cachedSummary?.trim();
-  if (trimmedCachedSummary) {
-    return trimmedCachedSummary;
-  }
+  if (trimmedCachedSummary) return trimmedCachedSummary;
   const editorialSummary = LOCATION_EDITORIAL_SUMMARIES[location.id]?.trim();
-  if (editorialSummary) {
-    return editorialSummary;
-  }
+  if (editorialSummary) return editorialSummary;
   if (location.shortDescription && location.shortDescription.trim().length > 0) {
     return location.shortDescription.trim();
   }
-
-  const descriptor =
-    CATEGORY_DESCRIPTORS[location.category.toLowerCase()] ?? "Notable experience";
+  const descriptor = CATEGORY_DESCRIPTORS[location.category.toLowerCase()] ?? "Notable experience";
   const cityPiece = location.city ? ` in ${location.city}` : "";
-
   const details: string[] = [];
-  if (location.minBudget) {
-    details.push(`Budget ${location.minBudget}`);
-  }
-  if (location.estimatedDuration) {
-    details.push(`Plan for ${location.estimatedDuration}`);
-  }
-
-  const detailsSentence = details.length > 0 ? ` ${details.join(" • ")}` : "";
-
+  if (location.minBudget) details.push(`Budget ${location.minBudget}`);
+  if (location.estimatedDuration) details.push(`Plan for ${location.estimatedDuration}`);
+  const detailsSentence = details.length > 0 ? ` ${details.join(" \u2022 ")}` : "";
   return `${descriptor}${cityPiece}.${detailsSentence || " Fits into most itineraries."}`;
 }
 
@@ -258,9 +294,7 @@ function hasRealRating(location: Location): boolean {
 }
 
 function formatReviewCount(count: number): string {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`;
-  }
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
   return count.toString();
 }
 

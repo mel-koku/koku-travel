@@ -152,6 +152,9 @@ export type Location = {
   /** Ordering within a parent (lower = first). */
   sortOrder?: number;
 
+  /** Resolved parent location name for display (set on search results for child locations). */
+  parentName?: string;
+
   category: string;
   image: string;
   /**

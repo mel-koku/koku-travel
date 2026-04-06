@@ -91,8 +91,21 @@ export const GET = withApiHandler(
       });
     }
 
-    // Transform Supabase data to Location type
+    // Resolve parent names for child locations (search mode only)
     const rows = (data || []) as unknown as LocationListingDbRow[];
+    const parentNameMap = new Map<string, string>();
+    if (search) {
+      const parentIds = [...new Set(rows.map((r) => r.parent_id).filter(Boolean))] as string[];
+      if (parentIds.length > 0) {
+        const { data: parents } = await supabase
+          .from("locations")
+          .select("id, name")
+          .in("id", parentIds);
+        parents?.forEach((p) => parentNameMap.set(p.id, p.name));
+      }
+    }
+
+    // Transform Supabase data to Location type
     const locations: Location[] = rows.map((row) => ({
         id: row.id,
         name: row.name,
@@ -120,6 +133,8 @@ export const GET = withApiHandler(
         isFeatured: row.is_featured ?? undefined,
         jtaApproved: row.jta_approved ?? undefined,
         isUnescoSite: row.is_unesco_site ?? undefined,
+        parentId: row.parent_id ?? undefined,
+        parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
       }));
 
     // Create paginated response
