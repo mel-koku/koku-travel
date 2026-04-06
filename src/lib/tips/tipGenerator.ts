@@ -32,6 +32,10 @@ export type ActivityTip = {
    * Is this an important/critical tip?
    */
   isImportant?: boolean;
+  /**
+   * Cultural pillar this tip relates to (e.g. "kegare", "omotenashi")
+   */
+  pillar?: string;
 };
 
 /**

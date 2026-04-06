@@ -68,6 +68,7 @@ export type CulturalMomentTemplate = {
   key: string; // "subCategory:city" e.g. "shrine:kyoto"
   content: string;
   icon?: string;
+  pillar?: string;
 };
 
 export type PracticalTipTemplate = {
@@ -75,6 +76,7 @@ export type PracticalTipTemplate = {
   key: string; // "topic" e.g. "ic-card"
   content: string;
   icon?: string;
+  pillar?: string;
 };
 
 export type DaySummaryTemplate = {

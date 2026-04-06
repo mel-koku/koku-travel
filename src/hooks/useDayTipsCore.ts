@@ -29,6 +29,7 @@ export type DisplayTip = {
   summary: string;
   content?: string;
   icon: string;
+  pillar?: string;
 };
 
 export const GUIDANCE_TYPE_ICONS: Record<string, string> = {
