@@ -22,6 +22,7 @@ type PlanApiResponse = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: import("@/types/culturalBriefing").CulturalBriefing;
   validation: { valid: boolean; issues: string[] };
 };
 
@@ -94,6 +95,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         dayIntros: result.dayIntros,
         guideProse: result.guideProse,
         dailyBriefings: result.dailyBriefings,
+        culturalBriefing: result.culturalBriefing,
       });
 
       // Track vibe selections for learned preferences

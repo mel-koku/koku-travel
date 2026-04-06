@@ -18,6 +18,7 @@ import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinera
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
 
 import { LocationSearchBar } from "./LocationSearchBar";
@@ -56,7 +57,7 @@ const DiscoverMap = dynamic(
   { ssr: false },
 );
 
-type ItineraryViewMode = "timeline" | "dashboard" | "discover";
+type ItineraryViewMode = "timeline" | "dashboard" | "discover" | "culture";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -77,6 +78,7 @@ type ItineraryShellProps = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: CulturalBriefing;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -106,6 +108,7 @@ export const ItineraryShell = ({
   dayIntros,
   guideProse,
   dailyBriefings,
+  culturalBriefing,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -586,6 +589,7 @@ export const ItineraryShell = ({
                           { key: "timeline", label: "Timeline" },
                           { key: "dashboard", label: "Overview" },
                           ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
+                          ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
                         ] as { key: ItineraryViewMode; label: string }[]
                       ).map((tab) => (
                         <button
@@ -694,6 +698,15 @@ export const ItineraryShell = ({
                 geoLoading={discover.geoLocation.isLoading}
                 geoError={discover.geoLocation.error}
               />
+            </div>
+          )}
+
+          {/* Before You Land (Culture) Tab */}
+          {viewMode === "culture" && culturalBriefing && (
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+              <div className="py-8 text-center text-foreground-secondary">
+                Before You Land tab placeholder
+              </div>
             </div>
           )}
 
