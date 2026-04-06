@@ -148,6 +148,10 @@ export const ItineraryShell = ({
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
+  const [cultureTabSeen, setCultureTabSeen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("koku-culture-tab-seen") === "true";
+  });
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
@@ -194,6 +198,14 @@ export const ItineraryShell = ({
       finalHeadingRef.current.focus();
     }
   }, [finalHeadingRef]);
+
+  // Mark culture tab as seen on first visit
+  useEffect(() => {
+    if (viewMode === "culture" && !cultureTabSeen) {
+      setCultureTabSeen(true);
+      localStorage.setItem("koku-culture-tab-seen", "true");
+    }
+  }, [viewMode, cultureTabSeen]);
 
   // Keyboard shortcuts for undo/redo (Cmd+Z / Cmd+Shift+Z / Cmd+Y)
   useEffect(() => {
@@ -604,6 +616,9 @@ export const ItineraryShell = ({
                           }`}
                         >
                           {tab.label}
+                          {tab.key === "culture" && !cultureTabSeen && (
+                            <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
+                          )}
                         </button>
                       ))}
                     </div>
