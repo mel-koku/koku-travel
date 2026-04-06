@@ -82,6 +82,7 @@ export const GET = withApiHandler(
         const { data: batch, error } = await applyActiveLocationFilters(
           supabase.from("locations").select("city, category, region, prefecture, neighborhood")
         ).eq("is_accommodation", false)
+          .is("parent_id", null) // Only count top-level locations for filter options
           .range(from, to);
 
         if (error) {

@@ -50,7 +50,11 @@ export const GET = withApiHandler(
     if (category) countQuery = countQuery.eq("category", category);
     if (featured === "true") countQuery = countQuery.eq("is_featured", true);
     if (search) {
+      // Search matches ALL locations (including children, which show "in {parent}" annotation)
       countQuery = applySearchFilter(countQuery, search);
+    } else {
+      // Browse mode: only top-level locations
+      countQuery = countQuery.is("parent_id", null);
     }
     const { count, error: countError } = await countQuery;
 
@@ -73,6 +77,8 @@ export const GET = withApiHandler(
     if (featured === "true") dataQuery = dataQuery.eq("is_featured", true);
     if (search) {
       dataQuery = applySearchFilter(dataQuery, search);
+    } else {
+      dataQuery = dataQuery.is("parent_id", null);
     }
     const { data, error } = await dataQuery
       .order("name", { ascending: true })
