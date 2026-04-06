@@ -94,6 +94,9 @@ ${dayIds.map((id, i) => `Day ${i + 1}: "${id}"`).join("\n")}
 ### tripOverview (2-3 sentences)
 The arc of the whole trip. Name 1-2 cities. Set expectations without listing activities. Think back-cover copy.
 
+### culturalBriefingIntro (2-3 sentences, max 250 chars, optional)
+A cultural briefing intro that contextualizes this traveler's specific itinerary to Japanese cultural expectations. Reference the types of places they'll visit (temples, onsen, markets, residential neighborhoods) and set the tone that understanding these customs will transform their experience. Do not list rules. Do not use deny-list words.
+
 ### Per day (use exact dayId values from above):
 
 **intro** (1-2 sentences, max 180 chars)
