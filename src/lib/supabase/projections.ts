@@ -79,6 +79,7 @@ export type LocationDbRow = {
   // Seasonal availability fields
   is_seasonal: boolean | null;
   seasonal_type: SeasonalType | null;
+  valid_months: number[] | null;
   // Practical travel info (Gemini-enriched)
   name_japanese: string | null;
   nearest_station: string | null;
@@ -237,6 +238,7 @@ export const LOCATION_ITINERARY_COLUMNS = `
   editorial_summary,
   is_seasonal,
   seasonal_type,
+  valid_months,
   price_level,
   accessibility_options,
   dietary_options,

@@ -134,6 +134,7 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
       // Seasonal fields
       isSeasonal: fullRow.is_seasonal ?? undefined,
       seasonalType: fullRow.seasonal_type ?? undefined,
+      validMonths: fullRow.valid_months ?? undefined,
       // Enrichment fields used by scoring (tags, cuisine, hidden gems, practical info)
       cuisineType: fullRow.cuisine_type ?? undefined,
       isHiddenGem: fullRow.is_hidden_gem ?? undefined,
