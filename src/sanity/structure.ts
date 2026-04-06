@@ -134,4 +134,11 @@ export const deskStructure = (S: StructureBuilder) =>
       S.listItem()
         .title("Authors")
         .child(S.documentTypeList("author").title("Authors")),
+
+      S.divider(),
+
+      // ── Cultural Pillars ───────────────────────
+      S.listItem()
+        .title("Cultural Pillars")
+        .child(S.documentTypeList("culturalPillar").title("Cultural Pillars")),
     ]);
