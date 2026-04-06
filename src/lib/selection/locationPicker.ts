@@ -94,6 +94,7 @@ export function pickLocationForTimeSlot(
   hasLocalSecretsVibe?: boolean,
   hasNatureAdventureVibe?: boolean,
   hasHeritageVibe?: boolean,
+  clusterContext?: { clusterPairs: Set<string>; scheduledIds: string[] },
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -214,11 +215,27 @@ export function pickLocationForTimeSlot(
     hasHeritageVibe,
   };
 
-  const scored = candidates
+  let scored = candidates
     .map((loc) => scoreLocation(loc, criteria))
     // Filter out locations with very negative scores (e.g., -100 for >50km distance)
     // These are effectively "invalid" for this query
     .filter((locScore) => locScore.score >= -50);
+
+  // Apply cluster bonus: +5 when candidate is near a same-day activity
+  if (clusterContext && clusterContext.clusterPairs.size > 0 && clusterContext.scheduledIds.length > 0) {
+    scored = scored.map((locScore) => {
+      for (const scheduledId of clusterContext.scheduledIds) {
+        if (clusterContext.clusterPairs.has(`${locScore.location.id}::${scheduledId}`)) {
+          return {
+            ...locScore,
+            score: locScore.score + 5,
+            reasoning: [...locScore.reasoning, "Cluster proximity bonus: +5 (near same-day activity)"],
+          };
+        }
+      }
+      return locScore;
+    });
+  }
 
   // Apply diversity filter
   const diversityContext: DiversityContext = {

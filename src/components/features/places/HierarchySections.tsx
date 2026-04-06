@@ -39,12 +39,12 @@ export function ChildLocationsSection({
       <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
         Things to do in {parentName}
       </h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {childLocations.map((child) => (
           <LocationCard
             key={child.id}
             location={child}
-            variant="default"
+            variant="compact"
           />
         ))}
       </div>
@@ -53,7 +53,7 @@ export function ChildLocationsSection({
 }
 
 // ============================================
-// Sub-experiences Section ("Don't miss")
+// Sub-experiences Section
 // ============================================
 
 function SubExperienceCard({ item }: { item: SubExperience }) {
@@ -125,7 +125,6 @@ export function SubExperiencesSection({
           </div>
         </div>
       )}
-
       {routeStops.length > 0 && (
         <div className="space-y-3">
           <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
@@ -138,7 +137,6 @@ export function SubExperiencesSection({
           </div>
         </div>
       )}
-
       {timeVariants.length > 0 && (
         <div className="space-y-3">
           <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
@@ -156,7 +154,7 @@ export function SubExperiencesSection({
 }
 
 // ============================================
-// Relationships Section ("In this area" / "Consider instead")
+// Relationships Section
 // ============================================
 
 export function RelationshipsSection({
@@ -181,18 +179,18 @@ export function RelationshipsSection({
           <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             In this area
           </h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {clusters.slice(0, 6).map((rel) => (
               <LocationCard
                 key={rel.id}
                 location={rel.relatedLocation!}
-                variant="default"
+                variant="compact"
+                meta={rel.walkMinutes ? `${rel.walkMinutes} min walk` : undefined}
               />
             ))}
           </div>
         </motion.section>
       )}
-
       {alternatives.length > 0 && (
         <motion.section
           variants={fadeUp}
@@ -203,12 +201,12 @@ export function RelationshipsSection({
           <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Consider instead
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {alternatives.map((rel) => (
               <div key={rel.id} className="space-y-1">
                 <LocationCard
                   location={rel.relatedLocation!}
-                  variant="default"
+                  variant="compact"
                 />
                 {rel.editorialNote && (
                   <p className="px-1 text-xs text-foreground-secondary">
