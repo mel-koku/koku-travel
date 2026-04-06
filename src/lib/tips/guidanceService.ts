@@ -51,17 +51,33 @@ const SPECIFICITY_TAGS = new Set([
   "udon", "soba", "tempura", "kaiseki",
   "yakiniku", "tonkatsu", "gyukatsu", "curry",
   "kaedama", "hakata",
+  "gyutan", "gyoza", "teppanyaki", "fugu", "champon", "chanpon",
+  "okinawa soba", "taiyaki", "kakigori",
+  "nabe", "yudofu", "oden", "soup curry", "genghis-khan",
+  "taco-rice", "champuru", "kobe beef",
+  "sanuki-udon", "kitakata", "hoto",
+  // Sweets / street food
+  "wagashi", "zunda",
+  // Drinks
+  "sake", "shochu", "umeshu",
   // Chain / brand names
   "ichiran", "ippudo", "mos burger", "saizeriya",
   "doutor", "komeda", "ootoya", "yayoiken",
   "tenya", "marugame seimen", "yoshinoya", "matsuya", "sukiya",
   "sushiro", "kura sushi", "hamazushi", "torikizoku",
   "don quijote", "donki", "coco ichibanya",
+  "yabaton", "blue seal", "famichiki", "familymart", "lawson", "7-eleven",
+  // Markets
+  "tsukiji", "nishiki", "ameyoko", "makishi", "omicho market",
+  // Dining districts / nightlife areas
+  "pontocho", "kiyamachi", "gion", "nakasu", "shinsekai",
+  "tsukishima", "yurakucho", "chinatown",
   // Venue / attraction names
   "robot restaurant", "teamlab", "ghibli",
   "disneysea", "disneyland", "usj", "universal studios",
   "oedo onsen", "oedo-onsen", "spa world", "spa-world",
   "super potato", "kabuki-za",
+  "kibune", "kawadoko", "uji",
   // Landmarks — Kyoto
   "fushimi inari", "kinkaku", "kinkakuji", "kiyomizu",
   "arashiyama", "bamboo grove", "nishiki market",
@@ -178,6 +194,13 @@ export async function fetchMatchingGuidance(
  * Higher score = better match.
  * Returns 0 if guidance doesn't match at all.
  */
+export function _testCalculateMatchScore(
+  guidance: TravelGuidance,
+  criteria: GuidanceMatchCriteria,
+): number {
+  return calculateMatchScore(guidance, criteria);
+}
+
 function calculateMatchScore(
   guidance: TravelGuidance,
   criteria: GuidanceMatchCriteria,
@@ -241,6 +264,15 @@ function calculateMatchScore(
   // category isn't among them, this tip is about a different kind of place.
   // City/region alone shouldn't be enough to surface it.
   if (criteria.category && guidance.categories.length > 0 && !categoryMatched) {
+    return 0;
+  }
+
+  // Exclusion: non-universal tips with empty categories[] are city/region-level
+  // advice (transit, budget, accessibility) that belong in day-level guidance,
+  // not on individual location detail pages. Without this gate, city/region
+  // match alone lets tips like "Hotel Prices Rise Late March" or "Tokyo Station
+  // Orientation" leak onto unrelated restaurant/temple/shrine pages.
+  if (criteria.category && guidance.categories.length === 0) {
     return 0;
   }
 
