@@ -55,10 +55,7 @@ export const GET = withApiHandler(
     const { count, error: countError } = await countQuery;
 
     if (countError) {
-      logger.error("Failed to count locations", {
-        error: countError,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to count locations", countError, { requestId: context.requestId });
       return internalError("Failed to fetch locations from database", { error: countError.message }, {
         requestId: context.requestId,
       });
@@ -82,10 +79,7 @@ export const GET = withApiHandler(
       .range(pagination.offset, pagination.offset + pagination.limit - 1);
 
     if (error) {
-      logger.error("Failed to fetch locations from Supabase", {
-        error,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to fetch locations from Supabase", error, { requestId: context.requestId });
       return internalError("Failed to fetch locations from database", { error: error.message }, {
         requestId: context.requestId,
       });

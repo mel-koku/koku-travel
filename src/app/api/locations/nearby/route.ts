@@ -84,7 +84,7 @@ export const GET = withApiHandler(
     const { data, error } = await query.limit(200); // Fetch extra, then filter + sort client-side
 
     if (error) {
-      logger.error("Nearby query failed", { error, requestId: context.requestId });
+      logger.error("Nearby query failed", error, { requestId: context.requestId });
       return internalError("Failed to fetch nearby locations", { error: error.message }, {
         requestId: context.requestId,
       });

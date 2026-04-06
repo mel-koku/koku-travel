@@ -114,8 +114,7 @@ export const GET = withApiHandler(
         .range(from, to);
 
       if (error) {
-        logger.error("Failed to fetch experiences page", {
-          error,
+        logger.error("Failed to fetch experiences page", error, {
           page,
           requestId: context.requestId,
         });
