@@ -77,10 +77,7 @@ export const GET = withApiHandler(
     ).eq("is_accommodation", false);
 
     if (countError) {
-      logger.error("Failed to count locations", {
-        error: countError,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to count locations", countError, { requestId: context.requestId });
       return internalError("Failed to fetch locations from database", { error: countError.message }, {
         requestId: context.requestId,
       });
@@ -107,8 +104,7 @@ export const GET = withApiHandler(
     for (const [i, result] of pageResults.entries()) {
       const { data: batch, error } = result;
       if (error) {
-        logger.error("Failed to fetch locations page", {
-          error,
+        logger.error("Failed to fetch locations page", error, {
           page: i,
           requestId: context.requestId,
         });

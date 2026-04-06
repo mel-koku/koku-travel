@@ -170,7 +170,7 @@ export async function fetchLocationById(id: string): Promise<Location | null> {
     .single();
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationById] Supabase query failed", { error: error.message, code: error.code, id });
+    if (error) logger.error("[fetchLocationById] Supabase query failed", error, { code: error.code, id });
     return null;
   }
 
@@ -197,7 +197,7 @@ export async function fetchLocationsByIds(ids: string[]): Promise<Location[]> {
     .in("id", ids);
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationsByIds] Supabase query failed", { error: error.message, code: error.code });
+    if (error) logger.error("[fetchLocationsByIds] Supabase query failed", error, { code: error.code });
     return [];
   }
 
@@ -223,7 +223,7 @@ export async function fetchLocationByName(name: string): Promise<Location | null
     .single();
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationByName] Supabase query failed", { error: error.message, code: error.code, name });
+    if (error) logger.error("[fetchLocationByName] Supabase query failed", error, { code: error.code, name });
     return null;
   }
 
@@ -254,7 +254,7 @@ export async function fetchLocationsByNames(names: string[]): Promise<Location[]
     .or(nameFilters);
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationsByNames] Supabase query failed", { error: error.message, code: error.code });
+    if (error) logger.error("[fetchLocationsByNames] Supabase query failed", error, { code: error.code });
     return [];
   }
 
@@ -309,7 +309,7 @@ export async function fetchLocationsByCity(
   const { data, error } = await query.limit(limit);
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationsByCity] Supabase query failed", { error: error.message, code: error.code, city });
+    if (error) logger.error("[fetchLocationsByCity] Supabase query failed", error, { code: error.code, city });
     return [];
   }
 
@@ -374,7 +374,7 @@ export async function fetchLocationsByCategories(
   const { data, error } = await query.limit(limit);
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationsByCategories] Supabase query failed", { error: error.message, code: error.code, categories });
+    if (error) logger.error("[fetchLocationsByCategories] Supabase query failed", error, { code: error.code, categories });
     return [];
   }
 
@@ -401,7 +401,7 @@ export async function fetchLocationsByIdsForListing(ids: string[]): Promise<Loca
     .in("id", ids);
 
   if (error || !data) {
-    if (error) logger.error("[fetchLocationsByIdsForListing] Supabase query failed", { error: error.message, code: error.code });
+    if (error) logger.error("[fetchLocationsByIdsForListing] Supabase query failed", error, { code: error.code });
     return [];
   }
 
@@ -451,7 +451,7 @@ export async function fetchTopRatedLocations(
     .limit(limit);
 
   if (error || !data) {
-    if (error) logger.error("[fetchTopRatedLocations] Supabase query failed", { error: error.message, code: error.code });
+    if (error) logger.error("[fetchTopRatedLocations] Supabase query failed", error, { code: error.code });
     return [];
   }
 

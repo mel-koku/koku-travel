@@ -85,8 +85,7 @@ export const GET = withApiHandler(
           .range(from, to);
 
         if (error) {
-          logger.error("Failed to fetch locations for filter metadata", {
-            error,
+          logger.error("Failed to fetch locations for filter metadata", error, {
             page,
             requestId: context.requestId,
           });

@@ -71,8 +71,7 @@ export const GET = withApiHandler(
       .limit(limit);
 
     if (error) {
-      logger.error("Failed to search locations", {
-        error,
+      logger.error("Failed to search locations", error, {
         query,
         requestId: context.requestId,
       });
