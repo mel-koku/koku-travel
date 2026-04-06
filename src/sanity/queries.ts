@@ -494,3 +494,27 @@ export const pagesContentQuery = groq`
     itineraryBuilderLink
   }
 `;
+
+/** Cultural pillars for Before You Land briefing */
+export const culturalPillarsQuery = groq`
+  *[_type == "culturalPillar"] | order(sortOrder asc) {
+    name,
+    japanese,
+    "slug": slug.current,
+    pronunciation,
+    tagline,
+    concept,
+    inPractice,
+    forTravelers,
+    briefIntro,
+    icon,
+    sortOrder,
+    behaviors[] {
+      situation,
+      action,
+      why,
+      categories,
+      severity
+    }
+  }
+`;

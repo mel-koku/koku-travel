@@ -4,6 +4,7 @@ import {
   siteSettingsQuery,
   tripBuilderConfigQuery,
   pagesContentQuery,
+  culturalPillarsQuery,
 } from "@/sanity/queries";
 import type {
   LandingPageContent,
@@ -11,6 +12,7 @@ import type {
   TripBuilderConfig,
   PagesContent,
 } from "@/types/sanitySiteContent";
+import type { CulturalPillar } from "@/types/culturalBriefing";
 import { readFileCache, readFileCacheStale, writeFileCache } from "@/lib/api/fileCache";
 
 /**
@@ -99,4 +101,8 @@ export async function getTripBuilderConfig(): Promise<TripBuilderConfig | null> 
 
 export async function getPagesContent(): Promise<PagesContent | null> {
   return fetchWithCache<PagesContent>("pagesContent", pagesContentQuery);
+}
+
+export async function getCulturalPillars(): Promise<CulturalPillar[] | null> {
+  return fetchWithCache<CulturalPillar[]>("culturalPillars", culturalPillarsQuery);
 }
