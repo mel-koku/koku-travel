@@ -100,6 +100,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "At the temizuya (water basin) near the entrance, purify your hands before approaching the main hall. Use the ladle to pour water over your left hand, then right, then cup water in your left hand to rinse your mouth. Don't drink directly from the ladle.",
     icon: "⛩️",
+    pillar: "kegare",
   },
   {
     id: "pt-14",
@@ -107,6 +108,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "The standard shrine prayer is: toss a coin (5 yen is lucky, 'go-en' sounds like 'good connection'), bow twice, clap twice, make your wish, then bow once more. It's fine to take your time; nobody will rush you.",
     icon: "🙏",
+    pillar: "kegare",
   },
   {
     id: "pt-15",
@@ -114,6 +116,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Walk along the sides of the sando (approach path) rather than the center, which is considered the gods' pathway. The torii gate marks the transition from the secular world to sacred space. A slight bow as you pass through is a nice touch.",
     icon: "🚶",
+    pillar: "kegare",
   },
 
   // ── Temple Etiquette (3 variants) ─────────────────────────────────────
@@ -123,6 +126,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "If you're entering a temple building, shoes come off. Look for the shelves or plastic bags provided at the entrance. Socks are fine and recommended, especially in winter when the wooden floors get cold.",
     icon: "🛕",
+    pillar: "kegare",
   },
   {
     id: "pt-17",
@@ -130,6 +134,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "At the incense burner outside the main hall, waft the smoke toward any part of your body you'd like to 'heal.' It's believed to have purifying properties. Head for wisdom, shoulders for strength. You'll see locals doing the same.",
     icon: "🪔",
+    pillar: "kegare",
   },
   {
     id: "pt-18",
@@ -137,6 +142,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Photography rules vary by temple. Interiors are often no-photo zones, while gardens and exteriors are usually fine. Look for signs with a camera icon. When in doubt, ask the staff. And please silence your phone before entering.",
     icon: "📷",
+    pillar: "kegare",
   },
 
   // ── Onsen Etiquette (3 variants) ──────────────────────────────────────
@@ -146,6 +152,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "The golden rule of onsen: wash thoroughly before getting into the bath. Use the shower stations provided and make sure all soap is rinsed off. The bath water is shared, so keeping it clean is essential. Your small towel stays out of the water.",
     icon: "♨️",
+    pillar: "kegare",
   },
   {
     id: "pt-20",
@@ -153,6 +160,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Most traditional onsen do not allow tattoos, but policies are slowly changing. Some offer private baths (kashikiri) as an alternative, and larger cities tend to be more lenient. It's worth calling ahead or checking their website to avoid disappointment.",
     icon: "🛁",
+    pillar: "kegare",
   },
   {
     id: "pt-21",
@@ -160,6 +168,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Don't bring your large towel into the bathing area. Only the small hand towel. Most people fold it and place it on their head while soaking. Ease into the hot water slowly, especially at higher-temperature baths, and stay hydrated.",
     icon: "🧖",
+    pillar: "kegare",
   },
 
   // ── Dining Etiquette (3 variants) ─────────────────────────────────────
@@ -169,6 +178,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "No tipping in Japan. Really! It can actually be considered rude. When you receive the oshibori (hot towel), it's for your hands only. And don't forget to say 'gochisousama deshita' (thank you for the meal) when you leave.",
     icon: "🍽️",
+    pillar: "omotenashi",
   },
   {
     id: "pt-23",
@@ -176,6 +186,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Many restaurants use ticket machines (shokkenki) at the entrance. Insert money, select your dish from the buttons, and hand the ticket to the staff. Don't panic if it's all in Japanese; the top-left button is usually the house specialty.",
     icon: "🎫",
+    pillar: "meiwaku",
   },
   {
     id: "pt-24",
@@ -183,6 +194,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "It's perfectly fine to slurp noodles loudly in Japan. In fact, it's a sign you're enjoying the meal. When eating ramen, start with a sip of the broth, then the noodles. Lift the bowl to drink the soup; no spoon needed.",
     icon: "🍜",
+    pillar: "omotenashi",
   },
 
   // ── Tax-Free Shopping (2 variants) ────────────────────────────────────
@@ -254,6 +266,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Stand on the left side of escalators in Tokyo and most of Japan. In Osaka and Kyoto, stand on the right. Follow what locals ahead of you are doing if unsure. The walking side is always kept clear for people in a hurry.",
     icon: "🚶",
+    pillar: "wa",
   },
   {
     id: "pt-34",
@@ -286,6 +299,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "Shoe removal is common in Japan: temples, ryokan, many restaurants with tatami, some museums, and all homes. Wear slip-on shoes and clean socks. Look for a raised entry (genkan) or shoe shelves as your cue.",
     icon: "👟",
+    pillar: "kegare",
   },
   {
     id: "pt-38",
@@ -293,5 +307,6 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     content:
       "When you remove your shoes, point them toward the exit (toes facing the door). Slippers provided inside are for hallways only. Remove them before stepping onto tatami. Toilet slippers stay in the bathroom.",
     icon: "👟",
+    pillar: "kegare",
   },
 ];
