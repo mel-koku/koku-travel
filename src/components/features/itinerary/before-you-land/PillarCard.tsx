@@ -25,7 +25,7 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="flex w-full items-start gap-4 p-5 text-left"
+        className="flex w-full items-start gap-4 px-4 py-5 text-left sm:px-5"
       >
         <span className="text-2xl">{pillar.icon}</span>
         <div className="min-w-0 flex-1">
@@ -66,7 +66,7 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
             transition={{ duration: 0.3, ease: [...easeEditorial] as [number, number, number, number] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-border px-5 pt-4 pb-5">
+            <div className="border-t border-border px-4 pt-4 pb-5 sm:px-5">
               <div className="space-y-3">
                 <p className={typography({ intent: "editorial-prose" })}>
                   {pillar.concept}

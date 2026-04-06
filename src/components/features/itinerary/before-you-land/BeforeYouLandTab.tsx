@@ -14,7 +14,7 @@ export function BeforeYouLandTab({ briefing }: BeforeYouLandTabProps) {
   return (
     <div className="space-y-6 py-6">
       <ScrollReveal>
-        <div className="rounded-lg bg-canvas px-5 py-6">
+        <div className="rounded-lg bg-canvas px-4 py-6 sm:px-5">
           <p className="eyebrow-mono mb-2">Before You Land</p>
           <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-3")}>
             The Japanese Way
