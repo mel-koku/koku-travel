@@ -11,7 +11,7 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
+import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
@@ -139,11 +139,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     return pills;
   }, [locationWithDetails.goodForChildren, locationWithDetails.goodForGroups]);
 
-  // Guidance tips
+  // Location-specific guidance tips (only tips explicitly targeting this location)
   const [tips, setTips] = useState<TravelGuidance[]>([]);
   useEffect(() => {
     let cancelled = false;
-    fetchGuidanceForLocation(locationWithDetails)
+    fetchLocationSpecificGuidance(locationWithDetails)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -353,13 +353,20 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           )}
 
 
-          {/* Local tips */}
-          {tips.length > 0 && (
+          {/* Local tips: insider tip + location-specific guidance */}
+          {(location.insiderTip || tips.length > 0) && (
             <section className="space-y-2">
               <h3 className="eyebrow-editorial">
                 Local tips
               </h3>
               <div className="space-y-2">
+                {location.insiderTip && (
+                  <div className="rounded-lg bg-yuzu-tint p-3">
+                    <p className="text-sm leading-relaxed text-foreground-body">
+                      {location.insiderTip}
+                    </p>
+                  </div>
+                )}
                 {tips.map((tip) => (
                   <div
                     key={tip.id}
