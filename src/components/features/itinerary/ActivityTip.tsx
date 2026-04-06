@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import type { ActivityTip } from "@/lib/tips/tipGenerator";
+import { PillarTag } from "./before-you-land/PillarTag";
 
 export type ActivityTipBadgeProps = {
   tip: ActivityTip;
@@ -69,6 +70,7 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
               </p>
               <p className="mt-0.5 text-xs text-foreground-secondary leading-relaxed">
                 {tip.message}
+                {tip.pillar && <PillarTag slug={tip.pillar} />}
               </p>
             </div>
           </div>

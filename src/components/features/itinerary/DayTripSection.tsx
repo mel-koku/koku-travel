@@ -133,6 +133,8 @@ export function DayTripSection({
                       onClick={() => handleViewDetails(s)}
                       className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-canvas"
                     >
+                      {/* 56x56 thumbnail, external Google Places URL. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={s.image}
                         alt={s.targetLocationName}

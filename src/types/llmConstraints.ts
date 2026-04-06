@@ -93,6 +93,7 @@ export type GeneratedDayGuide = {
 
 export type GeneratedGuide = {
   tripOverview: string;
+  culturalBriefingIntro?: string;
   days: GeneratedDayGuide[];
 };
 

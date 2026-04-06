@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { useDayTipsCore } from "@/hooks/useDayTipsCore";
+import { PillarTag } from "./before-you-land/PillarTag";
 
 const DISMISSED_TIPS_KEY = "koku-dismissed-tips";
 
@@ -143,6 +144,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
             </div>
             <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
               {tip.summary}
+              {tip.pillar && <PillarTag slug={tip.pillar} />}
             </p>
             {tip.content && isTipExpanded && (
               <p className="mt-1.5 border-t border-border/50 pt-1.5 text-xs leading-relaxed text-foreground-secondary/80">

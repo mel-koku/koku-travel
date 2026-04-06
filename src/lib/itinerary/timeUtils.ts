@@ -20,28 +20,3 @@ export function isToday(tripStartDate: string | undefined, dayIndex: number): bo
   return dayDate.getTime() === today.getTime();
 }
 
-/**
- * Format minutes until an event as a human-readable relative time string.
- */
-export function formatRelativeTime(minutesUntil: number): string {
-  if (minutesUntil < 0) {
-    const abs = Math.abs(minutesUntil);
-    if (abs < 60) return `${abs} min ago`;
-    const hours = Math.floor(abs / 60);
-    return `${hours}h ago`;
-  }
-  if (minutesUntil === 0) return "now";
-  if (minutesUntil < 60) return `in ${minutesUntil} min`;
-  const hours = Math.floor(minutesUntil / 60);
-  const mins = minutesUntil % 60;
-  if (mins === 0) return `in ${hours}h`;
-  return `in ${hours}h ${mins}m`;
-}
-
-/**
- * Get current minutes since midnight in local time.
- */
-export function getCurrentMinutes(): number {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
-}

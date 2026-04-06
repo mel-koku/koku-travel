@@ -31,6 +31,8 @@ vi.mock("@/lib/server/dayIntroGenerator", () => ({ generateDayIntros: vi.fn() })
 vi.mock("@/lib/server/intentExtractor", () => ({ extractTripIntent: vi.fn() }));
 vi.mock("@/lib/server/guideProseGenerator", () => ({ generateGuideProse: vi.fn() }));
 vi.mock("@/lib/server/dayRefinement", () => ({ refineDays: vi.fn() }));
+vi.mock("@/lib/sanity/contentService", () => ({ getCulturalPillars: vi.fn().mockResolvedValue(null) }));
+vi.mock("@/lib/briefing/briefingAssembler", () => ({ assembleBriefing: vi.fn() }));
 vi.mock("@/data/dayTrips", () => ({ getDayTripsFromCity: vi.fn().mockReturnValue([]) }));
 vi.mock("@/lib/utils/seasonUtils", () => ({
   getSeason: vi.fn().mockReturnValue("spring"),

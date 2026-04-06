@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContext";
 import type { TripStyle } from "@/types/trip";

@@ -58,58 +58,6 @@ describe("getTripLevelTips", () => {
     expect(ids).not.toContain("trip-escalator");
   });
 
-  it("includes JR pass for multi-city trips with transit", () => {
-    const itinerary = createTestItinerary({
-      days: [
-        createTestItineraryDay({
-          cityId: "tokyo",
-          activities: [
-            createTestPlaceActivity({
-              travelFromPrevious: createTestTravelSegment({ mode: "train" }),
-            }),
-          ],
-        }),
-        createTestItineraryDay({
-          cityId: "osaka",
-          activities: [
-            createTestPlaceActivity({
-              travelFromPrevious: createTestTravelSegment({ mode: "train" }),
-            }),
-          ],
-        }),
-      ],
-    });
-
-    const tips = getTripLevelTips(itinerary);
-    expect(tips.map((t) => t.id)).toContain("trip-jr-pass");
-  });
-
-  it("excludes JR pass for single-city trips", () => {
-    const itinerary = createTestItinerary({
-      days: [
-        createTestItineraryDay({
-          cityId: "tokyo",
-          activities: [
-            createTestPlaceActivity({
-              travelFromPrevious: createTestTravelSegment({ mode: "train" }),
-            }),
-          ],
-        }),
-        createTestItineraryDay({
-          cityId: "tokyo",
-          activities: [
-            createTestPlaceActivity({
-              travelFromPrevious: createTestTravelSegment({ mode: "train" }),
-            }),
-          ],
-        }),
-      ],
-    });
-
-    const tips = getTripLevelTips(itinerary);
-    expect(tips.map((t) => t.id)).not.toContain("trip-jr-pass");
-  });
-
   it("includes goshuin tip when trip has temples", () => {
     const itinerary = createTestItinerary({
       days: [

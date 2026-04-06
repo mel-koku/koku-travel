@@ -154,6 +154,7 @@ dist
 # misc
 .DS_Store
 *.pem
+tsconfig.tsbuildinfo
 
 # vercel
 .vercel

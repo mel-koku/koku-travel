@@ -32,6 +32,10 @@ export type ActivityTip = {
    * Is this an important/critical tip?
    */
   isImportant?: boolean;
+  /**
+   * Cultural pillar this tip relates to (e.g. "kegare", "omotenashi")
+   */
+  pillar?: string;
 };
 
 /**
@@ -156,6 +160,7 @@ function guidanceToActivityTip(guidance: TravelGuidance): ActivityTip {
     priority: guidance.priority,
     icon: guidance.icon ?? "🙏",
     isImportant: guidance.priority >= 8,
+    pillar: guidance.pillarSlug ?? undefined,
   };
 }
 

@@ -90,7 +90,6 @@ function makeCityInfo(key: string, label?: string, regionId?: string): CityInfo 
 function makeLocationsByCityKey(cityKeys: string[]): Map<string, Location[]> {
   const map = new Map<string, Location[]>();
   for (const key of cityKeys) {
-    map.push;
     map.set(key, [{ city: key } as Location]);
   }
   return map;
@@ -166,10 +165,62 @@ describe("citySequence", () => {
       // The last city (Kansai) is >90min from Tokyo, so it should append return
       const entry = makeEntryPoint(); // Tokyo
       const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry);
-      // Should auto-append tokyo at the end as return city
-      const lastCity = result[result.length - 1];
       // The optimization should try to end near Tokyo
       expect(result.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("appends return city when trip has slack (5 days, 2 cities)", () => {
+      // 5 days / 2 cities = slack of 1 day. Append is allowed.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 5);
+      expect(result.length).toBeGreaterThan(2);
+      expect(result[result.length - 1]).toBe("tokyo");
+    });
+
+    it("skips return city on tight short trips (4 days, 2 cities)", () => {
+      // 4 days / 2 cities = no slack (2 per city). Appending would steal
+      // a day, so keep the sequence at 2 and let the distance warning handle
+      // the far-from-exit situation.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 4);
+      expect(result.length).toBe(2);
+      expect(result).not.toContain("tokyo");
+    });
+
+    it("appends Tokyo return city for multi-region round trip ending in Nikko", () => {
+      // Regression: 5-city NRT round trip with Nikko last used to render
+      // without a Tokyo return night because a latching `hasOptimized` ref in
+      // TripSummaryEditorial prevented the optimizer from re-running after
+      // duration changed. Verify the optimizer itself produces the right
+      // append so the fix above is the only thing needed.
+      const entry = makeEntryPoint(); // NRT -> tokyo
+      const result = optimizeCitySequence(
+        entry,
+        ["tokyo", "osaka", "nikko"],
+        entry,
+        8,
+      );
+      // Kanto has tokyo+nikko (round-trip branch fires). Nikko is 150min from
+      // NRT (>90 comfort threshold), 8 > 3*2 slack, so tokyo should be
+      // appended as a return night.
+      expect(result[0]).toBe("tokyo");
+      expect(result[result.length - 1]).toBe("tokyo");
+      expect(result.length).toBe(4);
+    });
+
+    it("skips return city on same-region short trips (Nagoya + Ise, 4 days)", () => {
+      // E11 regression: NGO entry, [nagoya, ise], 4 days. Ise is >90min from
+      // NGO but the trip is too short to spare a return day.
+      const entry = ({
+        type: "airport" as const,
+        id: "NGO",
+        name: "Chubu Centrair International Airport",
+        coordinates: { lat: 34.8584, lng: 136.8052 },
+        cityId: "nagoya",
+        iataCode: "NGO",
+      });
+      const result = optimizeCitySequence(entry, ["nagoya", "ise"], entry, 4);
+      expect(result).toEqual(["nagoya", "ise"]);
     });
   });
 
@@ -412,17 +463,20 @@ describe("citySequence", () => {
     });
 
     it("deduplicates cities when not custom order", () => {
+      // Use a compact Kansai round trip where the last city (kyoto) is within
+      // the 90-minute departure comfort window of KIX, so auto-return-day
+      // won't re-append osaka. That way any duplicate osaka in the output
+      // would have come from the input, which is what we want to dedupe.
       const data = {
-        cities: ["tokyo", "osaka", "tokyo"] as string[],
+        cities: ["osaka", "kyoto", "osaka"] as string[],
         customCityOrder: false,
         dates: { startDate: "2026-04-10", endDate: "2026-04-17" },
-        entryPoint: makeEntryPoint(),
+        entryPoint: makeOsakaEntryPoint(),
       };
-      const locationsByCity = makeLocationsByCityKey(["tokyo", "osaka"]);
+      const locationsByCity = makeLocationsByCityKey(["osaka", "kyoto"]);
       const result = resolveCitySequence(data, locationsByCity, []);
-      // Auto order deduplicates
       const keys = result.map((c) => c.key);
-      expect(keys.filter((k) => k === "tokyo").length).toBe(1);
+      expect(keys.filter((k) => k === "osaka").length).toBe(1);
     });
 
     it("falls back to default rotation when no cities selected", () => {
