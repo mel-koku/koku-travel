@@ -84,18 +84,18 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
                     <div
                       key={`${behavior.situation}-${i}`}
                       className={cn(
-                        "rounded-md border-l-2 py-2 pr-3 pl-3",
+                        "rounded-md px-4 py-3",
                         behavior.severity === "critical"
-                          ? "border-l-error bg-[var(--nasu-tint)]"
+                          ? "bg-nasu-tint"
                           : behavior.severity === "important"
-                            ? "border-l-border bg-canvas"
-                            : "border-l-transparent",
+                            ? "bg-canvas"
+                            : "bg-transparent",
                       )}
                     >
                       {behavior.severity === "critical" && (
-                        <span className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-error">
-                          Important
-                        </span>
+                        <p className="eyebrow-mono mb-1.5 text-error">
+                          Good to know
+                        </p>
                       )}
                       <p className="text-sm font-medium text-foreground">
                         {behavior.situation}
