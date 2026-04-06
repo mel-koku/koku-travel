@@ -28,6 +28,7 @@ import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { BeforeYouLandTab } from "./before-you-land/BeforeYouLandTab";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
@@ -704,9 +705,7 @@ export const ItineraryShell = ({
           {/* Before You Land (Culture) Tab */}
           {viewMode === "culture" && culturalBriefing && (
             <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
-              <div className="py-8 text-center text-foreground-secondary">
-                Before You Land tab placeholder
-              </div>
+              <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
           )}
 
