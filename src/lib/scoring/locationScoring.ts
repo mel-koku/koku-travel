@@ -64,7 +64,7 @@ export function scoreLocation(
         neighborhoodDiversity: 0, weatherFit: 0, timeOptimization: 0,
         groupFit: 0, seasonalFit: 0, contentFit: 0, dietaryFit: 0,
         crowdFit: 0, photoFit: 0, tagMatch: 0,
-        accommodationBonus: 0, unescoBonus: 0,
+        accommodationBonus: 0, unescoBonus: 0, hiddenGemBonus: 0,
       },
       reasoning: [interestResult.reasoning, ratingResult.reasoning, logisticalResult.reasoning],
     };
@@ -144,6 +144,7 @@ export function scoreLocation(
     tagMatch: tagMatchResult.score,
     accommodationBonus,
     unescoBonus: unesco.total,
+    hiddenGemBonus: hiddenGem.total,
   };
 
   const totalScore =
@@ -163,9 +164,9 @@ export function scoreLocation(
     breakdown.crowdFit +
     breakdown.photoFit +
     breakdown.tagMatch +
-    accommodationBonus +
-    hiddenGem.total +
-    unesco.total;
+    breakdown.accommodationBonus +
+    breakdown.hiddenGemBonus +
+    breakdown.unescoBonus;
 
   const reasoning = [
     interestResult.reasoning,

@@ -324,5 +324,42 @@ describe("Location Scoring", () => {
       });
     });
   });
+
+  describe("Score Breakdown Completeness", () => {
+    it("breakdown fields should sum to total score", () => {
+      const hiddenGemLocation: Location = {
+        ...mockLocation,
+        id: "hidden-gem-test",
+        isHiddenGem: true,
+        tags: ["quiet", "outdoor"],
+      };
+      const result = scoreLocation(hiddenGemLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+      });
+      const breakdownSum = Object.values(result.breakdown).reduce((sum, v) => sum + v, 0);
+      expect(breakdownSum).toBe(result.score);
+    });
+
+    it("breakdown should include hiddenGemBonus field", () => {
+      const hiddenGemLocation: Location = {
+        ...mockLocation,
+        id: "hidden-gem-test",
+        isHiddenGem: true,
+      };
+      const result = scoreLocation(hiddenGemLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+      });
+      expect(result.breakdown).toHaveProperty("hiddenGemBonus");
+      expect(result.breakdown.hiddenGemBonus).toBeGreaterThan(0);
+    });
+  });
 });
 
