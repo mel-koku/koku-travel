@@ -27,7 +27,6 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
         onClick={() => setExpanded((prev) => !prev)}
         className="flex w-full items-start gap-4 px-4 py-5 text-left sm:px-5"
       >
-        <span className="text-2xl">{pillar.icon}</span>
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
             <span className={cn(typography({ intent: "editorial-h3" }), "leading-tight")}>
