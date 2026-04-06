@@ -74,7 +74,8 @@ export const GET = withApiHandler(
 
     const { count, error: countError } = await applyActiveLocationFilters(
       supabase.from("locations").select("id", { count: "exact", head: true })
-    ).eq("is_accommodation", false);
+    ).eq("is_accommodation", false)
+      .is("parent_id", null); // Only top-level locations in browse grid
 
     if (countError) {
       logger.error("Failed to count locations", countError, { requestId: context.requestId });
@@ -93,6 +94,7 @@ export const GET = withApiHandler(
       return applyActiveLocationFilters(
         supabase.from("locations").select(LOCATION_EXPLORE_COLUMNS)
       ).eq("is_accommodation", false)
+        .is("parent_id", null) // Only top-level locations in browse grid
         .order("name", { ascending: true })
         .range(from, to);
     });

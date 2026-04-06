@@ -331,6 +331,15 @@ export async function generateItinerary(
     const seenNamesInDay = new Set<string>();
 
     const availableLocations = rawAvailableLocations.filter((loc) => {
+      // 0. Hierarchy filter: exclude children of schedulable parents (parent is the itinerary unit)
+      //    and exclude container parents (not schedulable, children are the units)
+      if (loc.parentId && loc.parentMode !== "container") {
+        // This is a child location -- check if its parent is schedulable
+        const parent = rawAvailableLocations.find((p) => p.id === loc.parentId);
+        if (parent?.parentMode === "schedulable") return false;
+      }
+      if (loc.parentMode === "container") return false;
+
       // 1. Pre-filter by usedLocations (ID) to prevent duplicates across days
       if (usedLocations.has(loc.id)) return false;
 

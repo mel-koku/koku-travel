@@ -72,7 +72,8 @@ export const GET = withApiHandler(
 
     let query = applyActiveLocationFilters(
       supabase.from("locations").select(NEARBY_COLUMNS)
-    ).gte("coordinates->lat", lat - latDelta)
+    ).is("parent_id", null) // Only top-level locations in nearby grid
+      .gte("coordinates->lat", lat - latDelta)
       .lte("coordinates->lat", lat + latDelta)
       .gte("coordinates->lng", lng - lngDelta)
       .lte("coordinates->lng", lng + lngDelta);
