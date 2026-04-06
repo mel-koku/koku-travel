@@ -94,6 +94,10 @@ export type LocationDbRow = {
   source_url: string | null;
   // Tattoo policy for onsen/wellness
   tattoo_policy: "prohibited" | "cover_required" | "accepted" | null;
+  // Hierarchy fields
+  parent_id: string | null;
+  parent_mode: "schedulable" | "container" | "flexible" | null;
+  sort_order: number | null;
 };
 
 /**
@@ -130,7 +134,9 @@ export const LOCATION_LISTING_COLUMNS = `
   insider_tip,
   is_featured,
   jta_approved,
-  is_unesco_site
+  is_unesco_site,
+  parent_id,
+  parent_mode
 `.replace(/\s+/g, "");
 
 /**
@@ -172,7 +178,9 @@ export const LOCATION_EXPLORE_COLUMNS = `
   craft_type,
   insider_tip,
   jta_approved,
-  is_unesco_site
+  is_unesco_site,
+  parent_id,
+  parent_mode
 `.replace(/\s+/g, "");
 
 /**
@@ -199,7 +207,9 @@ export const LOCATION_DETAIL_COLUMNS = `
   place_id,
   preferred_transit_modes,
   jta_approved,
-  is_unesco_site
+  is_unesco_site,
+  parent_id,
+  parent_mode
 `.replace(/\s+/g, "");
 
 /**
@@ -246,7 +256,9 @@ export const LOCATION_ITINERARY_COLUMNS = `
   cuisine_type,
   insider_tip,
   tattoo_policy,
-  is_unesco_site
+  is_unesco_site,
+  parent_id,
+  parent_mode
 `.replace(/\s+/g, "");
 
 /**
@@ -455,4 +467,6 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "is_featured"
   | "jta_approved"
   | "is_unesco_site"
+  | "parent_id"
+  | "parent_mode"
 >;
