@@ -90,6 +90,7 @@ export function buildGuideProseSchema(
 ) {
   return z.object({
     tripOverview: z.string(),
+    culturalBriefingIntro: z.string().optional(),
     days: z.array(
       z.object({
         dayId: dayIds.length > 0 ? z.enum(dayIds as [string, ...string[]]) : z.string(),
