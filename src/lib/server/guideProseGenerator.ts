@@ -172,7 +172,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
 
     clearTimeout(timeout);
 
-    const guide = result.object as GeneratedGuide;
+    let guide = result.object as GeneratedGuide;
 
     // Validate day IDs match
     const returnedIds = new Set(guide.days.map((d) => d.dayId));
@@ -189,13 +189,31 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
     // Scan for deny-listed words that leaked through
     const leaks = scanForDenyListViolations(guide);
     if (leaks.length > 0) {
-      logger.warn("Guide prose deny-list violations", { leaks });
+      logger.warn("Guide prose deny-list violations, retrying", { leaks });
+      try {
+        const retryResult = await generateObject({
+          model: google("gemini-2.5-flash"),
+          schema,
+          prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
+          abortSignal: AbortSignal.timeout(12_000),
+        });
+        const retryGuide = retryResult.object as GeneratedGuide;
+        const retryLeaks = scanForDenyListViolations(retryGuide);
+        if (retryLeaks.length === 0) {
+          logger.info("Guide prose retry succeeded, deny-list clean");
+          guide = retryGuide;
+        } else {
+          logger.warn("Guide prose retry still has violations, accepting", { retryLeaks });
+          guide = retryGuide;
+        }
+      } catch {
+        logger.warn("Guide prose retry failed, using first attempt");
+      }
     }
 
     logger.info("Generated guide prose", {
       dayCount: guide.days.length,
       overviewLength: guide.tripOverview.length,
-      denyListLeaks: leaks.length,
     });
 
     return guide;
@@ -219,10 +237,12 @@ const DENY_LIST_PATTERNS = [
   /\boff the beaten path\b/i, /\btreasure\b/i, /\bembark\b/i, /\bventure\b/i,
   /\bfeast for the senses\b/i, /\btreat yourself\b/i, /\bdon't miss\b/i,
   /\bexperience of a lifetime\b/i, /\bbucket list\b/i, /\bget ready\b/i,
-  /\byou'll love\b/i,
+  /\byou'll love\b/i, /\bexplore\b/i, /\bdiscover\b/i, /\bwander\b/i,
+  /\bauthentic\b/i, /\bgem\b/i, /\bstunning\b/i, /\bbreathtaking\b/i,
+  /\bjourney\b/i, /\bnestled\b/i, /\bbest-kept secret\b/i, /\btapestry\b/i,
 ];
 
-function scanForDenyListViolations(guide: GeneratedGuide): string[] {
+export function scanForDenyListViolations(guide: GeneratedGuide): string[] {
   const violations: string[] = [];
   const allText = [
     guide.tripOverview,
