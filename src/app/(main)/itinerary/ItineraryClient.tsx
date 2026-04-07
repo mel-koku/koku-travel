@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
@@ -16,6 +17,7 @@ import { env } from "@/lib/env";
 import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
 import { useDayTripSuggestions } from "@/hooks/useDayTripSuggestions";
+import { UnlockCeremony } from "@/components/features/itinerary/UnlockCeremony";
 
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
@@ -47,6 +49,8 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   const { trips, updateTripItinerary } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
+  const [showCeremony, setShowCeremony] = useState(false);
+  const [generationPromise, setGenerationPromise] = useState<Promise<unknown> | null>(null);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -83,6 +87,55 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     ? trips.find((trip) => trip.id === selectedTripId)
     : null;
 
+  // Detect return from Stripe checkout (?unlocked=1&session_id=...)
+  useEffect(() => {
+    const unlocked = searchParams.get("unlocked");
+    const sessionId = searchParams.get("session_id");
+
+    if (unlocked === "1" && sessionId && selectedTrip && !selectedTrip.unlockedAt) {
+      const promise = (async () => {
+        // 1. Verify payment
+        const verifyRes = await fetch(
+          `/api/billing/verify?session_id=${sessionId}&trip_id=${selectedTrip.id}`
+        );
+        const verifyData = await verifyRes.json();
+        if (!verifyData.unlocked) return;
+
+        // 2. Run deferred Gemini passes
+        const genRes = await fetch("/api/billing/complete-generation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tripId: selectedTrip.id }),
+        });
+        return genRes.json();
+      })();
+
+      setGenerationPromise(promise);
+      setShowCeremony(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
+  }, []);
+
+  // Unlock button handler (passed down to UnlockCard via ItineraryShell)
+  const handleStartUnlock = useCallback(async () => {
+    if (!selectedTrip) return;
+
+    const res = await fetch("/api/billing/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tripId: selectedTrip.id,
+        tripLengthDays: selectedTrip.itinerary.days.length,
+        cities: [...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))],
+        tripDates: selectedTrip.builderData?.dates?.start ?? "",
+      }),
+    });
+
+    const data = await res.json();
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+    }
+  }, [selectedTrip]);
 
   const activeItinerary: Itinerary | null = selectedTrip
     ? selectedTrip.itinerary
@@ -274,9 +327,24 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           onFilterChange={smartPromptActions.setRefinementFilter}
           isPreviewLoading={smartPromptActions.isLoading}
           dayTripSuggestions={dayTripSuggestions.suggestions}
+          onUnlockClick={handleStartUnlock}
+          tripUnlocked={!!selectedTrip?.unlockedAt}
         />
       </ErrorBoundary>
 
+      <AnimatePresence>
+        {showCeremony && generationPromise && selectedTrip && (
+          <UnlockCeremony
+            cities={[...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))] as string[]}
+            onComplete={() => {
+              setShowCeremony(false);
+              // Force refresh trip data
+              window.location.href = `/itinerary?trip=${selectedTrip.id}`;
+            }}
+            generationPromise={generationPromise}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

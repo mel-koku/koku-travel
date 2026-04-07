@@ -45,6 +45,7 @@ import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
 import { TimelineCityTransition } from "./TimelineCityTransition";
 import { TimelineDragOverlay } from "./TimelineDragOverlay";
 import { TimelineActivityList } from "./TimelineActivityList";
+import { LockedDayOverlay } from "./LockedDayOverlay";
 
 type ItineraryTimelineProps = {
   day: ItineraryDay;
@@ -88,6 +89,10 @@ type ItineraryTimelineProps = {
   onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
   /** Open the LocationExpanded slide-in panel for a location */
   onViewDetails?: (location: Location) => void;
+  /** Whether this day is locked behind the paywall */
+  isLocked?: boolean;
+  /** Called when the user taps unlock on a locked day */
+  onUnlockClick?: () => void;
 };
 
 export const ItineraryTimeline = ({
@@ -124,6 +129,8 @@ export const ItineraryTimeline = ({
   onEndLocationChange,
   onCityAccommodationChange,
   onViewDetails,
+  isLocked,
+  onUnlockClick,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -619,33 +626,50 @@ export const ItineraryTimeline = ({
           );
         })()}
 
-        <TimelineActivityList
-          day={day}
-          dayIndex={dayIndex}
-          totalDays={model.days.length}
-          extendedActivities={extendedActivities}
-          activeId={activeId}
-          selectedActivityId={selectedActivityId}
-          onSelectActivity={onSelectActivity}
-          tripStartDate={tripStartDate}
-          tripId={tripId}
-          onDelete={handleDelete}
-          onUpdate={handleUpdate}
-          onReplace={onReplace}
-          conflictsResult={conflictsResult}
-          guide={guide}
-          isReadOnly={isReadOnly}
-          startLocation={startLocation}
-          endLocation={endLocation}
-          bookendEstimates={bookendEstimates}
-          availabilityIssues={availabilityIssues}
-          onViewDetails={onViewDetails}
-          handleAddNote={handleAddNote}
-          TravelSegmentWrapper={TravelSegmentWrapper}
-          onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
-          onEndLocationChange={isReadOnly ? undefined : onEndLocationChange}
-          onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
-        />
+        {isLocked ? (
+          <div className="relative min-h-50">
+            <div className="select-none" aria-hidden="true">
+              {day.activities
+                .filter((a) => a.kind === "place")
+                .slice(0, 3)
+                .map((a) => (
+                  <div key={a.id} className="mb-4 rounded-lg bg-surface p-4">
+                    <div className="font-serif text-sm text-foreground">{a.title}</div>
+                    <div className="mt-1 h-3 w-2/3 rounded bg-sand/50" />
+                  </div>
+                ))}
+            </div>
+            <LockedDayOverlay onUnlockClick={onUnlockClick ?? (() => {})} />
+          </div>
+        ) : (
+          <TimelineActivityList
+            day={day}
+            dayIndex={dayIndex}
+            totalDays={model.days.length}
+            extendedActivities={extendedActivities}
+            activeId={activeId}
+            selectedActivityId={selectedActivityId}
+            onSelectActivity={onSelectActivity}
+            tripStartDate={tripStartDate}
+            tripId={tripId}
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+            onReplace={onReplace}
+            conflictsResult={conflictsResult}
+            guide={guide}
+            isReadOnly={isReadOnly}
+            startLocation={startLocation}
+            endLocation={endLocation}
+            bookendEstimates={bookendEstimates}
+            availabilityIssues={availabilityIssues}
+            onViewDetails={onViewDetails}
+            handleAddNote={handleAddNote}
+            TravelSegmentWrapper={TravelSegmentWrapper}
+            onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
+            onEndLocationChange={isReadOnly ? undefined : onEndLocationChange}
+            onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
+          />
+        )}
       </div>
 
       {!isReadOnly && (
