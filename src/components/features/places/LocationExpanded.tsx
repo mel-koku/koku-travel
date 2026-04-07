@@ -20,6 +20,7 @@ import { useLocationHierarchy } from "@/hooks/useLocationHierarchy";
 import {
   ChildLocationsSection,
   SubExperiencesSection,
+  SubExperienceTeaser,
   RelationshipsSection,
 } from "./HierarchySections";
 
@@ -42,6 +43,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const wasSaved = useRef(isSaved);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const { data: hierarchy } = useLocationHierarchy(location.id);
+  const subExperiencesRef = useRef<HTMLDivElement>(null);
 
   // Reset active photo when location changes
   useEffect(() => {
@@ -338,6 +340,16 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             )}
           </div>
 
+          {/* Sub-experience teaser */}
+          {hierarchy && hierarchy.subExperiences.length > 0 && (
+            <SubExperienceTeaser
+              subExperiences={hierarchy.subExperiences}
+              onScrollTo={() =>
+                subExperiencesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+            />
+          )}
+
           {/* Description */}
           {(summary || description) && (
             <section className="space-y-2">
@@ -628,7 +640,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
 
           {/* Hierarchy sections */}
           {hierarchy && hierarchy.subExperiences.length > 0 && (
-            <div className="border-t border-border pt-6">
+            <div ref={subExperiencesRef} className="border-t border-border pt-6">
               <SubExperiencesSection subExperiences={hierarchy.subExperiences} />
             </div>
           )}
