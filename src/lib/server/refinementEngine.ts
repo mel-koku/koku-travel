@@ -3,6 +3,42 @@ import "server-only";
 import type { Trip, TripDay } from "@/types/tripDomain";
 import { fetchLocationsByCity, fetchLocationsByCategories } from "@/lib/locations/locationService";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
+import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
+
+/** Default day window: 09:00 to 21:00 = 720 minutes */
+const DEFAULT_DAY_START = 540;
+const DEFAULT_DAY_END = 1260;
+/** Minimum activity duration worth inserting */
+export const MIN_ACTIVITY_DURATION = 45;
+/** Transition buffer between activities (minutes) */
+export const TRANSITION_BUFFER = 15;
+
+/**
+ * Calculate available minutes remaining on a day.
+ * Uses anchor startTime/endTime when available for precision,
+ * falls back to activity.duration otherwise.
+ */
+export function getAvailableMinutesForDay(day: TripDay): number {
+  const totalWindow = DEFAULT_DAY_END - DEFAULT_DAY_START;
+  const activities = day.activities;
+  if (activities.length === 0) return totalWindow;
+
+  let occupied = 0;
+  for (const activity of activities) {
+    if (activity.startTime && activity.endTime) {
+      const start = parseTimeToMinutes(activity.startTime);
+      const end = parseTimeToMinutes(activity.endTime);
+      if (start !== null && end !== null) {
+        occupied += end - start;
+        continue;
+      }
+    }
+    occupied += activity.duration || 90;
+  }
+
+  const transitionTime = Math.max(0, activities.length - 1) * TRANSITION_BUFFER;
+  return Math.max(0, totalWindow - occupied - transitionTime);
+}
 
 /**
  * Refinement types
@@ -103,6 +139,12 @@ function refineTooBusy(day: TripDay, trip: Trip): TripDay {
  */
 async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
+
+  const available = getAvailableMinutesForDay(day);
+  if (available < MIN_ACTIVITY_DURATION) {
+    return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+  }
+
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
   // Find available locations in the same city from the database
@@ -146,7 +188,11 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   });
 
   // Add 1-2 new activities — insert before any departure anchor at the end
-  const toAdd = Math.min(2, uniqueScored.length);
+  const maxByCapacity = Math.floor(available / (90 + TRANSITION_BUFFER));
+  const toAdd = Math.min(maxByCapacity, 2, uniqueScored.length);
+  if (toAdd === 0) {
+    return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+  }
   const newItems = uniqueScored.slice(0, toAdd).map((scoredLoc, index) => ({
     id: `${day.id}-added-${Date.now()}-${index}`,
     locationId: scoredLoc.location.id,
@@ -178,6 +224,12 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
  */
 async function refineMoreFood(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
+
+  const available = getAvailableMinutesForDay(day);
+  if (available < MIN_ACTIVITY_DURATION) {
+    return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+  }
+
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
   // Find food locations from the database
@@ -254,6 +306,12 @@ async function refineMoreFood(day: TripDay, trip: Trip): Promise<TripDay> {
  */
 async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
+
+  const available = getAvailableMinutesForDay(day);
+  if (available < MIN_ACTIVITY_DURATION) {
+    return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+  }
+
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
   // Find culture locations from the database
@@ -380,6 +438,10 @@ async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay>
   // If day has few activities, add the kid-friendly one
   // Otherwise, replace a less kid-friendly activity
   if (activities.length <= 2) {
+    const available = getAvailableMinutesForDay(day);
+    if (available < MIN_ACTIVITY_DURATION) {
+      return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+    }
     const newKidActivity = {
       id: `${day.id}-kid-friendly-${Date.now()}`,
       locationId: bestKidFriendly.location.id,
@@ -451,6 +513,12 @@ function refineMoreRest(day: TripDay, _trip: Trip): TripDay {
  */
 async function refineMoreCraft(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
+
+  const available = getAvailableMinutesForDay(day);
+  if (available < MIN_ACTIVITY_DURATION) {
+    return { ...day, message: "This day is fully scheduled. Remove an activity first to make room." };
+  }
+
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
   const craftLocations = await fetchLocationsByCategories(

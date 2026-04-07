@@ -202,7 +202,7 @@ export type TripDay = {
    */
   explanation?: string;
   /**
-   * Message when refinement made no changes (e.g., no candidates available)
+   * Message when refinement made no changes (e.g., no candidates available, day fully scheduled)
    */
   message?: string;
 };
