@@ -130,4 +130,10 @@ body {
   .print-screen-only {
     display: none !important;
   }
+
+  /* Hide all fixed-position overlays (cookie banner, etc.) from printed pages. */
+  [style*="position: fixed"],
+  .fixed {
+    display: none !important;
+  }
 }

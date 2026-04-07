@@ -77,7 +77,7 @@ function TOCRow({
   emphasis?: boolean;
 }) {
   return (
-    <div className="flex items-baseline gap-3 py-1">
+    <div className="print-avoid-break flex items-baseline gap-3 py-1">
       {meta && (
         <span className="font-mono text-[8pt] uppercase tracking-[0.18em] text-foreground-secondary w-14 flex-shrink-0">
           {meta}

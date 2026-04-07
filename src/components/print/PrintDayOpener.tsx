@@ -53,7 +53,7 @@ export function PrintDayOpener({
           )}
         </header>
 
-        <div className="flex-1 space-y-5 overflow-hidden">
+        <div className="flex-1 space-y-5">
           {intro && (
             <p className="font-serif text-[11pt] leading-[1.65] text-foreground-body">
               {intro}
@@ -80,6 +80,7 @@ export function PrintDayOpener({
           </footer>
         )}
       </div>
+      <div className="print-folio">{cityName ?? `Day ${dayIndex + 1}`}</div>
     </article>
   );
 }

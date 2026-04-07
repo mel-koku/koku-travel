@@ -36,7 +36,7 @@ export function PrintPrologue({ trip }: PrintPrologueProps) {
           </h2>
         </header>
 
-        <div className="flex-1 space-y-5 overflow-hidden">
+        <div className="flex-1 space-y-5">
           {paragraphs.map((paragraph, i) => (
             <p
               key={i}
