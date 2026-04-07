@@ -13,6 +13,7 @@ const DAY_START_OPTIONS = [
 type DayStartTimePickerProps = {
   currentTime: string;
   onChange: (time: string) => void;
+  isReadOnly?: boolean;
 };
 
 /**
@@ -26,7 +27,7 @@ function formatTime(time: string): string {
   return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
-export function DayStartTimePicker({ currentTime, onChange }: DayStartTimePickerProps) {
+export function DayStartTimePicker({ currentTime, onChange, isReadOnly }: DayStartTimePickerProps) {
   const dropdownItems = useMemo(
     () =>
       DAY_START_OPTIONS.map((option) => ({
@@ -66,6 +67,8 @@ export function DayStartTimePicker({ currentTime, onChange }: DayStartTimePicker
     ),
     [currentLabel]
   );
+
+  if (isReadOnly) return null;
 
   return (
     <Dropdown

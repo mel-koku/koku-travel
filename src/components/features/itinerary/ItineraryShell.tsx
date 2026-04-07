@@ -186,11 +186,12 @@ export const ItineraryShell = ({
 
   const handleReorder = useCallback(
     (dayId: string, activityIds: string[]) => {
+      if (isReadOnly) return;
       if (tripId && !isUsingMock) {
         reorderActivities(tripId, dayId, activityIds);
       }
     },
-    [tripId, isUsingMock, reorderActivities],
+    [tripId, isUsingMock, isReadOnly, reorderActivities],
   );
 
   useEffect(() => {
@@ -273,25 +274,28 @@ export const ItineraryShell = ({
   // Handler: set start location for this day
   const handleStartLocationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay?.id) return;
       setDayEntryPoint(tripId, currentDay.id, "start", location);
       // If end isn't explicitly set, it defaults to same as start (via resolution logic)
     },
-    [tripId, currentDay, setDayEntryPoint],
+    [tripId, currentDay, setDayEntryPoint, isReadOnly],
   );
 
   // Handler: set end location for this day
   const handleEndLocationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay?.id) return;
       setDayEntryPoint(tripId, currentDay.id, "end", location);
     },
-    [tripId, currentDay, setDayEntryPoint],
+    [tripId, currentDay, setDayEntryPoint, isReadOnly],
   );
 
   // Handler: set accommodation for all days in this city
   const handleCityAccommodationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay) return;
       const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
       if (!effectiveCityId) return;
@@ -305,12 +309,13 @@ export const ItineraryShell = ({
         setCityAccommodation(tripId, effectiveCityId, undefined);
       }
     },
-    [tripId, currentDay, setCityAccommodation],
+    [tripId, currentDay, setCityAccommodation, isReadOnly],
   );
 
   // Handler: change day start time
   const handleDayStartTimeChange = useCallback(
     (startTime: string) => {
+      if (isReadOnly) return;
       applyModelUpdate((current) => {
         const nextDays = current.days.map((entry, index) => {
           if (index !== safeSelectedDay) return entry;
@@ -325,7 +330,7 @@ export const ItineraryShell = ({
         return { ...current, days: nextDays };
       });
     },
-    [safeSelectedDay, applyModelUpdate],
+    [safeSelectedDay, applyModelUpdate, isReadOnly],
   );
 
   const { currentDaySuggestions, handleAcceptSuggestion } = useSmartSuggestions({
@@ -381,6 +386,7 @@ export const ItineraryShell = ({
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
     (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+      if (isReadOnly) return;
       if (!tripId || isUsingMock || !currentDay) return;
 
       addActivity(tripId, currentDay.id, newActivity);
@@ -397,12 +403,13 @@ export const ItineraryShell = ({
         scheduleUserPlanningRef.current?.(nextItinerary);
       }, 0);
     },
-    [tripId, isUsingMock, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+    [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
   // ── Refine day (Adjust button) ──
   const handleRefineDay = useCallback(
     (refinedDay: ItineraryDay) => {
+      if (isReadOnly) return;
       const nextItinerary = {
         ...model,
         days: model.days.map((d, i) => (i === safeSelectedDay ? refinedDay : d)),
@@ -412,7 +419,7 @@ export const ItineraryShell = ({
         scheduleUserPlanningRef.current?.(nextItinerary);
       }, 0);
     },
-    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef],
+    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef, isReadOnly],
   );
 
   // ── Day trip accept handler ──
@@ -437,10 +444,11 @@ export const ItineraryShell = ({
 
   const handleAddDiscoverActivity = useCallback(
     (location: Location) => {
+      if (isReadOnly) return;
       const newActivity = discover.buildActivity(location);
       handleAddSearchedActivity(newActivity);
     },
-    [discover, handleAddSearchedActivity],
+    [discover, handleAddSearchedActivity, isReadOnly],
   );
 
   // Activity ratings
