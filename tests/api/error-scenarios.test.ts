@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { POST } from "@/app/api/itinerary/plan/route";
 import { createMockRequest } from "../utils/mocks";
 
+vi.mock("server-only", () => ({}));
+vi.mock("@/lib/billing/accessServer", () => ({
+  isFullAccessEnabled: vi.fn().mockResolvedValue(true),
+}));
+
 // Mock dependencies at module level
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
