@@ -15,7 +15,10 @@ export function PrintTransitSteps({ steps }: PrintTransitStepsProps) {
   return (
     <div className="mt-1 mb-2 ml-[16mm] space-y-0.5">
       {steps.map((step, i) => (
-        <PrintTransitStep key={i} step={step} />
+        <PrintTransitStep
+          key={`${step.type}-${step.departureStop ?? step.walkInstruction ?? i}`}
+          step={step}
+        />
       ))}
       {totalFare > 0 && (
         <p className="font-mono text-[7pt] text-foreground-secondary mt-1">

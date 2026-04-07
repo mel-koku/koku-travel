@@ -5,6 +5,7 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 
 const MAX_IDS = 200;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const PRINT_COLUMNS = `id, name_japanese, nearest_station, cash_only, reservation_info`;
 
@@ -39,7 +40,7 @@ export const GET = withApiHandler(
     }
 
     const ids = [...new Set(
-      idsParam.split(",").map((id) => id.trim()).filter((id) => id.length > 0),
+      idsParam.split(",").map((id) => id.trim()).filter((id) => UUID_RE.test(id)),
     )];
 
     if (ids.length === 0) {
