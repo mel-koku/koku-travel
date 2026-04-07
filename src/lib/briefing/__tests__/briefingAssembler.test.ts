@@ -34,6 +34,15 @@ describe("scorePillar", () => {
     expect(highScore).toBeGreaterThan(lowScore);
   });
 
+  it("should score behaviors with empty categories as universally matching", () => {
+    const pillar = makePillar("wa", [
+      { categories: [], severity: "critical" },
+      { categories: [], severity: "important" },
+    ]);
+    const score = scorePillar(pillar, ["restaurant"]);
+    expect(score).toBeGreaterThan(0);
+  });
+
   it("should weight critical behaviors higher", () => {
     const criticalPillar = makePillar("kegare", [
       { categories: ["onsen"], severity: "critical" },
