@@ -1,62 +1,14 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import {
-  BookOpen,
-  Camera,
-  Flower2,
-  Frame,
-  Gamepad2,
-  Leaf,
-  Mountain,
-  Smile,
-  Sparkles,
-  Utensils,
-  type LucideIcon,
-} from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
+import { VIBE_ICON_MAP, VIBE_ICON_FALLBACK } from "@/data/vibeIcons";
 import { cn } from "@/lib/cn";
 
 // Filter out "in_season" — Places-only filter, not a trip builder vibe
 const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
-
-// Custom Torii icon since Lucide doesn't have one
-function ToriiIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M4 5h16" />
-      <path d="M6 5v16" />
-      <path d="M18 5v16" />
-      <path d="M2 8h20" />
-      <path d="M9 8v13" />
-      <path d="M15 8v13" />
-    </svg>
-  );
-}
-
-const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
-  Torii: ToriiIcon,
-  Utensils: Utensils,
-  Camera: Camera,
-  Sparkles: Sparkles,
-  Mountain: Mountain,
-  Leaf: Leaf,
-  Frame: Frame,
-  Flower2: Flower2,
-  Gamepad2: Gamepad2,
-  Smile: Smile,
-  BookOpen: BookOpen,
-};
 
 export type VibeSelectorProps = {
   onSelectionChange?: (vibes: VibeId[]) => void;
@@ -111,7 +63,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
         {TRIP_BUILDER_VIBES.map((vibe) => {
           const isSelected = selectedVibes.includes(vibe.id);
           const isDisabled = isMaxSelected && !isSelected;
-          const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
+          const Icon = VIBE_ICON_MAP[vibe.icon] ?? VIBE_ICON_FALLBACK;
 
           return (
             <button

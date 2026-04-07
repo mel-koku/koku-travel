@@ -212,7 +212,8 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     let cancelled = false;
     fetchLocationSpecificGuidance(location)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
-      .catch(() => {});
+      // eslint-disable-next-line no-console
+      .catch((err) => console.warn("Failed to fetch location guidance:", err));
     return () => { cancelled = true; };
   }, [location]);
 
@@ -352,9 +353,20 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           )}
         </motion.div>
 
-        {/* Save button (hidden for container parents -- they're not schedulable) */}
-        {location.parentMode !== "container" && (
-          <motion.div variants={fadeUp} className="mt-5">
+        {/* Save button (disabled with explanation for container parents like districts) */}
+        <motion.div variants={fadeUp} className="mt-5">
+          {location.parentMode === "container" ? (
+            <button
+              type="button"
+              disabled
+              className="inline-flex h-11 items-center gap-2 rounded-lg bg-surface px-5 text-sm font-medium text-foreground-secondary opacity-50 cursor-not-allowed"
+              title="This is a district. Save individual places instead."
+              aria-label="Save unavailable for districts"
+            >
+              <HeartIcon active={false} animating={false} variant="inline" />
+              Save for trip
+            </button>
+          ) : (
             <button
               type="button"
               onClick={handleToggleSave}
@@ -368,8 +380,8 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
               {isSaved ? "Saved" : "Save for trip"}
             </button>
-          </motion.div>
-        )}
+          )}
+        </motion.div>
       </motion.div>
 
       {/* Photo gallery */}
