@@ -355,8 +355,15 @@ describe("Time Optimization", () => {
       expect(EVENING_APPROPRIATE_CATEGORIES.has("viewpoint")).toBe(true);
     });
 
+    it("should include landmark", () => {
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("landmark")).toBe(true);
+    });
+
+    it("should include historic_site", () => {
+      expect(EVENING_APPROPRIATE_CATEGORIES.has("historic_site")).toBe(true);
+    });
+
     it("excludes daytime categories", () => {
-      expect(EVENING_APPROPRIATE_CATEGORIES.has("landmark")).toBe(false);
       expect(EVENING_APPROPRIATE_CATEGORIES.has("museum")).toBe(false);
       expect(EVENING_APPROPRIATE_CATEGORIES.has("temple")).toBe(false);
       expect(EVENING_APPROPRIATE_CATEGORIES.has("shrine")).toBe(false);
@@ -374,9 +381,9 @@ describe("Time Optimization", () => {
       category,
     });
 
-    it("gives strong penalty for landmark in evening slot", () => {
+    it("gives small boost for landmark in evening slot (adjacent to afternoon optimal)", () => {
       const result = scoreTimeOfDayFit(makeLocation("landmark"), "evening");
-      expect(result.scoreAdjustment).toBeLessThanOrEqual(-10);
+      expect(result.scoreAdjustment).toBe(3);
     });
 
     it("gives strong penalty for museum in evening slot", () => {
