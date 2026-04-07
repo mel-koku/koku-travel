@@ -532,6 +532,17 @@ html.lenis-stopped {
   }
 }
 
+/* Touch-only elements: hidden by default, shown on coarse/touch pointers */
+.touch-only-visible {
+  display: none;
+}
+
+@media (hover: none) {
+  .touch-only-visible {
+    display: block !important;
+  }
+}
+
 /* Eased image scrim overlays
    8-stop ease-out curve in oklab for smooth perceptual fade.
    Eliminates the visible "knee" of linear Tailwind gradients.
