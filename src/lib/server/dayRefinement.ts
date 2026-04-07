@@ -225,7 +225,7 @@ export function applyPatches(
           break;
         }
         // Validate replacement is in the same city as the day
-        if (replacementLoc.city && day.cityId && replacementLoc.city !== day.cityId) {
+        if (replacementLoc.city && day.cityId && replacementLoc.city.toLowerCase() !== day.cityId.toLowerCase()) {
           logger.warn("Swap replacement location is in a different city, skipping", {
             locationId: patch.replacementLocationId,
             locationCity: replacementLoc.city,
