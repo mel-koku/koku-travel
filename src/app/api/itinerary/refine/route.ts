@@ -18,6 +18,8 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
+import { isFullAccessEnabled, MAX_FREE_REFINEMENTS } from "@/lib/billing/access";
+import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
 export const maxDuration = 60;
 
@@ -207,7 +209,7 @@ const mapTripDayToItineraryDay = (
  * @throws Returns 500 for server errors
  */
 export const POST = withApiHandler(
-  async (request, { context }) => {
+  async (request, { context, user }) => {
     // Validate request body with size limit (2MB for trip data)
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
     // Using strip() to silently drop unknown fields for security
@@ -278,6 +280,30 @@ export const POST = withApiHandler(
         });
       }
 
+      // Check refinement limits for free users
+      const fullAccessStub = await isFullAccessEnabled();
+      if (!fullAccessStub && user) {
+        const serviceClientStub = getServiceRoleClient();
+        const { data: tripRowStub } = await serviceClientStub
+          .from("trips")
+          .select("unlocked_at, free_refinements_used")
+          .eq("id", trip.id)
+          .eq("user_id", user.id)
+          .single();
+
+        if (tripRowStub && !tripRowStub.unlocked_at) {
+          const used = tripRowStub.free_refinements_used ?? 0;
+          if (used >= MAX_FREE_REFINEMENTS) {
+            return NextResponse.json({
+              refinedDay: null,
+              updatedTrip: null,
+              message: "Unlock your full trip to keep refining.",
+              requiresUnlock: true,
+            });
+          }
+        }
+      }
+
       // Check Redis cache for identical refinement request
       const dayActivityIds = (trip.days[targetDayIndex]?.activities ?? []).map(a => a.locationId ?? a.id);
       const cacheKey = buildRefineCacheKey(dayActivityIds, refinementType, trip.days[targetDayIndex]?.cityId);
@@ -320,6 +346,22 @@ export const POST = withApiHandler(
         updatedAt: new Date().toISOString(),
       };
 
+      // Increment free refinement counter for non-unlocked trips (only on real changes, not no-ops)
+      const isNoOpStub = !!refinedDay.message;
+      if (!fullAccessStub && user && !isNoOpStub) {
+        const serviceClientStub = getServiceRoleClient();
+        const { data: tripRowForIncrement } = await serviceClientStub
+          .from("trips")
+          .select("unlocked_at")
+          .eq("id", trip.id)
+          .eq("user_id", user.id)
+          .single();
+
+        if (tripRowForIncrement && !tripRowForIncrement.unlocked_at) {
+          await serviceClientStub.rpc("increment_free_refinements", { p_trip_id: trip.id });
+        }
+      }
+
       return NextResponse.json(
         {
           trip: refined,
@@ -348,6 +390,30 @@ export const POST = withApiHandler(
       return badRequest("builderData and itinerary are required to refine a trip", undefined, {
         requestId: context.requestId,
       });
+    }
+
+    // Check refinement limits for free users
+    const fullAccess = await isFullAccessEnabled();
+    if (!fullAccess && user) {
+      const serviceClient = getServiceRoleClient();
+      const { data: tripRow } = await serviceClient
+        .from("trips")
+        .select("unlocked_at, free_refinements_used")
+        .eq("id", tripId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (tripRow && !tripRow.unlocked_at) {
+        const used = tripRow.free_refinements_used ?? 0;
+        if (used >= MAX_FREE_REFINEMENTS) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: "Unlock your full trip to keep refining.",
+            requiresUnlock: true,
+          });
+        }
+      }
     }
 
     // Determine cities to filter by for optimized database queries
@@ -380,6 +446,8 @@ export const POST = withApiHandler(
       originalIds.length === refinedIds.length &&
       originalIds.every((id, i) => id === refinedIds[i]);
 
+    const isNoOp = !!(refinedDay.message || unchanged);
+
     const responseBody: RefinementResponse = {
       refinedDay: mapTripDayToItineraryDay(refinedDay, originalItineraryDay),
       updatedTrip,
@@ -389,6 +457,21 @@ export const POST = withApiHandler(
           ? { message: "This day is already optimized for that adjustment." }
           : {}),
     };
+
+    // Increment free refinement counter for non-unlocked trips
+    if (!fullAccess && user && !isNoOp) {
+      const serviceClient = getServiceRoleClient();
+      const { data: tripRow } = await serviceClient
+        .from("trips")
+        .select("unlocked_at")
+        .eq("id", tripId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (tripRow && !tripRow.unlocked_at) {
+        await serviceClient.rpc("increment_free_refinements", { p_trip_id: tripId });
+      }
+    }
 
     return NextResponse.json(responseBody);
   },
