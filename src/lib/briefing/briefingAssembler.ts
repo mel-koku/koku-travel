@@ -25,7 +25,7 @@ export function scorePillar(pillar: CulturalPillar, tripCategories: string[]): n
   let score = 0;
 
   for (const behavior of pillar.behaviors) {
-    const matches = behavior.categories.some((c) => categorySet.has(c));
+    const matches = behavior.categories.length === 0 || behavior.categories.some((c) => categorySet.has(c));
     if (matches) {
       score += 10;
       if (behavior.severity === "critical") {
