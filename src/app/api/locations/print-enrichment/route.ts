@@ -13,8 +13,10 @@ type PrintEnrichmentRow = {
   name_japanese: string | null;
   nearest_station: string | null;
   cash_only: boolean | null;
-  reservation_info: "required" | "recommended" | null;
+  reservation_info: string | null;
 };
+
+const RESERVATION_LEVELS = new Set(["required", "recommended"]);
 
 export type PrintEnrichmentMap = Record<
   string,
@@ -70,7 +72,9 @@ export const GET = withApiHandler(
         nameJapanese: row.name_japanese ?? undefined,
         nearestStation: row.nearest_station ?? undefined,
         cashOnly: row.cash_only ?? undefined,
-        reservationInfo: row.reservation_info ?? undefined,
+        reservationInfo: RESERVATION_LEVELS.has(row.reservation_info ?? "")
+          ? (row.reservation_info as "required" | "recommended")
+          : undefined,
       };
     }
 
