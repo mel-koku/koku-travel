@@ -23,6 +23,25 @@ import { TimePickerSection } from "./TimePickerSection";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
+/** Fallback lookup for manual IATA entry when the airport API is unavailable. */
+const FALLBACK_AIRPORTS: Record<string, { name: string; city: string; region: KnownRegionId; lat: number; lng: number }> = {
+  HND: { name: "Tokyo Haneda Airport", city: "tokyo", region: "kanto", lat: 35.5494, lng: 139.7798 },
+  NRT: { name: "Narita International Airport", city: "tokyo", region: "kanto", lat: 35.7647, lng: 140.3864 },
+  KIX: { name: "Kansai International Airport", city: "osaka", region: "kansai", lat: 34.4347, lng: 135.2441 },
+  ITM: { name: "Osaka Itami Airport", city: "osaka", region: "kansai", lat: 34.7854, lng: 135.4383 },
+  CTS: { name: "New Chitose Airport", city: "sapporo", region: "hokkaido", lat: 42.7752, lng: 141.6925 },
+  FUK: { name: "Fukuoka Airport", city: "fukuoka", region: "kyushu", lat: 33.5859, lng: 130.4511 },
+  NGO: { name: "Chubu Centrair Airport", city: "nagoya", region: "chubu", lat: 34.8584, lng: 136.8124 },
+  OKA: { name: "Naha Airport", city: "naha", region: "okinawa", lat: 26.1958, lng: 127.6459 },
+  HIJ: { name: "Hiroshima Airport", city: "hiroshima", region: "chugoku", lat: 34.4361, lng: 132.9194 },
+  SDJ: { name: "Sendai Airport", city: "sendai", region: "tohoku", lat: 38.1397, lng: 140.9170 },
+  KMJ: { name: "Kumamoto Airport", city: "kumamoto", region: "kyushu", lat: 32.8373, lng: 130.8551 },
+  KOJ: { name: "Kagoshima Airport", city: "kagoshima", region: "kyushu", lat: 31.8034, lng: 130.7194 },
+  TAK: { name: "Takamatsu Airport", city: "takamatsu", region: "shikoku", lat: 34.2142, lng: 134.0156 },
+  MYJ: { name: "Matsuyama Airport", city: "matsuyama", region: "shikoku", lat: 33.8272, lng: 132.6997 },
+  KMQ: { name: "Komatsu Airport", city: "kanazawa", region: "chubu", lat: 36.3946, lng: 136.4069 },
+};
+
 export type EntryPointStepProps = {
   sanityConfig?: TripBuilderConfig;
 };
@@ -37,6 +56,8 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const [showFlightPaste, setShowFlightPaste] = useState(false);
   const [flightPasteText, setFlightPasteText] = useState("");
   const [flightParseMessage, setFlightParseMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [manualCode, setManualCode] = useState("");
+  const [manualCodeError, setManualCodeError] = useState<string | null>(null);
 
   const fetchAirports = useCallback(async () => {
     try {
@@ -78,6 +99,36 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const handleClear = useCallback(() => {
     setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined, arrivalTime: undefined, departureTime: undefined }));
   }, [setData]);
+
+  const handleManualCodeChange = useCallback((value: string) => {
+    const upper = value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
+    setManualCode(upper);
+    setManualCodeError(null);
+  }, []);
+
+  const handleManualCodeSubmit = useCallback(() => {
+    if (manualCode.length !== 3) {
+      setManualCodeError("Enter a 3-letter IATA code.");
+      return;
+    }
+    const fallback = FALLBACK_AIRPORTS[manualCode];
+    if (!fallback) {
+      setManualCodeError(`${manualCode} is not a recognized Japanese airport code.`);
+      return;
+    }
+    const entryPoint: EntryPoint = {
+      type: "airport",
+      id: `fallback-${manualCode.toLowerCase()}`,
+      name: fallback.name,
+      coordinates: { lat: fallback.lat, lng: fallback.lng },
+      iataCode: manualCode,
+      cityId: fallback.city,
+      region: fallback.region,
+    };
+    setData((prev) => ({ ...prev, entryPoint }));
+    setManualCode("");
+    setManualCodeError(null);
+  }, [manualCode, setData]);
 
   const handleSelectExitAirport = useCallback(
     (airport: Airport) => {
@@ -483,15 +534,64 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
           )}
 
           {fetchError && !isLoading && airports.length === 0 && (
-            <div className="mt-8 flex items-center gap-2">
-              <span className="text-sm text-error">Couldn&apos;t load airports.</span>
-              <button
-                type="button"
-                onClick={fetchAirports}
-                className="text-sm font-medium text-brand-primary hover:underline"
-              >
-                Retry
-              </button>
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-error">Couldn&apos;t load airports.</span>
+                <button
+                  type="button"
+                  onClick={fetchAirports}
+                  className="text-sm font-medium text-brand-primary hover:underline"
+                >
+                  Retry
+                </button>
+              </div>
+
+              <div className="rounded-lg border border-border bg-surface p-4">
+                <label htmlFor="manual-iata" className="mb-2 block text-sm font-medium text-foreground">
+                  Or enter your airport code
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="manual-iata"
+                    type="text"
+                    inputMode="text"
+                    autoCapitalize="characters"
+                    maxLength={3}
+                    value={manualCode}
+                    onChange={(e) => handleManualCodeChange(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleManualCodeSubmit(); }}
+                    placeholder="NRT"
+                    aria-describedby={manualCodeError ? "manual-iata-error" : undefined}
+                    aria-invalid={!!manualCodeError}
+                    className={cn(
+                      "h-12 w-24 rounded-md border bg-background px-3 text-center font-mono text-lg uppercase tracking-widest text-foreground placeholder:text-foreground-secondary/40",
+                      "text-base focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-1",
+                      manualCodeError ? "border-error" : "border-border"
+                    )}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleManualCodeSubmit}
+                    disabled={manualCode.length !== 3}
+                    className={cn(
+                      "h-12 rounded-md px-4 text-sm font-medium transition-colors",
+                      manualCode.length === 3
+                        ? "bg-brand-primary text-white hover:bg-brand-secondary active:scale-[0.98]"
+                        : "bg-border text-foreground-secondary cursor-not-allowed"
+                    )}
+                  >
+                    Set airport
+                  </button>
+                </div>
+                {manualCodeError && (
+                  <p id="manual-iata-error" className="mt-2 text-sm text-error" role="alert">
+                    {manualCodeError}
+                  </p>
+                )}
+                <p className="mt-2 text-xs text-stone">
+                  Common codes: HND (Haneda), NRT (Narita), KIX (Kansai), CTS (Chitose), FUK (Fukuoka), NGO (Centrair)
+                </p>
+              </div>
             </div>
           )}
         </div>
