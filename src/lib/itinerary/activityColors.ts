@@ -221,6 +221,81 @@ const COLOR_SCHEMES = {
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
+  shrine: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  temple: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  museum: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  landmark: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  viewpoint: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  tower: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  // Food sub-types — brand-secondary (same as meals)
+  restaurant: {
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
+    badgeText: "text-white",
+  },
+  bar: {
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
+    badgeText: "text-white",
+  },
+  market: {
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
+    badgeText: "text-white",
+  },
+  // Nature sub-types — sage (same as nature)
+  park: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  garden: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  // Accommodation — stone (same as hotel)
+  accommodation: {
+    border: "border-l-stone",
+    background: "bg-stone/10",
+    badge: "bg-stone",
+    badgeText: "text-white",
+  },
 } as const satisfies Record<string, ActivityColorScheme>;
 
 type ColorSchemeKey = keyof typeof COLOR_SCHEMES;
@@ -362,6 +437,7 @@ const HEX_COLORS: Record<string, string> = {
   garden: "#2d7a6f",
   onsen: "#2d7a6f",
   viewpoint: "#8c2f2f",
+  tower: "#8c2f2f",
   bar: "#c6923a",
   // New categories
   castle: "#8c2f2f",
@@ -381,6 +457,8 @@ const HEX_COLORS: Record<string, string> = {
   specialty: "#d4a017",
   // Culture sub-types
   performing_arts: "#8c2f2f",
+  // Accommodation — stone
+  accommodation: "#9a8d7e",
   // Default — crimson
   default: "#8c2f2f",
 };
@@ -445,3 +523,9 @@ export function getCategoryColorScheme(category: string | undefined): ActivityCo
   const key = category.toLowerCase() as ColorSchemeKey;
   return COLOR_SCHEMES[key] ?? COLOR_SCHEMES.default;
 }
+
+/** Exposed for testing: all keys with explicit color scheme entries */
+export const COLOR_SCHEME_KEYS = new Set(Object.keys(COLOR_SCHEMES));
+
+/** Exposed for testing: all keys with explicit hex color entries */
+export const HEX_COLOR_KEYS = new Set(Object.keys(HEX_COLORS));
