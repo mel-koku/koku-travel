@@ -1,23 +1,35 @@
 import type { StoredTrip } from "@/services/trip/types";
+import type { PrintEnrichmentMap } from "@/app/api/locations/print-enrichment/route";
 import { typography } from "@/lib/typography-system";
 import { buildDayLabel } from "@/lib/itinerary/dayLabel";
 
 type PrintTOCProps = {
   trip: StoredTrip;
+  enrichment: PrintEnrichmentMap;
 };
 
-export function PrintTOC({ trip }: PrintTOCProps) {
+export function PrintTOC({ trip, enrichment }: PrintTOCProps) {
   const { itinerary, builderData } = trip;
   const tripStartDate = builderData.dates?.start;
 
-  // Static front/back sections with approximate folio references.
-  // Folios are illustrative — exact page numbers are not tracked since
-  // day chapters vary in length. Real book printing will re-paginate.
   const frontMatter = [
     { label: "Prologue", folio: "iv" },
     { label: "The Route", folio: "v" },
-    { label: "Before You Go", folio: "vi" },
+    { label: "Five Things to Carry", folio: "vi" },
+    { label: "Before You Go", folio: "vii" },
+    { label: "Essential Phrases", folio: "viii" },
+    { label: "Numbers to Keep", folio: "ix" },
   ];
+
+  // Check if any activities have reservations
+  const hasReservations = itinerary.days.some((day) =>
+    day.activities.some(
+      (a) =>
+        a.kind === "place" &&
+        a.locationId &&
+        enrichment[a.locationId]?.reservationInfo,
+    ),
+  );
 
   return (
     <article className="print-page">
@@ -57,7 +69,8 @@ export function PrintTOC({ trip }: PrintTOCProps) {
           <div className="py-3" />
           <p className="eyebrow-mono pt-2">Back Matter</p>
           <div className="pt-2" />
-          <TOCRow label="Reservations &amp; contacts" />
+          {hasReservations && <TOCRow label="Book ahead" />}
+          <TOCRow label="Every place, by day" />
         </div>
       </div>
       <div className="print-folio">iii</div>
