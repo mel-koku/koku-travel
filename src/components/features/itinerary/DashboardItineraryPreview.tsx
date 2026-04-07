@@ -155,6 +155,15 @@ export const DashboardItineraryPreview = ({
             Active Itinerary
           </p>
           <h2 className={typography({ intent: "editorial-h3" })}>{trip.name}</h2>
+          {trip.unlockedAt ? (
+            <span className="rounded-md bg-sage/10 px-2 py-0.5 text-xs font-medium text-sage">
+              Full trip unlocked
+            </span>
+          ) : trip.itinerary.days.length > 1 ? (
+            <span className="rounded-md bg-sand px-2 py-0.5 text-xs font-medium text-foreground-secondary">
+              1 of {trip.itinerary.days.length} days unlocked
+            </span>
+          ) : null}
           {createdLabel ? (
             <p className="font-mono text-xs text-stone">
               Saved {createdLabel}
