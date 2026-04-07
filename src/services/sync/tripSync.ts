@@ -47,7 +47,7 @@ function rowToStoredTrip(row: TripRow): StoredTrip {
     itinerary: row.itinerary,
     builderData: row.builder_data,
     unlockedAt: row.unlocked_at ?? null,
-    unlockTier: row.unlock_tier ?? null,
+    unlockTier: (row.unlock_tier as "short" | "standard" | "long" | null) ?? null,
     stripeSessionId: row.stripe_session_id ?? null,
     unlockAmountCents: row.unlock_amount_cents ?? null,
     freeRefinementsUsed: row.free_refinements_used ?? 0,
