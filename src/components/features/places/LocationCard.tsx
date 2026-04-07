@@ -141,7 +141,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
               <div className="absolute inset-0 scrim-50 opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
             </div>
           </div>
-          <div className="absolute bottom-3 right-3 flex items-center gap-2 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none">
+          <div className="absolute bottom-3 right-3 flex items-center gap-2 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none touch-visible">
             <button
               type="button"
               onClick={(event) => {
