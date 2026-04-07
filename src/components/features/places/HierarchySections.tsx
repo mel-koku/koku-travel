@@ -53,6 +53,59 @@ export function ChildLocationsSection({
 }
 
 // ============================================
+// Sub-experience Teaser (above the fold)
+// ============================================
+
+export function SubExperienceTeaser({
+  subExperiences,
+  onScrollTo,
+}: {
+  subExperiences: SubExperience[];
+  onScrollTo: () => void;
+}) {
+  if (subExperiences.length === 0) return null;
+
+  const highlights = subExperiences.filter((s) => s.subType === "highlight");
+  const routeStops = subExperiences.filter((s) => s.subType === "route_stop");
+
+  // Pick the best label based on what types exist
+  const hasRoute = routeStops.length > 0;
+  const items = highlights.length > 0 ? highlights : routeStops;
+  if (items.length === 0) return null;
+
+  const maxShow = 2;
+  const shown = items.slice(0, maxShow);
+  const remaining = subExperiences.length - shown.length;
+
+  return (
+    <button
+      type="button"
+      onClick={onScrollTo}
+      className="flex w-full items-start gap-2.5 rounded-md bg-surface px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-border/40"
+    >
+      <svg
+        className="mt-0.5 h-4 w-4 shrink-0 text-brand-primary"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+      </svg>
+      <span className="text-foreground-secondary">
+        <span className="font-medium text-foreground">
+          {hasRoute && highlights.length === 0 ? "Walking route" : "Don\u2019t miss"}:
+        </span>{" "}
+        {shown.map((s) => s.name).join(", ")}
+        {remaining > 0 && (
+          <span className="text-stone"> +{remaining} more</span>
+        )}
+      </span>
+    </button>
+  );
+}
+
+// ============================================
 // Sub-experiences Section
 // ============================================
 
