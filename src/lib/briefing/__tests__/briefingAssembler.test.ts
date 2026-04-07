@@ -34,6 +34,15 @@ describe("scorePillar", () => {
     expect(highScore).toBeGreaterThan(lowScore);
   });
 
+  it("should score behaviors with empty categories as universally matching", () => {
+    const pillar = makePillar("wa", [
+      { categories: [], severity: "critical" },
+      { categories: [], severity: "important" },
+    ]);
+    const score = scorePillar(pillar, ["restaurant"]);
+    expect(score).toBeGreaterThan(0);
+  });
+
   it("should weight critical behaviors higher", () => {
     const criticalPillar = makePillar("kegare", [
       { categories: ["onsen"], severity: "critical" },
@@ -120,6 +129,20 @@ describe("assembleBriefing", () => {
   it("should use provided intro when given", () => {
     const result = assembleBriefing(pillars, ["restaurant"], "Custom intro text.");
     expect(result.intro).toBe("Custom intro text.");
+  });
+
+  it("should only include critical behaviors when no categories match", () => {
+    const pillar = makePillar("kegare", [
+      { categories: ["onsen"], severity: "critical" },
+      { categories: ["onsen"], severity: "important" },
+      { categories: ["onsen"], severity: "nice_to_know" },
+    ]);
+    // Trip has only "park" -- nothing matches onsen
+    const result = assembleBriefing([pillar], ["park"]);
+    const behaviors = result.pillars[0].behaviors;
+    const hasNonCritical = behaviors.some((b) => b.severity !== "critical");
+    expect(hasNonCritical).toBe(false);
+    expect(behaviors.length).toBeGreaterThan(0); // critical behaviors are still included
   });
 
   it("should include unmatched behaviors when no categories match at all", () => {
