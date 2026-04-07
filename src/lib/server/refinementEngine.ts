@@ -68,7 +68,7 @@ function refineTooBusy(day: TripDay, trip: Trip): TripDay {
   const removable = activities.filter((a) => !a.isAnchor);
 
   if (removable.length <= 2) {
-    return day; // Already minimal (excluding anchors)
+    return { ...day, message: "This day already has the minimum number of activities." };
   }
 
   // Adjust removal based on pace preference
@@ -113,7 +113,7 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   });
 
   if (availableLocations.length === 0) {
-    return day; // No more locations available
+    return { ...day, message: `No additional locations available in ${day.cityId}.` };
   }
 
   // Score and pick best locations using comprehensive TravelerProfile
@@ -192,7 +192,7 @@ async function refineMoreFood(day: TripDay, trip: Trip): Promise<TripDay> {
   );
 
   if (foodLocations.length === 0) {
-    return day;
+    return { ...day, message: `No additional food locations available in ${day.cityId}.` };
   }
 
   // Score food locations using TravelerProfile for better selection
@@ -268,7 +268,7 @@ async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
   );
 
   if (cultureLocations.length === 0) {
-    return day;
+    return { ...day, message: `No additional cultural locations available in ${day.cityId}.` };
   }
 
   // Score and pick best culture location using comprehensive TravelerProfile
@@ -341,10 +341,9 @@ async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay>
   );
 
   if (kidFriendlyLocations.length === 0) {
-    // If no kid-friendly alternatives, just return day with explanation
     return {
       ...day,
-      explanation: generateRefinementExplanation(day, "more_kid_friendly"),
+      message: `No additional kid-friendly locations available in ${day.cityId}.`,
     };
   }
 
@@ -422,7 +421,7 @@ function refineMoreRest(day: TripDay, _trip: Trip): TripDay {
   const activities = [...day.activities];
   const nonAnchorCount = activities.filter((a) => !a.isAnchor).length;
   if (nonAnchorCount <= 1) {
-    return day; // Already minimal
+    return { ...day, message: "This day already has minimal activities for adding rest time." };
   }
 
   // Remove non-anchor activities from the end
@@ -465,7 +464,7 @@ async function refineMoreCraft(day: TripDay, trip: Trip): Promise<TripDay> {
   );
 
   if (craftLocations.length === 0) {
-    return day;
+    return { ...day, message: `No additional craft locations available in ${day.cityId}.` };
   }
 
   const criteria: LocationScoringCriteria = {
