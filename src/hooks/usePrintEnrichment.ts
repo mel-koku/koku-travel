@@ -29,9 +29,12 @@ export function usePrintEnrichment(trip: StoredTrip | undefined): {
 
     if (locationIds.size === 0) return;
 
+    const controller = new AbortController();
     setIsLoading(true);
 
-    fetch(`/api/locations/print-enrichment?ids=${[...locationIds].join(",")}`)
+    fetch(`/api/locations/print-enrichment?ids=${[...locationIds].join(",")}`, {
+      signal: controller.signal,
+    })
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (json?.data) {
@@ -42,6 +45,8 @@ export function usePrintEnrichment(trip: StoredTrip | undefined): {
         // Enrichment is optional; book renders fine without it
       })
       .finally(() => setIsLoading(false));
+
+    return () => controller.abort();
   }, [trip?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { enrichment, isLoading };

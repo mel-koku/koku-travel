@@ -13,7 +13,7 @@ const PILLARS: Pillar[] = [
     japanese: "\u548C",
     concept: "Harmony is the highest social value.",
     inPractice:
-      "Read the room before acting. Queue where others queue. Match the volume around you. When unsure, observe first. The group\u2019s comfort matters more than individual expression.",
+      "Read the room before acting. Queue where others queue. Match the volume around you. When unsure, observe first. The group's comfort matters more than individual expression.",
   },
   {
     name: "Meiwaku",
@@ -27,21 +27,21 @@ const PILLARS: Pillar[] = [
     japanese: "\u7A62\u308C",
     concept: "Purity and purification shape daily rituals.",
     inPractice:
-      "Shoes off at the genkan (the step up). Wash your hands at the temizuya before entering a shrine. Shower before the onsen, never after. These aren\u2019t rules posted for tourists. They\u2019re how the space stays clean for everyone.",
+      "Shoes off at the genkan (the step up). Wash your hands at the temizuya before entering a shrine. Shower before the onsen, never after. These aren't rules posted for tourists. They're how the space stays clean for everyone.",
   },
   {
     name: "Omotenashi",
     japanese: "\u304A\u3082\u3066\u306A\u3057",
     concept: "Hospitality given without expectation of return.",
     inPractice:
-      "Accept what\u2019s offered gracefully. Don\u2019t tip (it can cause confusion). When someone goes out of their way for you, a sincere arigatou gozaimasu is the right response. Receive with both hands.",
+      "Accept what's offered gracefully. Don't tip (it can cause confusion). When someone goes out of their way for you, a sincere arigatou gozaimasu is the right response. Receive with both hands.",
   },
   {
     name: "Ma",
     japanese: "\u9593",
     concept: "The space between things carries meaning.",
     inPractice:
-      "Silence in conversation is not awkward. Empty space in a garden is intentional. The pause before a bow matters. Don\u2019t rush to fill quiet moments. Let the temples breathe.",
+      "Silence in conversation is not awkward. Empty space in a garden is intentional. The pause before a bow matters. Don't rush to fill quiet moments. Let the temples breathe.",
   },
 ];
 
