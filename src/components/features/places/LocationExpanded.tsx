@@ -145,7 +145,8 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     let cancelled = false;
     fetchLocationSpecificGuidance(locationWithDetails)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
-      .catch(() => {});
+      // eslint-disable-next-line no-console
+      .catch((err) => console.warn("Failed to fetch location guidance:", err));
     return () => { cancelled = true; };
   }, [locationWithDetails]);
 

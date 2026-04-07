@@ -212,7 +212,8 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     let cancelled = false;
     fetchLocationSpecificGuidance(location)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
-      .catch(() => {});
+      // eslint-disable-next-line no-console
+      .catch((err) => console.warn("Failed to fetch location guidance:", err));
     return () => { cancelled = true; };
   }, [location]);
 
