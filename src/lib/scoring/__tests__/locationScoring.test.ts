@@ -325,6 +325,46 @@ describe("Location Scoring", () => {
     });
   });
 
+  describe("Local Secrets Distance Extension", () => {
+    it("should extend to 75km for local_secrets vibe with any category", () => {
+      const remoteRestaurant: Location = {
+        ...mockLocation,
+        id: "remote-restaurant",
+        category: "restaurant",
+        coordinates: { lat: 35.5, lng: 136.1 }, // ~60km from current
+      };
+      const result = scoreLocation(remoteRestaurant, {
+        interests: ["food"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+        currentLocation: { lat: 35.0116, lng: 135.6761 },
+      });
+      // Should NOT get -100 hard penalty (should be in extended range)
+      expect(result.breakdown.logisticalFit).toBeGreaterThan(-100);
+    });
+
+    it("should NOT extend for non-local_secrets vibe with non-nature/cultural category", () => {
+      const remoteRestaurant: Location = {
+        ...mockLocation,
+        id: "remote-restaurant",
+        category: "restaurant",
+        coordinates: { lat: 35.5, lng: 136.1 }, // ~60km from current
+      };
+      const result = scoreLocation(remoteRestaurant, {
+        interests: ["food"],
+        travelStyle: "fast",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: false,
+        currentLocation: { lat: 35.0116, lng: 135.6761 },
+      });
+      // Should get -100 hard penalty
+      expect(result.breakdown.logisticalFit).toBe(-100);
+    });
+  });
+
   describe("Score Breakdown Completeness", () => {
     it("breakdown fields should sum to total score", () => {
       const hiddenGemLocation: Location = {
