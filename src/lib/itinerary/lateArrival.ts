@@ -12,12 +12,9 @@ export function applyLateArrivalStrip(day: ItineraryDay): void {
   );
   day.isLateArrival = true;
 
-  // If no non-anchor activities remain, inject a settle-in note so the day
-  // isn't completely empty (common for 1-day trips with late flights).
-  const hasNonAnchor = day.activities.some(
-    (a) => !(a.kind === "place" && a.isAnchor),
-  );
-  if (!hasNonAnchor) {
+  // Inject a settle-in note so the day isn't completely empty after stripping.
+  // After the filter above, only anchors remain, so we always inject.
+  {
     const settleNote: ItineraryActivity = {
       kind: "note",
       id: `settle-in-${Date.now()}`,
