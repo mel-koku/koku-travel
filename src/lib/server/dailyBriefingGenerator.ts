@@ -147,6 +147,15 @@ export async function generateDailyBriefings(
       return null;
     }
 
+    // Validate no empty briefing text
+    const emptyBriefings = object.days.filter((d) => !d.briefing?.trim());
+    if (emptyBriefings.length > 0) {
+      logger.warn("Daily briefings contain empty content", {
+        emptyDayIds: emptyBriefings.map((d) => d.dayId),
+      });
+      return null;
+    }
+
     return object as GeneratedBriefings;
   } catch (error) {
     logger.warn(
