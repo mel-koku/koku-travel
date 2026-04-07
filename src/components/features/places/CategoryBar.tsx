@@ -199,12 +199,12 @@ export function CategoryBar({
                 <button
                   key={`${filter.type}-${filter.value}-${index}`}
                   onClick={() => onRemoveFilter?.(filter)}
-                  className="inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
                   aria-label={`Remove ${filter.label} filter`}
                 >
                   <span>{filter.label}</span>
                   <svg
-                    className="h-3 w-3 text-stone group-hover:text-foreground-secondary transition"
+                    className="h-3.5 w-3.5 text-stone group-hover:text-foreground-secondary transition"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
