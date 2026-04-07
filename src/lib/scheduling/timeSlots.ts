@@ -36,6 +36,9 @@ export const TRAVEL_TIME_BY_PACE = {
   fast: 15, // Quick transitions
 } as const;
 
+/** Buffer for hotel check-out, luggage forwarding, and settling in a new city */
+export const CITY_TRANSITION_MINUTES = 90;
+
 export type TimeSlot = "morning" | "afternoon" | "evening";
 export const TIME_OF_DAY_SEQUENCE: readonly TimeSlot[] = ["morning", "afternoon", "evening"];
 

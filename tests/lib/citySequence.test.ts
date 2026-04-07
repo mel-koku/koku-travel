@@ -168,6 +168,60 @@ describe("citySequence", () => {
       // The optimization should try to end near Tokyo
       expect(result.length).toBeGreaterThanOrEqual(2);
     });
+
+    it("appends return city when trip has slack (5 days, 2 cities)", () => {
+      // 5 days / 2 cities = slack of 1 day. Append is allowed.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 5);
+      expect(result.length).toBeGreaterThan(2);
+      expect(result[result.length - 1]).toBe("tokyo");
+    });
+
+    it("skips return city on tight short trips (4 days, 2 cities)", () => {
+      // 4 days / 2 cities = no slack (2 per city). Appending would steal
+      // a day, so keep the sequence at 2 and let the distance warning handle
+      // the far-from-exit situation.
+      const entry = makeEntryPoint(); // Tokyo
+      const result = optimizeCitySequence(entry, ["kyoto", "osaka"], entry, 4);
+      expect(result.length).toBe(2);
+      expect(result).not.toContain("tokyo");
+    });
+
+    it("appends Tokyo return city for multi-region round trip ending in Nikko", () => {
+      // Regression: 5-city NRT round trip with Nikko last used to render
+      // without a Tokyo return night because a latching `hasOptimized` ref in
+      // TripSummaryEditorial prevented the optimizer from re-running after
+      // duration changed. Verify the optimizer itself produces the right
+      // append so the fix above is the only thing needed.
+      const entry = makeEntryPoint(); // NRT -> tokyo
+      const result = optimizeCitySequence(
+        entry,
+        ["tokyo", "osaka", "nikko"],
+        entry,
+        8,
+      );
+      // Kanto has tokyo+nikko (round-trip branch fires). Nikko is 150min from
+      // NRT (>90 comfort threshold), 8 > 3*2 slack, so tokyo should be
+      // appended as a return night.
+      expect(result[0]).toBe("tokyo");
+      expect(result[result.length - 1]).toBe("tokyo");
+      expect(result.length).toBe(4);
+    });
+
+    it("skips return city on same-region short trips (Nagoya + Ise, 4 days)", () => {
+      // E11 regression: NGO entry, [nagoya, ise], 4 days. Ise is >90min from
+      // NGO but the trip is too short to spare a return day.
+      const entry = ({
+        type: "airport" as const,
+        id: "NGO",
+        name: "Chubu Centrair International Airport",
+        coordinates: { lat: 34.8584, lng: 136.8052 },
+        cityId: "nagoya",
+        iataCode: "NGO",
+      });
+      const result = optimizeCitySequence(entry, ["nagoya", "ise"], entry, 4);
+      expect(result).toEqual(["nagoya", "ise"]);
+    });
   });
 
   // =========================================================

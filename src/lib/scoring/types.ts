@@ -147,6 +147,8 @@ export interface ScoreBreakdown {
   accommodationBonus: number;
   /** UNESCO World Heritage Site bonus (0-10) */
   unescoBonus: number;
+  /** Hidden gem bonus (0-15) based on local_secrets vibe + tag match + iconic penalty */
+  hiddenGemBonus: number;
 }
 
 /**

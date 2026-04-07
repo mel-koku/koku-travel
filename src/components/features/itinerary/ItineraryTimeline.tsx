@@ -148,6 +148,7 @@ export const ItineraryTimeline = ({
 
   const handleDelete = useCallback(
     (activityId: string) => {
+      if (isReadOnly) return;
       setModel((current) => {
         let hasChanged = false;
         const nextDays = current.days.map((entry, index) => {
@@ -171,11 +172,12 @@ export const ItineraryTimeline = ({
         return hasChanged ? { ...current, days: nextDays } : current;
       });
     },
-    [dayIndex, setModel],
+    [dayIndex, setModel, isReadOnly],
   );
 
   const handleUpdate = useCallback(
     (activityId: string, patch: Partial<ItineraryActivity>) => {
+      if (isReadOnly) return;
       setModel((current) => {
         let hasChanged = false;
         const nextDays = current.days.map((entry, index) => {
@@ -200,7 +202,7 @@ export const ItineraryTimeline = ({
         return hasChanged ? { ...current, days: nextDays } : current;
       });
     },
-    [dayIndex, setModel],
+    [dayIndex, setModel, isReadOnly],
   );
 
   // Helper function to recalculate travel segment between two place activities
@@ -263,6 +265,7 @@ export const ItineraryTimeline = ({
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
       setActiveId(null);
+      if (isReadOnly) return;
       if (!over) return;
 
       const activeId = String(active.id);
@@ -483,10 +486,11 @@ export const ItineraryTimeline = ({
         }
       }
     },
-    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day, onBeforeDragReorder, onAfterDragReorder],
+    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day, onBeforeDragReorder, onAfterDragReorder, isReadOnly],
   );
 
   const handleAddNote = useCallback(() => {
+    if (isReadOnly) return;
     setModel((current) => {
       const nextDays = current.days.map((entry, index) => {
         if (index !== dayIndex) return entry;
@@ -514,7 +518,7 @@ export const ItineraryTimeline = ({
 
       return { ...current, days: nextDays };
     });
-  }, [dayIndex, setModel]);
+  }, [dayIndex, setModel, isReadOnly]);
 
 
 

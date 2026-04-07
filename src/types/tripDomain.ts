@@ -201,6 +201,10 @@ export type TripDay = {
    * Explanation text for the day's plan
    */
   explanation?: string;
+  /**
+   * Message when refinement made no changes (e.g., no candidates available, day fully scheduled)
+   */
+  message?: string;
 };
 
 /**

@@ -17,7 +17,23 @@ export function scoreSeasonalMatch(
   location: Location,
   tripMonth?: number,
 ): ScoringAdjustmentResult {
-  if (!tripMonth || !location.tags) {
+  if (!tripMonth) {
+    return { scoreAdjustment: 0, reasoning: "No seasonal data" };
+  }
+
+  // Hard filter: if validMonths is set, the location only operates in those months.
+  // Apply a steep penalty (-15) to effectively exclude it from selection without
+  // breaking the scoring contract (still returns a number, not a boolean).
+  if (location.validMonths && location.validMonths.length > 0) {
+    if (!location.validMonths.includes(tripMonth)) {
+      return {
+        scoreAdjustment: -15,
+        reasoning: `Closed in month ${tripMonth} (operates ${location.validMonths.join(",")})`,
+      };
+    }
+  }
+
+  if (!location.tags) {
     return { scoreAdjustment: 0, reasoning: "No seasonal data" };
   }
 

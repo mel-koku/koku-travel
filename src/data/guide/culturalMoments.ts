@@ -9,6 +9,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "At the temizuya (water basin), purify your hands and mouth before approaching the main hall. Left hand first, then right, then rinse your mouth with water cupped in your left hand. It's a simple ritual, but locals appreciate when visitors take part.",
     icon: "⛩️",
+    pillar: "kegare",
   },
   {
     id: "cm-2",
@@ -16,6 +17,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "When you toss a coin into the offering box, a five-yen coin (go-en) is the traditional choice. The word 'go-en' is a homophone for 'good fortune' or 'connection.' Then bow twice, clap twice, make your wish silently, and bow once more.",
     icon: "🪙",
+    pillar: "kegare",
   },
   {
     id: "cm-3",
@@ -23,6 +25,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Those small wooden plaques hanging near the entrance are ema. People write wishes on them, passing exams, safe childbirth, good health. You can buy a blank one and add your own wish. It's perfectly fine to write in any language.",
     icon: "🪧",
+    pillar: "kegare",
   },
   {
     id: "cm-4",
@@ -30,6 +33,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Try drawing an omikuji (fortune slip) from the box. If you get dai-kichi (great blessing), keep it. If you get kyo (bad luck), tie it to the designated wire rack. This transfers the bad fortune to the shrine's care. Either way, it's a fun tradition.",
     icon: "🎋",
+    pillar: "kegare",
   },
   {
     id: "cm-5",
@@ -37,6 +41,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Notice how the torii gates mark a threshold between the everyday world and sacred space. Walk along the edges of the approach path. The center is considered the pathway for the kami (deity). This is one of those unspoken rules most tourists miss.",
     icon: "⛩️",
+    pillar: "kegare",
   },
   {
     id: "cm-6",
@@ -44,6 +49,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Kyoto's Fushimi Inari has thousands of torii gates, each donated by a business or individual. The smaller gates near the top are more affordable, so they tend to be from local shop owners. The ones at the base can cost millions of yen. Check the inscriptions. You'll see company names and dates.",
     icon: "⛩️",
+    pillar: "kegare",
   },
   {
     id: "cm-7",
@@ -51,6 +57,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Meiji Jingu's towering torii gate is made from a 1,500-year-old hinoki cypress. The original 1920 gate was struck by lightning in 1966, and the replacement tree was found after a nationwide search. The forest surrounding it was entirely planted. 100,000 trees donated from across Japan when the shrine was first built.",
     icon: "🌲",
+    pillar: "kegare",
   },
   {
     id: "cm-8",
@@ -58,6 +65,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Kasuga-taisha's 3,000 stone and bronze lanterns are lit only twice a year, during Setsubun in February and Obon in August. If you visit during those festivals, the effect is otherworldly. The rest of the year, look for the moss-covered lanterns along the paths. Some date back 800 years.",
     icon: "🏮",
+    pillar: "kegare",
   },
 
   // ─── Temple ────────────────────────────────────────────────────────────────
@@ -68,6 +76,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "If there's a large incense burner (jokoro) in the courtyard, waft the smoke toward yourself. Japanese tradition says the smoke has healing properties. Wave it toward any part of your body that needs help. You'll see locals doing the same, patting the smoke onto sore knees or shoulders.",
     icon: "🪷",
+    pillar: "kegare",
   },
   {
     id: "cm-10",
@@ -75,6 +84,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "When you see a temple bell, you're welcome to ring it, but only if there's a rope hanging down and no sign prohibiting it. One solid strike is all you need. The deep resonance is believed to purify the mind. Ring it before you pray, not after.",
     icon: "🔔",
+    pillar: "kegare",
   },
   {
     id: "cm-11",
@@ -82,6 +92,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Zen rock gardens aren't meant to be 'solved.' Sit on the viewing platform and simply look. The rocks are deliberately arranged so you can never see all of them from any single angle. A reminder that full understanding of the world is always just beyond reach.",
     icon: "🪨",
+    pillar: "kegare",
   },
   {
     id: "cm-12",
@@ -89,6 +100,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Many of Kyoto's temples charge a small admission fee and hand you a 'goshuin-cho' stamp if you ask. These calligraphed temple seals are hand-brushed by monks and make a beautiful, authentic souvenir. Bring a stamp book (sold at the first temple you visit) and collect them as you go.",
     icon: "📜",
+    pillar: "kegare",
   },
   {
     id: "cm-13",
@@ -96,6 +108,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Kyoto's moss temple, Saihoji, requires advance reservation, online or by postal letter. The temple limits visitors to protect its 120 species of moss, some dating back 700 years. Slots fill weeks ahead, so book early. The unhurried visit is itself part of the Zen experience.",
     icon: "🌿",
+    pillar: "kegare",
   },
   {
     id: "cm-14",
@@ -103,6 +116,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Todai-ji's Great Buddha Hall is the world's largest wooden building, yet the current structure is actually 30% smaller than the original from 752 AD. The hole in one of the pillars is said to be the same size as the Buddha's nostril. Squeezing through is believed to grant enlightenment in your next life.",
     icon: "🛕",
+    pillar: "kegare",
   },
 
   // ─── Onsen ─────────────────────────────────────────────────────────────────
@@ -113,6 +127,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Remember: wash thoroughly at the shower stations before entering the bath. Onsen is about communal relaxation, and keeping the water clean is the most important rule. Your small towel stays out of the water. Fold it on your head like the locals do.",
     icon: "♨️",
+    pillar: "kegare",
   },
   {
     id: "cm-16",
@@ -120,6 +135,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Most onsen still prohibit visible tattoos. If yours is small, cover it with a waterproof bandage. Some modern onsen in cities are tattoo-friendly. Look for signs saying 'tattoo OK' or ask at the front desk. Private baths (kashikiri-buro) are always an option and often worth the small extra fee.",
     icon: "♨️",
+    pillar: "kegare",
   },
   {
     id: "cm-17",
@@ -127,6 +143,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "An outdoor bath (rotenburo) in winter is one of Japan's great pleasures. The contrast of freezing air on your face and 42-degree water on your body is unforgettable. Ease in slowly. Sudden immersion can spike your blood pressure. And stay hydrated; the heat draws out more water than you realize.",
     icon: "🏔️",
+    pillar: "kegare",
   },
   {
     id: "cm-18",
@@ -134,6 +151,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Different onsen have different mineral compositions. Sulfur springs (white, cloudy water) are good for skin. Iron springs (brown/red) help with circulation. Clear alkaline springs leave your skin silky smooth. Locals call it 'bijin no yu' (beauty bath). Check the posted analysis sheet near the entrance.",
     icon: "🧪",
+    pillar: "kegare",
   },
   {
     id: "cm-19",
@@ -141,6 +159,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Arima Onsen, tucked into the mountains above Kobe, is one of Japan's oldest hot springs, documented since the 600s. Its signature 'kinsen' (gold water) is iron-rich and rust-colored, while 'ginsen' (silver water) is clear and carbonated. Locals swear alternating between them is the secret to good health.",
     icon: "♨️",
+    pillar: "kegare",
   },
 
   // ─── Market ────────────────────────────────────────────────────────────────
@@ -151,6 +170,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Japan has no haggling culture. The listed price is the price, and attempting to negotiate is considered rude. If a vendor offers you a taste of something, it's genuine hospitality, not a sales tactic, though buying something afterward is a kind gesture.",
     icon: "🏪",
+    pillar: "meiwaku",
   },
   {
     id: "cm-21",
@@ -158,6 +178,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "When buying food at a market stall, eat it at the stall or in designated eating areas. Walking and eating (tabearuki) is frowned upon on regular streets and in traditional markets like Nishiki. Festival stalls and dedicated food streets like Takeshita-dori are the exception. Many stalls provide small standing counters for exactly this reason.",
     icon: "🍡",
+    pillar: "meiwaku",
   },
   {
     id: "cm-22",
@@ -165,6 +186,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Osaka's Kuromon Market is called 'Osaka's Kitchen' for good reason. Local chefs have been sourcing ingredients here since the 1800s. For the best experience, go before 10 AM when the pros shop. The sea urchin and tuna stalls at the market's center are worth every yen.",
     icon: "🐟",
+    pillar: "meiwaku",
   },
   {
     id: "cm-23",
@@ -172,6 +194,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Nishiki Market stretches five blocks and has operated for over 400 years. Look for Kyoto-specific specialties you won't find elsewhere: namazuba (pickled mackerel sushi), yuba (tofu skin), and kyo-tsukemono (Kyoto-style pickles). The pickled vegetable shops will let you taste before buying.",
     icon: "🥢",
+    pillar: "meiwaku",
   },
   {
     id: "cm-24",
@@ -179,6 +202,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "At the outer market of Tsukiji (Toyosu's inner market is wholesale-only), many stalls open at 5 AM and close by early afternoon. The tamagoyaki (sweet rolled omelette) stands are a Tokyo breakfast tradition. Each vendor has their own closely guarded recipe. Grab one fresh off the grill.",
     icon: "🍳",
+    pillar: "meiwaku",
   },
 
   // ─── Garden ────────────────────────────────────────────────────────────────
@@ -189,6 +213,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Japanese gardens are designed to be experienced in motion. Walk slowly and notice how the view changes with each step. This technique is called 'shakkei' (borrowed scenery), where distant mountains or buildings are framed as part of the garden's composition.",
     icon: "🌳",
+    pillar: "ma",
   },
   {
     id: "cm-26",
@@ -196,6 +221,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "The raked gravel in a karesansui (dry landscape) garden represents water. Ripples, waves, or the open sea. Monks re-rake the patterns daily as a form of meditation. The act of raking is considered as important as the finished pattern. Step on the gravel only if you see others doing so.",
     icon: "🪨",
+    pillar: "ma",
   },
   {
     id: "cm-27",
@@ -203,6 +229,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Kenroku-en is considered one of Japan's three most beautiful gardens (alongside Kairaku-en and Koraku-en). Its name means 'Garden of Six Sublimities': spaciousness, seclusion, artifice, antiquity, water features, and panoramic views. In winter, the yukitsuri (rope cones protecting trees from snow) become an iconic sight.",
     icon: "🌿",
+    pillar: "ma",
   },
   {
     id: "cm-28",
@@ -210,6 +237,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Kyoto's gardens change dramatically with the seasons and are intentionally designed for this. The moss gardens are most vivid after the June rains, maple leaves peak in late November, and plum blossoms open in February. Locals often visit the same garden four times a year to see its full cycle.",
     icon: "🍁",
+    pillar: "ma",
   },
 
   // ─── Museum ────────────────────────────────────────────────────────────────
@@ -220,6 +248,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Many Japanese museums require you to remove your shoes, especially those in traditional buildings or with tatami rooms. Carry thin socks just in case. Barefoot is generally not allowed, and the museum's slippers may not fit larger foreign feet.",
     icon: "🏛️",
+    pillar: "kegare",
   },
   {
     id: "cm-30",
@@ -227,6 +256,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Photography rules vary widely between Japanese museums. Most prohibit flash and tripods, and some ban photography entirely in certain galleries (often those with loaned works). Look for the camera icon with an X at each room's entrance. When in doubt, ask. 'Shashin wa ii desu ka?' (Is it OK to take photos?)",
     icon: "📷",
+    pillar: "kegare",
   },
   {
     id: "cm-31",
@@ -234,6 +264,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Tokyo's museum district in Ueno Park holds the National Museum, Western Art Museum, Science Museum, and more, all within walking distance. If you're visiting multiple, the Grutt Pass (about 2,500 yen) covers entry or discounts to nearly 100 museums across the city and pays for itself after two visits.",
     icon: "🎫",
+    pillar: "kegare",
   },
 
   // ─── Landmark ──────────────────────────────────────────────────────────────
@@ -268,6 +299,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Before eating, say 'itadakimasu' (I humbly receive) with a slight nod. After finishing, say 'gochisousama deshita' (thank you for the feast). These aren't just politeness. They express gratitude to everyone who grew, prepared, and served the food. Staff genuinely notice and appreciate it.",
     icon: "🍱",
+    pillar: "omotenashi",
   },
   {
     id: "cm-36",
@@ -275,6 +307,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Never stick your chopsticks upright in a bowl of rice. This resembles incense at a funeral and is considered deeply inauspicious. Also avoid passing food chopstick-to-chopstick, as this mimics a cremation ritual. When sharing dishes, use the reverse (clean) end of your chopsticks instead.",
     icon: "🥢",
+    pillar: "omotenashi",
   },
   {
     id: "cm-37",
@@ -282,6 +315,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Tipping does not exist in Japan and can actually cause confusion or embarrassment. The price covers everything, including excellent service. If you want to show appreciation, a sincere 'gochisousama deshita' when leaving means more to staff than any tip would.",
     icon: "💴",
+    pillar: "omotenashi",
   },
   {
     id: "cm-38",
@@ -289,6 +323,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Osaka lives by 'kuidaore,' eat until you drop. This isn't just a slogan; the city genuinely prioritizes food over appearances. Where Kyoto dresses up, Osaka digs in. Don't overthink your choices in Dotonbori. If there's a line of locals, join it. Osaka's best meals are often at the most unassuming stalls.",
     icon: "🍢",
+    pillar: "omotenashi",
   },
   {
     id: "cm-39",
@@ -296,6 +331,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Many small Tokyo restaurants serve only one thing: ramen, tempura, tonkatsu, or soba. This isn't limited selection; it's a philosophy called 'kodawari' (obsessive dedication). The chef may have spent decades perfecting a single dish. Trust the specialty of the house.",
     icon: "🍜",
+    pillar: "omotenashi",
   },
   {
     id: "cm-40",
@@ -303,6 +339,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Fukuoka's yatai (outdoor food stalls) along the Naka River are one of Japan's last remaining street food traditions. Most cities banned them decades ago. Squeeze onto a stool, order Hakata ramen with extra-firm noodles (kata-men), and don't forget 'kaedama,' an extra helping of noodles added to your remaining broth.",
     icon: "🍜",
+    pillar: "omotenashi",
   },
 
   // ─── Cafe ──────────────────────────────────────────────────────────────────
@@ -337,6 +374,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "Many Japanese bars charge a 'otoshi' or 'tsukidashi,' a small appetizer that appears without you ordering it. This is not a scam; it's a cover charge (usually 300-800 yen) and a Japanese custom. Think of it as a table charge that comes with a small snack.",
     icon: "🍶",
+    pillar: "omotenashi",
   },
   {
     id: "cm-45",
@@ -375,6 +413,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     content:
       "If you see a stone path with one stone tied with a rope and a small knot on top, it means 'do not enter.' This is called 'sekimori-ishi' and is a gentle, centuries-old way of guiding visitors without signage. Respect the rope. There's often a reason, like freshly planted moss or a private area.",
     icon: "🪨",
+    pillar: "ma",
   },
 
   // ─── any:any catch-all cultural moments ────────────────────────────────────

@@ -12,11 +12,17 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
+import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon, LocationCard } from "./LocationCard";
+import { useLocationHierarchy } from "@/hooks/useLocationHierarchy";
+import {
+  ChildLocationsSection,
+  SubExperiencesSection,
+  RelationshipsSection,
+} from "./HierarchySections";
 
 const staggerContainer = {
   hidden: {},
@@ -118,6 +124,9 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     [nearbyData, location.id],
   );
 
+  // Hierarchy context (children, sub-experiences, relationships)
+  const { data: hierarchy } = useLocationHierarchy(location.id);
+
   // Photos
   const allPhotos = useMemo(() => {
     const hero = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
@@ -197,13 +206,14 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     return pills;
   }, [location.goodForChildren, location.goodForGroups]);
 
-  // Guidance tips
+  // Location-specific guidance tips (only tips explicitly targeting this location)
   const [tips, setTips] = useState<TravelGuidance[]>([]);
   useEffect(() => {
     let cancelled = false;
-    fetchGuidanceForLocation(location)
+    fetchLocationSpecificGuidance(location)
       .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
-      .catch(() => {});
+      // eslint-disable-next-line no-console
+      .catch((err) => console.warn("Failed to fetch location guidance:", err));
     return () => { cancelled = true; };
   }, [location]);
 
@@ -343,21 +353,34 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           )}
         </motion.div>
 
-        {/* Save button */}
+        {/* Save button (disabled with explanation for container parents like districts) */}
         <motion.div variants={fadeUp} className="mt-5">
-          <button
-            type="button"
-            onClick={handleToggleSave}
-            className={cn(
-              "inline-flex h-11 items-center gap-2 rounded-lg px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
-              isSaved
-                ? "bg-brand-primary text-white"
-                : "bg-surface text-foreground hover:bg-border/50"
-            )}
-          >
-            <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
-            {isSaved ? "Saved" : "Save for trip"}
-          </button>
+          {location.parentMode === "container" ? (
+            <button
+              type="button"
+              disabled
+              className="inline-flex h-11 items-center gap-2 rounded-lg bg-surface px-5 text-sm font-medium text-foreground-secondary opacity-50 cursor-not-allowed"
+              title="This is a district. Save individual places instead."
+              aria-label="Save unavailable for districts"
+            >
+              <HeartIcon active={false} animating={false} variant="inline" />
+              Save for trip
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleToggleSave}
+              className={cn(
+                "inline-flex h-11 items-center gap-2 rounded-lg px-5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]",
+                isSaved
+                  ? "bg-brand-primary text-white"
+                  : "bg-surface text-foreground hover:bg-border/50"
+              )}
+            >
+              <HeartIcon active={isSaved} animating={heartAnimating} variant="inline" />
+              {isSaved ? "Saved" : "Save for trip"}
+            </button>
+          )}
         </motion.div>
       </motion.div>
 
@@ -403,11 +426,18 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         )}
 
 
-        {/* Local tips */}
-        {tips.length > 0 && (
+        {/* Local tips: insider tip + location-specific guidance */}
+        {(location.insiderTip || tips.length > 0) && (
           <motion.section {...sectionReveal} className="space-y-3">
             <h2 className="eyebrow-editorial">Local tips</h2>
             <div className="space-y-2">
+              {location.insiderTip && (
+                <div className="rounded-lg bg-yuzu-tint p-3">
+                  <p className="text-sm leading-relaxed text-foreground-body">
+                    {location.insiderTip}
+                  </p>
+                </div>
+              )}
               {tips.map((tip) => (
                 <div
                   key={tip.id}
@@ -420,20 +450,6 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                   </div>
                 </div>
               ))}
-            </div>
-          </motion.section>
-        )}
-
-        {/* Insider Tip */}
-        {location.insiderTip && (
-          <motion.section {...sectionReveal}>
-            <div className="rounded-lg bg-yuzu-tint p-4">
-              <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
-                Insider tip
-              </p>
-              <p className="text-sm leading-relaxed text-foreground-body">
-                {location.insiderTip}
-              </p>
             </div>
           </motion.section>
         )}
@@ -636,6 +652,36 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </a>
         </div>
       </section>
+
+      {/* Hierarchy: Sub-experiences */}
+      {hierarchy && hierarchy.subExperiences.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <SubExperiencesSection subExperiences={hierarchy.subExperiences} />
+          </div>
+        </section>
+      )}
+
+      {/* Hierarchy: Child locations */}
+      {hierarchy && hierarchy.children.length > 0 && (
+        <section className="bg-canvas py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <ChildLocationsSection
+              childLocations={hierarchy.children}
+              parentName={location.name}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Hierarchy: Relationships (In this area / Consider instead) */}
+      {hierarchy && hierarchy.relationships.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <RelationshipsSection relationships={hierarchy.relationships} />
+          </div>
+        </section>
+      )}
 
       {/* Explore Nearby */}
       {nearbyLocations.length > 0 && (

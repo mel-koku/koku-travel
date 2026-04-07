@@ -154,8 +154,28 @@ ${runnerUpContext}
       return itinerary;
     }
 
-    // Apply patches to itinerary
-    return applyPatches(itinerary, refinement.patches, allLocations);
+    // Apply patches and sanity-check the result. If per-day activity counts
+    // dropped (which should never happen for swap/reorder/flag but is cheap
+    // to verify), fall back to the original itinerary. A silently-dropped
+    // activity is much worse than an un-refined day.
+    const refined = applyPatches(itinerary, refinement.patches, allLocations);
+    const countsMatch = itinerary.days.every((originalDay, i) => {
+      const refinedDay = refined.days[i];
+      if (!refinedDay) return false;
+      const originalCount = originalDay.activities.filter((a) => a.kind === "place").length;
+      const refinedCount = refinedDay.activities.filter((a) => a.kind === "place").length;
+      return originalCount === refinedCount;
+    });
+
+    if (!countsMatch) {
+      logger.warn("Day refinement lost activities, reverting to original", {
+        originalDayCounts: itinerary.days.map((d) => d.activities.filter((a) => a.kind === "place").length),
+        refinedDayCounts: refined.days.map((d) => d.activities.filter((a) => a.kind === "place").length),
+      });
+      return itinerary;
+    }
+
+    return refined;
   } catch (error) {
     clearTimeout(timeout);
     logger.warn("Day refinement failed, using original itinerary", {
@@ -183,6 +203,8 @@ export function applyPatches(
 
   const locationById = new Map(allLocations.map((l) => [l.id, l]));
 
+  const VALID_FLAG_SEVERITIES = new Set(["info", "warning"]);
+
   for (const patch of patches) {
     const day = days[patch.dayIndex];
     if (!day) {
@@ -202,6 +224,15 @@ export function applyPatches(
           logger.warn("Swap replacement location not found", { locationId: patch.replacementLocationId });
           break;
         }
+        // Validate replacement is in the same city as the day
+        if (replacementLoc.city && day.cityId && replacementLoc.city.toLowerCase() !== day.cityId.toLowerCase()) {
+          logger.warn("Swap replacement location is in a different city, skipping", {
+            locationId: patch.replacementLocationId,
+            locationCity: replacementLoc.city,
+            dayCity: day.cityId,
+          });
+          break;
+        }
         const original = day.activities[targetIdx]!;
         if (original.kind !== "place") break;
 
@@ -214,7 +245,7 @@ export function applyPatches(
           durationMin: original.durationMin,
           locationId: replacementLoc.id,
           coordinates: replacementLoc.coordinates,
-          neighborhood: replacementLoc.neighborhood ?? replacementLoc.city,
+          neighborhood: replacementLoc.neighborhood,
           tags: replacementLoc.category ? [replacementLoc.category] : [],
           notes: `Refined: ${patch.reason}`,
           schedule: original.schedule,
@@ -229,24 +260,41 @@ export function applyPatches(
       case "reorder": {
         const placeActivities = day.activities.filter((a) => a.kind === "place");
 
+        // Filter newOrder to only include IDs that correspond to place activities
+        const placeIds = new Set(placeActivities.map((a) => a.id));
+        const filteredOrder = patch.newOrder.filter((id) => placeIds.has(id));
+
         // Validate all IDs exist
         const activityMap = new Map(placeActivities.map((a) => [a.id, a]));
-        if (patch.newOrder.length !== placeActivities.length) {
+        if (filteredOrder.length !== placeActivities.length) {
           logger.warn("Reorder patch has wrong activity count", {
             expected: placeActivities.length,
-            got: patch.newOrder.length,
+            got: filteredOrder.length,
           });
           break;
         }
 
-        const allExist = patch.newOrder.every((id) => activityMap.has(id));
+        // Reject duplicate IDs in newOrder. Without this check a patch like
+        // [A, B, B] for original [A, B, C] would silently drop C — the length
+        // matches, every ID "exists" in the map, but C never makes it into
+        // the reordered list. This was a real hazard with LLM-generated
+        // patches before the fix.
+        const uniqueIds = new Set(filteredOrder);
+        if (uniqueIds.size !== filteredOrder.length) {
+          logger.warn("Reorder patch has duplicate activity IDs", {
+            newOrder: filteredOrder,
+          });
+          break;
+        }
+
+        const allExist = filteredOrder.every((id) => activityMap.has(id));
         if (!allExist) {
           logger.warn("Reorder patch references unknown activity IDs");
           break;
         }
 
         const reordered: ItineraryActivity[] = [];
-        for (const id of patch.newOrder) {
+        for (const id of filteredOrder) {
           const act = activityMap.get(id);
           if (act) reordered.push(act);
         }
@@ -261,6 +309,10 @@ export function applyPatches(
       }
 
       case "flag": {
+        if (!VALID_FLAG_SEVERITIES.has(patch.severity)) {
+          logger.warn("Invalid flag severity, skipping", { severity: patch.severity });
+          break;
+        }
         const flagIdx = day.activities.findIndex((a) => a.id === patch.activityId);
         if (flagIdx === -1) {
           logger.warn("Flag target activity not found", { activityId: patch.activityId });

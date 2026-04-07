@@ -262,6 +262,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           dayIntros={selectedTrip?.dayIntros}
           guideProse={selectedTrip?.guideProse}
           dailyBriefings={selectedTrip?.dailyBriefings}
+          culturalBriefing={selectedTrip?.culturalBriefing}
           suggestions={smartPrompts.gaps}
           onAcceptSuggestion={handleSmartPromptAccept}
           onSkipSuggestion={handleSmartPromptSkip}

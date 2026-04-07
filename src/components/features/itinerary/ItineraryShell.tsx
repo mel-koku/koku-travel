@@ -18,6 +18,7 @@ import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinera
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
 
 import { LocationSearchBar } from "./LocationSearchBar";
@@ -27,6 +28,7 @@ import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { BeforeYouLandTab } from "./before-you-land/BeforeYouLandTab";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
@@ -57,7 +59,7 @@ const DiscoverMap = dynamic(
   { ssr: false },
 );
 
-type ItineraryViewMode = "timeline" | "dashboard" | "discover";
+type ItineraryViewMode = "timeline" | "dashboard" | "discover" | "culture";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -78,6 +80,7 @@ type ItineraryShellProps = {
   dayIntros?: Record<string, string>;
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
+  culturalBriefing?: CulturalBriefing;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -107,6 +110,7 @@ export const ItineraryShell = ({
   dayIntros,
   guideProse,
   dailyBriefings,
+  culturalBriefing,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -145,6 +149,10 @@ export const ItineraryShell = ({
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
+  const [cultureTabSeen, setCultureTabSeen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("koku-culture-tab-seen") === "true";
+  });
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
@@ -179,11 +187,12 @@ export const ItineraryShell = ({
 
   const handleReorder = useCallback(
     (dayId: string, activityIds: string[]) => {
+      if (isReadOnly) return;
       if (tripId && !isUsingMock) {
         reorderActivities(tripId, dayId, activityIds);
       }
     },
-    [tripId, isUsingMock, reorderActivities],
+    [tripId, isUsingMock, isReadOnly, reorderActivities],
   );
 
   useEffect(() => {
@@ -191,6 +200,14 @@ export const ItineraryShell = ({
       finalHeadingRef.current.focus();
     }
   }, [finalHeadingRef]);
+
+  // Mark culture tab as seen on first visit
+  useEffect(() => {
+    if (viewMode === "culture" && !cultureTabSeen) {
+      setCultureTabSeen(true);
+      localStorage.setItem("koku-culture-tab-seen", "true");
+    }
+  }, [viewMode, cultureTabSeen]);
 
   // Keyboard shortcuts for undo/redo (Cmd+Z / Cmd+Shift+Z / Cmd+Y)
   useEffect(() => {
@@ -258,25 +275,28 @@ export const ItineraryShell = ({
   // Handler: set start location for this day
   const handleStartLocationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay?.id) return;
       setDayEntryPoint(tripId, currentDay.id, "start", location);
       // If end isn't explicitly set, it defaults to same as start (via resolution logic)
     },
-    [tripId, currentDay, setDayEntryPoint],
+    [tripId, currentDay, setDayEntryPoint, isReadOnly],
   );
 
   // Handler: set end location for this day
   const handleEndLocationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay?.id) return;
       setDayEntryPoint(tripId, currentDay.id, "end", location);
     },
-    [tripId, currentDay, setDayEntryPoint],
+    [tripId, currentDay, setDayEntryPoint, isReadOnly],
   );
 
   // Handler: set accommodation for all days in this city
   const handleCityAccommodationChange = useCallback(
     (location: EntryPoint | undefined) => {
+      if (isReadOnly) return;
       if (!tripId || !currentDay) return;
       const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
       if (!effectiveCityId) return;
@@ -290,12 +310,13 @@ export const ItineraryShell = ({
         setCityAccommodation(tripId, effectiveCityId, undefined);
       }
     },
-    [tripId, currentDay, setCityAccommodation],
+    [tripId, currentDay, setCityAccommodation, isReadOnly],
   );
 
   // Handler: change day start time
   const handleDayStartTimeChange = useCallback(
     (startTime: string) => {
+      if (isReadOnly) return;
       applyModelUpdate((current) => {
         const nextDays = current.days.map((entry, index) => {
           if (index !== safeSelectedDay) return entry;
@@ -310,7 +331,7 @@ export const ItineraryShell = ({
         return { ...current, days: nextDays };
       });
     },
-    [safeSelectedDay, applyModelUpdate],
+    [safeSelectedDay, applyModelUpdate, isReadOnly],
   );
 
   const { currentDaySuggestions, handleAcceptSuggestion } = useSmartSuggestions({
@@ -366,6 +387,7 @@ export const ItineraryShell = ({
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
     (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+      if (isReadOnly) return;
       if (!tripId || isUsingMock || !currentDay) return;
 
       addActivity(tripId, currentDay.id, newActivity);
@@ -382,12 +404,13 @@ export const ItineraryShell = ({
         scheduleUserPlanningRef.current?.(nextItinerary);
       }, 0);
     },
-    [tripId, isUsingMock, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+    [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
   // ── Refine day (Adjust button) ──
   const handleRefineDay = useCallback(
     (refinedDay: ItineraryDay) => {
+      if (isReadOnly) return;
       const nextItinerary = {
         ...model,
         days: model.days.map((d, i) => (i === safeSelectedDay ? refinedDay : d)),
@@ -397,7 +420,7 @@ export const ItineraryShell = ({
         scheduleUserPlanningRef.current?.(nextItinerary);
       }, 0);
     },
-    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef],
+    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef, isReadOnly],
   );
 
   // ── Day trip accept handler ──
@@ -422,10 +445,11 @@ export const ItineraryShell = ({
 
   const handleAddDiscoverActivity = useCallback(
     (location: Location) => {
+      if (isReadOnly) return;
       const newActivity = discover.buildActivity(location);
       handleAddSearchedActivity(newActivity);
     },
-    [discover, handleAddSearchedActivity],
+    [discover, handleAddSearchedActivity, isReadOnly],
   );
 
   // Activity ratings
@@ -587,6 +611,7 @@ export const ItineraryShell = ({
                           { key: "timeline", label: "Timeline" },
                           { key: "dashboard", label: "Overview" },
                           ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
+                          ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
                         ] as { key: ItineraryViewMode; label: string }[]
                       ).map((tab) => (
                         <button
@@ -600,6 +625,9 @@ export const ItineraryShell = ({
                           }`}
                         >
                           {tab.label}
+                          {tab.key === "culture" && !cultureTabSeen && (
+                            <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
+                          )}
                         </button>
                       ))}
                     </div>
@@ -698,6 +726,13 @@ export const ItineraryShell = ({
                 geoLoading={discover.geoLocation.isLoading}
                 geoError={discover.geoLocation.error}
               />
+            </div>
+          )}
+
+          {/* Before You Land (Culture) Tab */}
+          {viewMode === "culture" && culturalBriefing && (
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+              <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
           )}
 

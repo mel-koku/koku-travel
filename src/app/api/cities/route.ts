@@ -45,10 +45,7 @@ export const GET = withApiHandler(
     ).order("rating", { ascending: false, nullsFirst: false });
 
     if (error) {
-      logger.error("Failed to fetch locations for cities", {
-        error,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to fetch locations for cities", error, { requestId: context.requestId });
       return internalError("Failed to fetch cities from database", {
         error: error.message,
       });

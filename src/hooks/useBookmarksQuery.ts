@@ -52,7 +52,7 @@ async function addBookmark(
     .upsert({ user_id: userId, guide_id: guideId }, { onConflict: "user_id,guide_id" });
 
   if (error) {
-    logger.error("Failed to add guide bookmark", { error });
+    logger.error("Failed to add guide bookmark", error);
     throw new Error(error.message);
   }
 }
@@ -72,7 +72,7 @@ async function removeBookmark(
     .eq("guide_id", guideId);
 
   if (error) {
-    logger.error("Failed to remove guide bookmark", { error });
+    logger.error("Failed to remove guide bookmark", error);
     throw new Error(error.message);
   }
 }

@@ -172,7 +172,7 @@ export function resolveCitySequence(
     // Dedupe input in auto mode — the user just picked a bag of cities.
     const uniqueInput = Array.from(new Set(citiesToOptimize));
     const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
-    const optimizedSequence = optimizeCitySequence(data.entryPoint, uniqueInput, effectiveExit);
+    const optimizedSequence = optimizeCitySequence(data.entryPoint, uniqueInput, effectiveExit, data.duration);
     // Allow duplicates through the dedup pass because optimizeCitySequence may
     // append the entry city at the end (appendReturnCityIfNeeded) when the
     // trip would otherwise strand the traveler far from the exit airport.
@@ -210,6 +210,7 @@ export function optimizeCitySequence(
   entryPoint: TripBuilderData["entryPoint"],
   cities: CityId[],
   exitPoint?: TripBuilderData["exitPoint"],
+  totalDays?: number,
 ): CityId[] {
   if (cities.length === 0) {
     return cities;
@@ -229,7 +230,7 @@ export function optimizeCitySequence(
   // If no regions found or only one region, fall back to simple optimization
   if (citiesByRegion.size <= 1) {
     const result = optimizeCitiesWithinRegion(cities, entryPoint, exitPoint, true);
-    return appendReturnCityIfNeeded(result, entryPoint, exitPoint);
+    return appendReturnCityIfNeeded(result, entryPoint, exitPoint, totalDays);
   }
 
   // Detect round trip: exit region equals entry region
@@ -280,7 +281,7 @@ export function optimizeCitySequence(
     }
 
     const pinned = pinExitCityLast(result, entryPoint, exitPoint);
-    return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint);
+    return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint, totalDays);
   }
 
   // Non-round-trip: group by region and concatenate in optimal order
@@ -318,7 +319,7 @@ export function optimizeCitySequence(
   // ending far from exit airport). Move a closer city to the end when possible.
   const pinned = pinExitCityLast(result, entryPoint, exitPoint);
 
-  return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint);
+  return appendReturnCityIfNeeded(pinned, entryPoint, exitPoint, totalDays);
 }
 
 /**
@@ -371,11 +372,18 @@ function pinExitCityLast(
 /**
  * Auto-append the airport city when the last city is far (>2h) from the
  * departure airport. Only called during sequence optimization (not custom order).
+ *
+ * When `totalDays` is provided and the trip is short (no slack beyond giving
+ * each selected city 2 full days), skip the append — stealing a day for a
+ * return stop on a 4-day 2-city trip turns the primary visits into a rush.
+ * The departure-distance warning still fires client-side so the traveler
+ * knows to plan their own return.
  */
 function appendReturnCityIfNeeded(
   cities: CityId[],
   entryPoint: TripBuilderData["entryPoint"],
   exitPoint?: TripBuilderData["exitPoint"],
+  totalDays?: number,
 ): CityId[] {
   const effectiveExit = exitPoint ?? entryPoint;
   if (!effectiveExit || cities.length === 0) return cities;
@@ -385,10 +393,18 @@ function appendReturnCityIfNeeded(
   if (!nearestCity || lastCity === nearestCity) return cities;
 
   const time = travelTimeFromEntryPoint(effectiveExit, lastCity);
-  if (time !== undefined && time > DEPARTURE_COMFORT_MINUTES) {
-    return [...cities, nearestCity];
+  if (time === undefined || time <= DEPARTURE_COMFORT_MINUTES) {
+    return cities;
   }
-  return cities;
+
+  // Short-trip guard: with totalDays <= 2*cities.length the trip can't
+  // afford to reserve a full day just for the return. Let each city keep
+  // its share and rely on the distance warning instead.
+  if (totalDays !== undefined && totalDays <= cities.length * 2) {
+    return cities;
+  }
+
+  return [...cities, nearestCity];
 }
 
 /**

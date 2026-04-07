@@ -40,6 +40,9 @@ export {
   useSavedLocations,
 } from "./useSavedLocations";
 
+// Location hierarchy hook
+export { useLocationHierarchy } from "./useLocationHierarchy";
+
 // Activity locations hook
 export {
   activityLocationsKeys,

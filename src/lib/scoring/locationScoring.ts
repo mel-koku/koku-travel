@@ -40,10 +40,11 @@ export function scoreLocation(
   const categoryWeight = criteria.categoryWeights && location.category
     ? criteria.categoryWeights[location.category.toLowerCase()] ?? 1.0
     : 1.0;
+  const MAX_INTEREST_SCORE = 50;
   const interestResult = categoryWeight !== 1.0
     ? {
-        score: Math.round(rawInterestResult.score * categoryWeight),
-        reasoning: `${rawInterestResult.reasoning} (×${categoryWeight.toFixed(1)} weight)`,
+        score: Math.min(MAX_INTEREST_SCORE, Math.round(rawInterestResult.score * categoryWeight)),
+        reasoning: `${rawInterestResult.reasoning} (×${categoryWeight.toFixed(1)} weight, capped at ${MAX_INTEREST_SCORE})`,
       }
     : rawInterestResult;
 
@@ -51,7 +52,7 @@ export function scoreLocation(
   const logisticalResult = scoreLogisticalFit(location, criteria);
 
   // Short-circuit: location is too far away (hard -100 penalty).
-  // Skip remaining 16 factor evaluations for locations that will never be selected.
+  // Skip remaining factor evaluations for locations that will never be selected.
   if (logisticalResult.score <= -100) {
     return {
       location,
@@ -64,7 +65,7 @@ export function scoreLocation(
         neighborhoodDiversity: 0, weatherFit: 0, timeOptimization: 0,
         groupFit: 0, seasonalFit: 0, contentFit: 0, dietaryFit: 0,
         crowdFit: 0, photoFit: 0, tagMatch: 0,
-        accommodationBonus: 0, unescoBonus: 0,
+        accommodationBonus: 0, unescoBonus: 0, hiddenGemBonus: 0,
       },
       reasoning: [interestResult.reasoning, ratingResult.reasoning, logisticalResult.reasoning],
     };
@@ -144,6 +145,7 @@ export function scoreLocation(
     tagMatch: tagMatchResult.score,
     accommodationBonus,
     unescoBonus: unesco.total,
+    hiddenGemBonus: hiddenGem.total,
   };
 
   const totalScore =
@@ -163,9 +165,9 @@ export function scoreLocation(
     breakdown.crowdFit +
     breakdown.photoFit +
     breakdown.tagMatch +
-    accommodationBonus +
-    hiddenGem.total +
-    unesco.total;
+    breakdown.accommodationBonus +
+    breakdown.hiddenGemBonus +
+    breakdown.unescoBonus;
 
   const reasoning = [
     interestResult.reasoning,

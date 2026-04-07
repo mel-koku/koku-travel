@@ -20,6 +20,8 @@ export type LocationSearchResult = {
   placeId: string;
   image?: string;
   rating?: number;
+  parentId?: string;
+  parentName?: string;
 };
 
 /** Maximum number of results to return */
@@ -63,7 +65,7 @@ export const GET = withApiHandler(
 
     // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
     const baseQuery = applyActiveLocationFilters(
-      supabase.from("locations").select("id, name, city, region, category, place_id, image, rating")
+      supabase.from("locations").select("id, name, city, region, category, place_id, image, rating, parent_id")
     );
 
     const { data, error } = await applySearchFilter(baseQuery, query)
@@ -71,14 +73,24 @@ export const GET = withApiHandler(
       .limit(limit);
 
     if (error) {
-      logger.error("Failed to search locations", {
-        error,
+      logger.error("Failed to search locations", error, {
         query,
         requestId: context.requestId,
       });
       return internalError("Failed to search locations", { error: error.message }, {
         requestId: context.requestId,
       });
+    }
+
+    // Fetch parent names for child locations
+    const parentIds = [...new Set((data || []).map((r) => r.parent_id).filter(Boolean))];
+    const parentNameMap = new Map<string, string>();
+    if (parentIds.length > 0) {
+      const { data: parents } = await supabase
+        .from("locations")
+        .select("id, name")
+        .in("id", parentIds);
+      parents?.forEach((p) => parentNameMap.set(p.id, p.name));
     }
 
     // Transform to LocationSearchResult
@@ -91,6 +103,8 @@ export const GET = withApiHandler(
       placeId: row.place_id ?? "",
       image: row.image || undefined,
       rating: row.rating ?? undefined,
+      parentId: row.parent_id ?? undefined,
+      parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
     }));
 
     return NextResponse.json(results, {

@@ -119,6 +119,47 @@ describe("Location Scoring", () => {
       expect(result.breakdown.ratingQuality).toBeLessThan(20);
     });
 
+    it("should cap effective rating at 4.0 when review count is below 10", () => {
+      // 5★/2rv vs 5★/500rv should not score the same — thin-review
+      // locations get a 4.0-rating cap so they can't outrank genuinely
+      // well-reviewed places.
+      const thinButPerfect = { ...mockLocation, rating: 5.0, reviewCount: 2 };
+      const wellReviewed = { ...mockLocation, rating: 5.0, reviewCount: 500 };
+
+      const thinResult = scoreLocation(thinButPerfect, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+      const wellResult = scoreLocation(wellReviewed, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      expect(thinResult.breakdown.ratingQuality).toBeLessThan(
+        wellResult.breakdown.ratingQuality,
+      );
+      // Thin-review 5★ should score roughly as a 4★/low-review location
+      expect(thinResult.breakdown.ratingQuality).toBeLessThanOrEqual(15);
+    });
+
+    it("should not cap rating when review count meets the 10-review threshold", () => {
+      const atThreshold = { ...mockLocation, rating: 4.8, reviewCount: 10 };
+      const result = scoreLocation(atThreshold, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      // 4.8★ with 10 reviews should get close to full rating credit
+      // (14 * sqrt(0.96) + 4 = ~17.7)
+      expect(result.breakdown.ratingQuality).toBeGreaterThanOrEqual(17);
+    });
+
     it("should handle missing rating gracefully", () => {
       const noRating = { ...mockLocation, rating: undefined, reviewCount: undefined };
       const result = scoreLocation(noRating, {
@@ -281,6 +322,97 @@ describe("Location Scoring", () => {
         expect(typeof reason).toBe("string");
         expect(reason.length).toBeGreaterThan(0);
       });
+    });
+  });
+
+  describe("Interest Score Capping", () => {
+    it("should cap weighted interest score at 50", () => {
+      const result = scoreLocation(mockLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        currentInterest: "culture", // triggers +10 rotation bonus
+        categoryWeights: { temple: 2.0 }, // 2x multiplier
+      });
+      expect(result.breakdown.interestMatch).toBeLessThanOrEqual(50);
+    });
+  });
+
+  describe("Local Secrets Distance Extension", () => {
+    it("should extend to 75km for local_secrets vibe with any category", () => {
+      const remoteRestaurant: Location = {
+        ...mockLocation,
+        id: "remote-restaurant",
+        category: "restaurant",
+        coordinates: { lat: 35.5, lng: 136.1 }, // ~60km from current
+      };
+      const result = scoreLocation(remoteRestaurant, {
+        interests: ["food"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+        currentLocation: { lat: 35.0116, lng: 135.6761 },
+      });
+      // Should NOT get -100 hard penalty (should be in extended range)
+      expect(result.breakdown.logisticalFit).toBeGreaterThan(-100);
+    });
+
+    it("should NOT extend for non-local_secrets vibe with non-nature/cultural category", () => {
+      const remoteRestaurant: Location = {
+        ...mockLocation,
+        id: "remote-restaurant",
+        category: "restaurant",
+        coordinates: { lat: 35.5, lng: 136.1 }, // ~60km from current
+      };
+      const result = scoreLocation(remoteRestaurant, {
+        interests: ["food"],
+        travelStyle: "fast",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: false,
+        currentLocation: { lat: 35.0116, lng: 135.6761 },
+      });
+      // Should get -100 hard penalty
+      expect(result.breakdown.logisticalFit).toBe(-100);
+    });
+  });
+
+  describe("Score Breakdown Completeness", () => {
+    it("breakdown fields should sum to total score", () => {
+      const hiddenGemLocation: Location = {
+        ...mockLocation,
+        id: "hidden-gem-test",
+        isHiddenGem: true,
+        tags: ["quiet", "outdoor"],
+      };
+      const result = scoreLocation(hiddenGemLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+      });
+      const breakdownSum = Object.values(result.breakdown).reduce((sum, v) => sum + v, 0);
+      expect(breakdownSum).toBe(result.score);
+    });
+
+    it("breakdown should include hiddenGemBonus field", () => {
+      const hiddenGemLocation: Location = {
+        ...mockLocation,
+        id: "hidden-gem-test",
+        isHiddenGem: true,
+      };
+      const result = scoreLocation(hiddenGemLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        hasLocalSecretsVibe: true,
+      });
+      expect(result.breakdown).toHaveProperty("hiddenGemBonus");
+      expect(result.breakdown.hiddenGemBonus).toBeGreaterThan(0);
     });
   });
 });

@@ -47,7 +47,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
         </ScrollReveal>
 
         {/* Cards grid — hero card for first item */}
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {locations.slice(0, 5).map((location, i) => {
             const isHero = i === 0;
             return (

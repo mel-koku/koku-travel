@@ -93,7 +93,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
   if (firstError) {
     const msg = `Failed to fetch locations from database: ${firstError.message}`;
-    logger.error(msg, { error: firstError.message });
+    logger.error(msg, firstError);
     throw new Error(msg);
   }
 
@@ -325,7 +325,7 @@ export const POST = withApiHandler(
           trip: refined,
           refinementType,
           dayIndex: targetDayIndex,
-          message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
+          message: refinedDay.message ?? `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
         },
         { status: 200 }
       );
@@ -383,7 +383,11 @@ export const POST = withApiHandler(
     const responseBody: RefinementResponse = {
       refinedDay: mapTripDayToItineraryDay(refinedDay, originalItineraryDay),
       updatedTrip,
-      ...(unchanged ? { message: "This day is already optimized for that adjustment." } : {}),
+      ...(refinedDay.message
+        ? { message: refinedDay.message }
+        : unchanged
+          ? { message: "This day is already optimized for that adjustment." }
+          : {}),
     };
 
     return NextResponse.json(responseBody);
