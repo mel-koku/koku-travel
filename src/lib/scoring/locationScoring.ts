@@ -52,7 +52,7 @@ export function scoreLocation(
   const logisticalResult = scoreLogisticalFit(location, criteria);
 
   // Short-circuit: location is too far away (hard -100 penalty).
-  // Skip remaining 16 factor evaluations for locations that will never be selected.
+  // Skip remaining factor evaluations for locations that will never be selected.
   if (logisticalResult.score <= -100) {
     return {
       location,
