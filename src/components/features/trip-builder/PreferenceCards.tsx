@@ -210,7 +210,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         title="Group Composition"
         description="Tell us about your travel group"
       >
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormField id="group-type" label="Group Type">
             <Controller
               control={control}
@@ -272,7 +272,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
           <p className="text-sm font-medium text-foreground-secondary mb-2">
             Dietary Restrictions
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {DIETARY_OPTIONS.map((option) => (
               <label
                 key={option.id}
