@@ -48,6 +48,12 @@ type EnvConfig = {
 
   // Email (Resend)
   RESEND_API_KEY?: string;
+
+  // Stripe (Billing)
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?: string;
+  FREE_FULL_ACCESS?: string;
 };
 
 type RequiredEnvKeys =
@@ -116,6 +122,10 @@ function createLenientConfig(): EnvConfig {
     DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: process.env.DAILY_BRIEFING_PER_CALL_TIMEOUT_MS,
     NAVITIME_RAPIDAPI_KEY: process.env.NAVITIME_RAPIDAPI_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    FREE_FULL_ACCESS: process.env.FREE_FULL_ACCESS,
   };
 }
 
@@ -187,6 +197,10 @@ function validateEnv(): EnvConfig {
     DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: getOptionalEnv("DAILY_BRIEFING_PER_CALL_TIMEOUT_MS"),
     NAVITIME_RAPIDAPI_KEY: getOptionalEnv("NAVITIME_RAPIDAPI_KEY"),
     RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
+    STRIPE_SECRET_KEY: getOptionalEnv("STRIPE_SECRET_KEY"),
+    STRIPE_WEBHOOK_SECRET: getOptionalEnv("STRIPE_WEBHOOK_SECRET"),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: getOptionalEnv("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"),
+    FREE_FULL_ACCESS: getOptionalEnv("FREE_FULL_ACCESS"),
   };
 }
 
@@ -296,5 +310,17 @@ export const env = {
   },
   get resendApiKey() {
     return envConfig.RESEND_API_KEY;
+  },
+  get stripeSecretKey() {
+    return envConfig.STRIPE_SECRET_KEY;
+  },
+  get stripeWebhookSecret() {
+    return envConfig.STRIPE_WEBHOOK_SECRET;
+  },
+  get stripePublishableKey() {
+    return envConfig.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  },
+  get freeFullAccess() {
+    return envConfig.FREE_FULL_ACCESS === "true";
   },
 } as const;
