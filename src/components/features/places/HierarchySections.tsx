@@ -36,9 +36,9 @@ export function ChildLocationsSection({
       animate="visible"
       className="space-y-4"
     >
-      <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+      <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
         Things to do in {parentName}
-      </h2>
+      </h3>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {childLocations.map((child) => (
           <LocationCard
@@ -115,9 +115,9 @@ export function SubExperiencesSection({
     >
       {highlights.length > 0 && (
         <div className="space-y-3">
-          <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+          <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Don&apos;t miss
-          </h2>
+          </h3>
           <div className="space-y-3">
             {highlights.map((item) => (
               <SubExperienceCard key={item.id} item={item} />
@@ -127,9 +127,9 @@ export function SubExperiencesSection({
       )}
       {routeStops.length > 0 && (
         <div className="space-y-3">
-          <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+          <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Walking route
-          </h2>
+          </h3>
           <div className="space-y-3">
             {routeStops.map((item) => (
               <SubExperienceCard key={item.id} item={item} />
@@ -139,9 +139,9 @@ export function SubExperiencesSection({
       )}
       {timeVariants.length > 0 && (
         <div className="space-y-3">
-          <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+          <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Also experience
-          </h2>
+          </h3>
           <div className="space-y-3">
             {timeVariants.map((item) => (
               <SubExperienceCard key={item.id} item={item} />
@@ -176,9 +176,9 @@ export function RelationshipsSection({
           animate="visible"
           className="space-y-4"
         >
-          <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+          <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             In this area
-          </h2>
+          </h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {clusters.slice(0, 6).map((rel) => (
               <LocationCard
@@ -198,9 +198,9 @@ export function RelationshipsSection({
           animate="visible"
           className="space-y-4"
         >
-          <h2 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
+          <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Consider instead
-          </h2>
+          </h3>
           <div className="space-y-2">
             {alternatives.map((rel) => (
               <div key={rel.id} className="space-y-1">

@@ -9,6 +9,7 @@ type ArrowLineCTAProps = {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  "aria-describedby"?: string;
 };
 
 export function ArrowLineCTA({
@@ -16,6 +17,7 @@ export function ArrowLineCTA({
   onClick,
   disabled = false,
   className,
+  "aria-describedby": ariaDescribedBy,
 }: ArrowLineCTAProps) {
   const prefersReducedMotion = useReducedMotion();
 
@@ -24,6 +26,7 @@ export function ArrowLineCTA({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-describedby={ariaDescribedBy}
       className={cn(
         "group flex cursor-pointer items-center gap-3 transition-opacity",
         disabled && "!cursor-not-allowed opacity-40",
