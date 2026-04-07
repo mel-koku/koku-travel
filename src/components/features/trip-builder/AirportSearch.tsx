@@ -99,7 +99,7 @@ export function AirportSearch({
           <p className={`${popularLabelClassName} text-xs font-medium uppercase tracking-wide text-stone`}>
             {popularLabel}
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {topAirports.map((airport) => (
               <button
                 key={airport.id}
