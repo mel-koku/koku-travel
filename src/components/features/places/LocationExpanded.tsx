@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
 import { easeReveal, durationFast } from "@/lib/motion";
@@ -31,6 +32,7 @@ type LocationExpandedProps = {
 
 
 export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
+  const router = useRouter();
   const { pause, resume } = useLenis();
   const { status, details, fetchedLocation, errorMessage, retry } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
@@ -649,12 +651,16 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               <ChildLocationsSection
                 childLocations={hierarchy.children}
                 parentName={locationWithDetails.name}
+                onSelect={(loc) => router.push(`/places/${loc.id}`)}
               />
             </div>
           )}
           {hierarchy && hierarchy.relationships.length > 0 && (
             <div className="border-t border-border pt-6">
-              <RelationshipsSection relationships={hierarchy.relationships} />
+              <RelationshipsSection
+                relationships={hierarchy.relationships}
+                onSelect={(loc) => router.push(`/places/${loc.id}`)}
+              />
             </div>
           )}
         </div>

@@ -669,6 +669,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             <ChildLocationsSection
               childLocations={hierarchy.children}
               parentName={location.name}
+              onSelect={(loc) => router.push(`/places/${loc.id}`)}
             />
           </div>
         </section>
@@ -678,7 +679,10 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       {hierarchy && hierarchy.relationships.length > 0 && (
         <section className="py-12 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <RelationshipsSection relationships={hierarchy.relationships} />
+            <RelationshipsSection
+              relationships={hierarchy.relationships}
+              onSelect={(loc) => router.push(`/places/${loc.id}`)}
+            />
           </div>
         </section>
       )}

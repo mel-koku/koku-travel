@@ -24,9 +24,11 @@ const fadeUp = {
 export function ChildLocationsSection({
   childLocations,
   parentName,
+  onSelect,
 }: {
   childLocations: Location[];
   parentName: string;
+  onSelect?: (location: Location) => void;
 }) {
   if (childLocations.length === 0) return null;
 
@@ -46,6 +48,7 @@ export function ChildLocationsSection({
             key={child.id}
             location={child}
             variant="compact"
+            onSelect={onSelect}
           />
         ))}
       </div>
@@ -223,8 +226,10 @@ export function SubExperiencesSection({
 
 export function RelationshipsSection({
   relationships,
+  onSelect,
 }: {
   relationships: (LocationRelationship & { relatedLocation?: Location })[];
+  onSelect?: (location: Location) => void;
 }) {
   if (relationships.length === 0) return null;
 
@@ -250,6 +255,7 @@ export function RelationshipsSection({
                 location={rel.relatedLocation!}
                 variant="compact"
                 meta={rel.walkMinutes ? `${rel.walkMinutes} min walk` : undefined}
+                onSelect={onSelect}
               />
             ))}
           </div>
@@ -271,6 +277,7 @@ export function RelationshipsSection({
                 <LocationCard
                   location={rel.relatedLocation!}
                   variant="compact"
+                  onSelect={onSelect}
                 />
                 {rel.editorialNote && (
                   <p className="px-1 text-xs text-foreground-secondary">
