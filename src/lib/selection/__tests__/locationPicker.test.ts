@@ -47,7 +47,7 @@ describe("pickLocationForTimeSlot evening category filter", () => {
     category: "museum",
   });
 
-  it("filters out daytime landmark after 6 PM when no hours data", () => {
+  it("allows landmark after 6 PM (evening-appropriate category)", () => {
     const result = pickLocationForTimeSlot(
       [landmark],
       "culture",
@@ -58,7 +58,7 @@ describe("pickLocationForTimeSlot evening category filter", () => {
       undefined, undefined, undefined, undefined,
       "evening", "2024-01-01",
     );
-    expect(result).toBeUndefined();
+    expect(result).toBeDefined();
   });
 
   it("allows restaurant after 6 PM", () => {
