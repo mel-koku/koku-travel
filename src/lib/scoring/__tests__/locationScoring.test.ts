@@ -325,6 +325,20 @@ describe("Location Scoring", () => {
     });
   });
 
+  describe("Interest Score Capping", () => {
+    it("should cap weighted interest score at 50", () => {
+      const result = scoreLocation(mockLocation, {
+        interests: ["culture"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        currentInterest: "culture", // triggers +10 rotation bonus
+        categoryWeights: { temple: 2.0 }, // 2x multiplier
+      });
+      expect(result.breakdown.interestMatch).toBeLessThanOrEqual(50);
+    });
+  });
+
   describe("Local Secrets Distance Extension", () => {
     it("should extend to 75km for local_secrets vibe with any category", () => {
       const remoteRestaurant: Location = {

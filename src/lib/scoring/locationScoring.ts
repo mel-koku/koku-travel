@@ -40,10 +40,11 @@ export function scoreLocation(
   const categoryWeight = criteria.categoryWeights && location.category
     ? criteria.categoryWeights[location.category.toLowerCase()] ?? 1.0
     : 1.0;
+  const MAX_INTEREST_SCORE = 50;
   const interestResult = categoryWeight !== 1.0
     ? {
-        score: Math.round(rawInterestResult.score * categoryWeight),
-        reasoning: `${rawInterestResult.reasoning} (×${categoryWeight.toFixed(1)} weight)`,
+        score: Math.min(MAX_INTEREST_SCORE, Math.round(rawInterestResult.score * categoryWeight)),
+        reasoning: `${rawInterestResult.reasoning} (×${categoryWeight.toFixed(1)} weight, capped at ${MAX_INTEREST_SCORE})`,
       }
     : rawInterestResult;
 
