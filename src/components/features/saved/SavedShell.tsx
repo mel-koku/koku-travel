@@ -20,7 +20,7 @@ export default function SavedShell() {
     return (
       <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(saved.length, 8) }).map((_, i) => (
               <div key={i} className="space-y-3">
                 <div className="h-64 animate-pulse rounded-lg bg-surface/50" />
@@ -115,7 +115,7 @@ export default function SavedShell() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {savedLocations.map((loc, i) => (
               <ScrollReveal key={loc.id} delay={i * 0.05} distance={20}>
                 <div className="space-y-3">

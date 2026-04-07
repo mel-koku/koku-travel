@@ -53,7 +53,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
         {/* Asymmetric Grid */}
         <div className="mt-10 grid gap-6 md:grid-cols-[2fr_1fr] md:grid-rows-2">
           {/* Featured guide: spans 2 rows */}
-          <ScrollReveal delay={0.15} className="lg:row-span-2">
+          <ScrollReveal delay={0.15} className="md:row-span-2">
             <GuideCard guide={featured} index={0} featured />
           </ScrollReveal>
 
