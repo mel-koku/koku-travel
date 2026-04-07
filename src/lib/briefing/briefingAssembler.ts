@@ -58,8 +58,11 @@ function selectBehaviors(behaviors: PillarBehavior[], tripCategories: string[]):
     (b) => b.categories.length === 0 || b.categories.some((c) => categorySet.has(c)),
   );
 
-  // If nothing matched, fall back to all behaviors
-  const pool = matched.length === 0 ? behaviors : matched;
+  // If nothing matched, fall back to critical-only behaviors
+  // (prevents mismatched advice like temple etiquette on park-only trips)
+  const pool = matched.length === 0
+    ? behaviors.filter((b) => b.severity === "critical")
+    : matched;
 
   const critical = pool.filter((b) => b.severity === "critical");
   const important = pool.filter((b) => b.severity === "important").slice(0, MAX_IMPORTANT_PER_PILLAR);
