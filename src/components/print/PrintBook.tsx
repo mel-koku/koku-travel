@@ -1,4 +1,5 @@
 import type { StoredTrip } from "@/services/trip/types";
+import { usePrintEnrichment } from "@/hooks/usePrintEnrichment";
 import { PrintCover } from "./PrintCover";
 import { PrintColophon } from "./PrintColophon";
 import { PrintTOC } from "./PrintTOC";
@@ -30,6 +31,7 @@ type PrintBookProps = {
  */
 export function PrintBook({ trip }: PrintBookProps) {
   const { itinerary, builderData, guideProse, dailyBriefings } = trip;
+  const { enrichment } = usePrintEnrichment(trip);
 
   return (
     <div className="print-book">
@@ -48,6 +50,7 @@ export function PrintBook({ trip }: PrintBookProps) {
           tripStartDate={builderData.dates?.start}
           dayGuide={guideProse?.days.find((g) => g.dayId === day.id)}
           dayBriefing={dailyBriefings?.days.find((b) => b.dayId === day.id)}
+          enrichment={enrichment}
         />
       ))}
       <PrintAppendix trip={trip} />

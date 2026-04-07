@@ -1,19 +1,23 @@
 import type { ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { GeneratedDayGuide } from "@/types/llmConstraints";
+import type { PrintEnrichmentMap } from "@/app/api/locations/print-enrichment/route";
 import { typography } from "@/lib/typography-system";
 import { formatDuration, formatClock } from "./printUtils";
+import { PrintTransitSteps } from "./PrintTransitSteps";
 
 type PrintDayTimelineProps = {
   day: ItineraryDay;
   dayIndex: number;
   totalDays: number;
   dayGuide?: GeneratedDayGuide;
+  enrichment: PrintEnrichmentMap;
 };
 
 export function PrintDayTimeline({
   day,
   dayIndex,
   dayGuide,
+  enrichment,
 }: PrintDayTimelineProps) {
   const activities = day.activities;
   const practicalTip = dayGuide?.practicalTip;
@@ -34,6 +38,7 @@ export function PrintDayTimeline({
               key={activity.id}
               activity={activity}
               isLast={i === activities.length - 1}
+              enrichment={enrichment}
             />
           ))}
         </ol>
@@ -54,9 +59,11 @@ export function PrintDayTimeline({
 
 function TimelineEntry({
   activity,
+  enrichment,
 }: {
   activity: ItineraryActivity;
   isLast: boolean;
+  enrichment: PrintEnrichmentMap;
 }) {
   if (activity.kind === "note") {
     return (
@@ -77,6 +84,10 @@ function TimelineEntry({
   const travel = activity.travelFromPrevious;
   const travelDuration = travel ? formatDuration(travel.durationMinutes) : null;
   const travelMode = travel?.mode;
+  const transitSteps = travel?.transitSteps;
+
+  // Enrichment data from the DB
+  const loc = activity.locationId ? enrichment[activity.locationId] : undefined;
 
   return (
     <li className="print-avoid-break">
@@ -88,6 +99,11 @@ function TimelineEntry({
           </span>
           <div className="flex-1 border-t border-dotted border-border" />
         </div>
+      )}
+
+      {/* Inline transit steps (when available) */}
+      {transitSteps && transitSteps.length > 0 && (
+        <PrintTransitSteps steps={transitSteps} />
       )}
 
       <div className="flex gap-3">
@@ -112,7 +128,24 @@ function TimelineEntry({
           <h4 className="font-serif text-[11.5pt] font-semibold leading-[1.25] text-foreground">
             {activity.title}
           </h4>
-          {activity.neighborhood && (
+          {/* Japanese name for showing to locals */}
+          {loc?.nameJapanese && (
+            <p className="font-sans text-[9pt] text-foreground-secondary mt-[1pt]">
+              {loc.nameJapanese}
+            </p>
+          )}
+          {/* Nearest station + cash-only */}
+          {(loc?.nearestStation || loc?.cashOnly) && (
+            <p className="font-mono text-[7.5pt] text-foreground-secondary mt-[1pt]">
+              {[
+                loc.nearestStation ? `Stn: ${loc.nearestStation}` : null,
+                loc.cashOnly ? "Cash only" : null,
+              ]
+                .filter(Boolean)
+                .join(" \u00B7 ")}
+            </p>
+          )}
+          {activity.neighborhood && !loc?.nearestStation && (
             <p className="font-sans text-[8pt] text-foreground-secondary mt-[1pt]">
               {activity.neighborhood}
             </p>
