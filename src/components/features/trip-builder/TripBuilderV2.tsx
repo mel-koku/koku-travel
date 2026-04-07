@@ -229,47 +229,54 @@ function StepDots({
   onStepClick: (step: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      {/* Skip step 0 (Intro) — only show steps 1-5 */}
-      {Array.from({ length: totalSteps - 1 }).map((_, idx) => {
-        const step = idx + 1;
-        const isActive = step === currentStep;
-        const isCompleted = completedSteps.has(step);
-        const canClick = isCompleted || step <= currentStep;
+    <>
+      <div className="flex items-center gap-3">
+        {/* Skip step 0 (Intro) — only show steps 1-5 */}
+        {Array.from({ length: totalSteps - 1 }).map((_, idx) => {
+          const step = idx + 1;
+          const isActive = step === currentStep;
+          const isCompleted = completedSteps.has(step);
+          const canClick = isCompleted || step <= currentStep;
 
-        return (
-          <div key={step} className="group relative">
-            <button
-              type="button"
-              onClick={() => canClick && onStepClick(step)}
-              disabled={!canClick}
-              className={cn(
-                "relative rounded-full transition-all duration-300",
-                isActive &&
-                  "h-2.5 w-2.5 bg-brand-primary shadow-[0_0_12px_rgba(196,80,79,0.4)]",
-                isCompleted &&
+          return (
+            <div key={step} className="group relative">
+              <button
+                type="button"
+                onClick={() => canClick && onStepClick(step)}
+                disabled={!canClick}
+                className={cn(
+                  "relative rounded-full transition-all duration-300",
+                  isActive &&
+                    "h-2.5 w-2.5 bg-brand-primary shadow-[0_0_12px_rgba(196,80,79,0.4)]",
+                  isCompleted &&
+                    !isActive &&
+                    "h-1.5 w-1.5 bg-sage cursor-pointer hover:bg-sage/80",
                   !isActive &&
-                  "h-1.5 w-1.5 bg-sage cursor-pointer hover:bg-sage/80",
-                !isActive &&
-                  !isCompleted &&
-                  "h-1 w-1 bg-border",
-                canClick && !isActive && "cursor-pointer"
-              )}
-              aria-label={`Go to ${STEP_LABELS[step]}`}
-            />
+                    !isCompleted &&
+                    "h-1 w-1 bg-border",
+                  canClick && !isActive && "cursor-pointer"
+                )}
+                aria-label={`Go to ${STEP_LABELS[step]}`}
+              />
 
-            {/* Tooltip — shows on hover */}
-            {canClick && (
-              <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-                <span className="rounded-md bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-[var(--shadow-card)]">
-                  {STEP_LABELS[step]}
-                </span>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
+              {/* Tooltip — shows on hover */}
+              {canClick && (
+                <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="rounded-md bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-[var(--shadow-card)]">
+                    {STEP_LABELS[step]}
+                  </span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Active step label — visible on touch devices only */}
+      <p className="touch-only-visible mt-1.5 text-center text-[11px] font-medium text-foreground-secondary">
+        {STEP_LABELS[currentStep]}
+      </p>
+    </>
   );
 }
 
@@ -352,7 +359,7 @@ function StepShell({
 
           <div className="flex flex-col items-end gap-1.5" onClick={handleDisabledClick} onMouseEnter={showDisabledHint}>
             {showHint && disabledHint && (
-              <p className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
+              <p id="step-disabled-hint" className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
                 {disabledHint}
               </p>
             )}
@@ -360,6 +367,7 @@ function StepShell({
               label={nextLabel}
               onClick={onNext}
               disabled={nextDisabled}
+              aria-describedby={disabledHint ? "step-disabled-hint" : undefined}
             />
           </div>
         </div>
@@ -376,7 +384,7 @@ function StepShell({
           />
         </div>
         {showHint && disabledHint && (
-          <p className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
+          <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
             {disabledHint}
           </p>
         )}
@@ -393,6 +401,7 @@ function StepShell({
           <button
             type="button"
             onClick={nextDisabled ? handleDisabledClick : onNext}
+            aria-describedby={disabledHint ? "step-disabled-hint-mobile" : undefined}
             className={cn(
               "h-12 flex-1 rounded-lg text-sm font-medium uppercase tracking-wider transition",
               nextDisabled

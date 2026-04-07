@@ -44,8 +44,9 @@ export function scoreLogisticalFit(
       ((criteria.hasNatureAdventureVibe || criteria.hasLocalSecretsVibe) && NATURE_CATEGORIES.has(category)) ||
       // Cultural vibes + cultural categories
       (criteria.hasHeritageVibe && CULTURAL_CATEGORIES.has(category)) ||
-      // Local secrets vibe + craft category (craft absorbed into local_secrets)
-      (criteria.hasLocalSecretsVibe && category === "craft");
+      // Local secrets vibe extends range for all categories
+      // (local_secrets users actively seek off-beaten-path locations regardless of type)
+      criteria.hasLocalSecretsVibe;
 
     const hardCutoffKm = useExtendedRange ? 75 : 50;
 

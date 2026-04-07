@@ -48,6 +48,7 @@ const FACTOR_META: Record<
   tagMatch: { label: "Tag match", maxMagnitude: 8 },
   accommodationBonus: { label: "Accommodation style", maxMagnitude: 5 },
   unescoBonus: { label: "UNESCO World Heritage", maxMagnitude: 10 },
+  hiddenGemBonus: { label: "Hidden gem", maxMagnitude: 15 },
 };
 
 // ---------------------------------------------------------------------------

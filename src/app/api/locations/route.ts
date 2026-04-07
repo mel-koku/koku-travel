@@ -50,15 +50,16 @@ export const GET = withApiHandler(
     if (category) countQuery = countQuery.eq("category", category);
     if (featured === "true") countQuery = countQuery.eq("is_featured", true);
     if (search) {
+      // Search matches ALL locations (including children, which show "in {parent}" annotation)
       countQuery = applySearchFilter(countQuery, search);
+    } else {
+      // Browse mode: only top-level locations
+      countQuery = countQuery.is("parent_id", null);
     }
     const { count, error: countError } = await countQuery;
 
     if (countError) {
-      logger.error("Failed to count locations", {
-        error: countError,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to count locations", countError, { requestId: context.requestId });
       return internalError("Failed to fetch locations from database", { error: countError.message }, {
         requestId: context.requestId,
       });
@@ -76,23 +77,35 @@ export const GET = withApiHandler(
     if (featured === "true") dataQuery = dataQuery.eq("is_featured", true);
     if (search) {
       dataQuery = applySearchFilter(dataQuery, search);
+    } else {
+      dataQuery = dataQuery.is("parent_id", null);
     }
     const { data, error } = await dataQuery
       .order("name", { ascending: true })
       .range(pagination.offset, pagination.offset + pagination.limit - 1);
 
     if (error) {
-      logger.error("Failed to fetch locations from Supabase", {
-        error,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to fetch locations from Supabase", error, { requestId: context.requestId });
       return internalError("Failed to fetch locations from database", { error: error.message }, {
         requestId: context.requestId,
       });
     }
 
-    // Transform Supabase data to Location type
+    // Resolve parent names for child locations (search mode only)
     const rows = (data || []) as unknown as LocationListingDbRow[];
+    const parentNameMap = new Map<string, string>();
+    if (search) {
+      const parentIds = [...new Set(rows.map((r) => r.parent_id).filter(Boolean))] as string[];
+      if (parentIds.length > 0) {
+        const { data: parents } = await supabase
+          .from("locations")
+          .select("id, name")
+          .in("id", parentIds);
+        parents?.forEach((p) => parentNameMap.set(p.id, p.name));
+      }
+    }
+
+    // Transform Supabase data to Location type
     const locations: Location[] = rows.map((row) => ({
         id: row.id,
         name: row.name,
@@ -120,6 +133,8 @@ export const GET = withApiHandler(
         isFeatured: row.is_featured ?? undefined,
         jtaApproved: row.jta_approved ?? undefined,
         isUnescoSite: row.is_unesco_site ?? undefined,
+        parentId: row.parent_id ?? undefined,
+        parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
       }));
 
     // Create paginated response

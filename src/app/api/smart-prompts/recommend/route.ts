@@ -416,7 +416,7 @@ export const POST = withApiHandler(
         .limit(100);
 
       if (error) {
-        logger.error("Failed to fetch restaurants", { error, cityId });
+        logger.error("Failed to fetch restaurants", error, { cityId });
         return internalError("Failed to fetch restaurant recommendations");
       }
 
@@ -499,7 +499,7 @@ export const POST = withApiHandler(
       const { data: rows, error } = await query;
 
       if (error) {
-        logger.error("Failed to fetch locations", { error, cityId });
+        logger.error("Failed to fetch locations", error, { cityId });
         return internalError("Failed to fetch experience recommendations");
       }
 
@@ -582,7 +582,7 @@ export const POST = withApiHandler(
         .limit(100);
 
       if (error) {
-        logger.error("Failed to fetch locations for gap fill", { error, cityId });
+        logger.error("Failed to fetch locations for gap fill", error, { cityId });
         return internalError("Failed to fetch gap fill recommendations");
       }
 
@@ -650,7 +650,7 @@ export const POST = withApiHandler(
         .limit(100);
 
       if (error) {
-        logger.error("Failed to fetch locations for day extension", { error, cityId });
+        logger.error("Failed to fetch locations for day extension", error, { cityId });
         return internalError("Failed to fetch extension recommendations");
       }
 
@@ -711,7 +711,7 @@ export const POST = withApiHandler(
         .limit(100);
 
       if (error) {
-        logger.error("Failed to fetch locations for diversification", { error, cityId });
+        logger.error("Failed to fetch locations for diversification", error, { cityId });
         return internalError("Failed to fetch diversification recommendations");
       }
 

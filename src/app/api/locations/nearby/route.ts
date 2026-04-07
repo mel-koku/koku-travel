@@ -72,7 +72,8 @@ export const GET = withApiHandler(
 
     let query = applyActiveLocationFilters(
       supabase.from("locations").select(NEARBY_COLUMNS)
-    ).gte("coordinates->lat", lat - latDelta)
+    ).is("parent_id", null) // Only top-level locations in nearby grid
+      .gte("coordinates->lat", lat - latDelta)
       .lte("coordinates->lat", lat + latDelta)
       .gte("coordinates->lng", lng - lngDelta)
       .lte("coordinates->lng", lng + lngDelta);
@@ -84,7 +85,7 @@ export const GET = withApiHandler(
     const { data, error } = await query.limit(200); // Fetch extra, then filter + sort client-side
 
     if (error) {
-      logger.error("Nearby query failed", { error, requestId: context.requestId });
+      logger.error("Nearby query failed", error, { requestId: context.requestId });
       return internalError("Failed to fetch nearby locations", { error: error.message }, {
         requestId: context.requestId,
       });

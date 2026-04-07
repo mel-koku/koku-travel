@@ -36,6 +36,7 @@ export function createTripRecord(input: CreateTripInput): StoredTrip {
     dayIntros: input.dayIntros,
     guideProse: input.guideProse,
     dailyBriefings: input.dailyBriefings,
+    culturalBriefing: input.culturalBriefing,
   };
 }
 

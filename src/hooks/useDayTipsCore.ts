@@ -29,6 +29,7 @@ export type DisplayTip = {
   summary: string;
   content?: string;
   icon: string;
+  pillar?: string;
 };
 
 export const GUIDANCE_TYPE_ICONS: Record<string, string> = {
@@ -56,6 +57,7 @@ export function toDisplayTip(tip: TravelGuidance): DisplayTip {
     summary: tip.summary,
     content: tip.content,
     icon: tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "\uD83D\uDCA1",
+    pillar: tip.pillarSlug ?? undefined,
   };
 }
 

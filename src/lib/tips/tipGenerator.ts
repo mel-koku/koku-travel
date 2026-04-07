@@ -4,6 +4,11 @@ import type { WeatherForecast } from "@/types/weather";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
 
+/** Max important tips surfaced per activity */
+const MAX_IMPORTANT = 3;
+/** Max total tips surfaced per activity */
+const MAX_TOTAL = 5;
+
 /**
  * Contextual tip for an activity
  */
@@ -32,6 +37,10 @@ export type ActivityTip = {
    * Is this an important/critical tip?
    */
   isImportant?: boolean;
+  /**
+   * Cultural pillar this tip relates to (e.g. "kegare", "omotenashi")
+   */
+  pillar?: string;
 };
 
 /**
@@ -90,15 +99,17 @@ export function generateActivityTips(
   const generalTips = generateGeneralTips(location, activity);
   tips.push(...generalTips);
 
-  // Important tips always surface; fill remaining slots by priority
-  const important = tips.filter((t) => t.isImportant);
+  // Cap both important and non-important tips to prevent overcrowding
+  const important = tips
+    .filter((t) => t.isImportant)
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, MAX_IMPORTANT);
   const rest = tips
     .filter((t) => !t.isImportant)
     .sort((a, b) => b.priority - a.priority);
-  const maxTips = 3;
-  const result = [...important.sort((a, b) => b.priority - a.priority)];
+  const result = [...important];
   for (const tip of rest) {
-    if (result.length >= maxTips) break;
+    if (result.length >= MAX_TOTAL) break;
     result.push(tip);
   }
   return result;
@@ -131,15 +142,17 @@ export async function generateActivityTipsAsync(
     // Silently fail - we still have the base tips
   }
 
-  // Important tips always surface; fill remaining slots by priority
-  const important = tips.filter((t) => t.isImportant);
+  // Cap both important and non-important tips to prevent overcrowding
+  const important = tips
+    .filter((t) => t.isImportant)
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, MAX_IMPORTANT);
   const rest = tips
     .filter((t) => !t.isImportant)
     .sort((a, b) => b.priority - a.priority);
-  const maxTips = 3;
-  const result = [...important.sort((a, b) => b.priority - a.priority)];
+  const result = [...important];
   for (const tip of rest) {
-    if (result.length >= maxTips) break;
+    if (result.length >= MAX_TOTAL) break;
     result.push(tip);
   }
   return result;
@@ -156,6 +169,7 @@ function guidanceToActivityTip(guidance: TravelGuidance): ActivityTip {
     priority: guidance.priority,
     icon: guidance.icon ?? "🙏",
     isImportant: guidance.priority >= 8,
+    pillar: guidance.pillarSlug ?? undefined,
   };
 }
 

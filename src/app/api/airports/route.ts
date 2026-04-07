@@ -90,10 +90,7 @@ export const GET = withApiHandler(
     const { data: airports, error } = await query;
 
     if (error) {
-      logger.error("Failed to fetch airports", {
-        error,
-        requestId: context.requestId,
-      });
+      logger.error("Failed to fetch airports", error, { requestId: context.requestId });
       return internalError("Failed to fetch airports from database", {
         error: error.message,
       });

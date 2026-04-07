@@ -296,7 +296,7 @@ export function locationMatchesSubTypes(
  * Database stores: "shrine", "temple", "restaurant", etc.
  * Parent categories: "culture", "food", "nature", etc.
  */
-const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
+export const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
   // Culture
   shrine: "culture",
   temple: "culture",
