@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Clock } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -126,7 +127,8 @@ function SubExperienceCard({ item }: { item: SubExperience }) {
           {item.name}
         </h3>
         {item.timeEstimate && (
-          <span className="shrink-0 font-mono text-xs text-foreground-secondary">
+          <span className="shrink-0 inline-flex items-center gap-1 font-mono text-xs text-foreground-secondary">
+            <Clock className="h-3 w-3" />
             {item.timeEstimate}min
           </span>
         )}
@@ -171,6 +173,9 @@ export function SubExperiencesSection({
           <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Don&apos;t miss
           </h3>
+          <p className="px-1 text-sm text-foreground-secondary">
+            The highlights worth your time once you&apos;re here.
+          </p>
           <div className="space-y-3">
             {highlights.map((item) => (
               <SubExperienceCard key={item.id} item={item} />
@@ -183,6 +188,9 @@ export function SubExperiencesSection({
           <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Walking route
           </h3>
+          <p className="px-1 text-sm text-foreground-secondary">
+            A suggested path through the grounds.
+          </p>
           <div className="space-y-3">
             {routeStops.map((item) => (
               <SubExperienceCard key={item.id} item={item} />
@@ -195,6 +203,9 @@ export function SubExperiencesSection({
           <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
             Also experience
           </h3>
+          <p className="px-1 text-sm text-foreground-secondary">
+            Same place, different time of day.
+          </p>
           <div className="space-y-3">
             {timeVariants.map((item) => (
               <SubExperienceCard key={item.id} item={item} />

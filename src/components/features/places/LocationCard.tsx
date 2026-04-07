@@ -53,10 +53,12 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
         viewport={{ once: true, margin: "-5%" }}
         transition={{ duration: durationBase, ease: easeReveal }}
       >
-        <button
-          type="button"
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => onSelect?.(location)}
-          className="flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left shadow-[var(--shadow-sm)] transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5"
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect?.(location); }}
+          className="flex w-full cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left shadow-[var(--shadow-sm)] transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-canvas">
             <Image
@@ -104,7 +106,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
               <HeartIcon active={active} animating={heartAnimating} className="h-4 w-4" />
             </button>
           )}
-        </button>
+        </div>
       </motion.article>
     );
   }
