@@ -43,7 +43,7 @@ export function PrintColophon({ trip }: PrintColophonProps) {
 
           <dl className="space-y-3">
             {facts.map((fact) => (
-              <div key={fact.label} className="flex items-baseline gap-4">
+              <div key={fact.label} className="print-avoid-break flex items-baseline gap-4">
                 <dt className="font-mono text-[8pt] uppercase tracking-[0.18em] text-foreground-secondary w-24 shrink-0">
                   {fact.label}
                 </dt>

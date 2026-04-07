@@ -69,7 +69,7 @@ export function PrintBeforeYouGo({ trip }: PrintBeforeYouGoProps) {
 
         <div className="flex-1 space-y-6">
           {essentials.map((item) => (
-            <div key={item.title}>
+            <div key={item.title} className="print-avoid-break">
               <h3 className="font-serif text-[12pt] font-semibold leading-tight text-foreground mb-2">
                 {item.title}
               </h3>

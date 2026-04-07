@@ -42,7 +42,7 @@ export function PrintAppendix({ trip }: PrintAppendixProps) {
         <div>
           <ul className="space-y-2">
             {entries.map((entry, i) => (
-              <li key={i} className="print-avoid-break flex items-baseline gap-3">
+              <li key={`${entry.day}-${entry.title}-${i}`} className="print-avoid-break flex items-baseline gap-3">
                 <span className="font-mono text-[7.5pt] uppercase tracking-[0.15em] text-foreground-secondary w-24 shrink-0">
                   {entry.day}
                 </span>

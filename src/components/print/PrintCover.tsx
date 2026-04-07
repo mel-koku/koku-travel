@@ -39,7 +39,7 @@ export function PrintCover({ trip }: PrintCoverProps) {
 
         <div className="flex-1 flex flex-col justify-center">
           <p className="eyebrow-mono mb-6">A private itinerary for</p>
-          <h1 className="font-serif text-[44pt] font-semibold leading-[1.02] tracking-[-0.01em] text-foreground text-balance">
+          <h1 className="font-serif text-[32pt] font-semibold leading-[1.08] tracking-[-0.01em] text-foreground text-balance">
             {displayName}
           </h1>
           {cities.length > 0 && (
