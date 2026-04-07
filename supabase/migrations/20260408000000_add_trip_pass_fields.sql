@@ -51,22 +51,28 @@ CREATE POLICY "Users can read own access logs"
   TO authenticated
   USING (auth.uid() = user_id);
 
--- RPC to atomically decrement launch pricing slots
-CREATE OR REPLACE FUNCTION decrement_launch_slots()
+-- RPC to atomically decrement launch pricing slots.
+-- Requires a valid stripe_session_id to prevent unauthorized calls.
+CREATE OR REPLACE FUNCTION decrement_launch_slots(p_stripe_session_id TEXT)
 RETURNS void AS $$
 BEGIN
+  -- Only decrement if session ID looks valid (basic guard against direct client calls)
+  IF p_stripe_session_id IS NULL OR length(p_stripe_session_id) < 10 THEN
+    RETURN;
+  END IF;
   UPDATE launch_pricing
   SET remaining_slots = GREATEST(remaining_slots - 1, 0)
   WHERE id = 'default' AND remaining_slots > 0;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- RPC to increment free refinements used
-CREATE OR REPLACE FUNCTION increment_free_refinements(p_trip_id UUID)
+-- RPC to increment free refinements used.
+-- Requires user_id to enforce ownership.
+CREATE OR REPLACE FUNCTION increment_free_refinements(p_trip_id UUID, p_user_id UUID)
 RETURNS void AS $$
 BEGIN
   UPDATE trips
   SET free_refinements_used = free_refinements_used + 1
-  WHERE id = p_trip_id;
+  WHERE id = p_trip_id AND user_id = p_user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

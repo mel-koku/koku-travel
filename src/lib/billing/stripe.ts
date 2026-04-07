@@ -87,7 +87,7 @@ export async function constructWebhookEvent(
   return stripe.webhooks.constructEvent(body, signature, secret);
 }
 
-export async function getOrCreateCustomer(
+export async function createCustomer(
   userId: string,
   email: string,
 ): Promise<string> {

@@ -127,7 +127,14 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
         tripId: selectedTrip.id,
         tripLengthDays: selectedTrip.itinerary.days.length,
         cities: [...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))],
-        tripDates: selectedTrip.builderData?.dates?.start ?? "",
+        tripDates: (() => {
+          const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          const start = selectedTrip.builderData?.dates?.start;
+          const end = selectedTrip.builderData?.dates?.end;
+          if (start && end) return `${fmt(start)} - ${fmt(end)}`;
+          if (start) return fmt(start);
+          return "";
+        })(),
       }),
     });
 

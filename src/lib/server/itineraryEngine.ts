@@ -585,6 +585,14 @@ export async function generateTripFromBuilderData(
   // LLM output (the assembly step uses `guideProse?.culturalBriefingIntro`
   // with optional chaining), so running it in parallel reclaims ~3s off the
   // sequential budget. All four fall back gracefully on failure.
+  // When deferring prose (free users), skip Passes 3 & 4 entirely to save cost.
+  // Only run them for Day 1 by filtering the itinerary input.
+  // At unlock time, the complete-generation endpoint re-runs them for all days.
+  const day1Only = options?.deferProse && optimizedItinerary.days.length > 1;
+  const proseItinerary = day1Only
+    ? { ...optimizedItinerary, days: optimizedItinerary.days.slice(0, 1) }
+    : optimizedItinerary;
+
   const [plannedItinerary, guideProse, dailyBriefings, pillars] = await Promise.all([
     timeStage(
       "planItinerary",
@@ -595,11 +603,11 @@ export async function generateTripFromBuilderData(
     ),
     timeStage(
       "generateGuideProse",
-      generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
+      generateGuideProse(proseItinerary, builderData, intentResult ?? undefined).catch(() => null),
     ),
     timeStage(
       "generateDailyBriefings",
-      generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
+      generateDailyBriefings(proseItinerary, builderData).catch(() => null),
     ),
     timeStage(
       "getCulturalPillars",
@@ -607,26 +615,8 @@ export async function generateTripFromBuilderData(
     ),
   ]);
 
-  // When deferring prose, keep only Day 1 prose/briefings.
-  // LLM passes run on full itinerary for context quality,
-  // but we strip Days 2-N output to avoid delivering unpaid content.
-  let effectiveGuideProse = guideProse;
-  let effectiveDailyBriefings = dailyBriefings;
-
-  if (options?.deferProse && optimizedItinerary.days.length > 1) {
-    const day1Id = optimizedItinerary.days[0]?.id;
-    if (effectiveGuideProse && day1Id) {
-      effectiveGuideProse = {
-        ...effectiveGuideProse,
-        days: effectiveGuideProse.days.filter((d) => d.dayId === day1Id),
-      };
-    }
-    if (effectiveDailyBriefings && day1Id) {
-      effectiveDailyBriefings = {
-        days: effectiveDailyBriefings.days.filter((d) => d.dayId === day1Id),
-      };
-    }
-  }
+  const effectiveGuideProse = guideProse;
+  const effectiveDailyBriefings = dailyBriefings;
 
   // Assemble cultural briefing from Sanity pillars + trip categories.
   // Pillars are already fetched in the parallel block above, so this is a

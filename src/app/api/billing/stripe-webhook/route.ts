@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (session.metadata?.launchPricing === "true") {
-        await supabase.rpc("decrement_launch_slots");
+        await supabase.rpc("decrement_launch_slots", { p_stripe_session_id: session.id });
       }
 
       logger.info("Trip unlocked via webhook", { tripId, userId, tier });

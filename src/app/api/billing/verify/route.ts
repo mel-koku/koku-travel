@@ -6,8 +6,10 @@ import { verifySession } from "@/lib/billing/stripe";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
 
+export const maxDuration = 60;
+
 export const GET = withApiHandler(
-  async (request: NextRequest, { context }) => {
+  async (request: NextRequest, { context, user }) => {
     const sessionId = request.nextUrl.searchParams.get("session_id");
     const tripId = request.nextUrl.searchParams.get("trip_id");
 
@@ -17,7 +19,7 @@ export const GET = withApiHandler(
 
     const result = await verifySession(sessionId);
 
-    if (result.paid && result.metadata?.tripId === tripId) {
+    if (result.paid && result.metadata?.tripId === tripId && result.metadata?.userId === user?.id) {
       const supabase = getServiceRoleClient();
       const { data: trip } = await supabase
         .from("trips")
@@ -34,7 +36,8 @@ export const GET = withApiHandler(
             stripe_session_id: sessionId,
             unlock_amount_cents: result.amountTotal,
           })
-          .eq("id", tripId);
+          .eq("id", tripId)
+          .eq("user_id", user!.id);
 
         logger.info("Trip unlocked via verify fallback", { tripId, sessionId });
       }

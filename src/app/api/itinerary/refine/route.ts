@@ -359,7 +359,7 @@ export const POST = withApiHandler(
           .single();
 
         if (tripRowForIncrement && !tripRowForIncrement.unlocked_at) {
-          await serviceClientStub.rpc("increment_free_refinements", { p_trip_id: trip.id });
+          await serviceClientStub.rpc("increment_free_refinements", { p_trip_id: trip.id, p_user_id: user.id });
         }
       }
 
@@ -470,7 +470,7 @@ export const POST = withApiHandler(
         .single();
 
       if (tripRow && !tripRow.unlocked_at) {
-        await serviceClient.rpc("increment_free_refinements", { p_trip_id: tripId });
+        await serviceClient.rpc("increment_free_refinements", { p_trip_id: tripId, p_user_id: user.id });
       }
     }
 

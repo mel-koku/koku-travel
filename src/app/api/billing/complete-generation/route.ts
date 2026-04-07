@@ -28,8 +28,9 @@ export const POST = withApiHandler(
     const supabase = getServiceRoleClient();
     const { data: trip } = await supabase
       .from("trips")
-      .select("itinerary, builder_data, unlocked_at")
+      .select("itinerary, builder_data, unlocked_at, user_id")
       .eq("id", tripId)
+      .eq("user_id", user.id)
       .single();
 
     if (!trip) {

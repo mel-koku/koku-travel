@@ -9,6 +9,8 @@ import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { validateRequestBody } from "@/lib/api/schemas";
 
+export const maxDuration = 60;
+
 const checkoutSchema = z.object({
   tripId: z.string().min(1),
   tripLengthDays: z.number().int().min(1),
