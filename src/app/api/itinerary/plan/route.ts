@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/server/itineraryEngine";
-import { isFullAccessEnabled } from "@/lib/billing/access";
+import { isFullAccessEnabled } from "@/lib/billing/accessServer";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";

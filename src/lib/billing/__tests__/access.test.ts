@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 describe("billing/access", () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
@@ -53,7 +55,7 @@ describe("billing/access", () => {
   describe("isFullAccessEnabled", () => {
     it("returns true when FREE_FULL_ACCESS env is true", async () => {
       vi.stubEnv("FREE_FULL_ACCESS", "true");
-      const mod = await import("@/lib/billing/access");
+      const mod = await import("@/lib/billing/accessServer");
       expect(await mod.isFullAccessEnabled()).toBe(true);
     });
 
@@ -63,7 +65,7 @@ describe("billing/access", () => {
       vi.mock("@/lib/sanity/contentService", () => ({
         getTripBuilderConfig: vi.fn().mockResolvedValue(null),
       }));
-      const mod = await import("@/lib/billing/access");
+      const mod = await import("@/lib/billing/accessServer");
       expect(await mod.isFullAccessEnabled()).toBe(false);
     });
   });

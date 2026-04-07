@@ -18,7 +18,8 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
-import { isFullAccessEnabled, MAX_FREE_REFINEMENTS } from "@/lib/billing/access";
+import { MAX_FREE_REFINEMENTS } from "@/lib/billing/access";
+import { isFullAccessEnabled } from "@/lib/billing/accessServer";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
 export const maxDuration = 60;
