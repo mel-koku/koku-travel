@@ -1,46 +1,56 @@
 import type { StoredTrip } from "@/services/trip/types";
-import { usePrintEnrichment } from "@/hooks/usePrintEnrichment";
+import type { PrintEnrichmentMap } from "@/app/api/locations/print-enrichment/route";
 import { PrintCover } from "./PrintCover";
 import { PrintColophon } from "./PrintColophon";
 import { PrintTOC } from "./PrintTOC";
 import { PrintPrologue } from "./PrintPrologue";
 import { PrintRouteMap } from "./PrintRouteMap";
+import { PrintCulturalPillars } from "./PrintCulturalPillars";
 import { PrintBeforeYouGo } from "./PrintBeforeYouGo";
+import { PrintPhrases } from "./PrintPhrases";
+import { PrintEmergency } from "./PrintEmergency";
 import { PrintDayChapter } from "./PrintDayChapter";
+import { PrintReservations } from "./PrintReservations";
 import { PrintAppendix } from "./PrintAppendix";
 import { PrintBackCover } from "./PrintBackCover";
 
 type PrintBookProps = {
   trip: StoredTrip;
+  enrichment: PrintEnrichmentMap;
 };
 
 /**
- * Top-level editorial book layout. Pages are stacked vertically in the DOM;
- * @page rules in print.css convert each .print-page to a physical page.
+ * Top-level editorial book layout.
  *
- * Page order follows a traditional travel book structure:
- *   i    Cover
- *   ii   Colophon
- *   iii  Table of Contents
- *   iv   Prologue (LLM guide prose)
- *   v    The Route (line map + city sequence)
- *   vi+  Before You Go (checklist, essentials)
+ * Page order:
+ *   i      Cover
+ *   ii     Colophon
+ *   iii    Table of Contents
+ *   iv     Prologue
+ *   v      The Route
+ *   vi     Cultural Pillars
+ *   vii    Before You Go
+ *   viii   Phrases
+ *   ix     Emergency
  *   day chapters (2pp each: opener + timeline)
+ *   reservations (conditional)
  *   appendix
  *   back cover
  */
-export function PrintBook({ trip }: PrintBookProps) {
+export function PrintBook({ trip, enrichment }: PrintBookProps) {
   const { itinerary, builderData, guideProse, dailyBriefings } = trip;
-  const { enrichment } = usePrintEnrichment(trip);
 
   return (
     <div className="print-book">
       <PrintCover trip={trip} />
       <PrintColophon trip={trip} />
-      <PrintTOC trip={trip} />
+      <PrintTOC trip={trip} enrichment={enrichment} />
       <PrintPrologue trip={trip} />
       <PrintRouteMap trip={trip} />
+      <PrintCulturalPillars />
       <PrintBeforeYouGo trip={trip} />
+      <PrintPhrases />
+      <PrintEmergency />
       {itinerary.days.map((day, index) => (
         <PrintDayChapter
           key={day.id}
@@ -53,6 +63,7 @@ export function PrintBook({ trip }: PrintBookProps) {
           enrichment={enrichment}
         />
       ))}
+      <PrintReservations trip={trip} enrichment={enrichment} />
       <PrintAppendix trip={trip} />
       <PrintBackCover />
     </div>
