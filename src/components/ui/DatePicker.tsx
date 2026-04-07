@@ -90,6 +90,7 @@ export function DatePicker({
             id={id}
             type="button"
             disabled={disabled}
+            aria-required={required}
             className={cn(
               "flex h-12 w-full items-center rounded-md border border-input bg-transparent px-4 text-left text-base shadow-[var(--shadow-sm)] transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",

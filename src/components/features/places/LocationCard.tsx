@@ -90,18 +90,19 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
             </div>
           </div>
           {location.parentMode !== "container" && (
-            <div
-              role="button"
+            <button
+              type="button"
               tabIndex={-1}
               onClick={(e) => {
                 e.stopPropagation();
                 if (!active) showFirstSaveToast();
                 toggleSave(location.id);
               }}
+              aria-label={active ? "Remove from saved" : "Save for trip"}
               className="shrink-0 p-1"
             >
               <HeartIcon active={active} animating={heartAnimating} className="h-4 w-4" />
-            </div>
+            </button>
           )}
         </button>
       </motion.article>
@@ -146,7 +147,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 if (!active) showFirstSaveToast();
                 toggleSave(location.id);
               }}
-              aria-label={active ? "Unsave" : "Save for trip"}
+              aria-label={active ? "Remove from saved" : "Save for trip"}
               className="pointer-events-auto flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
