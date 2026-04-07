@@ -660,6 +660,9 @@ export const ItineraryShell = ({
                   cityIds={days.map((day) => day.cityId)}
                   tripStartDate={tripStartDate}
                   dayHealthLevels={dayHealthLevels}
+                  lockedDayIndices={!(tripUnlocked ?? false) && !fullAccessEnabled
+                    ? new Set(days.map((_, i) => i).filter((i) => i > 0))
+                    : undefined}
                 />
                 {!isReadOnly && !isUsingMock && currentDay && (
                   <div className="flex items-center gap-2">

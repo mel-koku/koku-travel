@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import type { ChangeEvent } from "react";
 
 import type { StoredTrip } from "@/state/AppState";
@@ -122,10 +122,7 @@ export const DashboardItineraryPreview = ({
   const days = trip.itinerary.days ?? [];
   const safeSelectedDay = days.length > selectedDay ? selectedDay : 0;
   const currentDay = days[safeSelectedDay];
-  const sections = useMemo(
-    () => buildSectionMap(currentDay?.activities),
-    [currentDay?.activities],
-  );
+  const sections = buildSectionMap(currentDay?.activities);
 
   const createdLabel = formatDate(trip.createdAt);
   const updatedLabel =
@@ -241,6 +238,9 @@ export const DashboardItineraryPreview = ({
             selected={safeSelectedDay}
             onChange={setSelectedDay}
             labels={days.map((day, index) => day.dateLabel || `Day ${index + 1}`)}
+            lockedDayIndices={!trip.unlockedAt && days.length > 1
+              ? new Set(days.map((_, i) => i).filter((i) => i > 0))
+              : undefined}
           />
 
           {currentDay ? (
