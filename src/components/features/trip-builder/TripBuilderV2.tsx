@@ -352,7 +352,7 @@ function StepShell({
 
           <div className="flex flex-col items-end gap-1.5" onClick={handleDisabledClick} onMouseEnter={showDisabledHint}>
             {showHint && disabledHint && (
-              <p className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
+              <p id="step-disabled-hint" className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
                 {disabledHint}
               </p>
             )}
@@ -360,6 +360,7 @@ function StepShell({
               label={nextLabel}
               onClick={onNext}
               disabled={nextDisabled}
+              aria-describedby={disabledHint ? "step-disabled-hint" : undefined}
             />
           </div>
         </div>
@@ -376,7 +377,7 @@ function StepShell({
           />
         </div>
         {showHint && disabledHint && (
-          <p className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
+          <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
             {disabledHint}
           </p>
         )}
@@ -393,6 +394,7 @@ function StepShell({
           <button
             type="button"
             onClick={nextDisabled ? handleDisabledClick : onNext}
+            aria-describedby={disabledHint ? "step-disabled-hint-mobile" : undefined}
             className={cn(
               "h-12 flex-1 rounded-lg text-sm font-medium uppercase tracking-wider transition",
               nextDisabled
