@@ -544,20 +544,16 @@ export function buildGuide(
 
     if (!prose) return templateGuide;
 
-    // Merge generated prose into the template-based guide
-    const segments: GuideSegment[] = [];
-
-    // Use generated transitions in place of template transitions (activity_context segments)
-    const templateNonTransitions = templateGuide.segments.filter(
-      (s) => s.type !== "activity_context",
-    );
+    // Merge generated prose into template segments.
+    // Single-pass: iterate template segments, substitute LLM prose where available.
     const placeActivities = (day.activities ?? []).filter((a) => a.kind === "place");
 
-    // Insert generated transitions between activities
+    // Build a map of generated transitions by afterActivityId
+    const proseTransitions = new Map<string, GuideSegment>();
     for (let i = 0; i < prose.transitions.length && i < placeActivities.length - 1; i++) {
       const prevActivity = placeActivities[i];
       if (prevActivity) {
-        segments.push({
+        proseTransitions.set(prevActivity.id, {
           id: `guide-${day.id}-tr-${i + 1}`,
           type: "activity_context",
           content: prose.transitions[i]!,
@@ -567,41 +563,46 @@ export function buildGuide(
       }
     }
 
-    // Use generated cultural moment if available, otherwise keep template
-    if (prose.culturalMoment) {
-      // Replace template cultural moment
-      const templateCM = templateNonTransitions.filter((s) => s.type !== "cultural_moment");
-      segments.push(...templateCM);
-      // Find the first cultural activity to attach the moment to
-      const culturalActivity = placeActivities.find((a) =>
-        a.tags?.some((t) => ["shrine", "temple", "onsen", "garden", "museum", "craft"].includes(t)),
-      );
-      segments.push({
-        id: `guide-${day.id}-cm`,
-        type: "cultural_moment",
-        content: prose.culturalMoment,
-        icon: "⛩️",
-        dayId: day.id,
-        beforeActivityId: culturalActivity?.id,
-      });
-    } else {
-      segments.push(...templateNonTransitions);
-    }
+    // Track whether culturalMoment and practicalTip have been substituted
+    let culturalMomentUsed = false;
+    let practicalTipUsed = false;
 
-    // Use generated practical tip if available
-    if (prose.practicalTip) {
-      // Remove template practical tip and add generated one
-      const withoutTip = segments.filter((s) => s.type !== "practical_tip");
-      withoutTip.push({
-        id: `guide-${day.id}-tip`,
-        type: "practical_tip",
-        content: prose.practicalTip,
-        icon: "💡",
-        dayId: day.id,
-        beforeActivityId: placeActivities[0]?.id,
-      });
-      segments.length = 0;
-      segments.push(...withoutTip);
+    const segments: GuideSegment[] = templateGuide.segments.map((segment) => {
+      // Replace transitions with LLM prose
+      if (segment.type === "activity_context" && segment.afterActivityId) {
+        const proseVersion = proseTransitions.get(segment.afterActivityId);
+        if (proseVersion) {
+          proseTransitions.delete(segment.afterActivityId);
+          return proseVersion;
+        }
+      }
+
+      // Replace cultural moment with LLM prose
+      if (segment.type === "cultural_moment" && prose.culturalMoment && !culturalMomentUsed) {
+        culturalMomentUsed = true;
+        return {
+          ...segment,
+          id: `guide-${day.id}-cm`,
+          content: prose.culturalMoment,
+        };
+      }
+
+      // Replace practical tip with LLM prose
+      if (segment.type === "practical_tip" && prose.practicalTip && !practicalTipUsed) {
+        practicalTipUsed = true;
+        return {
+          ...segment,
+          id: `guide-${day.id}-tip`,
+          content: prose.practicalTip,
+        };
+      }
+
+      return segment; // keep template version
+    });
+
+    // Add any remaining prose transitions that didn't match template positions
+    for (const transition of proseTransitions.values()) {
+      segments.push(transition);
     }
 
     // Use generated summary

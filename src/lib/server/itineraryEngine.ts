@@ -19,6 +19,7 @@ import { generateDailyBriefings } from "./dailyBriefingGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
+import { applyLateArrivalStrip } from "@/lib/itinerary/lateArrival";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
@@ -453,10 +454,7 @@ export async function generateTripFromBuilderData(
     const entryIata = builderData.entryPoint?.iataCode;
     const rawEffective = computeRawEffectiveArrival(builderData.arrivalTime, entryIata);
     if (rawEffective !== null && rawEffective >= LATE_ARRIVAL_THRESHOLD) {
-      optimizedItinerary.days[0].activities = optimizedItinerary.days[0].activities.filter(
-        (a) => a.kind === "place" && a.isAnchor,
-      );
-      optimizedItinerary.days[0].isLateArrival = true;
+      applyLateArrivalStrip(optimizedItinerary.days[0]);
       logger.info("[engine] Late arrival detected — Day 1 activities stripped", {
         rawEffective,
         threshold: LATE_ARRIVAL_THRESHOLD,
@@ -730,4 +728,5 @@ export function validateTripConstraints(trip: Trip): {
     issues,
   };
 }
+
 
