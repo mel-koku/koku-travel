@@ -16,6 +16,8 @@ export const EVENING_APPROPRIATE_CATEGORIES = new Set([
   "wellness",
   "shopping",
   "viewpoint",
+  "landmark",
+  "historic_site",
 ]);
 
 /**
