@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { constructWebhookEvent } from "@/lib/billing/stripe";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
+import { sendUnlockConfirmationEmail } from "@/lib/billing/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -61,6 +62,21 @@ export async function POST(request: NextRequest) {
       }
 
       logger.info("Trip unlocked via webhook", { tripId, userId, tier });
+
+      if (session.customer_details?.email) {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+        const cities = (session.metadata?.cities ?? "").split(", ");
+        void sendUnlockConfirmationEmail({
+          to: session.customer_details.email,
+          tripName: `${cities.join(", ")} Trip`,
+          tripUrl: `${siteUrl}/itinerary?trip=${tripId}`,
+          amountFormatted: `$${((session.amount_total ?? 0) / 100).toFixed(2)}`,
+          tier: tier ?? "standard",
+          cities,
+          totalDays: parseInt(session.metadata?.tripLengthDays ?? "1", 10),
+        });
+      }
+
       break;
     }
 
