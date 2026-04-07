@@ -90,7 +90,7 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
 
           {/* Overlay Actions */}
-          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none z-10">
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none z-10 touch-visible">
             <button
               type="button"
               onClick={(event) => {
