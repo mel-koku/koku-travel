@@ -1,5 +1,6 @@
 import type { ItineraryDay } from "@/types/itinerary";
 import type { GeneratedDayGuide, DayBriefing } from "@/types/llmConstraints";
+import type { PrintEnrichmentMap } from "@/app/api/locations/print-enrichment/route";
 import { PrintDayOpener } from "./PrintDayOpener";
 import { PrintDayTimeline } from "./PrintDayTimeline";
 
@@ -10,18 +11,9 @@ type PrintDayChapterProps = {
   tripStartDate?: string;
   dayGuide?: GeneratedDayGuide;
   dayBriefing?: DayBriefing;
+  enrichment: PrintEnrichmentMap;
 };
 
-/**
- * One day = one spread (2 pages).
- *   Left page: opener — full-width editorial intro using LLM day prose
- *   Right page: timeline — chronological activity list
- *
- * For very full days (6+ activities) the timeline may overflow onto
- * a third page automatically; .print-page has hard height so any
- * overflow is clipped in screen preview. Real print media honors
- * @page break rules and paginates naturally.
- */
 export function PrintDayChapter({
   day,
   dayIndex,
@@ -29,6 +21,7 @@ export function PrintDayChapter({
   tripStartDate,
   dayGuide,
   dayBriefing,
+  enrichment,
 }: PrintDayChapterProps) {
   return (
     <div className="print-spread">
@@ -45,6 +38,7 @@ export function PrintDayChapter({
         dayIndex={dayIndex}
         totalDays={totalDays}
         dayGuide={dayGuide}
+        enrichment={enrichment}
       />
     </div>
   );
