@@ -143,7 +143,7 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
         <ScrollReveal delay={0.1}>
           <div className="py-12 sm:py-20 lg:py-28">
             <div className="mx-auto max-w-7xl px-6">
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
                 {rest.map((testimonial, i) => (
                   <div
                     key={i}

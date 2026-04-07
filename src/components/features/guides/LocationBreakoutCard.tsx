@@ -108,7 +108,7 @@ export function LocationBreakoutCard({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className="pointer-events-auto absolute right-3 top-3 flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 shadow-[var(--shadow-elevated)] backdrop-blur-md transition-all hover:bg-surface hover:scale-105 active:scale-[0.98] opacity-0 group-hover:opacity-100"
+              className="pointer-events-auto absolute right-3 top-3 flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 shadow-[var(--shadow-elevated)] backdrop-blur-md transition-all hover:bg-surface hover:scale-105 active:scale-[0.98] opacity-0 group-hover:opacity-100 touch-visible"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
               <span className="text-xs font-medium text-foreground">
