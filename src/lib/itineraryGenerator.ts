@@ -22,6 +22,7 @@ import {
 } from "@/lib/geo/zoneClustering";
 import {
   TIME_OF_DAY_SEQUENCE,
+  CITY_TRANSITION_MINUTES,
   getAvailableTimeForSlot,
   getTravelTime,
 } from "@/lib/scheduling/timeSlots";
@@ -558,6 +559,16 @@ export async function generateItinerary(
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
       let availableMinutes = Math.round(getAvailableTimeForSlot(timeSlot, pace) * pacingModifier);
+
+      // Deduct transition buffer on city-change days (check-out, luggage, settling in)
+      // Applied to morning slot only. Skip Day 1 (arrival already has its own adjustments).
+      if (
+        timeSlot === "morning" &&
+        dayIndex > 0 &&
+        expandedCitySequence[dayIndex - 1]?.key !== cityInfo.key
+      ) {
+        availableMinutes = Math.max(60, availableMinutes - CITY_TRANSITION_MINUTES);
+      }
 
       // Adjust for day trip travel time
       if (activeDayTrip) {
