@@ -143,6 +143,54 @@ const markdownComponents = {
 
 // ── Location distribution ──
 
+/**
+ * Build search tokens from a location name for fuzzy matching against prose.
+ * Returns lowercase fragments: full name, plus any multi-char words.
+ * e.g. "Suzumushidera Temple" -> ["suzumushidera temple", "suzumushidera", "temple"]
+ */
+function nameTokens(name: string): string[] {
+  const lower = name.toLowerCase();
+  const words = lower.split(/\s+/).filter((w) => w.length > 2);
+  return [lower, ...words];
+}
+
+/**
+ * Score how well a section's text matches a location.
+ * Returns 0 (no match) or a positive score (higher = better match).
+ */
+function sectionMatchScore(sectionText: string, location: Location): number {
+  const text = sectionText.toLowerCase();
+  const tokens = nameTokens(location.name);
+
+  // Full name match is strongest signal
+  if (tokens[0] && text.includes(tokens[0])) return 10;
+
+  // Count individual word hits (skip very common words like "the", "of")
+  const skipWords = new Set([
+    "the",
+    "and",
+    "temple",
+    "shrine",
+    "park",
+    "garden",
+    "museum",
+    "castle",
+    "market",
+    "station",
+    "tower",
+    "bridge",
+  ]);
+  let wordHits = 0;
+  for (let i = 1; i < tokens.length; i++) {
+    if (!skipWords.has(tokens[i]!) && text.includes(tokens[i]!)) {
+      wordHits++;
+    }
+  }
+
+  // Need at least one distinctive word match
+  return wordHits >= 1 ? wordHits * 3 : 0;
+}
+
 function distributeLocations(
   markdownBody: string,
   locations: Location[]
@@ -152,43 +200,76 @@ function distributeLocations(
   const insertions = new Map<number, Location[]>();
 
   if (sections.length <= 1 || locations.length === 0) {
-    // Single section or no locations: put all locations after the body
     if (locations.length > 0) {
       insertions.set(sections.length - 1, [...locations]);
     }
     return { chunks: sections, insertions };
   }
 
-  // Distribute evenly between sections
-  // We want to place locations after every N sections
-  const totalSections = sections.length;
-  const totalLocations = locations.length;
+  // Phase 1: Match locations to sections by name mention
+  const matched = new Set<number>(); // location indices already placed
+  const sectionClaimed = new Set<number>(); // sections that have a matched card
 
-  // Calculate: how many sections between each location card
-  const gap = Math.max(1, Math.floor(totalSections / (totalLocations + 1)));
+  for (let locIdx = 0; locIdx < locations.length; locIdx++) {
+    let bestSection = -1;
+    let bestScore = 0;
 
-  let locationIdx = 0;
-
-  // Place locations after section boundaries
-  for (
-    let sectionIdx = gap;
-    sectionIdx < totalSections && locationIdx < totalLocations;
-    sectionIdx += gap
-  ) {
-    const afterIdx = sectionIdx - 1;
-    if (!insertions.has(afterIdx)) {
-      insertions.set(afterIdx, []);
+    for (let secIdx = 0; secIdx < sections.length; secIdx++) {
+      const score = sectionMatchScore(sections[secIdx]!, locations[locIdx]!);
+      if (score > bestScore) {
+        bestScore = score;
+        bestSection = secIdx;
+      }
     }
-    insertions.get(afterIdx)!.push(locations[locationIdx]!);
-    locationIdx++;
+
+    if (bestSection >= 0) {
+      if (!insertions.has(bestSection)) insertions.set(bestSection, []);
+      insertions.get(bestSection)!.push(locations[locIdx]!);
+      matched.add(locIdx);
+      sectionClaimed.add(bestSection);
+    }
   }
 
-  // Any remaining locations go after the last section
-  while (locationIdx < totalLocations) {
-    const lastIdx = totalSections - 1;
-    if (!insertions.has(lastIdx)) insertions.set(lastIdx, []);
-    insertions.get(lastIdx)!.push(locations[locationIdx]!);
-    locationIdx++;
+  // Phase 2: Distribute unmatched locations evenly across unclaimed sections
+  const unmatched = locations.filter((_, i) => !matched.has(i));
+  if (unmatched.length > 0) {
+    // Find sections without a matched card (candidates for placement)
+    const openSections = Array.from(
+      { length: sections.length },
+      (_, i) => i
+    ).filter((i) => !sectionClaimed.has(i));
+
+    if (openSections.length === 0) {
+      // All sections claimed; append remaining after last section
+      const lastIdx = sections.length - 1;
+      if (!insertions.has(lastIdx)) insertions.set(lastIdx, []);
+      insertions.get(lastIdx)!.push(...unmatched);
+    } else {
+      const gap = Math.max(
+        1,
+        Math.floor(openSections.length / (unmatched.length + 1))
+      );
+      let unmatchedIdx = 0;
+
+      for (
+        let step = gap;
+        step < openSections.length && unmatchedIdx < unmatched.length;
+        step += gap
+      ) {
+        const secIdx = openSections[step]!;
+        if (!insertions.has(secIdx)) insertions.set(secIdx, []);
+        insertions.get(secIdx)!.push(unmatched[unmatchedIdx]!);
+        unmatchedIdx++;
+      }
+
+      // Remaining unmatched go after the last section
+      while (unmatchedIdx < unmatched.length) {
+        const lastIdx = sections.length - 1;
+        if (!insertions.has(lastIdx)) insertions.set(lastIdx, []);
+        insertions.get(lastIdx)!.push(unmatched[unmatchedIdx]!);
+        unmatchedIdx++;
+      }
+    }
   }
 
   return { chunks: sections, insertions };
