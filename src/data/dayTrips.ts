@@ -144,10 +144,96 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
   ],
   kanazawa: [
     {
-      cityId: "nagoya",
+      cityId: "takayama",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Hida beef, sake breweries, and morning markets",
+    },
+    {
+      cityId: "toyama",
+      travelMinutes: 20,
+      minDaysBeforeSuggesting: 2,
+      description: "Glass art museum, fresh firefly squid, and waterfront park",
+    },
+  ],
+  takayama: [
+    {
+      cityId: "kanazawa",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Kenrokuen Garden, samurai districts, and gold leaf craft",
+    },
+  ],
+  toyama: [
+    {
+      cityId: "kanazawa",
+      travelMinutes: 20,
+      minDaysBeforeSuggesting: 2,
+      description: "Kenrokuen Garden and Higashi Chaya geisha district",
+    },
+  ],
+  nagano: [
+    {
+      cityId: "kawaguchiko",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Mt. Fuji views, lakes, and Chureito Pagoda",
+    },
+    {
+      cityId: "takayama",
       travelMinutes: 180,
-      minDaysBeforeSuggesting: 5,
-      description: "Castle town and Nagoya cuisine",
+      minDaysBeforeSuggesting: 4,
+      description: "Hida beef, preserved merchant streets, and mountain culture",
+    },
+  ],
+  kawaguchiko: [
+    {
+      cityId: "tokyo",
+      travelMinutes: 110,
+      minDaysBeforeSuggesting: 3,
+      description: "Shibuya, Shinjuku, and endless dining options",
+    },
+    {
+      cityId: "hakone",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 2,
+      description: "Hot springs, Owakudani volcanic valley, and Lake Ashi",
+    },
+  ],
+  hakone: [
+    {
+      cityId: "tokyo",
+      travelMinutes: 80,
+      minDaysBeforeSuggesting: 3,
+      description: "Return to the capital for museums and nightlife",
+    },
+    {
+      cityId: "kamakura",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 2,
+      description: "Great Buddha, seaside temples, and Enoshima Island",
+    },
+  ],
+  kamakura: [
+    {
+      cityId: "tokyo",
+      travelMinutes: 55,
+      minDaysBeforeSuggesting: 3,
+      description: "Endless districts to explore on a break from the coast",
+    },
+    {
+      cityId: "yokohama",
+      travelMinutes: 25,
+      minDaysBeforeSuggesting: 2,
+      description: "Chinatown, Cup Noodles Museum, and Minato Mirai waterfront",
+    },
+  ],
+  nikko: [
+    {
+      cityId: "tokyo",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Return to Tokyo for a change of pace",
     },
   ],
   // Kyushu
@@ -173,6 +259,70 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       description: "Ramen capital and yatai food stalls",
     },
   ],
+  kumamoto: [
+    {
+      cityId: "fukuoka",
+      travelMinutes: 45,
+      minDaysBeforeSuggesting: 3,
+      description: "Yatai street stalls, tonkotsu ramen, and Canal City",
+    },
+    {
+      cityId: "kagoshima",
+      travelMinutes: 50,
+      minDaysBeforeSuggesting: 3,
+      description: "Sakurajima volcano, black pork, and Sengan-en garden",
+    },
+  ],
+  kagoshima: [
+    {
+      cityId: "kumamoto",
+      travelMinutes: 50,
+      minDaysBeforeSuggesting: 3,
+      description: "Kumamoto Castle and Aso volcano caldera",
+    },
+    {
+      cityId: "miyazaki",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 4,
+      description: "Aoshima shrine island and coastal rock formations",
+    },
+  ],
+  miyazaki: [
+    {
+      cityId: "kagoshima",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Sakurajima volcano views and kurobuta black pork",
+    },
+  ],
+  oita: [
+    {
+      cityId: "fukuoka",
+      travelMinutes: 75,
+      minDaysBeforeSuggesting: 3,
+      description: "Yatai stalls, tonkotsu ramen, and vibrant nightlife",
+    },
+    {
+      cityId: "kumamoto",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 4,
+      description: "Kumamoto Castle and Aso caldera",
+    },
+  ],
+  kitakyushu: [
+    {
+      cityId: "fukuoka",
+      travelMinutes: 15,
+      minDaysBeforeSuggesting: 2,
+      description: "Yatai stalls, Canal City, and Hakata ramen",
+    },
+    {
+      cityId: "shimonoseki",
+      travelMinutes: 15,
+      minDaysBeforeSuggesting: 2,
+      description: "Fugu pufferfish and Karato Market",
+    },
+  ],
   // Chugoku
   hiroshima: [
     {
@@ -193,6 +343,62 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 4,
       description: "Dogo Onsen and hilltop castle",
     },
+    {
+      cityId: "shimonoseki",
+      travelMinutes: 70,
+      minDaysBeforeSuggesting: 3,
+      description: "Fugu pufferfish capital and Kanmon Straits",
+    },
+  ],
+  okayama: [
+    {
+      cityId: "hiroshima",
+      travelMinutes: 40,
+      minDaysBeforeSuggesting: 2,
+      description: "Peace Memorial Park and Miyajima Island",
+    },
+    {
+      cityId: "takamatsu",
+      travelMinutes: 55,
+      minDaysBeforeSuggesting: 3,
+      description: "Ritsurin Garden and sanuki udon across the Seto Inland Sea",
+    },
+  ],
+  matsue: [
+    {
+      cityId: "hiroshima",
+      travelMinutes: 180,
+      minDaysBeforeSuggesting: 4,
+      description: "Peace Memorial Park and Miyajima Island",
+    },
+    {
+      cityId: "tottori",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Sand dunes, Sand Museum, and coastal scenery",
+    },
+  ],
+  tottori: [
+    {
+      cityId: "matsue",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Matsue Castle, Lafcadio Hearn quarter, and sunset over Lake Shinji",
+    },
+  ],
+  shimonoseki: [
+    {
+      cityId: "hiroshima",
+      travelMinutes: 70,
+      minDaysBeforeSuggesting: 2,
+      description: "Peace Memorial Park, Miyajima, and Hiroshima okonomiyaki",
+    },
+    {
+      cityId: "kitakyushu",
+      travelMinutes: 15,
+      minDaysBeforeSuggesting: 2,
+      description: "Mojiko retro port district and Kokura Castle",
+    },
   ],
   kobe: [
     {
@@ -207,12 +413,179 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 3,
       description: "Zen gardens and geisha districts",
     },
+    {
+      cityId: "himeji",
+      travelMinutes: 40,
+      minDaysBeforeSuggesting: 2,
+      description: "Japan's most spectacular original castle",
+    },
+  ],
+  himeji: [
+    {
+      cityId: "kobe",
+      travelMinutes: 40,
+      minDaysBeforeSuggesting: 2,
+      description: "Kobe beef, harbor views, and Kitano foreign quarter",
+    },
+    {
+      cityId: "okayama",
+      travelMinutes: 20,
+      minDaysBeforeSuggesting: 2,
+      description: "Korakuen Garden and Kurashiki canal district",
+    },
+  ],
+  otsu: [
+    {
+      cityId: "kyoto",
+      travelMinutes: 10,
+      minDaysBeforeSuggesting: 2,
+      description: "Temples, teahouses, and the old imperial capital",
+    },
+    {
+      cityId: "nara",
+      travelMinutes: 70,
+      minDaysBeforeSuggesting: 3,
+      description: "Deer park, Todaiji Great Buddha, and Naramachi district",
+    },
+  ],
+  ise: [
+    {
+      cityId: "nagoya",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 2,
+      description: "Nagoya Castle, miso katsu, and Osu shopping district",
+    },
+  ],
+  wakayama: [
+    {
+      cityId: "osaka",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 3,
+      description: "Street food, Dotonbori, and Shinsekai",
+    },
+    {
+      cityId: "nara",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 3,
+      description: "Ancient capital with deer park and Great Buddha",
+    },
   ],
   // Hokkaido
-  sapporo: [],
-  hakodate: [],
+  sapporo: [
+    {
+      cityId: "hakodate",
+      travelMinutes: 210,
+      minDaysBeforeSuggesting: 4,
+      description: "Morning market seafood, Mt. Hakodate night view, and historic port town",
+    },
+  ],
+  hakodate: [
+    {
+      cityId: "sapporo",
+      travelMinutes: 210,
+      minDaysBeforeSuggesting: 4,
+      description: "Ramen alley, beer garden, and Susukino nightlife",
+    },
+    {
+      cityId: "aomori",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 3,
+      description: "Nebuta Museum, Aomori Bay, and fresh apple markets",
+    },
+  ],
+  asahikawa: [
+    {
+      cityId: "sapporo",
+      travelMinutes: 85,
+      minDaysBeforeSuggesting: 3,
+      description: "Sapporo ramen, Odori Park, and craft beer scene",
+    },
+  ],
+  kushiro: [
+    {
+      cityId: "abashiri",
+      travelMinutes: 180,
+      minDaysBeforeSuggesting: 3,
+      description: "Drift ice museum, Abashiri Prison, and Sea of Okhotsk coast",
+    },
+  ],
+  abashiri: [
+    {
+      cityId: "asahikawa",
+      travelMinutes: 210,
+      minDaysBeforeSuggesting: 3,
+      description: "Asahiyama Zoo and Asahikawa ramen village",
+    },
+  ],
   // Tohoku
-  sendai: [],
+  sendai: [
+    {
+      cityId: "yamagata",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 3,
+      description: "Yamadera cliff temple and Zao crater lake",
+    },
+  ],
+  yamagata: [
+    {
+      cityId: "sendai",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 3,
+      description: "Castle ruins, Zuihoden mausoleum, and gyutan beef tongue",
+    },
+  ],
+  aizuwakamatsu: [
+    {
+      cityId: "sendai",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 3,
+      description: "Castle town, Date Masamune history, and gyutan beef tongue",
+    },
+  ],
+  morioka: [
+    {
+      cityId: "sendai",
+      travelMinutes: 40,
+      minDaysBeforeSuggesting: 3,
+      description: "Tanabata festival city and grilled beef tongue capital",
+    },
+  ],
+  aomori: [
+    {
+      cityId: "morioka",
+      travelMinutes: 100,
+      minDaysBeforeSuggesting: 3,
+      description: "Wanko soba challenge, castle ruins, and craft beer",
+    },
+    {
+      cityId: "hakodate",
+      travelMinutes: 60,
+      minDaysBeforeSuggesting: 3,
+      description: "Morning market, Mt. Hakodate night view, and historic port",
+    },
+  ],
+  akita: [
+    {
+      cityId: "morioka",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 3,
+      description: "Wanko soba, jajamen noodles, and reimen cold noodles",
+    },
+    {
+      cityId: "sendai",
+      travelMinutes: 130,
+      minDaysBeforeSuggesting: 4,
+      description: "Gyutan beef tongue capital and Zuihoden mausoleum",
+    },
+  ],
+  niigata: [
+    {
+      cityId: "nagano",
+      travelMinutes: 100,
+      minDaysBeforeSuggesting: 3,
+      description: "Snow monkeys, Zenkoji Temple, and mountain soba",
+    },
+  ],
   // Shikoku
   matsuyama: [
     {
@@ -235,6 +608,34 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 3,
       description: "Japan's kitchen. Takoyaki, okonomiyaki, nightlife",
     },
+    {
+      cityId: "okayama",
+      travelMinutes: 55,
+      minDaysBeforeSuggesting: 3,
+      description: "Korakuen Garden and Kurashiki canal district",
+    },
+  ],
+  kochi: [
+    {
+      cityId: "matsuyama",
+      travelMinutes: 150,
+      minDaysBeforeSuggesting: 3,
+      description: "Dogo Onsen, Matsuyama Castle, and literary history",
+    },
+  ],
+  tokushima: [
+    {
+      cityId: "takamatsu",
+      travelMinutes: 70,
+      minDaysBeforeSuggesting: 3,
+      description: "Ritsurin Garden and legendary sanuki udon",
+    },
+    {
+      cityId: "osaka",
+      travelMinutes: 130,
+      minDaysBeforeSuggesting: 4,
+      description: "Street food, Dotonbori canal, and nightlife",
+    },
   ],
   // Okinawa
   naha: [
@@ -246,6 +647,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
     },
   ],
   ishigaki: [],
+  // Remote islands / valleys - no practical day trip destinations
+  amami: [],
+  miyako: [],
+  yakushima: [],
+  wakkanai: [],
+  iyavalley: [],
 };
 
 /**
