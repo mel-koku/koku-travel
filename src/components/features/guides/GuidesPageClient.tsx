@@ -21,7 +21,6 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "itinerary", label: "Itinerary" },
   { value: "listicle", label: "Top Picks" },
   { value: "deep_dive", label: "Deep Dive" },
-  { value: "seasonal", label: "Seasonal" },
   { value: "activity", label: "Activities" },
   { value: "blog", label: "Blog" },
 ];
@@ -56,7 +55,8 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
 
   const seasonCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    guides.forEach((g) => {
+    const base = selectedType ? guides.filter((g) => g.guideType === selectedType) : guides;
+    base.forEach((g) => {
       if (g.seasons) {
         for (const s of g.seasons) {
           if (s !== "year-round") {
@@ -66,7 +66,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
       }
     });
     return counts;
-  }, [guides]);
+  }, [guides, selectedType]);
 
   const filterTypes = useMemo(
     () =>
