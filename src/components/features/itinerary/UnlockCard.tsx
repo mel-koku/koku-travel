@@ -42,8 +42,12 @@ export function UnlockCard({
         Continue to {cityList}
       </h3>
 
-      <p className={cn(typography({ intent: "utility-body-muted" }), "mb-6")}>
+      <p className={cn(typography({ intent: "utility-body-muted" }), "mb-2")}>
         {totalDays - 1} more days of routes, transit, tips, and daily briefings.
+      </p>
+
+      <p className={cn(typography({ intent: "utility-meta" }), "mb-6 text-foreground-secondary")}>
+        We plan each trip from scratch. The Pass covers the cost.
       </p>
 
       {launchPricing && launchSlotsRemaining != null && launchSlotsRemaining > 0 && (
