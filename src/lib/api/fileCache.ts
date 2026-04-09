@@ -13,7 +13,7 @@ import { tmpdir } from "os";
  * Uses synchronous fs to avoid event-loop contention during compilation.
  */
 
-const CACHE_DIR = join(tmpdir(), "koku-travel-cache");
+const CACHE_DIR = join(tmpdir(), "yuku-japan-cache");
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 const STALE_FILE_AGE_MS = 48 * 60 * 60 * 1000; // 48 hours
 const MAX_STALE_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days — absolute limit for stale reads

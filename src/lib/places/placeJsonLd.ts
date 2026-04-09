@@ -1,6 +1,6 @@
 import type { Location } from "@/types/location";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
 
 /**
  * Build JSON-LD structured data for a place detail page.

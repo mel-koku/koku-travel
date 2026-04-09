@@ -25,7 +25,7 @@ export const maxDuration = 60;
 function buildRefineCacheKey(dayActivities: string[], refinementType: string, cityId?: string): string {
   const payload = JSON.stringify({ activities: dayActivities.sort(), refinementType, cityId });
   const hash = crypto.createHash("sha256").update(payload).digest("hex").slice(0, 16);
-  return `@koku-travel/refine:${hash}`;
+  return `@yuku-japan/refine:${hash}`;
 }
 
 /** Refinement cache TTL: 12 hours */

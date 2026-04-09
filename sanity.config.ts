@@ -6,8 +6,8 @@ import { deskStructure } from "@/sanity/structure";
 import { resolveDocumentActions } from "@/sanity/actions";
 
 export default defineConfig({
-  name: "koku-travel",
-  title: "Koku Travel",
+  name: "yuku-japan",
+  title: "Yuku Japan",
 
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,

@@ -36,8 +36,8 @@ export async function sendInquiryNotification(
         : data.preferredDatesStart ?? "Not specified";
 
     await resend.emails.send({
-      from: "Koku Travel <noreply@koku.travel>",
-      to: "inquiries@koku.travel",
+      from: "Yuku Japan <noreply@yukujapan.com>",
+      to: "inquiries@yukujapan.com",
       subject: `New inquiry for ${data.personName} (${data.personType})`,
       text: [
         `New booking inquiry received.`,
@@ -79,7 +79,7 @@ export async function sendInquiryConfirmation(
     const resend = new Resend(apiKey);
 
     await resend.emails.send({
-      from: "Koku Travel <noreply@koku.travel>",
+      from: "Yuku Japan <noreply@yukujapan.com>",
       to: data.userEmail,
       subject: `Your inquiry for ${data.personName} has been received`,
       text: [
@@ -87,7 +87,7 @@ export async function sendInquiryConfirmation(
         ``,
         `We've received your inquiry and will get back to you within 48 hours.`,
         ``,
-        `Koku Travel`,
+        `Yuku Japan`,
       ].join("\n"),
     });
   } catch (err) {

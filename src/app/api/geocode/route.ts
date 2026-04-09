@@ -29,7 +29,7 @@ export const GET = withApiHandler(
         `https://nominatim.openstreetmap.org/search?${params}`,
         {
           headers: {
-            "User-Agent": "KokuTravel/1.0 (https://kokutravel.com)",
+            "User-Agent": "YukuJapan/1.0 (https://yukujapan.com)",
           },
           next: { revalidate: 300 },
         },

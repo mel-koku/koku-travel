@@ -32,7 +32,7 @@ export function getServiceRoleClient(): SupabaseClient {
     },
     global: {
       headers: {
-        "X-Client-Info": "koku-travel-server",
+        "X-Client-Info": "yuku-japan-server",
       },
     },
   });

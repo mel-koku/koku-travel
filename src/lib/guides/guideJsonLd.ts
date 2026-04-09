@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
 
 type GuideJsonLdInput = {
   slug: string;
@@ -24,7 +24,7 @@ export function buildGuideJsonLd(guide: GuideJsonLdInput) {
     ...(guide.imageUrl && { image: guide.imageUrl }),
     ...(guide.publishedAt && { datePublished: guide.publishedAt }),
     ...(guide.updatedAt && { dateModified: guide.updatedAt }),
-    author: guide.authorName && guide.authorName !== "Koku Travel"
+    author: guide.authorName && guide.authorName !== "Yuku Japan"
       ? {
           "@type": "Person",
           name: guide.authorName,
@@ -32,17 +32,17 @@ export function buildGuideJsonLd(guide: GuideJsonLdInput) {
         }
       : {
           "@type": "Organization",
-          name: "Koku Travel",
+          name: "Yuku Japan",
           url: BASE_URL,
         },
     publisher: {
       "@type": "Organization",
-      name: "Koku Travel",
+      name: "Yuku Japan",
       url: BASE_URL,
     },
     isPartOf: {
       "@type": "WebSite",
-      name: "Koku Travel",
+      name: "Yuku Japan",
       url: BASE_URL,
     },
   };

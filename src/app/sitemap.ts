@@ -3,7 +3,7 @@ import { getPublishedGuides } from "@/lib/guides/guideService";
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { getAllCitySlugs } from "@/lib/cities/cityData";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes

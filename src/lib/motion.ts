@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────
-// Koku Travel — Unified Motion System
+// Yuku Japan — Unified Motion System
 // ─────────────────────────────────────────────────────────
 // Single source of truth for all animation values.
 // Import tokens by name; never hardcode easing / duration / stagger.

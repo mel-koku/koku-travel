@@ -15,7 +15,7 @@ const RATE_LIMIT_CONSTANTS = {
   /** Maximum page number for pagination safety */
   MAX_PAGINATION_PAGE: 100,
   /** Prefix for Upstash Redis rate limit keys */
-  REDIS_KEY_PREFIX: "@koku-travel/ratelimit",
+  REDIS_KEY_PREFIX: "@yuku-japan/ratelimit",
 } as const;
 
 /**

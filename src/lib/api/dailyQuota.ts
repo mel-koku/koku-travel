@@ -13,7 +13,7 @@ import { env } from "../env";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /** Redis key prefix for daily quotas */
-const QUOTA_KEY_PREFIX = "@koku-travel/daily-quota";
+const QUOTA_KEY_PREFIX = "@yuku-japan/daily-quota";
 
 /** TTL for quota keys: 25 hours (handles timezone edges) */
 const QUOTA_TTL_SECONDS = 25 * 60 * 60;

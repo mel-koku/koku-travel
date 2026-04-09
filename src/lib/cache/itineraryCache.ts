@@ -20,7 +20,7 @@ import type { CulturalBriefing } from "@/types/culturalBriefing";
 const CACHE_TTL_SECONDS = 6 * 60 * 60;
 
 /** Redis key prefix for itinerary cache */
-const CACHE_KEY_PREFIX = "@koku-travel/itinerary";
+const CACHE_KEY_PREFIX = "@yuku-japan/itinerary";
 
 /** Cached itinerary result */
 type CachedItineraryResult = {

@@ -50,7 +50,7 @@ export async function sendBookingConfirmation(
     const resend = new Resend(apiKey);
 
     await resend.emails.send({
-      from: "Koku Travel <noreply@koku.travel>",
+      from: "Yuku Japan <noreply@yukujapan.com>",
       to: data.userEmail,
       subject: `Booking confirmed with ${data.personName}`,
       text: [
@@ -64,9 +64,9 @@ export async function sendBookingConfirmation(
         ``,
         `Booking reference: ${data.bookingId.slice(0, 8).toUpperCase()}`,
         ``,
-        `You can manage your booking from your Koku Travel dashboard.`,
+        `You can manage your booking from your Yuku Japan dashboard.`,
         ``,
-        `Koku Travel`,
+        `Yuku Japan`,
       ].join("\n"),
     });
   } catch (err) {
@@ -94,8 +94,8 @@ export async function sendBookingNotification(
     const resend = new Resend(apiKey);
 
     await resend.emails.send({
-      from: "Koku Travel <noreply@koku.travel>",
-      to: "inquiries@koku.travel",
+      from: "Yuku Japan <noreply@yukujapan.com>",
+      to: "inquiries@yukujapan.com",
       subject: `New booking: ${data.personName} on ${data.bookingDate}`,
       text: [
         `New booking received.`,
@@ -144,14 +144,14 @@ export async function sendBookingCancellation(
 
     await Promise.all([
       resend.emails.send({
-        from: "Koku Travel <noreply@koku.travel>",
+        from: "Yuku Japan <noreply@yukujapan.com>",
         to: data.userEmail,
         subject: `Booking cancelled: ${data.personName} on ${data.bookingDate}`,
-        text: body + "\n\nKoku Travel",
+        text: body + "\n\nYuku Japan",
       }),
       resend.emails.send({
-        from: "Koku Travel <noreply@koku.travel>",
-        to: "inquiries@koku.travel",
+        from: "Yuku Japan <noreply@yukujapan.com>",
+        to: "inquiries@yukujapan.com",
         subject: `Booking cancelled: ${data.personName} on ${data.bookingDate}`,
         text: body + `\nUser: ${data.userEmail}`,
       }),

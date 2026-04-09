@@ -428,7 +428,7 @@ export type Location = {
   /**
    * How this location was added to the database.
    * - 'community': Discovered via user video import
-   * - null/undefined: Curated by the Koku team
+   * - null/undefined: Curated by the Yuku team
    */
   source?: 'community' | null;
 
