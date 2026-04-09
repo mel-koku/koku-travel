@@ -15,6 +15,10 @@ import {
 } from "@/lib/supabase/projections";
 import { assertLocationDbRow, assertLocationDbRows } from "@/lib/supabase/assertDbRow";
 import { logger } from "@/lib/logger";
+import { readFileCache, readFileCacheStale, writeFileCache } from "@/lib/api/fileCache";
+
+const LANDING_CACHE_TTL = 30 * 60 * 1000; // 30 min (shorter than ISR revalidate = 3600s so revalidation sees fresh data)
+const isDev = process.env.NODE_ENV === "development";
 
 /**
  * Fetches the total count of explorable locations in the database
@@ -25,6 +29,11 @@ import { logger } from "@/lib/logger";
  * @returns The total number of explorable locations
  */
 export async function getLocationCount(): Promise<number> {
+  if (!isDev) {
+    const cached = readFileCache<number>("landing-location-count", LANDING_CACHE_TTL);
+    if (cached !== null) return cached;
+  }
+
   const supabase = await createClient();
 
   const { count, error } = await supabase
@@ -34,9 +43,10 @@ export async function getLocationCount(): Promise<number> {
     .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (error || count === null) {
-    return 0;
+    return readFileCacheStale<number>("landing-location-count") ?? 0;
   }
 
+  writeFileCache("landing-location-count", count);
   return count;
 }
 
@@ -44,6 +54,11 @@ export async function getLocationCount(): Promise<number> {
  * Returns the number of distinct prefectures with active locations.
  */
 export async function getPrefectureCount(): Promise<number> {
+  if (!isDev) {
+    const cached = readFileCache<number>("landing-prefecture-count", LANDING_CACHE_TTL);
+    if (cached !== null) return cached;
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -53,17 +68,23 @@ export async function getPrefectureCount(): Promise<number> {
     .not("prefecture", "is", null);
 
   if (error || !data) {
-    return 0;
+    return readFileCacheStale<number>("landing-prefecture-count") ?? 0;
   }
 
-  const unique = new Set(data.map((r) => r.prefecture));
-  return unique.size;
+  const count = new Set(data.map((r) => r.prefecture)).size;
+  writeFileCache("landing-prefecture-count", count);
+  return count;
 }
 
 /**
  * Returns the total number of published travel tips.
  */
 export async function getTipCount(): Promise<number> {
+  if (!isDev) {
+    const cached = readFileCache<number>("landing-tip-count", LANDING_CACHE_TTL);
+    if (cached !== null) return cached;
+  }
+
   const supabase = await createClient();
 
   const { count, error } = await supabase
@@ -72,9 +93,10 @@ export async function getTipCount(): Promise<number> {
     .eq("status", "published");
 
   if (error || count === null) {
-    return 0;
+    return readFileCacheStale<number>("landing-tip-count") ?? 0;
   }
 
+  writeFileCache("landing-tip-count", count);
   return count;
 }
 
@@ -434,6 +456,12 @@ export async function fetchTopRatedLocations(
   options: FetchTopRatedOptions = {},
 ): Promise<Location[]> {
   const { limit = 8, minRating = 4.0, minReviewCount = 10 } = options;
+  const cacheKey = `landing-top-rated-${limit}-${minRating.toFixed(1)}-${minReviewCount}`;
+
+  if (!isDev) {
+    const cached = readFileCache<Location[]>(cacheKey, LANDING_CACHE_TTL);
+    if (cached !== null) return cached;
+  }
 
   const supabase = await createClient();
 
@@ -455,11 +483,13 @@ export async function fetchTopRatedLocations(
 
   if (error || !data) {
     if (error) logger.error("[fetchTopRatedLocations] Supabase query failed", error, { code: error.code });
-    return [];
+    return readFileCacheStale<Location[]>(cacheKey) ?? [];
   }
 
   assertLocationDbRows(data, "fetchTopRatedLocations");
-  return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+  const locations = (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+  writeFileCache(cacheKey, locations);
+  return locations;
 }
 
 /**
