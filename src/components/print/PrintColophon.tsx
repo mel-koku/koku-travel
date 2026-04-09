@@ -55,7 +55,7 @@ export function PrintColophon({ trip }: PrintColophonProps) {
           </dl>
         </div>
       </div>
-      <div className="print-folio">Koku</div>
+      <div className="print-folio">Yuku</div>
     </article>
   );
 }

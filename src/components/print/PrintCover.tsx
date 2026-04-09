@@ -30,7 +30,7 @@ export function PrintCover({ trip }: PrintCoverProps) {
       <div className="print-page-inner justify-between">
         <header className="flex items-center justify-between">
           <span className="font-mono text-[8pt] uppercase tracking-[0.2em] text-foreground-secondary">
-            Koku Travel
+            Yuku Japan
           </span>
           <span className="font-mono text-[8pt] uppercase tracking-[0.2em] text-foreground-secondary">
             Field Guide

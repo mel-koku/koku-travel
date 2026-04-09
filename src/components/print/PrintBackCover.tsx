@@ -17,10 +17,10 @@ export function PrintBackCover() {
 
         <div className="space-y-2">
           <p className="font-mono text-[8pt] uppercase tracking-[0.22em] text-foreground-secondary">
-            Koku Travel
+            Yuku Japan
           </p>
           <p className="font-mono text-[7.5pt] uppercase tracking-[0.18em] text-foreground-secondary">
-            kokutravel.com
+            yukujapan.com
           </p>
         </div>
       </div>

@@ -227,7 +227,7 @@ export default function Header() {
           >
             <span className="flex items-baseline gap-1.5">
               <span className="font-serif text-2xl tracking-[-0.03em] text-foreground sm:text-3xl">
-                Koku
+                Yuku
               </span>
               <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
                 Travel

@@ -9,7 +9,7 @@ export function PrintFooter() {
     <div data-print-footer className="hidden">
       <hr style={{ borderColor: "#ccc", marginBottom: "6pt" }} />
       <p>
-        Generated {today} &middot; kokutravel.com
+        Generated {today} &middot; yukujapan.com
       </p>
     </div>
   );
