@@ -230,7 +230,7 @@ export default function Header() {
                 Yuku
               </span>
               <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-                Travel
+                Japan
               </span>
             </span>
           </Link>
