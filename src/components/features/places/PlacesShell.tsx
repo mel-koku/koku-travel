@@ -77,7 +77,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
-    kokuIds, setKokuIds, clearKokuFilter,
+    yukuIds, setYukuIds, clearYukuFilter,
     selectedCity, setSelectedCity,
     selectedCategory, setSelectedCategory,
     jtaApprovedOnly, setJtaApprovedOnly,
@@ -135,14 +135,14 @@ export function PlacesShell({ content }: PlacesShellProps) {
   useEffect(() => {
     if (didApplyParamsRef.current) return;
     didApplyParamsRef.current = true;
-    const kokuParam = searchParams.get("koku");
+    const yukuParam = searchParams.get("yuku");
     const cityParam = searchParams.get("city");
     const categoryParam = searchParams.get("category");
     const qParam = searchParams.get("q");
     const jtaParam = searchParams.get("jta");
-    if (kokuParam) {
-      const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
-      if (ids.length > 0) setKokuIds(ids);
+    if (yukuParam) {
+      const ids = yukuParam.split(",").map((s) => s.trim()).filter(Boolean);
+      if (ids.length > 0) setYukuIds(ids);
     }
     if (cityParam) setSelectedCity(cityParam);
     if (categoryParam) setSelectedCategory(categoryParam);
@@ -279,7 +279,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       if (vegetarianFriendly) params.set("vegetarian", "true");
       if (featuredOnly) params.set("featured", "true");
       if (unescoOnly) params.set("unesco", "true");
-      if (kokuIds.length > 0) params.set("koku", kokuIds.join(","));
+      if (yukuIds.length > 0) params.set("yuku", yukuIds.join(","));
       if (locationParam) params.set("location", locationParam);
       const qs = params.toString();
       router.replace(`/places${qs ? `?${qs}` : ""}`, { scroll: false });
@@ -289,7 +289,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewMode, query, selectedCity, selectedCategory, jtaApprovedOnly,
     selectedSort, selectedPrefectures, selectedVibes, selectedPriceLevel,
     selectedDuration, openNow, wheelchairAccessible, vegetarianFriendly,
-    featuredOnly, unescoOnly, kokuIds, locationParam, router,
+    featuredOnly, unescoOnly, yukuIds, locationParam, router,
   ]);
 
   return (
@@ -335,14 +335,14 @@ export function PlacesShell({ content }: PlacesShellProps) {
         inputValue={inputValue}
         onInputChange={handleInputChange}
         onInputSubmit={handleInputSubmit}
-        totalCount={activeFilterCount > 0 || kokuIds.length > 0 ? filteredLocations.length : total}
+        totalCount={activeFilterCount > 0 || yukuIds.length > 0 ? filteredLocations.length : total}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         mapAvailable={mapAvailable}
       />
 
-      {/* Koku filter banner */}
-      {kokuIds.length > 0 && (
+      {/* Yuku filter banner */}
+      {yukuIds.length > 0 && (
         <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between gap-3 rounded-lg border border-brand-primary/30 bg-brand-primary/10 px-4 py-3 text-sm">
             <div className="flex items-start gap-2.5">
@@ -352,7 +352,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
               </svg>
               <div>
                 <span className="font-medium text-brand-primary">
-                  Koku suggested {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""} for you
+                  Yuku suggested {yukuIds.length} place{yukuIds.length !== 1 ? "s" : ""} for you
                 </span>
                 <p className="text-xs text-foreground-secondary mt-0.5">
                   Other filters are paused while viewing suggestions.
@@ -361,7 +361,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
             </div>
             <button
               type="button"
-              onClick={clearKokuFilter}
+              onClick={clearYukuFilter}
               className="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium text-brand-primary hover:bg-brand-primary/10 transition"
             >
               Show all places

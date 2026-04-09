@@ -143,7 +143,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
   const { toolName, toolInput } = isUser ? { toolName: null, toolInput: {} } : extractToolContext(message);
   const basePath = "";
   const viewAllUrl = locations.length >= 2
-    ? `${basePath}/places?koku=${locations.map((l) => l.id).join(",")}`
+    ? `${basePath}/places?yuku=${locations.map((l) => l.id).join(",")}`
     : null;
   const browseUrl = buildBrowseUrl(basePath, toolName, toolInput);
   const browseLabel = buildBrowseLabel(toolInput);
