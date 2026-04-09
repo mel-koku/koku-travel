@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
     `Discover ${location.name} in ${location.city}, Japan`;
 
   return {
-    title: `${location.name} | ${location.city} | Koku Travel`,
+    title: `${location.name} | ${location.city} | Yuku Japan`,
     description,
     alternates: {
       canonical: `/places/${id}`,

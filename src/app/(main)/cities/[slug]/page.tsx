@@ -34,7 +34,7 @@ export async function generateMetadata({
   if (!city) return { title: "City not found" };
 
   return {
-    title: `${city.name}, Japan | Travel Guide | Koku Travel`,
+    title: `${city.name}, Japan | Travel Guide | Yuku Japan`,
     description: city.ogDescription,
     alternates: {
       canonical: `/cities/${slug}`,
@@ -42,7 +42,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${city.name}, Japan | Travel Guide`,
       description: city.ogDescription,
-      siteName: "Koku Travel",
+      siteName: "Yuku Japan",
     },
   };
 }

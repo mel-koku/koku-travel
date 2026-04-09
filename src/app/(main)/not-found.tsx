@@ -4,12 +4,12 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 import { NotFoundClient } from "./NotFoundClient";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | Koku Travel",
-  description: "The page you're looking for doesn't exist. Explore Japan travel guides, itineraries, and experiences with Koku Travel.",
+  title: "Page Not Found | Yuku Japan",
+  description: "The page you're looking for doesn't exist. Explore Japan travel guides, itineraries, and experiences with Yuku Japan.",
   openGraph: {
-    title: "Page Not Found | Koku Travel",
-    description: "The page you're looking for doesn't exist. Explore Japan travel guides, itineraries, and experiences with Koku Travel.",
-    siteName: "Koku Travel",
+    title: "Page Not Found | Yuku Japan",
+    description: "The page you're looking for doesn't exist. Explore Japan travel guides, itineraries, and experiences with Yuku Japan.",
+    siteName: "Yuku Japan",
   },
 };
 

@@ -5,12 +5,12 @@ import { DashboardClient } from "./DashboardClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Koku Travel",
+  title: "Dashboard | Yuku Japan",
   description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
   openGraph: {
-    title: "Dashboard | Koku Travel",
+    title: "Dashboard | Yuku Japan",
     description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

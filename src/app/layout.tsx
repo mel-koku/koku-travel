@@ -11,25 +11,25 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Koku Travel - Discover Japan with Local Experts",
+  title: "Yuku Japan - Discover Japan with Local Experts",
   description:
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
   openGraph: {
-    title: "Koku Travel - Discover Japan with Local Experts",
+    title: "Yuku Japan - Discover Japan with Local Experts",
     description:
       "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
     url: BASE_URL,
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary",
-    title: "Koku Travel - Discover Japan with Local Experts",
+    title: "Yuku Japan - Discover Japan with Local Experts",
     description:
       "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
   },

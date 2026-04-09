@@ -7,7 +7,7 @@ export default function ContactPage() {
       <div className="mx-auto max-w-2xl">
         <h1 className={cn(typography({ intent: "editorial-h1" }), "mb-6")}>Contact</h1>
         <p className="text-foreground-secondary leading-relaxed">
-          Have feedback or a question? Reach us at hello@kokutravel.com.
+          Have feedback or a question? Reach us at hello@yukujapan.com.
         </p>
       </div>
     </main>

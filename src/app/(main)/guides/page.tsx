@@ -3,14 +3,14 @@ import { GuidesPageClient } from "@/components/features/guides/GuidesPageClient"
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata = {
-  title: "Travel Guides | Koku Travel",
+  title: "Travel Guides | Yuku Japan",
   description:
     "Curated travel guides for Japan. Seasonal highlights, regional deep dives, and expert tips for your trip.",
   openGraph: {
-    title: "Travel Guides | Koku Travel",
+    title: "Travel Guides | Yuku Japan",
     description:
       "Curated travel guides for Japan. Seasonal highlights, regional deep dives, and expert tips for your trip.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

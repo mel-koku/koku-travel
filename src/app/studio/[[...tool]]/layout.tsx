@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Koku Travel Studio",
-  description: "Content management studio for Koku Travel guides",
+  title: "Yuku Japan Studio",
+  description: "Content management studio for Yuku Japan guides",
 };
 
 export default function StudioLayout({

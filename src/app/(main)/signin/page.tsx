@@ -5,12 +5,12 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 import { SignInClient } from "./SignInClient";
 
 export const metadata: Metadata = {
-  title: "Sign In | Koku Travel",
-  description: "Sign in to Koku Travel to save your trips, favorite locations, and get personalized Japan travel recommendations.",
+  title: "Sign In | Yuku Japan",
+  description: "Sign in to Yuku Japan to save your trips, favorite locations, and get personalized Japan travel recommendations.",
   openGraph: {
-    title: "Sign In | Koku Travel",
-    description: "Sign in to Koku Travel to save your trips, favorite locations, and get personalized Japan travel recommendations.",
-    siteName: "Koku Travel",
+    title: "Sign In | Yuku Japan",
+    description: "Sign in to Yuku Japan to save your trips, favorite locations, and get personalized Japan travel recommendations.",
+    siteName: "Yuku Japan",
   },
 };
 

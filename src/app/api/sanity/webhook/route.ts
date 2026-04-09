@@ -133,7 +133,7 @@ async function handleGuide(body: SanityWebhookBody) {
         region: body.region || null,
         location_ids: locationIdStrings,
         reading_time_minutes: body.readingTimeMinutes || null,
-        author: body.authorName || "Koku Travel",
+        author: body.authorName || "Yuku Japan",
         status: "published",
         featured: body.featured ?? false,
         sort_order: body.sortOrder ?? 100,

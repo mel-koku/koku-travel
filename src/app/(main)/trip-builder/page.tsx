@@ -4,12 +4,12 @@ import { getTripBuilderConfig } from "@/lib/sanity/contentService";
 import TripBuilderClient from "./TripBuilderClient";
 
 export const metadata: Metadata = {
-  title: "Trip Builder | Koku Travel",
+  title: "Trip Builder | Yuku Japan",
   description: "Build your personalized Japan itinerary. Choose your dates, entry point, travel vibes, and regions to create the perfect trip.",
   openGraph: {
-    title: "Trip Builder | Koku Travel",
+    title: "Trip Builder | Yuku Japan",
     description: "Build your personalized Japan itinerary. Choose your dates, entry point, travel vibes, and regions to create the perfect trip.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

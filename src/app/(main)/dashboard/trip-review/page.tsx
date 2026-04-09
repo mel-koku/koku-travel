@@ -4,7 +4,7 @@ import { getAuthUser } from "@/lib/auth/middleware";
 import { TripReview } from "@/components/features/dashboard/TripReview";
 
 export const metadata: Metadata = {
-  title: "Trip Review | Koku Travel",
+  title: "Trip Review | Yuku Japan",
   description: "Look back on your Japan journey. Stats, highlights, and memories.",
 };
 

@@ -4,12 +4,12 @@ import { AccountClient } from "./AccountClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
-  title: "Account | Koku Travel",
-  description: "Manage your Koku Travel account settings and preferences.",
+  title: "Account | Yuku Japan",
+  description: "Manage your Yuku Japan account settings and preferences.",
   openGraph: {
-    title: "Account | Koku Travel",
-    description: "Manage your Koku Travel account settings and preferences.",
-    siteName: "Koku Travel",
+    title: "Account | Yuku Japan",
+    description: "Manage your Yuku Japan account settings and preferences.",
+    siteName: "Yuku Japan",
   },
 };
 

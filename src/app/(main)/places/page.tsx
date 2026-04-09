@@ -5,15 +5,15 @@ import { PlacesShellLazy } from "@/components/features/places/PlacesShellLazy";
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
-  title: "Places in Japan | Koku Travel",
+  title: "Places in Japan | Yuku Japan",
   description: "Over 6,000 locations across Japan. Cultural landmarks, neighborhood favorites, and an interactive map.",
   alternates: {
     canonical: "/places",
   },
   openGraph: {
-    title: "Places in Japan | Koku Travel",
+    title: "Places in Japan | Yuku Japan",
     description: "Over 6,000 locations across Japan. Cultural landmarks, neighborhood favorites, and an interactive map.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

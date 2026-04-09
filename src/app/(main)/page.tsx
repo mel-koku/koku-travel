@@ -19,15 +19,15 @@ import { urlFor } from "@/sanity/image";
 import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
 
 export const metadata: Metadata = {
-  title: "Koku Travel | Plan Your Trip to Japan",
+  title: "Yuku Japan | Plan Your Trip to Japan",
   description: "Thousands of curated places across all 47 prefectures. Build a trip, day by day, with routing and timing handled for you.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Koku Travel | Plan Your Trip to Japan",
+    title: "Yuku Japan | Plan Your Trip to Japan",
     description: "Thousands of curated places across all 47 prefectures. Build a trip, day by day, with routing and timing handled for you.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

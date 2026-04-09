@@ -4,12 +4,12 @@ import { SavedClient } from "./SavedClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
-  title: "Saved Places | Koku Travel",
+  title: "Saved Places | Yuku Japan",
   description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
   openGraph: {
-    title: "Saved Places | Koku Travel",
+    title: "Saved Places | Yuku Japan",
     description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

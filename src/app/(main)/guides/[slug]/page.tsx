@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       guide.featuredImage?.url ||
       urlFor(guide.featuredImage).width(1200).url();
     return {
-      title: `${guide.title} | Koku Travel`,
+      title: `${guide.title} | Yuku Japan`,
       description: guide.summary,
       alternates: {
         canonical: `/guides/${slug}`,
@@ -53,12 +53,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Fallback to Supabase
   const result = await getCachedSupabaseGuide(slug);
   if (!result) {
-    return { title: "Guide Not Found | Koku Travel" };
+    return { title: "Guide Not Found | Yuku Japan" };
   }
 
   const { guide } = result;
   return {
-    title: `${guide.title} | Koku Travel`,
+    title: `${guide.title} | Yuku Japan`,
     description: guide.summary,
     alternates: {
       canonical: `/guides/${slug}`,

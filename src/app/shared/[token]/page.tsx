@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!trip) {
     return {
-      title: "Shared Itinerary - Koku Travel",
+      title: "Shared Itinerary - Yuku Japan",
     };
   }
 
@@ -91,15 +91,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   ];
 
   const cityList = cities.length > 0 ? cities.join(", ") : "Japan";
-  const description = `${dayCount}-day itinerary for ${cityList}. Shared via Koku Travel.`;
+  const description = `${dayCount}-day itinerary for ${cityList}. Shared via Yuku Japan.`;
 
   return {
-    title: `${trip.name} - Koku Travel`,
+    title: `${trip.name} - Yuku Japan`,
     description,
     openGraph: {
       title: trip.name,
       description,
-      siteName: "Koku Travel",
+      siteName: "Yuku Japan",
       type: "website",
     },
     twitter: {

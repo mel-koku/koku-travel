@@ -6,14 +6,14 @@ import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { CityIndex } from "@/components/features/cities/CityIndex";
 
 export const metadata: Metadata = {
-  title: "Cities of Japan | Koku Travel",
+  title: "Cities of Japan | Yuku Japan",
   description:
     "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.",
   openGraph: {
-    title: "Cities of Japan | Koku Travel",
+    title: "Cities of Japan | Yuku Japan",
     description:
       "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.",
-    siteName: "Koku Travel",
+    siteName: "Yuku Japan",
   },
 };
 

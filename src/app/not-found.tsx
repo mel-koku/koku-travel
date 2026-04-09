@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | Koku Travel",
+  title: "Page Not Found | Yuku Japan",
 };
 
 export default function RootNotFound() {
