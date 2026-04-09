@@ -95,7 +95,7 @@ export function SharedClient({ trip, token }: SharedClientProps) {
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link href="/" className="font-serif text-xl text-foreground hover:text-brand-primary transition">
-              KOKU
+              YUKU
             </Link>
             <span className="text-stone">|</span>
             <span className="text-sm text-foreground-secondary">Shared Itinerary</span>

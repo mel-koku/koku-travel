@@ -7,7 +7,7 @@ export default function SharedNotFound() {
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4">
       <div className="text-center">
         <Link href="/" className="font-serif text-2xl text-foreground hover:text-brand-primary transition">
-          KOKU
+          YUKU
         </Link>
         <h1 className={cn(typography({ intent: "editorial-h1" }), "mt-8")}>
           Link no longer active

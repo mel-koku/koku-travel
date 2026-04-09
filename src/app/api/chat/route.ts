@@ -68,7 +68,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
 
   try {
     const { messages, context: bodyContext, tripContext } = parsed.data;
-    const chatContext = bodyContext ?? request.headers.get("X-Koku-Context");
+    const chatContext = bodyContext ?? request.headers.get("X-Yuku-Context");
 
     // Cap conversation to last 20 messages for cost control
     const recentMessages = messages.slice(-20);

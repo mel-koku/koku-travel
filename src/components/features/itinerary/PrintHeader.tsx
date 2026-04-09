@@ -8,7 +8,7 @@ export function PrintHeader({ tripName, dateRange, cities }: PrintHeaderProps) {
   return (
     <div data-print-header className="hidden">
       <p style={{ fontSize: "10pt", letterSpacing: "0.2em", textTransform: "uppercase", color: "#888", marginBottom: "4pt" }}>
-        KOKU TRAVEL
+        YUKU JAPAN
       </p>
       <p style={{ fontSize: "20pt", fontWeight: "bold", marginBottom: "4pt" }}>
         {tripName}

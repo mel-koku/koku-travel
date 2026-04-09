@@ -1,5 +1,5 @@
-const STORAGE_KEY = "koku-cookie-consent";
-const CONSENT_EVENT = "koku-consent-change";
+const STORAGE_KEY = "yuku-cookie-consent";
+const CONSENT_EVENT = "yuku-consent-change";
 
 export type ConsentState = "granted" | "denied" | "undecided";
 
