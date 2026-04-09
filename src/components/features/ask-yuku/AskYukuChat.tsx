@@ -3,17 +3,17 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
-import { AskKokuMessage } from "./AskKokuMessage";
-import { AskKokuSuggestions, type AskKokuContext } from "./AskKokuSuggestions";
-import { AskKokuInput } from "./AskKokuInput";
+import { AskYukuMessage } from "./AskYukuMessage";
+import { AskYukuSuggestions, type AskYukuContext } from "./AskYukuSuggestions";
+import { AskYukuInput } from "./AskYukuInput";
 
-type AskKokuChatProps = {
+type AskYukuChatProps = {
   onClose?: () => void;
-  context?: AskKokuContext;
+  context?: AskYukuContext;
   tripData?: string;
 };
 
-export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuChatProps) {
+export function AskYukuChat({ onClose, context = "default", tripData }: AskYukuChatProps) {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -67,11 +67,11 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
         data-lenis-prevent
       >
         {!hasMessages ? (
-          <AskKokuSuggestions onSelect={handleSuggestion} context={context} />
+          <AskYukuSuggestions onSelect={handleSuggestion} context={context} />
         ) : (
           <div className="flex flex-col gap-3">
             {messages.map((message) => (
-              <AskKokuMessage key={message.id} message={message} onClosePanel={onClose} />
+              <AskYukuMessage key={message.id} message={message} onClosePanel={onClose} />
             ))}
             {isLoading && (
               <div className="flex justify-start">
@@ -89,7 +89,7 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
                 {error.message?.includes("quota") ||
                 error.message?.includes("503") ||
                 error.message?.includes("429")
-                  ? "Koku hit a limit. Give it a minute and try again."
+                  ? "Yuku hit a limit. Give it a minute and try again."
                   : "Couldn\u2019t get a response. Try sending that again."}
               </div>
             )}
@@ -98,7 +98,7 @@ export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuC
       </div>
 
       <div className="shrink-0">
-        <AskKokuInput
+        <AskYukuInput
           value={input}
           onChange={setInput}
           onSubmit={onSubmit}

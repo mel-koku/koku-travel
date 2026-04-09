@@ -12,11 +12,11 @@ import { PageTransition } from "@/components/PageTransition";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
 import type { SiteSettings } from "@/types/sanitySiteContent";
 
-// Lazy-load Ask Koku chat FAB — not critical path
-const AskKokuButton = dynamic(
+// Lazy-load Ask Yuku chat FAB — not critical path
+const AskYukuButton = dynamic(
   () =>
-    import("@/components/features/ask-koku/AskKokuButton").then(
-      (m) => m.AskKokuButton,
+    import("@/components/features/ask-yuku/AskYukuButton").then(
+      (m) => m.AskYukuButton,
     ),
   { ssr: false },
 );
@@ -57,7 +57,7 @@ export function LayoutWrapper({
               </ErrorBoundary>
             )}
           </div>
-          <AskKokuButton />
+          <AskYukuButton />
         </LenisProvider>
       </SharedProviders>
     </ThemeProvider>

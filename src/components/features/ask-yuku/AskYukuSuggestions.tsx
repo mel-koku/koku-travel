@@ -2,14 +2,14 @@
 
 import { useMemo } from "react";
 
-export type AskKokuContext =
+export type AskYukuContext =
   | "places"
   | "itinerary"
   | "dashboard"
   | "trip-builder"
   | "default";
 
-const SUGGESTION_POOLS: Record<AskKokuContext, string[]> = {
+const SUGGESTION_POOLS: Record<AskYukuContext, string[]> = {
   places: [
     "What's worth seeing that I'd walk past?",
     "Show me top-rated shrines",
@@ -68,15 +68,15 @@ function shuffleSlice(pool: string[], count: number): string[] {
   return shuffled.slice(0, count);
 }
 
-type AskKokuSuggestionsProps = {
+type AskYukuSuggestionsProps = {
   onSelect: (suggestion: string) => void;
-  context?: AskKokuContext;
+  context?: AskYukuContext;
 };
 
-export function AskKokuSuggestions({
+export function AskYukuSuggestions({
   onSelect,
   context = "default",
-}: AskKokuSuggestionsProps) {
+}: AskYukuSuggestionsProps) {
   // Shuffle per mount — stable across re-renders, fresh when panel reopens
   const suggestions = useMemo(
     () => shuffleSlice(SUGGESTION_POOLS[context] ?? SUGGESTION_POOLS.default, 6),

@@ -3,19 +3,19 @@
 import { useRef } from "react";
 import { ArrowUp } from "lucide-react";
 
-type AskKokuInputProps = {
+type AskYukuInputProps = {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
 };
 
-export function AskKokuInput({
+export function AskYukuInput({
   value,
   onChange,
   onSubmit,
   isLoading,
-}: AskKokuInputProps) {
+}: AskYukuInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

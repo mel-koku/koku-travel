@@ -5,15 +5,15 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
-import { AskKokuPanel } from "./AskKokuPanel";
+import { AskYukuPanel } from "./AskYukuPanel";
 import { useAppState } from "@/state/AppState";
 import { serializeTripContext } from "@/lib/chat/serializeTripContext";
 import { hasResponded, CONSENT_EVENT } from "@/lib/cookieConsent";
-import type { AskKokuContext } from "./AskKokuSuggestions";
+import type { AskYukuContext } from "./AskYukuSuggestions";
 
 const HIDDEN_PATHS = ["/studio", "/places"];
 
-function deriveContext(pathname: string): AskKokuContext {
+function deriveContext(pathname: string): AskYukuContext {
   if (pathname.startsWith("/places")) return "places";
   if (pathname.startsWith("/trip-builder")) return "trip-builder";
   if (pathname.startsWith("/dashboard")) return "dashboard";
@@ -21,7 +21,7 @@ function deriveContext(pathname: string): AskKokuContext {
   return "default";
 }
 
-export function AskKokuButton() {
+export function AskYukuButton() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -61,9 +61,9 @@ export function AskKokuButton() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className={`fixed right-6 z-50 flex h-11 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] ${open ? "w-11" : "px-4"} ${isTripBuilder ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"}`}
-        aria-label={open ? "Close chat" : "Ask Koku"}
+        aria-label={open ? "Close chat" : "Ask Yuku"}
         aria-expanded={open}
-        aria-controls="ask-koku-panel"
+        aria-controls="ask-yuku-panel"
       >
         <AnimatePresence mode="wait" initial={false}>
           {open ? (
@@ -84,7 +84,7 @@ export function AskKokuButton() {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.15, ease: easeReveal }}
             >
-              <span className="text-sm font-medium">Ask Koku</span>
+              <span className="text-sm font-medium">Ask Yuku</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -93,7 +93,7 @@ export function AskKokuButton() {
       {/* Panel */}
       <AnimatePresence>
         {open && (
-          <AskKokuPanel onClose={() => setOpen(false)} context={context} tripData={tripData} />
+          <AskYukuPanel onClose={() => setOpen(false)} context={context} tripData={tripData} />
         )}
       </AnimatePresence>
     </>

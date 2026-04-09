@@ -777,7 +777,7 @@ html.lenis-stopped {
   [data-map-container],
   [data-smart-prompts],
   [data-sidebar],
-  [data-ask-koku],
+  [data-ask-yuku],
   [data-confidence-dashboard] {
     display: none !important;
   }

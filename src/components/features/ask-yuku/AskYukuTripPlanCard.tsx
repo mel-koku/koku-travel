@@ -25,7 +25,7 @@ export type TripPlanData = {
   vibeNames: string[];
 };
 
-type AskKokuTripPlanCardProps = {
+type AskYukuTripPlanCardProps = {
   data: TripPlanData;
   onClose?: () => void;
 };
@@ -61,7 +61,7 @@ const STYLE_LABELS: Record<TripStyle, string> = {
   fast: "Packed schedule",
 };
 
-export function AskKokuTripPlanCard({ data, onClose }: AskKokuTripPlanCardProps) {
+export function AskYukuTripPlanCard({ data, onClose }: AskYukuTripPlanCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { plan, cityNames, vibeNames } = data;

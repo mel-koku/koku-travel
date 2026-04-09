@@ -386,7 +386,7 @@ export const EXPERIENCE_EXPLORE_COLUMNS = `
 
 /**
  * Columns needed for AI chat responses (18 columns)
- * Used by: Ask Koku chat tools
+ * Used by: Ask Yuku chat tools
  */
 export const LOCATION_CHAT_COLUMNS = `
   id,

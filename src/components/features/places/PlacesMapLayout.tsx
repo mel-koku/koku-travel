@@ -9,7 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationFast, easeReveal } from "@/lib/motion";
 import { PlacesMap, type MapBounds } from "./PlacesMap";
 import { PlacesMapCard } from "./PlacesMapCard";
-import { AskKokuChat } from "@/components/features/ask-koku/AskKokuChat";
+import { AskYukuChat } from "@/components/features/ask-yuku/AskYukuChat";
 import type { Location } from "@/types/location";
 
 const PAGE_SIZE = 40;
@@ -274,7 +274,7 @@ export function PlacesMapLayout({
               style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-                <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>Ask Koku</h2>
+                <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>Ask Yuku</h2>
                 <button
                   onClick={onChatClose}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
@@ -283,7 +283,7 @@ export function PlacesMapLayout({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <AskKokuChat onClose={onChatClose} />
+              <AskYukuChat onClose={onChatClose} />
             </motion.div>
           </>
         )}

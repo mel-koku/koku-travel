@@ -26,7 +26,7 @@ export function useTripBuilderNavigation({
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Check for ?step=5 deep link (from Ask Koku chat)
+  // Check for ?step=5 deep link (from Ask Yuku chat)
   const initialStep = searchParams.get("step");
   const didDeepLink = useRef(false);
 
@@ -78,7 +78,7 @@ export function useTripBuilderNavigation({
     }
   }, [initialStep, router, dataIsEmpty, basePath]);
 
-  // Listen for Ask Koku trip plan updates when already on /trip-builder
+  // Listen for Ask Yuku trip plan updates when already on /trip-builder
   useEffect(() => {
     const handleChatPlan = (e: Event) => {
       const detail = (e as CustomEvent).detail;

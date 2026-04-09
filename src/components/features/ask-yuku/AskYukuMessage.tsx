@@ -2,12 +2,12 @@
 
 import ReactMarkdown from "react-markdown";
 import type { UIMessage } from "ai";
-import { AskKokuLocationCard } from "./AskKokuLocationCard";
-import { AskKokuTripPlanCard, type TripPlanData } from "./AskKokuTripPlanCard";
+import { AskYukuLocationCard } from "./AskYukuLocationCard";
+import { AskYukuTripPlanCard, type TripPlanData } from "./AskYukuTripPlanCard";
 import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 
-type AskKokuMessageProps = {
+type AskYukuMessageProps = {
   message: UIMessage;
   onClosePanel?: () => void;
 };
@@ -135,7 +135,7 @@ function getTextContent(message: UIMessage): string {
     .join("");
 }
 
-export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
+export function AskYukuMessage({ message, onClosePanel }: AskYukuMessageProps) {
   const isUser = message.role === "user";
   const locations = isUser ? [] : extractLocations(message);
   const tripPlan = isUser ? null : extractTripPlan(message);
@@ -200,13 +200,13 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
         )}
 
         {tripPlan && (
-          <AskKokuTripPlanCard data={tripPlan} onClose={onClosePanel} />
+          <AskYukuTripPlanCard data={tripPlan} onClose={onClosePanel} />
         )}
 
         {locations.length > 0 && (
           <div className="mt-2 flex flex-col gap-1.5">
             {locations.map((loc) => (
-              <AskKokuLocationCard
+              <AskYukuLocationCard
                 key={loc.id}
                 id={loc.id}
                 name={loc.name}

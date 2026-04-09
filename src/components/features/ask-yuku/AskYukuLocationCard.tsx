@@ -8,7 +8,7 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
-type AskKokuLocationCardProps = {
+type AskYukuLocationCardProps = {
   id: string;
   name: string;
   category: string;
@@ -18,7 +18,7 @@ type AskKokuLocationCardProps = {
   primaryPhotoUrl: string | null;
 };
 
-export function AskKokuLocationCard({
+export function AskYukuLocationCard({
   id,
   name,
   category,
@@ -26,7 +26,7 @@ export function AskKokuLocationCard({
   rating,
   image,
   primaryPhotoUrl,
-}: AskKokuLocationCardProps) {
+}: AskYukuLocationCardProps) {
   const imageSrc = resizePhotoUrl(primaryPhotoUrl ?? image, 200) || FALLBACK_IMAGE;
 
   return (

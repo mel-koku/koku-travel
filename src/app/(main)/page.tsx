@@ -9,7 +9,7 @@ import {
   TestimonialTheater,
   FeaturedGuides,
   FinalCTA,
-  AskKokuPreview,
+  AskYukuPreview,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount, getPrefectureCount, getTipCount } from "@/lib/locations/locationService";
@@ -98,7 +98,7 @@ export default async function Home() {
           />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
-          <AskKokuPreview />
+          <AskYukuPreview />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
           <FinalCTA content={landingContent ?? undefined} />

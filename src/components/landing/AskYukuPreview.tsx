@@ -96,12 +96,12 @@ function QAPill({
   );
 }
 
-export function AskKokuPreview() {
+export function AskYukuPreview() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-10%" });
 
   return (
-    <section aria-label="Ask Koku" className="bg-canvas py-12 sm:py-20 lg:py-28">
+    <section aria-label="Ask Yuku" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div ref={sectionRef} className="mx-auto max-w-7xl px-6">
         {/* Heading */}
         <motion.div
@@ -110,7 +110,7 @@ export function AskKokuPreview() {
           transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
           className="text-center"
         >
-          <p className="eyebrow-mono">Ask Koku</p>
+          <p className="eyebrow-mono">Ask Yuku</p>
           <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl")}>
             Questions? We know Japan. Ask anything.
           </h2>
