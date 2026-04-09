@@ -445,7 +445,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                     <ScrollReveal delay={0.5} distance={10}>
                       <Link
                         href="/trip-builder"
-                        className="btn-koku relative mt-6 inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                        className="btn-yuku relative mt-6 inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                       >
                         <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
                         <span className="relative">{content?.dashboardPlanButton ?? "Build My First Trip"}</span>

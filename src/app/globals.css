@@ -492,7 +492,7 @@ html.lenis-stopped {
 }
 
 /* Signature CTA: vermilion glow on hover */
-.btn-koku {
+.btn-yuku {
   position: relative;
   overflow: hidden;
   transition:
@@ -500,11 +500,11 @@ html.lenis-stopped {
     transform 0.15s ease;
 }
 
-.btn-koku:hover {
+.btn-yuku:hover {
   box-shadow: var(--shadow-glow);
 }
 
-.btn-koku::after {
+.btn-yuku::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -520,7 +520,7 @@ html.lenis-stopped {
   pointer-events: none;
 }
 
-.btn-koku:hover::after {
+.btn-yuku:hover::after {
   transform: translateX(100%);
 }
 

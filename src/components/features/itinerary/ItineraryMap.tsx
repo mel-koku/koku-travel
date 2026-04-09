@@ -307,7 +307,7 @@ export function ItineraryMap({
       }
 
       const el = document.createElement("div");
-      el.className = "koku-mapbox-marker-accom";
+      el.className = "yuku-mapbox-marker-accom";
       Object.assign(el.style, {
         width: "30px",
         height: "30px",
@@ -342,7 +342,7 @@ export function ItineraryMap({
 
       // Create new marker
       const markerEl = document.createElement("div");
-      markerEl.className = "koku-mapbox-marker";
+      markerEl.className = "yuku-mapbox-marker";
       Object.assign(markerEl.style, {
         width: "26px",
         height: "26px",

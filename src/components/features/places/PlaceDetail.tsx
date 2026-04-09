@@ -643,7 +643,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </p>
           <a
             href={`/trip-builder?city=${encodeURIComponent(location.city)}`}
-            className="btn-koku inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
+            className="btn-yuku inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
           >
             Build a trip to {location.city}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

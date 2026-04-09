@@ -123,7 +123,7 @@ export function LocalExpertsComingSoon() {
         >
           <Link
             href="/places"
-            className="btn-koku inline-flex h-12 items-center justify-center rounded-lg bg-brand-primary px-8 text-sm font-medium text-white shadow-[var(--shadow-glow)] transition-all hover:bg-brand-secondary active:scale-[0.98]"
+            className="btn-yuku inline-flex h-12 items-center justify-center rounded-lg bg-brand-primary px-8 text-sm font-medium text-white shadow-[var(--shadow-glow)] transition-all hover:bg-brand-secondary active:scale-[0.98]"
           >
             Browse Places
           </Link>

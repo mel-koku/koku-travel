@@ -11,9 +11,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "btn-koku bg-primary text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90",
+          "btn-yuku bg-primary text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90",
         primary:
-          "btn-koku bg-primary text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90",
+          "btn-yuku bg-primary text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground shadow-[var(--shadow-sm)] hover:bg-destructive/90",
         outline:

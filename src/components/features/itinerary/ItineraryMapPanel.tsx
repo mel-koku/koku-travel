@@ -13,7 +13,7 @@ import { mapColors } from "@/lib/mapColors";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
-const SELECTED_MARKER_CLASS = "koku-map-marker-selected";
+const SELECTED_MARKER_CLASS = "yuku-map-marker-selected";
 const ROUTE_POLYLINE_COLOR = mapColors.brandPrimary;
 const ROUTE_POLYLINE_HIGHLIGHT_COLOR = mapColors.sage;
 
@@ -388,7 +388,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
 
           const customIcon = Leaflet.divIcon({
             html: iconHtml,
-            className: "koku-numbered-marker",
+            className: "yuku-numbered-marker",
             iconSize: [32, 32],
             iconAnchor: [16, 16],
           });
@@ -440,7 +440,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             color: ROUTE_POLYLINE_COLOR,
             weight: 4,
             opacity: 0.7,
-            className: "koku-map-route",
+            className: "yuku-map-route",
           });
           routesLayerRef.current.addLayer(polyline);
           polylineInstancesRef.current.set(segmentId, polyline);

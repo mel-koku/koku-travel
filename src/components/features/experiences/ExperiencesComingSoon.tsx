@@ -140,7 +140,7 @@ export function ExperiencesComingSoon({ variant }: Props) {
             className={cn(
               "inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white active:scale-[0.98] transition-all",
               isA
-                ? "btn-koku rounded-lg bg-brand-primary shadow-[var(--shadow-glow)] hover:bg-brand-secondary"
+                ? "btn-yuku rounded-lg bg-brand-primary shadow-[var(--shadow-glow)] hover:bg-brand-secondary"
                 : "rounded-lg bg-[var(--primary)] hover:brightness-110"
             )}
           >

@@ -59,7 +59,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
           >
             <a
               href="/trip-builder"
-              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
+              className="btn-yuku relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
