@@ -73,7 +73,7 @@ describe("TripBuilderContext", () => {
       });
 
       await testLocalStoragePersistence(
-        "koku_trip_builder",
+        "yuku_trip_builder",
         () => result.current.setData((prev) => ({ ...prev, regions: ["Kansai"] })),
         500,
         (parsed) => expect((parsed as { regions: string[] }).regions).toEqual(["Kansai"])

@@ -12,7 +12,7 @@ vi.mock("@/lib/supabase/client", () => ({
 
 vi.mock("@/lib/savedStorage", () => ({
   loadSaved: vi.fn().mockReturnValue([]),
-  SAVED_KEY: "koku_saved",
+  SAVED_KEY: "yuku_saved",
 }));
 
 type SupabaseBrowserClient = ReturnType<typeof createClient>;
@@ -45,7 +45,7 @@ describe("AppState", () => {
         guideBookmarks: ["guide-1"],
         trips: [],
       };
-      localStorage.setItem("koku_app_state_v1", JSON.stringify(persistedState));
+      localStorage.setItem("yuku_app_state_v1", JSON.stringify(persistedState));
 
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
@@ -78,7 +78,7 @@ describe("AppState", () => {
       // Wait for debounced write (500ms)
       await waitFor(
         () => {
-          const stored = localStorage.getItem("koku_app_state_v1");
+          const stored = localStorage.getItem("yuku_app_state_v1");
           expect(stored).toBeTruthy();
           if (stored) {
             const parsed = JSON.parse(stored);
@@ -105,7 +105,7 @@ describe("AppState", () => {
 
       await waitFor(
         () => {
-          const stored = localStorage.getItem("koku_app_state_v1");
+          const stored = localStorage.getItem("yuku_app_state_v1");
           if (stored) {
             const parsed = JSON.parse(stored);
             expect(parsed.isLoadingRefresh).toBeUndefined();
@@ -140,7 +140,7 @@ describe("AppState", () => {
       });
 
       // Should not be written immediately
-      expect(localStorage.getItem("koku_app_state_v1")).toBeNull();
+      expect(localStorage.getItem("yuku_app_state_v1")).toBeNull();
 
       act(() => {
         result.current.setUser({ displayName: "Second" });
@@ -153,7 +153,7 @@ describe("AppState", () => {
       });
 
       // Check localStorage directly (no waitFor needed with fake timers)
-      const stored = localStorage.getItem("koku_app_state_v1");
+      const stored = localStorage.getItem("yuku_app_state_v1");
       expect(stored).toBeTruthy();
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -357,7 +357,7 @@ describe("AppState", () => {
       });
 
       // Check localStorage directly (no waitFor needed with fake timers)
-      const stored = localStorage.getItem("koku_app_state_v1");
+      const stored = localStorage.getItem("yuku_app_state_v1");
       expect(stored).toBeTruthy();
       if (stored) {
         const parsed = JSON.parse(stored);

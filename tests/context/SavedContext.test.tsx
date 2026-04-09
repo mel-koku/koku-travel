@@ -11,7 +11,7 @@ vi.mock("@/lib/supabase/client", () => ({
 
 vi.mock("@/lib/savedStorage", () => ({
   loadSaved: vi.fn().mockReturnValue([]),
-  SAVED_KEY: "koku_saved",
+  SAVED_KEY: "yuku_saved",
 }));
 
 import { createMockSupabaseClient } from "../utils/mocks";
