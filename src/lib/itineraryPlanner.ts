@@ -19,6 +19,7 @@ import { logger } from "./logger";
 import { requestRoute } from "./routing";
 import { toItineraryMode } from "./routing/types";
 import type { RoutingResult } from "./routing/types";
+import { haversineDistance, estimateHeuristicRoute } from "./routing/heuristic";
 import { parseTimeToMinutes as parseTime } from "@/lib/utils/timeUtils";
 import {
   TRANSIT_DISTANCE_THRESHOLD_KM,
@@ -495,16 +496,31 @@ async function planItineraryDay(
   }
 
   // --- Phase 1: Fetch walk routes + explicit-mode routes in parallel ---
+  // For very short distances (< 300m), skip the API call and use a heuristic
+  // estimate. At walking speed, 300m is ~4 minutes -- the API would return
+  // essentially the same result with minor street-routing differences.
+  const SHORT_WALK_THRESHOLD_M = 300;
   const phase1Results = await Promise.all(
-    routingPairs.map((pair) =>
-      requestRoute({
+    routingPairs.map((pair) => {
+      const mode = pair.explicitMode ?? "walk";
+      if (mode === "walk") {
+        const straightLineM = haversineDistance(pair.origin, pair.destination);
+        if (straightLineM < SHORT_WALK_THRESHOLD_M) {
+          return estimateHeuristicRoute({
+            origin: pair.origin,
+            destination: pair.destination,
+            mode: "walk",
+          });
+        }
+      }
+      return requestRoute({
         origin: pair.origin,
         destination: pair.destination,
-        mode: pair.explicitMode ?? "walk",
+        mode,
         departureTime: formatTime(startMinutes),
         timezone: dayTimezone,
-      }),
-    ),
+      });
+    }),
   );
 
   // --- Phase 2: Fetch transit routes for walk pairs with distance >= 1km ---
@@ -776,36 +792,18 @@ async function planItineraryDay(
       const lastCoords = metaByActivityId.get(lastActivity.id)?.coordinates;
       if (lastCoords) {
         try {
-          const returnRoute = await requestRoute({
+          // Use heuristic estimate for return-to-hotel instead of API calls.
+          // This segment is informational only (doesn't affect scheduling).
+          // Saves 1-2 NAVITIME calls per day.
+          const distanceM = haversineDistance(lastCoords, endPoint.coordinates);
+          const distanceKm = distanceM / 1000;
+          const returnMode: "walk" | "transit" = distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM ? "transit" : "walk";
+          const finalRoute = estimateHeuristicRoute({
             origin: lastCoords,
             destination: endPoint.coordinates,
-            mode: "walk",
-            departureTime: lastActivity.schedule?.departureTime ?? formatTime(cursorMinutes),
-            timezone: dayTimezone,
+            mode: returnMode,
           });
-
-          const distanceKm = (returnRoute.distanceMeters ?? 0) / 1000;
-          let finalRoute = returnRoute;
-          let finalMode: ItineraryTravelMode = "walk";
-
-          // Use transit if distance is significant
-          if (distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM) {
-            try {
-              const transitRoute = await requestRoute({
-                origin: lastCoords,
-                destination: endPoint.coordinates,
-                mode: "transit",
-                departureTime: lastActivity.schedule?.departureTime ?? formatTime(cursorMinutes),
-                timezone: dayTimezone,
-              });
-              if (transitRoute.durationSeconds > 0) {
-                finalRoute = transitRoute;
-                finalMode = "train";
-              }
-            } catch {
-              // Fall back to walk route
-            }
-          }
+          const finalMode: ItineraryTravelMode = returnMode === "transit" ? "train" : "walk";
 
           const returnPath = mergePathSegments([
             finalRoute.geometry,

@@ -47,7 +47,7 @@ function toRadians(deg: number) {
   return (deg * Math.PI) / 180;
 }
 
-function haversineDistance(origin: RoutingRequest["origin"], destination: RoutingRequest["destination"]) {
+export function haversineDistance(origin: RoutingRequest["origin"], destination: RoutingRequest["destination"]) {
   const earthRadiusMeters = 6371e3;
   const dLat = toRadians(destination.lat - origin.lat);
   const dLng = toRadians(destination.lng - origin.lng);

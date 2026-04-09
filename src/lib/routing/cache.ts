@@ -56,15 +56,10 @@ function buildCacheKey(request: RoutingRequest): CacheKey {
     serializeNumber(request.destination.lng),
   ];
 
-  if (request.departureTime) {
-    parts.push(`dep:${request.departureTime}`);
-  }
-  if (request.arrivalTime) {
-    parts.push(`arr:${request.arrivalTime}`);
-  }
-  if (request.timezone) {
-    parts.push(`tz:${request.timezone}`);
-  }
+  // Deliberately omit departureTime, arrivalTime, and timezone from cache key.
+  // Walking/cycling routes are time-invariant. Transit duration estimates from
+  // NAVITIME don't meaningfully change between e.g. 9:00 and 11:30 on the same day.
+  // Including time fields caused ~50% of calls to miss cache for identical routes.
 
   return parts.join("|");
 }
