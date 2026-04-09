@@ -135,7 +135,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     const cities = tripCities?.join("-") ?? "trip";
     const date = tripStartDate ?? new Date().toISOString().split("T")[0];
     a.href = url;
-    a.download = `koku-trip-${cities}-${date}.csv`;
+    a.download = `yuku-trip-${cities}-${date}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

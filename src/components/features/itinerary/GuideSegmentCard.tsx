@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import type { GuideContentType, GuideSegment } from "@/types/itineraryGuide";
 
-const DISMISSED_GUIDE_KEY = "koku-dismissed-guide-segments";
+const DISMISSED_GUIDE_KEY = "yuku-dismissed-guide-segments";
 
 function getDismissedSegments(): Set<string> {
   try {

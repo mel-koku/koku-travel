@@ -7,7 +7,7 @@ import { useState, type ReactNode } from "react";
 /** Emits a custom event when a 401 response is detected so SharedProviders can show a toast */
 function emit401() {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("koku:session-expired"));
+    window.dispatchEvent(new CustomEvent("yuku:session-expired"));
   }
 }
 

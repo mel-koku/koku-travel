@@ -24,7 +24,7 @@ type ArticleFloatingCTAProps = {
   bottomCtaRef: RefObject<HTMLDivElement | null>;
 };
 
-const CONTENT_CONTEXT_KEY = "koku:content-context";
+const CONTENT_CONTEXT_KEY = "yuku:content-context";
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 const MAX_PILL_AVATARS = 4;

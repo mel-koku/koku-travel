@@ -91,8 +91,8 @@ export function useTripBuilderNavigation({
         setCurrentStep(5);
       }
     };
-    window.addEventListener("koku:trip-plan-from-chat", handleChatPlan);
-    return () => window.removeEventListener("koku:trip-plan-from-chat", handleChatPlan);
+    window.addEventListener("yuku:trip-plan-from-chat", handleChatPlan);
+    return () => window.removeEventListener("yuku:trip-plan-from-chat", handleChatPlan);
   }, [setData]);
 
   // Track completed steps

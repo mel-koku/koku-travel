@@ -200,7 +200,7 @@ export function TripBuilderProvider({ initialData, userPreferences, children }: 
     setLocal(TRIP_BUILDER_STORAGE_KEY, next);
     if (typeof window !== "undefined") {
       try {
-        window.localStorage.removeItem("koku_trip_step");
+        window.localStorage.removeItem("yuku_trip_step");
       } catch {
         // Ignore storage errors to avoid interrupting reset.
       }
@@ -210,8 +210,8 @@ export function TripBuilderProvider({ initialData, userPreferences, children }: 
   // Reset in-memory state when AppState clears all local data
   useEffect(() => {
     const handleClear = () => reset();
-    window.addEventListener("koku:local-data-cleared", handleClear);
-    return () => window.removeEventListener("koku:local-data-cleared", handleClear);
+    window.addEventListener("yuku:local-data-cleared", handleClear);
+    return () => window.removeEventListener("yuku:local-data-cleared", handleClear);
   }, [reset]);
 
   const setDataNormalized = useCallback(

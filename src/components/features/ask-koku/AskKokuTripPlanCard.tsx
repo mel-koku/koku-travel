@@ -94,7 +94,7 @@ export function AskKokuTripPlanCard({ data, onClose }: AskKokuTripPlanCardProps)
     if (pathname === "/trip-builder") {
       // Already on trip builder — dispatch event for in-page update
       window.dispatchEvent(
-        new CustomEvent("koku:trip-plan-from-chat", { detail: tripData }),
+        new CustomEvent("yuku:trip-plan-from-chat", { detail: tripData }),
       );
     } else {
       // Navigate to trip builder at Review step

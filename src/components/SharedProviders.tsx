@@ -18,8 +18,8 @@ function SessionExpiredListener() {
         duration: 8000,
       });
     };
-    window.addEventListener("koku:session-expired", handler);
-    return () => window.removeEventListener("koku:session-expired", handler);
+    window.addEventListener("yuku:session-expired", handler);
+    return () => window.removeEventListener("yuku:session-expired", handler);
   }, [showToast]);
 
   return null;

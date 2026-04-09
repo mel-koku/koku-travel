@@ -781,7 +781,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(TRIP_STEP_STORAGE_KEY);
       localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
       // Notify other contexts (e.g. TripBuilderContext) that local data was wiped
-      window.dispatchEvent(new CustomEvent("koku:local-data-cleared"));
+      window.dispatchEvent(new CustomEvent("yuku:local-data-cleared"));
     }
   }, []);
 

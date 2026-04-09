@@ -151,7 +151,7 @@ export const ItineraryShell = ({
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
   const [cultureTabSeen, setCultureTabSeen] = useState(() => {
     if (typeof window === "undefined") return true;
-    return localStorage.getItem("koku-culture-tab-seen") === "true";
+    return localStorage.getItem("yuku-culture-tab-seen") === "true";
   });
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -205,7 +205,7 @@ export const ItineraryShell = ({
   useEffect(() => {
     if (viewMode === "culture" && !cultureTabSeen) {
       setCultureTabSeen(true);
-      localStorage.setItem("koku-culture-tab-seen", "true");
+      localStorage.setItem("yuku-culture-tab-seen", "true");
     }
   }, [viewMode, cultureTabSeen]);
 

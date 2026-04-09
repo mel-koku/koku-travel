@@ -21,7 +21,7 @@ type PackingChecklistCardProps = {
   interests?: string[];
 };
 
-const STORAGE_KEY = "koku-packing-checked";
+const STORAGE_KEY = "yuku-packing-checked";
 
 function loadChecked(): Set<string> {
   if (typeof window === "undefined") return new Set();

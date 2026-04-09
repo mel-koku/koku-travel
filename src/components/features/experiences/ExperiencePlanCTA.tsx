@@ -11,7 +11,7 @@ type ExperiencePlanCTAProps = {
   region?: string;
 };
 
-const CONTENT_CONTEXT_KEY = "koku:content-context";
+const CONTENT_CONTEXT_KEY = "yuku:content-context";
 
 export function ExperiencePlanCTA({
   experienceSlug,

@@ -52,7 +52,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       // Read transient content context from guide/experience CTA bridge
       let contentContext: TripBuilderData["contentContext"];
       try {
-        const raw = localStorage.getItem("koku:content-context");
+        const raw = localStorage.getItem("yuku:content-context");
         if (raw) {
           contentContext = JSON.parse(raw);
         }
@@ -123,7 +123,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       }
 
       // Clear transient content context after successful trip creation
-      localStorage.removeItem("koku:content-context");
+      localStorage.removeItem("yuku:content-context");
 
       reset();
       setSuccessData({ tripName, tripId });

@@ -5,7 +5,7 @@ import type { ItineraryDay } from "@/types/itinerary";
 import { useDayTipsCore } from "@/hooks/useDayTipsCore";
 import { PillarTag } from "./before-you-land/PillarTag";
 
-const DISMISSED_TIPS_KEY = "koku-dismissed-tips";
+const DISMISSED_TIPS_KEY = "yuku-dismissed-tips";
 
 function getDismissedTips(): Set<string> {
   try {
