@@ -103,7 +103,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     const modelMessages = await convertToModelMessages(recentMessages as any);
 
     const result = streamText({
-      model: vertex("gemini-2.5-flash-preview-04-17"),
+      model: vertex("gemini-2.5-flash"),
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,
