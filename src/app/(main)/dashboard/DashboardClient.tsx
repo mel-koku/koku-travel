@@ -273,7 +273,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         eyebrow={content?.dashboardEyebrow ?? "Home base"}
         title={displayName}
         subtitle={content?.dashboardSubtitle ?? "Your trips, saved places, and plans in progress."}
-        imageUrl="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"
+        imageUrl={content?.dashboardHeroImage?.url ?? "/images/fallback.jpg"}
       />
 
       {/* Guest sign-in prompt */}
@@ -408,7 +408,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                 <div className="relative overflow-hidden rounded-lg">
                   <div className="absolute inset-0">
                     <Image
-                      src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80"
+                      src={content?.dashboardLockImage?.url ?? "/images/fallback.jpg"}
                       alt=""
                       fill
                       className="object-cover opacity-20"
