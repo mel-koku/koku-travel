@@ -14,6 +14,7 @@ import { generateObject } from "ai";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { buildGuideProseSchema } from "./llmSchemas";
 import { getSeason } from "@/lib/utils/seasonUtils";
 import type { Itinerary } from "@/types/itinerary";
@@ -159,8 +160,24 @@ Write like a concierge who already knows this traveler, not a guidebook selling 
 
 Return JSON with tripOverview and days array (one entry per day with exact dayId).`;
 
+  // Budget scales with trip length. Gemini's response size grows roughly
+  // linearly with day count (intro + transitions + culturalMoment +
+  // practicalTip + summary per day, plus tripOverview and
+  // culturalBriefingIntro). Guide prose is the biggest LLM pass by response
+  // size and the one most likely to hit its cap on long trips.
+  //
+  // Budget math (13-day trip, after parallelizing getCulturalPillars):
+  //   upstream ~4s
+  //   + parallel block max = max(planItinerary 3s, guideProse 35s, briefings 23s, pillars 3s) = 35s
+  //   + refineDays 8s
+  //   = 47s, leaving 8s of headroom under the 55s route timer for
+  //     Vertex's ~5s AbortController slippage on long responses.
+  const guideProseTimeoutMs = Math.min(
+    35_000,
+    18_000 + Math.max(0, days.length - 5) * 2_000,
+  );
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 18000);
+  const timeout = setTimeout(() => controller.abort(), guideProseTimeoutMs);
 
   try {
     const result = await generateObject({
@@ -197,7 +214,9 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
           providerOptions: VERTEX_GENERATE_OPTIONS,
           schema,
           prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
-          abortSignal: AbortSignal.timeout(12_000),
+          // Retry gets 2/3 of the primary budget — same day-count scaling,
+          // capped lower so the retry can never blow past the primary timer.
+          abortSignal: AbortSignal.timeout(Math.round(guideProseTimeoutMs * 2 / 3)),
         });
         const retryGuide = retryResult.object as GeneratedGuide;
         const retryLeaks = scanForDenyListViolations(retryGuide);
@@ -208,8 +227,11 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
           logger.warn("Guide prose retry still has violations, accepting", { retryLeaks });
           guide = retryGuide;
         }
-      } catch {
-        logger.warn("Guide prose retry failed, using first attempt");
+      } catch (retryError) {
+        logger.warn("Guide prose retry failed, using first attempt", {
+          error: getErrorMessage(retryError),
+          ...extractApiErrorDetails(retryError),
+        });
       }
     }
 
@@ -223,6 +245,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
     clearTimeout(timeout);
     logger.warn("Guide prose generation failed, will fall back to day intros/templates", {
       error: getErrorMessage(error),
+      ...extractApiErrorDetails(error),
     });
     return null;
   }

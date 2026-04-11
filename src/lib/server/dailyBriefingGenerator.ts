@@ -12,6 +12,7 @@ import { generateObject } from "ai";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { buildDailyBriefingSchema } from "./llmSchemas";
 import { getFestivalsForDay } from "@/data/festivalCalendar";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -131,13 +132,22 @@ export async function generateDailyBriefings(
   const dayIds = itinerary.days.map((d) => d.id);
   if (dayIds.length === 0) return null;
 
+  // Budget scales with trip length — the 15s base was sized for 3-7 day
+  // trips and was hitting the cap on a 13-day trip (incident
+  // req_1775916704399_jeo2x94nkx). Capped at 25s to stay under the parallel
+  // block budget.
+  const briefingsTimeoutMs = Math.min(
+    25_000,
+    15_000 + Math.max(0, dayIds.length - 5) * 1_000,
+  );
+
   try {
     const { object } = await generateObject({
       model: vertex("gemini-2.5-flash"),
       providerOptions: VERTEX_GENERATE_OPTIONS,
       schema: buildDailyBriefingSchema(dayIds),
       prompt: buildBriefingPrompt(itinerary, builderData),
-      abortSignal: AbortSignal.timeout(15_000),
+      abortSignal: AbortSignal.timeout(briefingsTimeoutMs),
     });
 
     // Validate all day IDs present
@@ -163,6 +173,7 @@ export async function generateDailyBriefings(
       "Daily briefings generation failed, falling back to rule-based tips",
       {
         error: getErrorMessage(error),
+        ...extractApiErrorDetails(error),
       },
     );
     return null;
