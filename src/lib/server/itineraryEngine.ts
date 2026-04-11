@@ -11,7 +11,6 @@ import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
-import { generateDayIntros } from "./dayIntroGenerator";
 import { extractTripIntent } from "./intentExtractor";
 import { generateGuideProse } from "./guideProseGenerator";
 import { refineDays } from "./dayRefinement";
@@ -38,6 +37,13 @@ export function convertItineraryToTrip(
 ): Trip {
   const travelerProfile = builderData.travelerProfile ?? buildTravelerProfile(builderData);
 
+  // Missing start date used to silently fall back to today via the `??`
+  // chain, which masked frontend bugs. Log a warn so it's visible in prod.
+  if (!builderData.dates.start) {
+    logger.warn("[engine] convertItineraryToTrip called without dates.start — falling back to today", {
+      tripId,
+    });
+  }
   const startDate = builderData.dates.start ?? new Date().toISOString().split("T")[0] ?? "";
   const duration = builderData.duration ?? itinerary.days.length;
 
@@ -58,7 +64,13 @@ export function convertItineraryToTrip(
   const endDateObj = new Date(sy, sm - 1, sd + duration - 1);
   const endDate = `${endDateObj.getFullYear()}-${String(endDateObj.getMonth() + 1).padStart(2, "0")}-${String(endDateObj.getDate()).padStart(2, "0")}`;
 
-  // Build a Map for O(1) location lookups by name (instead of O(n×m) using .find())
+  // O(1) lookup maps. id is unique; name is NOT — the ~5,874-row DB has
+  // duplicate names across cities, so name-keyed lookups previously picked
+  // the last-seen location and could link a Kyoto activity to an Osaka
+  // location.id. Prefer id; fall back to name only when the activity has no
+  // locationId. The Map still keeps last-wins on name collision, but that
+  // path is now only exercised for free-form activities without an id.
+  const locationById = new Map(allLocations.map((loc) => [loc.id, loc]));
   const locationByName = new Map(allLocations.map((loc) => [loc.name, loc]));
 
   const days: TripDay[] = itinerary.days.map((day, index) => {
@@ -72,7 +84,9 @@ export function convertItineraryToTrip(
     const activities: TripActivity[] = day.activities
       .filter((activity): activity is Extract<ItineraryActivity, { kind: "place" }> => activity.kind === "place")
       .map((activity) => {
-        const location = locationByName.get(activity.title);
+        const location =
+          (activity.locationId ? locationById.get(activity.locationId) : undefined) ??
+          locationByName.get(activity.title);
         return {
           id: activity.id,
           locationId: activity.locationId ?? location?.id ?? `unknown-${activity.id}`,
@@ -192,6 +206,42 @@ export type GeneratedTripResult = {
 };
 
 /**
+ * Supabase calls in this pipeline (fetchAllLocations, fetchCommunityRatings)
+ * have no native timeout. A degraded database would otherwise hang the entire
+ * pipeline past the 55s route timeout. These wrappers enforce an upper bound
+ * at the call site: the downstream promise keeps running (no true
+ * cancellation), but the pipeline moves on.
+ */
+const LOCATIONS_FETCH_TIMEOUT_MS = 20_000;
+const COMMUNITY_RATINGS_TIMEOUT_MS = 8_000;
+
+/** @internal Exported for testing */
+export class PipelineTimeoutError extends Error {
+  constructor(stage: string, timeoutMs: number) {
+    super(`[engine] ${stage} exceeded ${timeoutMs}ms timeout`);
+    this.name = "PipelineTimeoutError";
+  }
+}
+
+/** @internal Exported for testing */
+export function raceWithTimeout<T>(
+  stage: string,
+  promise: Promise<T>,
+  timeoutMs: number,
+): Promise<T> {
+  const sentinel = Symbol("timeout");
+  return Promise.race<T | typeof sentinel>([
+    promise,
+    new Promise<typeof sentinel>((resolve) => setTimeout(() => resolve(sentinel), timeoutMs)),
+  ]).then((result) => {
+    if (result === sentinel) {
+      throw new PipelineTimeoutError(stage, timeoutMs);
+    }
+    return result as T;
+  });
+}
+
+/**
  * Generates an itinerary from TripBuilderData
  * Returns both a Trip domain model and the raw Itinerary for storage
  *
@@ -206,9 +256,35 @@ export async function generateTripFromBuilderData(
 ): Promise<GeneratedTripResult> {
   const t0 = Date.now();
 
+  // Per-stage timing: lets us see which pass is blowing the 55s budget.
+  // Every significant async step is wrapped so we can log a full breakdown
+  // at the end, plus a per-stage-completed line so a hang reveals the culprit.
+  const stageTimings: Record<string, number> = {};
+  const timeStage = async <T>(name: string, p: Promise<T>): Promise<T> => {
+    const start = Date.now();
+    try {
+      const result = await p;
+      const elapsed = Date.now() - start;
+      stageTimings[name] = elapsed;
+      logger.info(`[engine:stage] ${name}`, { elapsedMs: elapsed });
+      return result;
+    } catch (err) {
+      const elapsed = Date.now() - start;
+      stageTimings[name] = elapsed;
+      logger.warn(`[engine:stage-fail] ${name}`, {
+        elapsedMs: elapsed,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
+  };
+
   // Run intent extraction in parallel with location fetching — zero added latency.
   // Intent extraction uses Gemini to reason about vibes, notes, group, pace holistically.
-  const intentPromise = extractTripIntent(builderData).catch(() => null);
+  const intentPromise = timeStage(
+    "intentExtraction",
+    extractTripIntent(builderData).catch(() => null),
+  );
 
   // Compute day trip cities upfront (synchronous) for 1-2 city trips
   const dayTripCityIds = new Set<string>();
@@ -219,21 +295,51 @@ export async function generateTripFromBuilderData(
     builderData.cities.forEach((c) => dayTripCityIds.delete(c));
   }
 
-  // Fire main + day-trip location fetches in parallel
+  // Fire main + day-trip location fetches in parallel. Both are bounded by
+  // LOCATIONS_FETCH_TIMEOUT_MS so a degraded Supabase cannot hang the pipeline.
+  // On timeout, we throw — the pipeline cannot usefully continue without locations.
   const [mainLocations, dayTripLocations] = await Promise.all([
-    fetchAllLocations({ cities: builderData.cities }),
+    timeStage(
+      "fetchMainLocations",
+      raceWithTimeout(
+        "fetchMainLocations",
+        fetchAllLocations({ cities: builderData.cities }),
+        LOCATIONS_FETCH_TIMEOUT_MS,
+      ),
+    ),
     dayTripCityIds.size > 0
-      ? fetchAllLocations({ cities: Array.from(dayTripCityIds) })
+      ? timeStage(
+          "fetchDayTripLocations",
+          raceWithTimeout(
+            "fetchDayTripLocations",
+            fetchAllLocations({ cities: Array.from(dayTripCityIds) }),
+            LOCATIONS_FETCH_TIMEOUT_MS,
+          ),
+        )
       : Promise.resolve([]),
   ]);
   const allLocations = dayTripLocations.length > 0
     ? [...mainLocations, ...dayTripLocations]
     : mainLocations;
 
-  // Await intent extraction + community ratings in parallel
+  // Await intent extraction + community ratings in parallel. Ratings are
+  // non-fatal — on timeout or error, fall back to an empty Map so scoring
+  // simply uses base ratings.
   const [intentResult, communityRatingsMap] = await Promise.all([
     intentPromise,
-    fetchCommunityRatings(allLocations.map((l) => l.id)),
+    timeStage(
+      "fetchCommunityRatings",
+      raceWithTimeout(
+        "fetchCommunityRatings",
+        fetchCommunityRatings(allLocations.map((l) => l.id)),
+        COMMUNITY_RATINGS_TIMEOUT_MS,
+      ).catch((err) => {
+        logger.warn("[engine] fetchCommunityRatings failed, using empty ratings", {
+          error: err instanceof Error ? err.message : String(err),
+        });
+        return new Map();
+      }),
+    ),
   ]);
   const t1 = Date.now();
   const communityRatings = communityRatingsMap.size > 0
@@ -242,12 +348,15 @@ export async function generateTripFromBuilderData(
 
   // Generate itinerary using existing generator, including saved locations
   // Pass pre-fetched locations to avoid duplicate Supabase call inside generator
-  const rawItinerary = await generateItinerary(builderData, {
-    savedIds,
-    locations: allLocations,
-    communityRatings,
-    intentConstraints: intentResult ?? undefined,
-  });
+  const rawItinerary = await timeStage(
+    "generateItinerary",
+    generateItinerary(builderData, {
+      savedIds,
+      locations: allLocations,
+      communityRatings,
+      intentConstraints: intentResult ?? undefined,
+    }),
+  );
   const t2 = Date.now();
 
   // Optimize route order before planning times
@@ -462,24 +571,42 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Run planItinerary (routing), guide prose, and daily briefings in parallel.
-  // Guide prose replaces both day intros and template-based guide text.
-  // Daily briefings replace per-day tip cards with concise prose.
-  // Both fall back gracefully on failure.
-  const [plannedItinerary, guideProse, dailyBriefings] = await Promise.all([
-    planItinerary(optimizedItinerary, {
-      defaultDayStart: builderData.dayStartTime ?? "09:00",
-      defaultDayEnd: builderData.accommodationStyle === "ryokan" ? "17:00" : undefined,
-    }, dayEntryPoints),
-    generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
-    generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
+  // Run planItinerary (routing), guide prose, daily briefings, and
+  // getCulturalPillars in parallel. Guide prose replaces both day intros and
+  // template-based guide text. Daily briefings replace per-day tip cards with
+  // concise prose. getCulturalPillars is a Sanity fetch that was previously
+  // sequential after the parallel block — it has no data dependency on the
+  // LLM output (the assembly step uses `guideProse?.culturalBriefingIntro`
+  // with optional chaining), so running it in parallel reclaims ~3s off the
+  // sequential budget. All four fall back gracefully on failure.
+  const [plannedItinerary, guideProse, dailyBriefings, pillars] = await Promise.all([
+    timeStage(
+      "planItinerary",
+      planItinerary(optimizedItinerary, {
+        defaultDayStart: builderData.dayStartTime ?? "09:00",
+        defaultDayEnd: builderData.accommodationStyle === "ryokan" ? "17:00" : undefined,
+      }, dayEntryPoints),
+    ),
+    timeStage(
+      "generateGuideProse",
+      generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
+    ),
+    timeStage(
+      "generateDailyBriefings",
+      generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
+    ),
+    timeStage(
+      "getCulturalPillars",
+      getCulturalPillars().catch(() => null),
+    ),
   ]);
 
-  // Assemble cultural briefing from Sanity pillars + trip categories
+  // Assemble cultural briefing from Sanity pillars + trip categories.
+  // Pillars are already fetched in the parallel block above, so this is a
+  // pure synchronous transform — no I/O.
   let culturalBriefing: CulturalBriefing | undefined;
-  try {
-    const pillars = await getCulturalPillars();
-    if (pillars && pillars.length > 0) {
+  if (pillars && pillars.length > 0) {
+    try {
       const locationMap = new Map(allLocations.map((l) => [l.id, l]));
       const tripCategories = [
         ...new Set(
@@ -496,20 +623,28 @@ export async function generateTripFromBuilderData(
         tripCategories,
         guideProse?.culturalBriefingIntro,
       );
+    } catch {
+      // Non-blocking: briefing is optional enhancement
     }
-  } catch {
-    // Non-blocking: briefing is optional enhancement
   }
 
-  // Extract day intros from guide prose, or fall back to standalone Gemini call
+  // Extract day intros from guide prose when present. When guideProse is
+  // null (aborted or rejected), do NOT fall through to generateDayIntros —
+  // that path runs another full Vertex call against the same slow provider
+  // that just failed, with no effective timeout, and it compounded the wait
+  // up to 55s on a 13-day trip (see incident req_1775916704399_jeo2x94nkx).
+  // Downstream guideBuilder already has a three-tier fallback:
+  //   guideProse.intro → dayIntros → DAY_INTRO_TEMPLATES
+  // so undefined here just drops to the template layer.
   const dayIntros = guideProse
     ? Object.fromEntries(guideProse.days.map(d => [d.dayId, d.intro]))
-    : await generateDayIntros(optimizedItinerary, builderData).catch(() => null);
+    : undefined;
 
   // Day refinement: holistic quality pass — can swap, reorder, or flag activities.
   // Runs sequentially after planning since it needs scheduled times.
-  const itinerary = await refineDays(
-    plannedItinerary, builderData, allLocations, intentResult ?? undefined,
+  const itinerary = await timeStage(
+    "refineDays",
+    refineDays(plannedItinerary, builderData, allLocations, intentResult ?? undefined),
   );
   const t3 = Date.now();
 
@@ -524,6 +659,7 @@ export async function generateTripFromBuilderData(
     hasIntentConstraints: !!intentResult,
     hasGuideProse: !!guideProse,
     hasDailyBriefings: !!dailyBriefings,
+    stages: stageTimings,
   });
 
   // Attach seasonal highlight if trip dates overlap a known event
