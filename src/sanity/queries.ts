@@ -161,6 +161,10 @@ export const landingPageQuery = groq`
       },
       alt
     },
+    "testimonialBackgroundImage": testimonialBackgroundImage {
+      ...,
+      "url": asset->url
+    },
     featuredGuidesEyebrow,
     featuredGuidesHeading,
     featuredGuidesDescription,
@@ -459,6 +463,14 @@ export const pagesContentQuery = groq`
     dashboardAccountHeading,
     dashboardDeleteToastTitle,
     dashboardUndoButton,
+    "dashboardHeroImage": dashboardHeroImage {
+      ...,
+      "url": asset->url
+    },
+    "dashboardLockImage": dashboardLockImage {
+      ...,
+      "url": asset->url
+    },
     accountEyebrow,
     accountTitle,
     accountSubtitle,
@@ -486,6 +498,10 @@ export const pagesContentQuery = groq`
     notFoundPrimaryCtaText,
     notFoundSecondaryCtaText,
     "notFoundBackgroundImage": notFoundBackgroundImage {
+      ...,
+      "url": asset->url
+    },
+    "comingSoonExpertsImage": comingSoonExpertsImage {
       ...,
       "url": asset->url
     },
