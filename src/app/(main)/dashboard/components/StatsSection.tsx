@@ -9,16 +9,14 @@ import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { parallaxSection } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type StatsSectionProps = {
   savedCount: number;
   guideBookmarksCount: number;
   tripsCount: number;
   isAuthenticated?: boolean;
-  content?: {
-    dashboardActivityEyebrow?: string;
-    dashboardActivityHeading?: string;
-  };
+  content?: PagesContent;
 };
 
 export function StatsSection({
@@ -53,7 +51,7 @@ export function StatsSection({
         style={prefersReducedMotion ? {} : { scale: imageScale }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80"
+          src={content?.dashboardHeroImage?.url ?? "/images/fallback.jpg"}
           alt="Traditional Japanese street at dusk"
           fill
           className="object-cover"
