@@ -16,4 +16,24 @@ if [ -n "$STAGED" ]; then
   exit 1
 fi
 
+# Block accidental reintroduction of Unsplash URLs.
+# Spec: docs/superpowers/specs/2026-04-11-unsplash-removal-design.md
+# fill-photo-gaps.js and enrich-all-locations.js intentionally contain
+# unsplash detection regex — skip them along with docs and memory.
+UNSPLASH_STAGED=$(git diff --cached --name-only --diff-filter=AM \
+  | grep -vE '^(docs/|memory/|\.husky/|\.github/workflows/|scripts/(fill-photo-gaps\.js|enrich-all-locations\.js|clean-unsplash-urls\.ts)$)' \
+  | while IFS= read -r f; do
+      [ -f "$f" ] && grep -l "images\.unsplash\.com" "$f" 2>/dev/null
+    done)
+if [ -n "$UNSPLASH_STAGED" ]; then
+  echo ""
+  echo "  Unsplash URLs found in staged files:"
+  printf '    %s\n' $UNSPLASH_STAGED
+  echo ""
+  echo "  This app no longer uses Unsplash. See:"
+  echo "    docs/superpowers/specs/2026-04-11-unsplash-removal-design.md"
+  echo ""
+  exit 1
+fi
+
 npx lint-staged
