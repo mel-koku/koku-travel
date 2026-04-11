@@ -189,6 +189,16 @@ export const landingPage = defineType({
       validation: (rule) => rule.length(3),
     }),
 
+    defineField({
+      name: "testimonialBackgroundImage",
+      title: "Testimonial / Feature Showcase Background",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "testimonials",
+      description:
+        "Background image behind the 'Every day, routed and timed' feature showcase on the landing page. Used when no real testimonials are configured.",
+    }),
+
     // ── Featured Locations ───────────────────────
     defineField({
       name: "featuredLocationsEyebrow",
