@@ -15,6 +15,7 @@ import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 
 /** Valid DB categories — constrains Gemini to only return real values */
 const VALID_CATEGORIES = [
@@ -241,6 +242,7 @@ First, determine the **commandType**:
     logger.warn("Place intent extraction failed, falling back to text search", {
       error: getErrorMessage(error),
       query,
+      ...extractApiErrorDetails(error),
     });
     return null;
   }

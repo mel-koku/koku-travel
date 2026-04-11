@@ -11,6 +11,7 @@ import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
 
 export const maxDuration = 60;
@@ -147,31 +148,3 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     return internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId });
   }
 }, { rateLimit: RATE_LIMITS.CHAT, dailyQuota: DAILY_QUOTAS.CHAT, optionalAuth: true });
-
-/**
- * Pulls diagnostic fields off Vercel AI SDK's APICallError without importing
- * the class (duck-typed to avoid a hard dep).
- */
-function extractApiErrorDetails(error: unknown): Record<string, unknown> {
-  if (!error || typeof error !== "object") return {};
-  const e = error as Record<string, unknown>;
-  const details: Record<string, unknown> = {};
-  if (typeof e.name === "string") details.errorName = e.name;
-  if (typeof e.statusCode === "number") details.statusCode = e.statusCode;
-  if (typeof e.url === "string") {
-    // Strip query string to avoid logging auth params.
-    details.url = e.url.split("?")[0];
-  }
-  if (typeof e.responseBody === "string") {
-    details.responseBody = e.responseBody.slice(0, 500);
-  }
-  if (e.data && typeof e.data === "object") {
-    const data = e.data as { error?: { code?: unknown; status?: unknown; message?: unknown } };
-    if (data.error) {
-      details.apiErrorCode = data.error.code;
-      details.apiErrorStatus = data.error.status;
-      details.apiErrorMessage = data.error.message;
-    }
-  }
-  return details;
-}

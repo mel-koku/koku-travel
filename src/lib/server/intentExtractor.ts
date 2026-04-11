@@ -14,6 +14,7 @@ import { generateObject } from "ai";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { intentExtractionSchema } from "./llmSchemas";
 import { generateCacheKey, getRedisClient } from "@/lib/cache/itineraryCache";
 import { requiresLLMExtraction, extractIntentFromRules } from "./ruleBasedIntent";
@@ -195,6 +196,7 @@ Important:
     clearTimeout(timeout);
     logger.warn("Intent extraction failed, proceeding without constraints", {
       error: getErrorMessage(error),
+      ...extractApiErrorDetails(error),
     });
     return null;
   }

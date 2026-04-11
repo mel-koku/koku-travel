@@ -14,6 +14,7 @@ import { generateObject } from "ai";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { dayRefinementSchema } from "./llmSchemas";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -181,6 +182,7 @@ ${runnerUpContext}
     clearTimeout(timeout);
     logger.warn("Day refinement failed, using original itinerary", {
       error: getErrorMessage(error),
+      ...extractApiErrorDetails(error),
     });
     return itinerary;
   }
