@@ -354,8 +354,16 @@ describe("planItinerary — expanded", () => {
 
   describe("return-to-hotel routing", () => {
     it("adds travel segment from last activity to end point", async () => {
-      mockRequestRoute.mockResolvedValue(buildRoute("walk", 600, 500)); // short walk
-
+      // Return-to-hotel uses a synchronous haversine heuristic, not the
+      // routing API (see `TRANSIT_DISTANCE_THRESHOLD_KM` branch in
+      // itineraryPlanner.ts ~L800 — intentional, per CLAUDE.md "Return-to-hotel
+      // segments use heuristic (informational only)"). So mocking requestRoute
+      // here has no effect on the return leg — its mode is derived directly
+      // from distance between coordinates.
+      //
+      // Temple is at (34.9948, 135.785); hotel endpoint below is ~245m away,
+      // which is well under TRANSIT_DISTANCE_THRESHOLD_KM (1km), so the
+      // heuristic picks "walk".
       const itinerary = createItinerary([
         {
           kind: "place",
@@ -370,7 +378,7 @@ describe("planItinerary — expanded", () => {
       const dayEntryPoints = {
         "day-1": {
           startPoint: { coordinates: { lat: 35.01, lng: 135.77 } },
-          endPoint: { coordinates: { lat: 35.0, lng: 135.76 } },
+          endPoint: { coordinates: { lat: 34.997, lng: 135.785 } },
         },
       };
 
