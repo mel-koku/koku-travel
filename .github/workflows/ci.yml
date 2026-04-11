@@ -25,6 +25,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Block Unsplash URLs
+        run: |
+          # Spec: docs/superpowers/specs/2026-04-11-unsplash-removal-design.md
+          MATCHES=$(grep -rln "images\.unsplash\.com" src next.config.ts 2>/dev/null || true)
+          if [ -n "$MATCHES" ]; then
+            echo "::error::Unsplash URLs found. See docs/superpowers/specs/2026-04-11-unsplash-removal-design.md"
+            echo "$MATCHES"
+            exit 1
+          fi
+
       - name: Validate required secrets
         if: github.actor != 'dependabot[bot]'
         run: |
