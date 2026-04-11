@@ -25,8 +25,7 @@ type HeroOpeningProps = {
   content?: LandingPageContent;
 };
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80";
+const FALLBACK_IMAGE = "/images/fallback.jpg";
 const FALLBACK_ALT = "Quiet alley in Japan at dusk";
 
 export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
