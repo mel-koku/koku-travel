@@ -21,8 +21,6 @@ function reportWebVital(metric: Metric): void {
       id: metric.id,
     });
 
-  // In production, send to analytics service
-  // Example: Google Analytics 4
   if (typeof window !== "undefined" && "gtag" in window && typeof (window as { gtag?: unknown }).gtag === "function") {
     const gtag = (window as { gtag: (event: string, name: string, options: Record<string, unknown>) => void }).gtag;
     gtag("event", metric.name, {
@@ -32,17 +30,6 @@ function reportWebVital(metric: Metric): void {
       non_interaction: true,
     });
   }
-
-  // Example: Send to custom analytics endpoint
-  // if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
-  //   fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(metric),
-  //   }).catch(() => {
-  //     // Silently fail if analytics endpoint is unavailable
-  //   });
-  // }
 }
 
 /**

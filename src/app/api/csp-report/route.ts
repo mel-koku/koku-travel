@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 
 /**
  * CSP violation report endpoint.
@@ -49,9 +50,22 @@ function shouldIgnore(report: CspReport): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: 60,
+    windowMs: 60_000,
+    keySuffix: "csp-report",
+  });
+  if (rateLimitResponse) {
+    return new NextResponse(null, { status: 204 });
+  }
+
   let report: CspReport | null = null;
   try {
-    const body = (await request.json()) as { "csp-report"?: CspReport } | CspReport;
+    const raw = await request.text();
+    if (!raw) {
+      return new NextResponse(null, { status: 204 });
+    }
+    const body = JSON.parse(raw) as { "csp-report"?: CspReport } | CspReport;
     report = (body as { "csp-report"?: CspReport })["csp-report"] ?? (body as CspReport);
   } catch {
     return new NextResponse(null, { status: 204 });
