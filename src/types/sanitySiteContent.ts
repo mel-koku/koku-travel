@@ -32,6 +32,9 @@ export type LandingPageContent = {
     alt: string;
   }>;
 
+  // Testimonial / Feature showcase background
+  testimonialBackgroundImage?: SanityImageAsset & { url?: string };
+
   // Featured Locations section header
   featuredLocationsEyebrow?: string;
   featuredLocationsHeading?: string;
@@ -228,6 +231,8 @@ export type PagesContent = {
   dashboardAccountHeading?: string;
   dashboardDeleteToastTitle?: string;
   dashboardUndoButton?: string;
+  dashboardHeroImage?: SanityImageAsset & { url?: string };
+  dashboardLockImage?: SanityImageAsset & { url?: string };
 
   // Account
   accountEyebrow?: string;
@@ -258,6 +263,9 @@ export type PagesContent = {
   notFoundPrimaryCtaText?: string;
   notFoundSecondaryCtaText?: string;
   notFoundBackgroundImage?: SanityImageAsset & { url?: string };
+
+  // Coming Soon (shared)
+  comingSoonExpertsImage?: SanityImageAsset & { url?: string };
 
   // Itinerary
   itineraryLoadingText?: string;
