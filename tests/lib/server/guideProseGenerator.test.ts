@@ -3,9 +3,6 @@ import {
   initLLMMocks,
   setupLLMEnv,
   teardownLLMEnv,
-  mockGenerateObjectSuccess,
-  mockGenerateObjectFailure,
-  mockGenerateObjectTimeout,
 } from "../../fixtures/llmMocks";
 import {
   createTestItinerary,
@@ -13,7 +10,6 @@ import {
   createTestPlaceActivity,
   createTestBuilderData,
 } from "../../fixtures/itinerary";
-import type { GeneratedGuide } from "@/types/llmConstraints";
 
 // Mock server-only, AI SDK, and season utils
 vi.mock("server-only", () => ({}));
@@ -31,6 +27,7 @@ vi.mock("@/lib/utils/seasonUtils", () => ({
 }));
 
 // Import after mocks
+import { generateObject } from "ai";
 const { generateGuideProse } = await import(
   "@/lib/server/guideProseGenerator"
 );
@@ -63,26 +60,6 @@ const day2 = createTestItineraryDay({
 
 const itinerary = createTestItinerary({ days: [day1, day2] });
 
-const validGuide: GeneratedGuide = {
-  tripOverview: "A two-day journey through Kyoto's temples and markets.",
-  days: [
-    {
-      dayId: "day-1",
-      intro: "Higashiyama wakes slowly.",
-      transitions: ["The path narrows past the pottery shops."],
-      culturalMoment: "Kiyomizu means 'pure water'.",
-      practicalTip: "Get an IC card at the station.",
-      summary: "A day of worn stone and good noodles.",
-    },
-    {
-      dayId: "day-2",
-      intro: "The foxes guard the mountain.",
-      transitions: [],
-      summary: "Quiet trails above the city.",
-    },
-  ],
-};
-
 describe("generateGuideProse", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -112,67 +89,89 @@ describe("generateGuideProse", () => {
       expect(result).toBeNull();
     });
 
-    it("returns null on Gemini error", async () => {
+    it("returns an empty shell (NOT null) on total Gemini error", async () => {
+      // New drain behavior: total LLM failure returns empty shell so partial
+      // success (e.g., header succeeds but all days fail) can still be preserved.
       setupLLMEnv();
-      mockGenerateObjectFailure();
-      const result = await generateGuideProse(
-        itinerary,
-        createTestBuilderData(),
-      );
-      expect(result).toBeNull();
-    });
-
-    it("returns null on timeout", async () => {
-      setupLLMEnv();
-      mockGenerateObjectTimeout();
-      vi.useFakeTimers();
-      const promise = generateGuideProse(itinerary, createTestBuilderData());
-      vi.advanceTimersByTime(19000);
-      const result = await promise;
-      expect(result).toBeNull();
-      vi.useRealTimers();
-    });
-  });
-
-  describe("validation", () => {
-    it("returns null when returned day IDs are incomplete", async () => {
-      setupLLMEnv();
-      mockGenerateObjectSuccess({
-        tripOverview: "Overview",
-        days: [
-          {
-            dayId: "day-1",
-            intro: "Intro",
-            transitions: [],
-            summary: "Summary",
-          },
-          // Missing day-2
-        ],
-      });
-      const result = await generateGuideProse(
-        itinerary,
-        createTestBuilderData(),
-      );
-      expect(result).toBeNull();
-    });
-
-    it("returns guide when all day IDs match", async () => {
-      setupLLMEnv();
-      mockGenerateObjectSuccess(validGuide);
+      vi.mocked(generateObject).mockRejectedValue(new Error("Gemini API error"));
       const result = await generateGuideProse(
         itinerary,
         createTestBuilderData(),
       );
       expect(result).not.toBeNull();
-      expect(result?.tripOverview).toBe(validGuide.tripOverview);
-      expect(result?.days).toHaveLength(2);
+      expect(result?.tripOverview).toBeUndefined();
+      expect(result?.days).toEqual([]);
+    });
+
+    it("returns an empty shell (NOT null) on timeout", async () => {
+      // New drain behavior: deadline expiry returns a shell with whatever
+      // partial results arrived before the deadline fired.
+      setupLLMEnv();
+      vi.mocked(generateObject).mockImplementation(
+        ({ abortSignal }: { abortSignal?: AbortSignal }) =>
+          new Promise((_resolve, reject) => {
+            if (abortSignal) {
+              abortSignal.addEventListener("abort", () =>
+                reject(new DOMException("The operation was aborted.", "AbortError")),
+              );
+            }
+          }),
+      );
+      vi.useFakeTimers();
+      const promise = generateGuideProse(itinerary, createTestBuilderData());
+      await vi.advanceTimersByTimeAsync(20_000);
+      const result = await promise;
+      expect(result).not.toBeNull();
+      expect(result?.days).toEqual([]);
+      vi.useRealTimers();
+    });
+  });
+
+  describe("partial success", () => {
+    it("returns a shell with available days when some day calls fail", async () => {
+      setupLLMEnv();
+      // Header succeeds, day-1 succeeds, day-2 fails
+      vi.mocked(generateObject)
+        .mockResolvedValueOnce({ object: { tripOverview: "Two days in Kyoto." } } as never)
+        .mockResolvedValueOnce({
+          object: { intro: "Higashiyama wakes slowly.", transitions: [], summary: "A quiet start." },
+        } as never)
+        .mockRejectedValueOnce(new Error("day-2 error"));
+
+      const result = await generateGuideProse(itinerary, createTestBuilderData());
+
+      expect(result).not.toBeNull();
+      expect(result?.tripOverview).toBe("Two days in Kyoto.");
+      expect(result?.days).toHaveLength(1);
+      expect(result?.days[0]?.dayId).toBe("day-1");
     });
   });
 
   describe("success", () => {
     it("returns GeneratedGuide with tripOverview and per-day guides", async () => {
       setupLLMEnv();
-      mockGenerateObjectSuccess(validGuide);
+      // The new drain makes N+1 separate calls: 1 header + N day calls.
+      vi.mocked(generateObject)
+        .mockResolvedValueOnce({
+          object: { tripOverview: "A two-day journey through Kyoto's temples and markets." },
+        } as never)
+        .mockResolvedValueOnce({
+          object: {
+            intro: "Higashiyama wakes slowly.",
+            transitions: ["The path narrows past the pottery shops."],
+            culturalMoment: "Kiyomizu means 'pure water'.",
+            practicalTip: "Get an IC card at the station.",
+            summary: "A day of worn stone and good noodles.",
+          },
+        } as never)
+        .mockResolvedValueOnce({
+          object: {
+            intro: "The foxes guard the mountain.",
+            transitions: [],
+            summary: "Quiet trails above the city.",
+          },
+        } as never);
+
       const result = await generateGuideProse(
         itinerary,
         createTestBuilderData(),
@@ -182,6 +181,22 @@ describe("generateGuideProse", () => {
       expect(result?.days[0]?.intro).toBeTruthy();
       expect(result?.days[0]?.summary).toBeTruthy();
       expect(result?.days[1]?.dayId).toBe("day-2");
+    });
+
+    it("returns guide sorted by day order regardless of call settlement order", async () => {
+      setupLLMEnv();
+      vi.mocked(generateObject)
+        .mockResolvedValueOnce({ object: { tripOverview: "H" } } as never)
+        .mockResolvedValueOnce({
+          object: { intro: "Day 1", transitions: [], summary: "S1" },
+        } as never)
+        .mockResolvedValueOnce({
+          object: { intro: "Day 2", transitions: [], summary: "S2" },
+        } as never);
+
+      const result = await generateGuideProse(itinerary, createTestBuilderData());
+
+      expect(result?.days.map((d) => d.dayId)).toEqual(["day-1", "day-2"]);
     });
   });
 });

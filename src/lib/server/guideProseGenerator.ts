@@ -16,7 +16,6 @@ import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
-import { buildGuideProseSchema } from "./llmSchemas";
 import { getSeason } from "@/lib/utils/seasonUtils";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -76,6 +75,10 @@ export type BatchOutcome =
  * iteration. Orphaned in-flight promises keep running in the background --
  * the caller's consumer loop moves on without them.
  *
+ * Single-consumer only: calling [Symbol.asyncIterator]() more than once on
+ * the returned iterable produces two consumers sharing the same internal
+ * queue; behavior is undefined.
+ *
  * @internal Exported for testing. Private to guideProseGenerator conceptually.
  */
 export function settleInOrder<T>(
@@ -96,7 +99,6 @@ export function settleInOrder<T>(
   // Wire up each input promise to push into the queue as it settles.
   for (let index = 0; index < promises.length; index++) {
     const i = index;
-     
     promises[i]!.then(
       (value) => {
         queue.push({ status: "fulfilled", value, index: i });
@@ -184,7 +186,7 @@ export function computeCategoryMix(
 
   const counts = new Map<string, number>();
   for (const activity of activities) {
-    const cat = activity.category ?? "other";
+    const cat = activity.category || "other";
     counts.set(cat, (counts.get(cat) ?? 0) + 1);
   }
 
@@ -413,6 +415,12 @@ export function buildDaySchema() {
  * the caller can tag the outcome. This prevents duplicate log noise after
  * the batch summary has already reported the deadline count.
  *
+ * Note: The "Retry" in the name refers to a per-call deny-list retry that
+ * was deferred to avoid coupling retry logic to scanForDenyListViolations
+ * during the batch iterator build-out. The retry currently lives in
+ * generateGuideProse's old monolithic path only; a follow-up task will
+ * move it here once the drain layer is validated in production.
+ *
  * @internal Exported for testing. Also called by runGuideProseBatch.
  */
 export async function callVertexWithRetry<T>(
@@ -484,10 +492,16 @@ export async function* runGuideProseBatch(
   const days = itinerary.days ?? [];
   if (days.length === 0) return;
 
-  // Global batch AbortController. When the deadline fires, this aborts
-  // every in-flight call's combined signal (per-call timeout is still
-  // separate, and the catch in callVertexWithRetry discriminates between
-  // the two via signal.aborted state).
+  // Dual-deadline design: both this setTimeout and settleInOrder's internal
+  // deadline use GLOBAL_DEADLINE_MS. They are complementary, not redundant:
+  //
+  // - This outer timer aborts the batchController signal, which propagates
+  //   into each in-flight Vertex call via AbortSignal.any and closes the HTTP
+  //   connection promptly (resource hygiene -- stops bandwidth spend).
+  // - settleInOrder's internal timer is a termination guarantee: if abort
+  //   propagation stalls or the underlying library is non-compliant, the
+  //   async generator still yields deadline outcomes and terminates rather
+  //   than hanging. Belt and suspenders by design.
   const batchController = new AbortController();
   const deadlineTimer = setTimeout(
     () => batchController.abort(new Error("batch-deadline")),
@@ -517,6 +531,7 @@ export async function* runGuideProseBatch(
         (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
           a.kind === "place",
       );
+      // Project ItineraryActivity.tags into the { category?: string } shape that computeCategoryMix accepts.
       const categoryMix = computeCategoryMix(
         placeActivities.map((a) => ({
           category: a.tags?.[1] ?? a.tags?.[0],
@@ -527,8 +542,8 @@ export async function* runGuideProseBatch(
         day,
         dayIndex,
         days.length,
-        prevCityId ?? null,
-        nextCityId ?? null,
+        prevCityId,
+        nextCityId,
         categoryMix,
         builderData,
         intentResult,
@@ -572,6 +587,9 @@ export async function* runGuideProseBatch(
         } else {
           const dayIndex = settled.index - 1;
           const day = days[dayIndex];
+          // TypeScript requires the guard for `T | undefined` on array access,
+          // but the else path is logically unreachable: settleInOrder only
+          // yields indices within the bounds of the input array it was given.
           if (day) {
             yield { kind: "day-deadline", dayId: day.id, dayIndex };
           }
@@ -586,28 +604,20 @@ export async function* runGuideProseBatch(
 }
 
 /**
- * Builds a compact itinerary summary for the prompt.
- */
-function buildItinerarySummary(itinerary: Itinerary): string {
-  return itinerary.days
-    .map((day, i) => {
-      const city = day.cityId ?? "unknown";
-      const activities = (day.activities ?? [])
-        .filter((a) => a.kind === "place")
-        .map((a) => {
-          const category = a.tags?.[1] ?? a.tags?.[0] ?? "activity";
-          const neighborhood = a.neighborhood ?? "";
-          return `${a.title} (${category}${neighborhood ? `, ${neighborhood}` : ""})`;
-        });
-      return `Day ${i + 1} [${day.id}] — ${city}: ${activities.join(", ") || "free day"}`;
-    })
-    .join("\n");
-}
-
-/**
- * Generates personalized guide prose for an entire trip.
+ * Generates personalized guide prose for an entire trip via per-day parallel
+ * Vertex calls. Returns a GeneratedGuide containing the assembled header
+ * fields and per-day prose.
  *
- * Returns a GeneratedGuide or null on failure.
+ * Returns `null` ONLY on precondition failure (missing env var, zero days).
+ * Under partial or total call failure, returns a GeneratedGuide shell that
+ * may have `tripOverview` undefined and/or an empty `days` array -- the
+ * downstream guideBuilder handles this via its three-tier fallback.
+ *
+ * Public contract is unchanged from the old monolithic implementation except
+ * for this one detail: the old code returned `null` on total LLM failure;
+ * the new code returns an empty shell. The downstream consumer behavior is
+ * identical (templates render via the fallback), but the shell form allows
+ * partial-success preservation (e.g., header succeeds but all days fail).
  */
 export async function generateGuideProse(
   itinerary: Itinerary,
@@ -621,198 +631,94 @@ export async function generateGuideProse(
   const days = itinerary.days ?? [];
   if (days.length === 0) return null;
 
-  const season = getSeason(builderData.dates?.start);
-  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
-  const pace = builderData.style ?? "balanced";
-  const group = builderData.group?.type ?? "solo traveler";
-  const groupSize = builderData.group?.size ?? 1;
-  const childrenAges = builderData.group?.childrenAges?.join(", ") ?? "none";
-  const isFirstTime = builderData.isFirstTimeVisitor ? "yes" : "not mentioned";
-  const dietary = builderData.accessibility?.dietary?.join(", ") ?? "none";
-  const itinerarySummary = buildItinerarySummary(itinerary);
-  const insights = intentResult?.additionalInsights?.join("; ") ?? "";
+  // Shell with tripOverview genuinely absent until set by a successful
+  // header call. The type change in types/llmConstraints.ts makes
+  // tripOverview optional so this initialization compiles cleanly.
+  const shell: GeneratedGuide = { days: [] };
 
-  const dayIds = days.map((d) => d.id);
-  const schema = buildGuideProseSchema(dayIds);
+  let daysSuccess = 0;
+  let daysFailed = 0;
+  let daysDeadline = 0;
+  let headerStatus: "success" | "failed" | "deadline" = "failed";
 
-  const prompt = `You are a sharp UX writer for a Japan travel app. Say less. Talk to the person. Cut filler. Warm but never gushing. Concrete over clever. Every word earns its place.
+  const startTime = Date.now();
 
-You're writing the full narrative guide for a ${days.length}-day Japan trip.
+  // Collect { dayIndex, day } pairs so we can sort by original index after
+  // draining, without mutating the GeneratedDayGuide type.
+  const dayEntries: Array<{ dayIndex: number; day: typeof shell.days[number] }> = [];
 
-## Traveler Context
-- Season: ${season}
-- Group: ${group} (${groupSize} people${childrenAges !== "none" ? `, children: ${childrenAges}` : ""})
-- Pace: ${pace}
-- Vibes: ${vibes}
-- First time in Japan: ${isFirstTime}
-- Dietary: ${dietary}
-${insights ? `- Insights from notes: ${insights}` : ""}
-
-## Itinerary
-${itinerarySummary}
-
-## Day IDs (use these exactly)
-${dayIds.map((id, i) => `Day ${i + 1}: "${id}"`).join("\n")}
-
-## What to write
-
-### tripOverview (2-3 sentences)
-The arc of the whole trip. Name 1-2 cities. Set expectations without listing activities. Think back-cover copy.
-
-### culturalBriefingIntro (2-3 sentences, max 250 chars, optional)
-A cultural briefing intro that contextualizes this traveler's specific itinerary to Japanese cultural expectations. Reference the types of places they'll visit (temples, onsen, markets, residential neighborhoods) and set the tone that understanding these customs will transform their experience. Do not list rules. Do not use deny-list words.
-
-### Per day (use exact dayId values from above):
-
-**intro** (1-2 sentences, max 180 chars)
-Capture the FEEL of the day — neighborhood vibe, sensory detail, mood shift. Not the schedule.
-- One place name to anchor it. Two max. Weave in, never list.
-- NEVER enumerate activities or use "then" constructions
-- Banned: "Settle into / Ease into / Kick off with / Start your day"
-- Banned: listing activities with "and" or "then"
-- Consequences, not mechanics: "The temples are quieter this early" not "visit temples in the morning"
-- Vary openings across days. No two should start the same way.
-- First day can nod to arrival. Last day can nod to leaving.
-
-**transitions** (array of strings, 1 sentence each)
-Connecting tissue between consecutive activities. Reference the physical/sensory shift — what changes as you walk from one place to the next. Spatial, not procedural.
-- Max ${Math.min(3, days[0]?.activities.length ?? 3)} per day
-- Never start with "Next" or "Then" or "Head to"
-- Reference neighborhoods, sounds, smells, light changes
-
-**culturalMoment** (optional, 2-3 sentences)
-Context before a shrine, temple, onsen, or market. History, etiquette, or meaning — not a Wikipedia summary.
-- Only include if the day has a cultural site
-- Specific to the actual place, not generic
-
-**practicalTip** (optional, 1-2 sentences)
-Actionable advice for the day. IC cards, coin lockers, etiquette, timing.
-- Skip if nothing specific applies
-- Day 1 tips can cover arrival basics
-
-**summary** (1 sentence)
-Reflective close. What the day felt like, not what happened.
-- No exclamation marks
-- No "what a day!" or "unforgettable"
-
-## Topics to AVOID in practicalTip
-These are handled by our tips system. Do not duplicate them:
-- IC card / Suica / transit card setup or usage
-- Cash withdrawal, ATM locations, or payment warnings
-- Last train timing or schedule
-- Luggage forwarding (takkyubin) logistics
-- Rush hour avoidance
-- Shoe removal at temples/shrines
-- Temizuya (purification basin) instructions
-- Weather warnings (heat, rain, cold, umbrella)
-- General etiquette (bowing, queuing, quiet on trains)
-
-Focus practicalTip on: route-specific navigation, neighborhood logistics, timing strategies unique to this day's activity sequence, or reservation/ticket tips for specific venues.
-
-## Style rules
-- No emoji. No exclamation marks.
-- Say less. Trust the reader.
-
-### Deny-list (never use these words or phrases)
-amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic filler), hidden gem, delve, explore (as verb of enthusiasm), discover, wander, immerse, soak in, must-see, can't-miss, authentic (when vague), tucked away, off the beaten path, gem, treasure, embark, venture, hub, feast for the senses, treat yourself, don't miss, experience of a lifetime, bucket list, absolutely, truly, really (as intensifier), get ready, you'll love.
-
-### Positive direction
-Use words that evoke texture, light, and logistics. Mention physical details: the smell of old wood, the steepness of a cobbled street, the specific transit exit to use. Ground every sentence in something the traveler can see, hear, or do.
-
-### Voice
-Write like a concierge who already knows this traveler, not a guidebook selling a destination. If they've placed a shrine on their itinerary, don't tell them it's beautiful. Tell them to arrive before 6:30 AM.
-
-Return JSON with tripOverview and days array (one entry per day with exact dayId).`;
-
-  // Budget scales with trip length. Gemini's response size grows roughly
-  // linearly with day count (intro + transitions + culturalMoment +
-  // practicalTip + summary per day, plus tripOverview and
-  // culturalBriefingIntro). Guide prose is the biggest LLM pass by response
-  // size and the one most likely to hit its cap on long trips.
-  //
-  // Budget math (13-day trip, after parallelizing getCulturalPillars):
-  //   upstream ~4s
-  //   + parallel block max = max(planItinerary 3s, guideProse 35s, briefings 23s, pillars 3s) = 35s
-  //   + refineDays 8s
-  //   = 47s, leaving 8s of headroom under the 55s route timer for
-  //     Vertex's ~5s AbortController slippage on long responses.
-  const guideProseTimeoutMs = Math.min(
-    35_000,
-    18_000 + Math.max(0, days.length - 5) * 2_000,
-  );
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), guideProseTimeoutMs);
-
-  try {
-    const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
-      schema,
-      prompt,
-      abortSignal: controller.signal,
-    });
-
-    clearTimeout(timeout);
-
-    let guide = result.object as GeneratedGuide;
-
-    // Validate day IDs match
-    const returnedIds = new Set(guide.days.map((d) => d.dayId));
-    const missingDays = dayIds.filter((id) => !returnedIds.has(id));
-    if (missingDays.length > 0) {
-      logger.warn("Guide prose missing days, falling back", {
-        missingDays,
-        returnedCount: guide.days.length,
-        expectedCount: dayIds.length,
-      });
-      return null;
-    }
-
-    // Scan for deny-listed words that leaked through
-    const leaks = scanForDenyListViolations(guide);
-    if (leaks.length > 0) {
-      logger.warn("Guide prose deny-list violations, retrying", { leaks });
-      try {
-        const retryResult = await generateObject({
-          model: vertex("gemini-2.5-flash"),
-          providerOptions: VERTEX_GENERATE_OPTIONS,
-          schema,
-          prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
-          // Retry gets 2/3 of the primary budget — same day-count scaling,
-          // capped lower so the retry can never blow past the primary timer.
-          abortSignal: AbortSignal.timeout(Math.round(guideProseTimeoutMs * 2 / 3)),
-        });
-        const retryGuide = retryResult.object as GeneratedGuide;
-        const retryLeaks = scanForDenyListViolations(retryGuide);
-        if (retryLeaks.length === 0) {
-          logger.info("Guide prose retry succeeded, deny-list clean");
-          guide = retryGuide;
-        } else {
-          logger.warn("Guide prose retry still has violations, accepting", { retryLeaks });
-          guide = retryGuide;
+  for await (const outcome of runGuideProseBatch(itinerary, builderData, intentResult)) {
+    switch (outcome.kind) {
+      case "header":
+        shell.tripOverview = outcome.result.tripOverview;
+        if (outcome.result.culturalBriefingIntro !== undefined) {
+          shell.culturalBriefingIntro = outcome.result.culturalBriefingIntro;
         }
-      } catch (retryError) {
-        logger.warn("Guide prose retry failed, using first attempt", {
-          error: getErrorMessage(retryError),
-          ...extractApiErrorDetails(retryError),
+        headerStatus = "success";
+        break;
+      case "header-failed":
+        logger.warn("Guide prose header call failed", {
+          error: getErrorMessage(outcome.error),
+          ...extractApiErrorDetails(outcome.error),
         });
-      }
+        headerStatus = "failed";
+        break;
+      case "header-deadline":
+        headerStatus = "deadline";
+        break;
+      case "day":
+        dayEntries.push({
+          dayIndex: outcome.dayIndex,
+          day: {
+            dayId: outcome.dayId,
+            intro: outcome.result.intro,
+            transitions: outcome.result.transitions,
+            ...(outcome.result.culturalMoment !== undefined && {
+              culturalMoment: outcome.result.culturalMoment,
+            }),
+            ...(outcome.result.practicalTip !== undefined && {
+              practicalTip: outcome.result.practicalTip,
+            }),
+            summary: outcome.result.summary,
+          },
+        });
+        daysSuccess++;
+        break;
+      case "day-failed":
+        logger.warn("Guide prose day call failed", {
+          dayId: outcome.dayId,
+          dayIndex: outcome.dayIndex,
+          error: getErrorMessage(outcome.error),
+          ...extractApiErrorDetails(outcome.error),
+        });
+        daysFailed++;
+        break;
+      case "day-deadline":
+        daysDeadline++;
+        break;
     }
-
-    logger.info("Generated guide prose", {
-      dayCount: guide.days.length,
-      overviewLength: guide.tripOverview.length,
-    });
-
-    return guide;
-  } catch (error) {
-    clearTimeout(timeout);
-    logger.warn("Guide prose generation failed, will fall back to day intros/templates", {
-      error: getErrorMessage(error),
-      ...extractApiErrorDetails(error),
-    });
-    return null;
   }
+
+  // Sort by original dayIndex (completion order is non-deterministic) and
+  // extract the day objects into the shell.
+  dayEntries.sort((a, b) => a.dayIndex - b.dayIndex);
+  shell.days = dayEntries.map((e) => e.day);
+
+  const elapsedMs = Date.now() - startTime;
+  const totalDays = days.length;
+  const deadlineFired = daysDeadline > 0 || headerStatus === "deadline";
+
+  logger.info("Guide prose batch complete", {
+    headerStatus,
+    daysSuccess,
+    daysFailed,
+    daysDeadline,
+    totalDays,
+    elapsedMs,
+    deadlineFired,
+  });
+
+  return shell;
 }
 
 // ---------------------------------------------------------------------------

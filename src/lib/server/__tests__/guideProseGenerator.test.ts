@@ -20,6 +20,7 @@ import {
   buildDaySchema,
   callVertexWithRetry,
   runGuideProseBatch,
+  generateGuideProse,
   type SettledOutcome,
   type BatchOutcome,
 } from "../guideProseGenerator";
@@ -193,8 +194,7 @@ describe("computeCategoryMix", () => {
       { category: "shrine" },
       { category: "shrine" },
     ]);
-    // Dominant is "shrine" (2) tied with culture-group, but the helper
-    // reports whichever wins the count; this test asserts presence.
+    // "shrine" has count 2, "temple" has count 1; helper reports the dominant category.
     expect(mix).toContain("shrine");
   });
 
@@ -445,6 +445,9 @@ describe("callVertexWithRetry", () => {
 
     // The key assertion: logger.warn was NOT called because the abort came
     // from the batch signal, not our own per-call timer.
+    // Note: this test verifies the logging suppression path but not the
+    // actual abort signal propagation to generateObject (which would require
+    // integration testing against a live Vertex endpoint).
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
@@ -602,5 +605,166 @@ describe("runGuideProseBatch", () => {
     const daysSuccess = outcomes.filter((o) => o.kind === "day");
     expect(headerFailed).toBeDefined();
     expect(daysSuccess).toHaveLength(2);
+  });
+});
+
+// ── generateGuideProse (public contract) ────────────────────────────────────
+
+describe("generateGuideProse (new drain)", () => {
+  const originalEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = "fake-creds-json";
+  });
+
+  afterEach(() => {
+    if (originalEnv === undefined) {
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    } else {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = originalEnv;
+    }
+  });
+
+  const baseItinerary = {
+    id: "it-1",
+    days: [
+      { id: "d1", cityId: "kyoto", activities: [] },
+      { id: "d2", cityId: "osaka", activities: [] },
+      { id: "d3", cityId: "hiroshima", activities: [] },
+    ],
+  } as never;
+
+  const baseBuilder = {
+    dates: { start: "2026-05-01" },
+    vibes: ["temples_tradition"],
+    style: "balanced" as const,
+    group: { type: "couple" as const, size: 2 },
+  } as never;
+
+  it("returns null when GOOGLE_APPLICATION_CREDENTIALS_JSON is unset", async () => {
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when itinerary.days is empty", async () => {
+    const emptyItinerary = { id: "it", days: [] } as never;
+    const result = await generateGuideProse(emptyItinerary, baseBuilder, undefined);
+    expect(result).toBeNull();
+  });
+
+  it("returns a full GeneratedGuide on happy path", async () => {
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { tripOverview: "Kyoto quiet, Osaka loud." },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D1", transitions: [], summary: "S1" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D2", transitions: [], summary: "S2" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D3", transitions: [], summary: "S3" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+
+    expect(result).not.toBeNull();
+    expect(result?.tripOverview).toBe("Kyoto quiet, Osaka loud.");
+    expect(result?.days).toHaveLength(3);
+  });
+
+  it("returns a shell with undefined tripOverview when header fails", async () => {
+    vi.mocked(generateObject)
+      .mockRejectedValueOnce(
+        Object.assign(new Error("boom"), { name: "AI_APICallError" }),
+      )
+      .mockResolvedValueOnce({
+        object: { intro: "D1", transitions: [], summary: "S1" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D2", transitions: [], summary: "S2" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D3", transitions: [], summary: "S3" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+
+    expect(result).not.toBeNull();
+    expect(result?.tripOverview).toBeUndefined();
+    expect(result?.days).toHaveLength(3);
+  });
+
+  it("returns a shell with one day missing when that day's call fails", async () => {
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { tripOverview: "Full header." },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D1", transitions: [], summary: "S1" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockRejectedValueOnce(
+        Object.assign(new Error("day 2 boom"), { name: "AI_APICallError" }),
+      )
+      .mockResolvedValueOnce({
+        object: { intro: "D3", transitions: [], summary: "S3" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+
+    expect(result).not.toBeNull();
+    expect(result?.tripOverview).toBe("Full header.");
+    expect(result?.days).toHaveLength(2);
+    expect(result?.days.some((d) => d.dayId === "d2")).toBe(false);
+    expect(result?.days.some((d) => d.dayId === "d1")).toBe(true);
+    expect(result?.days.some((d) => d.dayId === "d3")).toBe(true);
+  });
+
+  it("returns an empty shell (NOT null) when every call fails", async () => {
+    const err = Object.assign(new Error("boom"), { name: "AI_APICallError" });
+    vi.mocked(generateObject)
+      .mockRejectedValueOnce(err)
+      .mockRejectedValueOnce(err)
+      .mockRejectedValueOnce(err)
+      .mockRejectedValueOnce(err);
+
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+
+    expect(result).not.toBeNull();
+    expect(result?.tripOverview).toBeUndefined();
+    expect(result?.days).toEqual([]);
+  });
+
+  it("sorts days by dayIndex regardless of completion order", async () => {
+    // Mock day calls resolving in reverse order (slowest first, fastest last)
+    let callCount = 0;
+    vi.mocked(generateObject).mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return { object: { tripOverview: "H" } } as any;
+      }
+      const dayNum = callCount - 1;
+      const dayObj = { object: { intro: `D${dayNum}`, transitions: [], summary: `S${dayNum}` } };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return dayObj as any;
+    });
+
+    const result = await generateGuideProse(baseItinerary, baseBuilder, undefined);
+
+    expect(result?.days.map((d) => d.dayId)).toEqual(["d1", "d2", "d3"]);
   });
 });
