@@ -1,6 +1,9 @@
 # Claude Code project instructions (local only)
 CLAUDE.md
 
+# Internal app documentation (local only, not needed for deployment)
+about-yuku.md
+
 # Internal docs (local only)
 PITCH.md
 itinerary-generation-explained.md
