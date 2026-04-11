@@ -157,7 +157,7 @@ Important:
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.0-flash-001"),
+      model: vertex("gemini-2.5-flash", { thinkingConfig: { thinkingBudget: 0 } }),
       schema: intentExtractionSchema,
       prompt,
       abortSignal: controller.signal,

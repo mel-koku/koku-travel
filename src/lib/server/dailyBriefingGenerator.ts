@@ -133,7 +133,7 @@ export async function generateDailyBriefings(
 
   try {
     const { object } = await generateObject({
-      model: vertex("gemini-2.0-flash-001"),
+      model: vertex("gemini-2.5-flash", { thinkingConfig: { thinkingBudget: 0 } }),
       schema: buildDailyBriefingSchema(dayIds),
       prompt: buildBriefingPrompt(itinerary, builderData),
       abortSignal: AbortSignal.timeout(15_000),
