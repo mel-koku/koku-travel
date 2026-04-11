@@ -19,13 +19,15 @@ const FEATURES = [
   { title: "Shareable Link", description: "One link. Full itinerary. No account needed." },
 ];
 
-function FeatureShowcase() {
+function FeatureShowcase({ content }: { content?: LandingPageContent }) {
+  const imageSrc = content?.testimonialBackgroundImage?.url ?? "/images/fallback.jpg";
+
   return (
     <section aria-label="What your itinerary delivers" className="bg-background">
       {/* Hero moment */}
       <div className="relative flex min-h-[50vh] sm:min-h-[80vh] items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1554797589-7241bb691973?w=1920&q=80"
+          src={imageSrc}
           alt="Narrow Kyoto backstreet at night with warm lantern light"
           fill
           className="object-cover"
@@ -192,5 +194,5 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
     return <TestimonialSection testimonials={testimonials} />;
   }
 
-  return <FeatureShowcase />;
+  return <FeatureShowcase content={content} />;
 }
