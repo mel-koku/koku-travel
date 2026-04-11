@@ -164,7 +164,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
+      model: vertex("gemini-2.0-flash-001"),
       schema,
       prompt,
       abortSignal: controller.signal,
@@ -192,7 +192,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
       logger.warn("Guide prose deny-list violations, retrying", { leaks });
       try {
         const retryResult = await generateObject({
-          model: vertex("gemini-2.5-flash"),
+          model: vertex("gemini-2.0-flash-001"),
           schema,
           prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
           abortSignal: AbortSignal.timeout(12_000),
