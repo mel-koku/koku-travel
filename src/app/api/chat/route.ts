@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { vertex } from "@/lib/server/vertexProvider";
+import { vertex, VERTEX_CHAT_OPTIONS } from "@/lib/server/vertexProvider";
 import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
@@ -104,14 +104,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
 
     const result = streamText({
       model: vertex("gemini-2.5-flash"),
-      // streamFunctionCallArguments defaults to true on Vertex and our project
-      // rejects it with 400 INVALID_ARGUMENT. Must set false explicitly.
-      providerOptions: {
-        google: {
-          streamFunctionCallArguments: false,
-          thinkingConfig: { thinkingBudget: 512 },
-        },
-      },
+      providerOptions: VERTEX_CHAT_OPTIONS,
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,

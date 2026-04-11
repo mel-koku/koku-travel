@@ -54,3 +54,19 @@ export const VERTEX_GENERATE_OPTIONS = {
     streamFunctionCallArguments: false,
   },
 } as const;
+
+/**
+ * Shared providerOptions for the chat streaming path.
+ *
+ * Chat caps `thinkingBudget` at 512 because the chat UI is latency-sensitive:
+ * users watch tokens stream in real time. The unary generators above prefer
+ * dynamic budgets; chat prefers a predictable ceiling. Kept separate from
+ * VERTEX_GENERATE_OPTIONS so the `streamFunctionCallArguments: false` line
+ * can never drift between the two call shapes.
+ */
+export const VERTEX_CHAT_OPTIONS = {
+  google: {
+    streamFunctionCallArguments: false,
+    thinkingConfig: { thinkingBudget: 512 },
+  },
+} as const;

@@ -56,7 +56,7 @@ If either is missing, ask one concise follow-up — no more than 2 exchanges bef
 
 **Refinement**: When the user wants to change something ("add Nara", "make it 7 days"), call buildTripPlan again with the **full** updated set of params — not just the changed field.
 
-**After the tool returns**: Keep your summary brief — the trip plan card shows the details. If unknownCities were filtered out, mention them: "I couldn't include Hakone — it's not in our city list yet."
+**After the tool returns**: Keep your summary brief. The trip plan card shows the details.
 
 ## Spontaneous Discovery
 

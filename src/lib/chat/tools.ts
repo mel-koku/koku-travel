@@ -17,6 +17,11 @@ import { ALL_CITY_IDS, REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { VIBES, normalizeVibeId } from "@/data/vibes";
 import type { VibeId, TripStyle, KnownCityId } from "@/types/trip";
 
+// Zod enum wants a non-empty tuple literal; ALL_CITY_IDS is a runtime readonly
+// array. Cast preserves the full 54-city union at the tool-call boundary so the
+// LLM isn't silently restricted to a stale hand-picked subset.
+const CITY_ID_ENUM = ALL_CITY_IDS as unknown as readonly [KnownCityId, ...KnownCityId[]];
+
 export const chatTools = {
   searchLocations: tool({
     description:
@@ -362,27 +367,8 @@ export const chatTools = {
         .optional()
         .describe("Trip duration in days (1-14). Used if no exact dates given."),
       cities: z
-        .array(
-          z.enum([
-            "kyoto",
-            "osaka",
-            "nara",
-            "kobe",
-            "tokyo",
-            "yokohama",
-            "nagoya",
-            "kanazawa",
-            "fukuoka",
-            "nagasaki",
-            "sapporo",
-            "hakodate",
-            "sendai",
-            "hiroshima",
-            "matsuyama",
-            "takamatsu",
-            "naha",
-          ]),
-        )
+        .array(z.enum(CITY_ID_ENUM))
+        .min(1)
         .describe("Lowercase city IDs the user wants to visit."),
       vibes: z
         .array(
@@ -413,28 +399,7 @@ export const chatTools = {
         .describe("IATA airport code for arrival (e.g. NRT, KIX, HND)"),
     }),
     execute: async (params) => {
-      // Validate cities
-      const validCities: KnownCityId[] = [];
-      const unknownCities: string[] = [];
-      for (const city of params.cities) {
-        const cityLower = city.toLowerCase();
-        if ((ALL_CITY_IDS as readonly string[]).includes(cityLower)) {
-          validCities.push(cityLower as KnownCityId);
-        } else {
-          unknownCities.push(city);
-        }
-      }
-
-      if (validCities.length === 0) {
-        return {
-          type: "tripPlan" as const,
-          error: "None of the specified cities are available. Available cities: " +
-            REGIONS.flatMap((r) => r.cities.map((c) => c.name)).join(", "),
-          unknownCities,
-        };
-      }
-
-      // Derive regions from cities
+      const validCities: KnownCityId[] = params.cities;
       const regions = deriveRegionsFromCities(validCities);
 
       // Validate vibes
@@ -489,7 +454,6 @@ export const chatTools = {
           style: (params.style as TripStyle) || undefined,
           entryAirport: params.entryAirport,
         },
-        unknownCities,
         cityNames,
         vibeNames,
       };
