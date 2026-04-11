@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { mapboxService } from "@/lib/mapbox/mapService";
+import { env } from "@/lib/env";
 import { typography } from "@/lib/typography-system";
 
-const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
+const MAP_STYLE = env.mapboxStyleUrl;
 
 export function TripReviewMap({ tripId }: { tripId: string }) {
   const mapContainer = useRef<HTMLDivElement>(null);

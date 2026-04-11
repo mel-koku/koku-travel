@@ -3,13 +3,14 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
+import { env } from "@/lib/env";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 import { getCraftTypeColor } from "@/data/craftTypes";
 import { debounce } from "@/lib/utils";
 import { mapColors } from "@/lib/mapColors";
 import type { Location } from "@/types/location";
 
-const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
+const MAP_STYLE = env.mapboxStyleUrl;
 const DEFAULT_CENTER: [number, number] = [136.9, 35.7]; // Central Japan
 const DEFAULT_ZOOM = 5;
 

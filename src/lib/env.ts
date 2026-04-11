@@ -20,6 +20,7 @@ type EnvConfig = {
   ROUTING_PROVIDER?: string;
   ROUTING_MAPBOX_ACCESS_TOKEN?: string;
   NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?: string;
+  NEXT_PUBLIC_MAPBOX_STYLE_URL?: string;
 
   // Rate Limiting - Upstash Redis
   UPSTASH_REDIS_REST_URL?: string;
@@ -95,6 +96,7 @@ function createLenientConfig(): EnvConfig {
     ROUTING_PROVIDER: process.env.ROUTING_PROVIDER,
     ROUTING_MAPBOX_ACCESS_TOKEN: process.env.ROUTING_MAPBOX_ACCESS_TOKEN,
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+    NEXT_PUBLIC_MAPBOX_STYLE_URL: process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -161,6 +163,7 @@ function validateEnv(): EnvConfig {
     ROUTING_PROVIDER: getOptionalEnv("ROUTING_PROVIDER"),
     ROUTING_MAPBOX_ACCESS_TOKEN: getOptionalEnv("ROUTING_MAPBOX_ACCESS_TOKEN"),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+    NEXT_PUBLIC_MAPBOX_STYLE_URL: process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL,
     UPSTASH_REDIS_REST_URL: getOptionalEnv("UPSTASH_REDIS_REST_URL"),
     UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
     NEXT_PUBLIC_SITE_URL: getOptionalEnv("NEXT_PUBLIC_SITE_URL"),
@@ -208,6 +211,16 @@ export const env = {
   },
   get mapboxAccessToken() {
     return envConfig.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  },
+  /**
+   * Mapbox custom style URL. Overridable via NEXT_PUBLIC_MAPBOX_STYLE_URL
+   * so the account handle / style ID can be rotated without a code change.
+   */
+  get mapboxStyleUrl() {
+    return (
+      envConfig.NEXT_PUBLIC_MAPBOX_STYLE_URL ||
+      "mapbox://styles/yuku-mel/cmntt84uu000801srgni672hh"
+    );
   },
   get googlePlacesApiKey() {
     return envConfig.GOOGLE_PLACES_API_KEY;

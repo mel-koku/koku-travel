@@ -1,6 +1,6 @@
-## Koku Travel
+## Yuku Japan
 
-Koku Travel is a Next.js application that helps travelers discover curated guides, itineraries, and inspiration from local experts. The project uses Supabase for authentication and persistence.
+Yuku Japan is a Next.js application that helps travelers discover curated guides, itineraries, and inspiration from local experts. The project uses Supabase for authentication and persistence.
 
 ## Prerequisites
 

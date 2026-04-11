@@ -1,7 +1,7 @@
-# Gitleaks configuration for Koku Travel
+# Gitleaks configuration for Yuku Japan
 # https://github.com/gitleaks/gitleaks
 
-title = "Koku Travel Secret Detection"
+title = "Yuku Japan Secret Detection"
 
 [extend]
 # Use the default gitleaks rules as a base

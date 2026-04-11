@@ -4,13 +4,14 @@ import type { ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
+import { env } from "@/lib/env";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import type { Coordinates } from "@/data/locationCoordinates";
 import type { RoutingRequest, TravelMode } from "@/lib/routing/types";
 import { mapColors } from "@/lib/mapColors";
 
-const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
+const MAP_STYLE = env.mapboxStyleUrl;
 const DEFAULT_ZOOM = 12;
 const DEFAULT_CENTER: [number, number] = [135.7681, 35.0116];
 const ROUTE_LINE = mapColors.brandPrimary;

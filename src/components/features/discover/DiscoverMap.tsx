@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
+import { env } from "@/lib/env";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 import type { Location } from "@/types/location";
 import type { NearbyLocation } from "@/hooks/useLocationsQuery";
 
-const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
+const MAP_STYLE = env.mapboxStyleUrl;
 const DEFAULT_CENTER: [number, number] = [139.7671, 35.6812]; // Tokyo Station
 const DEFAULT_ZOOM = 14;
 

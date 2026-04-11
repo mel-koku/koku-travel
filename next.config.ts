@@ -226,8 +226,8 @@ export default withSentryConfig(configWithAnalyzer, {
   // For all available options, see:
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-  org: "koku-b5",
-  project: "koku-travel",
+  org: "yuku-japan",
+  project: "yuku-japan",
 
   // Only upload source maps in production
   silent: process.env.NODE_ENV !== "production",
