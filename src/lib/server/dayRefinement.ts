@@ -134,7 +134,7 @@ ${runnerUpContext}
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.0-flash-001"),
+      model: vertex("gemini-2.5-flash-preview-04-17"),
       schema: dayRefinementSchema,
       prompt,
       abortSignal: controller.signal,
