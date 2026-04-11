@@ -82,7 +82,7 @@ export function SignInClient({ content }: SignInClientProps) {
           style={prefersReducedMotion ? {} : { scale: imageScale }}
         >
           <Image
-            src={content?.signInBackgroundImage?.url ?? "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"}
+            src={content?.signInBackgroundImage?.url ?? "/images/fallback.jpg"}
             alt="Warm Japanese interior"
             fill
             className="object-cover"

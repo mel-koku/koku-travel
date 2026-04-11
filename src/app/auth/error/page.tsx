@@ -97,7 +97,7 @@ function AuthErrorContent() {
         style={prefersReducedMotion ? {} : { scale: imageScale }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80"
+          src="/images/fallback.jpg"
           alt="Quiet Japanese temple path"
           fill
           className="object-cover saturate-[0.7] brightness-[0.5]"
