@@ -15,10 +15,17 @@ Copy `.env.example` to `.env.local` and populate the values:
 cp .env.example .env.local
 ```
 
-Required keys:
+See `.env.example` for the complete list with descriptions. At minimum, the production build requires:
 
-- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` – Supabase project credentials.
-- `ROUTING_PROVIDER` / `ROUTING_MAPBOX_ACCESS_TOKEN` – Optional routing backend (set to `mapbox` with a valid token for precise travel times). Leave unset to fall back to heuristic estimates.
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` – Supabase project credentials (reads and auth).
+- `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` – Sanity CMS config. Required for sitemap generation and Sanity-backed content. If absent, `src/sanity/client.ts` falls back to placeholder values so imports do not throw, and Sanity queries return empty arrays (see `experienceService.ts` try/catch pattern).
+
+Optional but commonly set:
+
+- `ROUTING_PROVIDER` / `ROUTING_MAPBOX_ACCESS_TOKEN` / `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` – routing and client-side map rendering. Leave unset to fall back to heuristic estimates.
+- `NEXT_PUBLIC_MAPBOX_STYLE_URL` – override the default Mapbox style URL consumed by all map components via `env.mapboxStyleUrl` (`src/lib/env.ts`). Useful when rotating Mapbox accounts or swapping branded styles without a code change.
+- `SENTRY_AUTH_TOKEN` – build-time Organization Auth Token for uploading sourcemaps. Must be issued by the current Sentry org (the slug is baked into the token and cannot be overridden at runtime).
+- `GOOGLE_GENERATIVE_AI_API_KEY` – powers LLM-backed itinerary refinement passes.
 
 ## Itinerary Planner & Map Highlights
 
