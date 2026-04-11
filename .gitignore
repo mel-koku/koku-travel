@@ -186,6 +186,10 @@ enrichment-targets.json
 
 # Ad-hoc query scripts (contain service role references)
 query_*.js
+check-enrichment.mjs
+
+# Local working plans / scratch notes (not part of repo history)
+plans/
 
 # Seed/enrichment data (already imported into DB, not used at runtime)
 data/
