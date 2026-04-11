@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("server-only", () => ({}));
+vi.mock("ai", () => ({ generateObject: vi.fn() }));
+vi.mock("@/lib/server/vertexProvider", () => ({
+  vertex: vi.fn().mockReturnValue({}),
+  VERTEX_GENERATE_OPTIONS: { google: { streamFunctionCallArguments: false } },
+}));
+vi.mock("@/lib/logger", () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+}));
 
 import {
   scanForDenyListViolations,
@@ -10,8 +18,11 @@ import {
   buildDayPrompt,
   buildHeaderSchema,
   buildDaySchema,
+  callVertexWithRetry,
   type SettledOutcome,
 } from "../guideProseGenerator";
+import { generateObject } from "ai";
+import { logger } from "@/lib/logger";
 
 describe("scanForDenyListViolations", () => {
   const makeGuide = (overview: string) => ({
@@ -384,5 +395,85 @@ describe("buildDaySchema", () => {
       summary: "Z",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+// ── callVertexWithRetry ─────────────────────────────────────────────────────
+
+describe("callVertexWithRetry", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns the parsed object on happy path", async () => {
+    const mockObject = { tripOverview: "Kyoto quiet." };
+    vi.mocked(generateObject).mockResolvedValueOnce({
+      object: mockObject,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+
+    const result = await callVertexWithRetry(
+      "test prompt",
+      buildHeaderSchema(),
+      10_000,
+    );
+
+    expect(result).toEqual(mockObject);
+    expect(generateObject).toHaveBeenCalledOnce();
+  });
+
+  it("suppresses the log when batch signal aborts before per-call timer", async () => {
+    // Pre-aborted batch signal
+    const batchController = new AbortController();
+    batchController.abort(new Error("batch-deadline"));
+
+    // Mock generateObject to throw as if aborted
+    vi.mocked(generateObject).mockRejectedValueOnce(
+      Object.assign(new Error("aborted"), { name: "AbortError" }),
+    );
+
+    await expect(
+      callVertexWithRetry(
+        "test prompt",
+        buildHeaderSchema(),
+        10_000,
+        batchController.signal,
+      ),
+    ).rejects.toBeTruthy();
+
+    // The key assertion: logger.warn was NOT called because the abort came
+    // from the batch signal, not our own per-call timer.
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it("logs legitimate per-call timeouts (no batch signal)", async () => {
+    vi.mocked(generateObject).mockRejectedValueOnce(
+      Object.assign(new Error("timeout"), { name: "TimeoutError" }),
+    );
+
+    await expect(
+      callVertexWithRetry("test prompt", buildHeaderSchema(), 10_000),
+    ).rejects.toBeTruthy();
+
+    // No batch signal was passed, so this is a legitimate failure -- log it.
+    expect(logger.warn).toHaveBeenCalledOnce();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Guide prose call failed",
+      expect.objectContaining({ error: expect.any(String) }),
+    );
+  });
+
+  it("logs Vertex rejection (not abort)", async () => {
+    const apiError = Object.assign(new Error("INVALID_ARGUMENT"), {
+      name: "AI_APICallError",
+      statusCode: 400,
+    });
+    vi.mocked(generateObject).mockRejectedValueOnce(apiError);
+
+    await expect(
+      callVertexWithRetry("test prompt", buildHeaderSchema(), 10_000),
+    ).rejects.toBeTruthy();
+
+    expect(logger.warn).toHaveBeenCalledOnce();
   });
 });

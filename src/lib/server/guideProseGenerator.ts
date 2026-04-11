@@ -367,6 +367,55 @@ export function buildDaySchema() {
 }
 
 /**
+ * Makes one Vertex call via generateObject with an abort-controlled timeout.
+ * Single point of contact with Vertex -- shared by both the header path and
+ * per-day paths so call-level handling stays consistent.
+ *
+ * Orphan log suppression: if `batchSignal` is provided and it fires before
+ * the per-call timer, the resulting abort is treated as "orphaned by batch
+ * deadline" and the warn log is suppressed. The throw still propagates so
+ * the caller can tag the outcome. This prevents duplicate log noise after
+ * the batch summary has already reported the deadline count.
+ *
+ * @internal Exported for testing. Also called by runGuideProseBatch.
+ */
+export async function callVertexWithRetry<T>(
+  prompt: string,
+  schema: z.ZodType<T>,
+  timeoutMs: number,
+  batchSignal?: AbortSignal,
+): Promise<T> {
+  const perCallTimeout = AbortSignal.timeout(timeoutMs);
+  const combined = batchSignal
+    ? AbortSignal.any([perCallTimeout, batchSignal])
+    : perCallTimeout;
+
+  try {
+    const result = await generateObject({
+      model: vertex("gemini-2.5-flash"),
+      providerOptions: VERTEX_GENERATE_OPTIONS,
+      schema,
+      prompt,
+      abortSignal: combined,
+    });
+    return result.object as T;
+  } catch (err) {
+    // Orphaned by batch deadline -- the outcome is already captured by the
+    // batch summary log. Skip the per-call log but still throw so the caller
+    // tags the outcome correctly.
+    if (batchSignal?.aborted && !perCallTimeout.aborted) {
+      throw err;
+    }
+    // Legitimate per-call failure -- log with full diagnostic details.
+    logger.warn("Guide prose call failed", {
+      error: getErrorMessage(err),
+      ...extractApiErrorDetails(err),
+    });
+    throw err;
+  }
+}
+
+/**
  * Builds a compact itinerary summary for the prompt.
  */
 function buildItinerarySummary(itinerary: Itinerary): string {
