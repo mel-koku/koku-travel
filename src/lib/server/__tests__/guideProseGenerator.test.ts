@@ -2,7 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-import { scanForDenyListViolations, settleInOrder, type SettledOutcome } from "../guideProseGenerator";
+import {
+  scanForDenyListViolations,
+  settleInOrder,
+  computeCategoryMix,
+  buildHeaderPrompt,
+  buildDayPrompt,
+  type SettledOutcome,
+} from "../guideProseGenerator";
 
 describe("scanForDenyListViolations", () => {
   const makeGuide = (overview: string) => ({
@@ -155,5 +162,160 @@ describe("settleInOrder", () => {
     }
     expect(outcomes).toEqual([]);
     expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+// ── computeCategoryMix ──────────────────────────────────────────────────────
+
+describe("computeCategoryMix", () => {
+  it("returns 'no activities' on empty list", () => {
+    expect(computeCategoryMix([])).toBe("no activities");
+  });
+
+  it("names the dominant category for homogeneous days", () => {
+    const mix = computeCategoryMix([
+      { category: "temple" },
+      { category: "shrine" },
+      { category: "shrine" },
+    ]);
+    // Dominant is "shrine" (2) tied with culture-group, but the helper
+    // reports whichever wins the count; this test asserts presence.
+    expect(mix).toContain("shrine");
+  });
+
+  it("notes mixed categories with the top two", () => {
+    const mix = computeCategoryMix([
+      { category: "temple" },
+      { category: "restaurant" },
+      { category: "restaurant" },
+      { category: "market" },
+    ]);
+    expect(mix).toContain("restaurant");
+  });
+});
+
+// ── buildHeaderPrompt ───────────────────────────────────────────────────────
+
+describe("buildHeaderPrompt", () => {
+  const baseItinerary = {
+    id: "it-1",
+    days: [
+      { id: "d1", cityId: "kyoto", activities: [] },
+      { id: "d2", cityId: "osaka", activities: [] },
+      { id: "d3", cityId: "hiroshima", activities: [] },
+    ],
+  } as never;
+
+  const baseBuilder = {
+    dates: { start: "2026-05-01" },
+    vibes: ["temples_tradition"],
+    style: "balanced" as const,
+    group: { type: "couple" as const, size: 2 },
+    isFirstTimeVisitor: true,
+  } as never;
+
+  it("includes the trip length", () => {
+    const p = buildHeaderPrompt(baseItinerary, baseBuilder, undefined);
+    expect(p).toContain("3-day");
+  });
+
+  it("includes the city list", () => {
+    const p = buildHeaderPrompt(baseItinerary, baseBuilder, undefined);
+    expect(p).toContain("kyoto");
+    expect(p).toContain("osaka");
+    expect(p).toContain("hiroshima");
+  });
+
+  it("includes the group type and size", () => {
+    const p = buildHeaderPrompt(baseItinerary, baseBuilder, undefined);
+    expect(p).toContain("couple");
+    expect(p).toContain("2");
+  });
+
+  it("includes the first-time-visitor flag when set", () => {
+    const p = buildHeaderPrompt(baseItinerary, baseBuilder, undefined);
+    expect(p.toLowerCase()).toContain("first");
+  });
+
+  it("requests tripOverview and culturalBriefingIntro", () => {
+    const p = buildHeaderPrompt(baseItinerary, baseBuilder, undefined);
+    expect(p).toContain("tripOverview");
+    expect(p).toContain("culturalBriefingIntro");
+  });
+});
+
+// ── buildDayPrompt ──────────────────────────────────────────────────────────
+
+describe("buildDayPrompt", () => {
+  const baseDay = {
+    id: "d5",
+    cityId: "osaka",
+    activities: [
+      { kind: "place", id: "a1", title: "Osaka Castle", tags: ["culture", "landmark"], timeOfDay: "morning" },
+      { kind: "place", id: "a2", title: "Kuromon Market", tags: ["food", "market"], timeOfDay: "afternoon" },
+      { kind: "place", id: "a3", title: "Dotonbori", tags: ["entertainment"], timeOfDay: "evening" },
+    ],
+  } as never;
+
+  const baseBuilder = {
+    dates: { start: "2026-05-01" },
+    vibes: ["foodie_paradise"],
+    style: "balanced" as const,
+    group: { type: "couple" as const, size: 2 },
+  } as never;
+
+  it("includes the day number and total", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("Day 5 of 13");
+  });
+
+  it("includes the city name", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("osaka");
+  });
+
+  it("includes previous-day framing for middle days", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("Yesterday: kyoto");
+    expect(p).toContain("Tomorrow: hiroshima");
+  });
+
+  it("omits previous-day framing on the first day", () => {
+    const p = buildDayPrompt(baseDay, 0, 13, null, "kyoto", "food-heavy", baseBuilder, undefined);
+    expect(p).not.toContain("Yesterday:");
+    expect(p.toLowerCase()).toContain("first day");
+  });
+
+  it("omits next-day framing on the last day", () => {
+    const p = buildDayPrompt(baseDay, 12, 13, "kyoto", null, "food-heavy", baseBuilder, undefined);
+    expect(p).not.toContain("Tomorrow:");
+    expect(p.toLowerCase()).toContain("final day");
+  });
+
+  it("handles a single-day trip (first === last)", () => {
+    const p = buildDayPrompt(baseDay, 0, 1, null, null, "food-heavy", baseBuilder, undefined);
+    expect(p.toLowerCase()).toContain("first day");
+    expect(p.toLowerCase()).toContain("final day");
+    expect(p).not.toContain("Yesterday:");
+    expect(p).not.toContain("Tomorrow:");
+  });
+
+  it("includes the day's activity list", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("Osaka Castle");
+    expect(p).toContain("Kuromon Market");
+    expect(p).toContain("Dotonbori");
+  });
+
+  it("includes the category mix summary", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("food-heavy");
+  });
+
+  it("requests intro, transitions, and summary fields", () => {
+    const p = buildDayPrompt(baseDay, 4, 13, "kyoto", "hiroshima", "food-heavy", baseBuilder, undefined);
+    expect(p).toContain("intro");
+    expect(p).toContain("transitions");
+    expect(p).toContain("summary");
   });
 });

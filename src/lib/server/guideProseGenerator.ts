@@ -17,7 +17,7 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { buildGuideProseSchema } from "./llmSchemas";
 import { getSeason } from "@/lib/utils/seasonUtils";
-import type { Itinerary } from "@/types/itinerary";
+import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { IntentExtractionResult, GeneratedGuide } from "@/types/llmConstraints";
 
@@ -130,6 +130,210 @@ export function settleInOrder<T>(
       })();
     },
   };
+}
+
+/**
+ * Summarizes a day's activity mix for prompt context. Returns a short
+ * natural-language string like "culture-heavy, with some food" that
+ * Gemini can use to ground the day's voice without the full activity list
+ * dominating the prompt.
+ *
+ * @internal Exported for testing.
+ */
+export function computeCategoryMix(
+  activities: Array<{ category?: string }>,
+): string {
+  if (activities.length === 0) return "no activities";
+
+  const counts = new Map<string, number>();
+  for (const activity of activities) {
+    const cat = activity.category ?? "other";
+    counts.set(cat, (counts.get(cat) ?? 0) + 1);
+  }
+
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  const top = sorted[0];
+  if (!top) return "no activities";
+
+  if (sorted.length === 1) {
+    return `${top[0]}-focused`;
+  }
+
+  const second = sorted[1];
+  if (!second) return `${top[0]}-focused`;
+
+  return `${top[0]}-heavy, with some ${second[0]}`;
+}
+
+/**
+ * Builds the prompt for the single trip-level header call. Output fields:
+ * tripOverview, culturalBriefingIntro. Contains traveler profile, city list,
+ * season, vibes, trip length, and trip-level voice rules + deny list.
+ * Does NOT include per-day schedule data.
+ *
+ * @internal Exported for testing.
+ */
+export function buildHeaderPrompt(
+  itinerary: Itinerary,
+  builderData: TripBuilderData,
+  intentResult: IntentExtractionResult | undefined,
+): string {
+  const days = itinerary.days ?? [];
+  const season = getSeason(builderData.dates?.start);
+  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
+  const pace = builderData.style ?? "balanced";
+  const group = builderData.group?.type ?? "solo traveler";
+  const groupSize = builderData.group?.size ?? 1;
+  const childrenAges = builderData.group?.childrenAges?.join(", ") ?? "none";
+  const isFirstTime = builderData.isFirstTimeVisitor ? "yes" : "not mentioned";
+  const dietary = builderData.accessibility?.dietary?.join(", ") ?? "none";
+  const insights = intentResult?.additionalInsights?.join("; ") ?? "";
+
+  const cities = [...new Set(days.map((d) => d.cityId).filter((c): c is string => !!c))];
+  const cityList = cities.join(", ");
+
+  return `You are a sharp UX writer for a Japan travel app. Say less. Talk to the person. Cut filler. Warm but never gushing. Concrete over clever. Every word earns its place.
+
+You're writing the trip-level narrative header for a ${days.length}-day Japan trip.
+
+## Traveler Context
+- Season: ${season}
+- Cities: ${cityList}
+- Group: ${group} (${groupSize} people${childrenAges !== "none" ? `, children: ${childrenAges}` : ""})
+- Pace: ${pace}
+- Vibes: ${vibes}
+- First time in Japan: ${isFirstTime}
+- Dietary: ${dietary}
+${insights ? `- Insights from notes: ${insights}` : ""}
+
+## What to write
+
+### tripOverview (2-3 sentences)
+The arc of the whole trip. Name 1-2 cities. Set expectations without listing activities. Think back-cover copy — the line the traveler remembers.
+
+### culturalBriefingIntro (2-3 sentences, max 250 chars, optional)
+Intro to a cultural briefing that contextualizes this traveler's specific itinerary to Japanese cultural expectations. Reference the types of places they'll visit (temples, onsen, markets, residential neighborhoods) and set the tone that understanding these customs will transform their experience. Do not list rules. Do not use deny-list words.
+
+## Style rules
+- No emoji. No exclamation marks.
+- Say less. Trust the reader.
+
+## Deny-list (never use these words or phrases)
+amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic filler), hidden gem, delve, explore (as verb of enthusiasm), discover, wander, immerse, soak in, must-see, can't-miss, authentic (when vague), tucked away, off the beaten path, gem, treasure, embark, venture, hub, feast for the senses, treat yourself, don't miss, experience of a lifetime, bucket list, absolutely, truly, really (as intensifier), get ready, you'll love, stunning, breathtaking, journey, nestled, best-kept secret, tapestry.
+
+## Voice
+Write like a concierge who already knows this traveler, not a guidebook selling a destination. Ground every sentence in something concrete — a city, a season, a sensation.
+
+Return JSON with tripOverview and optional culturalBriefingIntro.`;
+}
+
+/**
+ * Builds the prompt for a single day's per-day call. Output fields:
+ * intro, transitions, culturalMoment?, practicalTip?, summary. Contains
+ * position flags, neighbor city framing, activity list, and category mix.
+ * Does NOT include the full itinerary -- context size is O(1) per day.
+ *
+ * @internal Exported for testing.
+ */
+export function buildDayPrompt(
+  day: ItineraryDay,
+  dayIndex: number,
+  totalDays: number,
+  prevCityId: string | null,
+  nextCityId: string | null,
+  categoryMix: string,
+  builderData: TripBuilderData,
+  intentResult: IntentExtractionResult | undefined,
+): string {
+  const isFirstDay = dayIndex === 0;
+  const isLastDay = dayIndex === totalDays - 1;
+
+  const season = getSeason(builderData.dates?.start);
+  const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
+  const pace = builderData.style ?? "balanced";
+  const group = builderData.group?.type ?? "solo traveler";
+  const insights = intentResult?.additionalInsights?.join("; ") ?? "";
+
+  const placeActivities = (day.activities ?? []).filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+  );
+  const activityList = placeActivities
+    .map((a) => {
+      const category = a.tags?.[1] ?? a.tags?.[0] ?? "activity";
+      return `- ${a.title} (${category})`;
+    })
+    .join("\n");
+
+  // Natural-language position framing. First/last day get explicit nods;
+  // middle days get neighbor-city context.
+  let positionFraming: string;
+  if (isFirstDay && isLastDay) {
+    positionFraming = "This is the first day AND the final day — a single-day trip. The traveler arrives and departs on the same day.";
+  } else if (isFirstDay) {
+    positionFraming = `This is the first day. The traveler arrives today. Tomorrow: ${nextCityId ?? "next city"}.`;
+  } else if (isLastDay) {
+    positionFraming = `This is the final day. The traveler departs today. Yesterday: ${prevCityId ?? "previous city"}.`;
+  } else {
+    positionFraming = `Yesterday: ${prevCityId ?? "previous city"}. Tomorrow: ${nextCityId ?? "next city"}.`;
+  }
+
+  return `You are a sharp UX writer for a Japan travel app. Say less. Talk to the person. Cut filler. Warm but never gushing. Concrete over clever. Every word earns its place.
+
+You're writing editorial prose for Day ${dayIndex + 1} of ${totalDays} of a Japan trip.
+
+## Day Context
+- City: ${day.cityId ?? "unknown"}
+- Season: ${season}
+- Vibes: ${vibes}
+- Pace: ${pace}
+- Group: ${group}
+- This day: ${categoryMix}
+- ${positionFraming}
+${insights ? `- Traveler insights: ${insights}` : ""}
+
+## Today's activities
+${activityList || "(free day — no fixed activities)"}
+
+## What to write
+
+**intro** (1-2 sentences, max 180 chars)
+Capture the FEEL of the day — neighborhood vibe, sensory detail, mood shift. Not the schedule.
+- One place name to anchor it. Two max. Weave in, never list.
+- NEVER enumerate activities or use "then" constructions.
+- Banned openers: "Settle into / Ease into / Kick off with / Start your day".
+- Consequences, not mechanics: "The temples are quieter this early" not "visit temples in the morning".
+${isFirstDay ? "- This is the first day — a nod to arrival is welcome." : ""}
+${isLastDay ? "- This is the final day — a nod to leaving is welcome." : ""}
+
+**transitions** (array of 1-3 strings, 1 sentence each)
+Connecting tissue between consecutive activities. Reference the physical/sensory shift — what changes as you walk from one place to the next. Spatial, not procedural.
+- Never start with "Next" or "Then" or "Head to".
+- Reference neighborhoods, sounds, smells, light changes.
+
+**culturalMoment** (optional, 2-3 sentences)
+Context before a shrine, temple, onsen, or market. History, etiquette, or meaning — not a Wikipedia summary.
+- Only include if the day has a cultural site.
+- Specific to the actual place, not generic.
+
+**practicalTip** (optional, 1-2 sentences)
+Actionable advice for the day. Route-specific navigation, neighborhood logistics, timing strategies unique to this day's activity sequence, or reservation/ticket tips for specific venues.
+- Skip if nothing specific applies.
+
+**summary** (1 sentence)
+Reflective close. What the day felt like, not what happened.
+- No exclamation marks. No "what a day!" or "unforgettable".
+
+## Style rules
+- No emoji. No exclamation marks.
+- Say less. Trust the reader.
+
+## Deny-list (never use these words or phrases)
+amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic filler), hidden gem, delve, explore (as verb of enthusiasm), discover, wander, immerse, soak in, must-see, can't-miss, authentic (when vague), tucked away, off the beaten path, gem, treasure, embark, venture, hub, feast for the senses, treat yourself, don't miss, experience of a lifetime, bucket list, absolutely, truly, really (as intensifier), get ready, you'll love, stunning, breathtaking, journey, nestled, best-kept secret, tapestry.
+
+## Voice
+Write like a concierge who already knows this traveler. Ground every sentence in something concrete — a place, a sensation, a logistical specificity.
+
+Return JSON with intro, transitions, optional culturalMoment, optional practicalTip, and summary.`;
 }
 
 /**
