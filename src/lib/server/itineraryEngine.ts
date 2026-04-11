@@ -657,7 +657,7 @@ export async function generateTripFromBuilderData(
     locationCount: allLocations.length,
     dayStartTime: builderData.dayStartTime ?? "09:00",
     hasIntentConstraints: !!intentResult,
-    hasGuideProse: !!guideProse,
+    hasGuideProse: !!(guideProse?.tripOverview || guideProse?.days.length),
     hasDailyBriefings: !!dailyBriefings,
     stages: stageTimings,
   });
