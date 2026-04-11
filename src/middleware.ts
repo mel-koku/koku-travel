@@ -34,6 +34,7 @@ const PUBLIC_API_ROUTES = [
   "/api/bookings/availability",
   "/api/bookings/pricing",
   "/api/day-trips",
+  "/api/csp-report",
 ];
 
 /**
