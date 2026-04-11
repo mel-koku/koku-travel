@@ -13,8 +13,7 @@ const defaultActs = [
     title: "Every place scored, not just starred",
     description:
       "Weather, transit access, crowd levels, operating hours, seasonal timing. 19 factors per location. Not reviews. Context.",
-    image:
-      "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
+    image: "/images/fallback.jpg",
     alt: "Traditional Japanese alley",
   },
   {
@@ -23,8 +22,7 @@ const defaultActs = [
     title: "Real routes. Real transit times.",
     description:
       "Shinkansen schedules, local train transfers, walking segments. Your day accounts for every minute between stops, not just pins on a map.",
-    image:
-      "https://images.unsplash.com/photo-1624253321171-1be53e12f5f4?w=1920&q=80",
+    image: "/images/fallback.jpg",
     alt: "Peaceful Japanese garden",
   },
   {
@@ -33,8 +31,7 @@ const defaultActs = [
     title: "Your itinerary. Pocket-ready.",
     description:
       "Day-by-day timeline with timed activities, transit directions, and weather-aware tips. Share it with a link. Check it on the Shinkansen.",
-    image:
-      "https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?w=1920&q=80",
+    image: "/images/fallback.jpg",
     alt: "Japanese train station",
   },
 ];

@@ -54,7 +54,7 @@ export default async function Home() {
   const heroImage = landingContent?.heroImage;
   const lcpImageUrl = heroImage
     ? urlFor(heroImage).width(1920).quality(85).url()
-    : "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80";
+    : "/images/fallback.jpg";
 
   return (
     <>
