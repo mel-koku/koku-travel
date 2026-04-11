@@ -26,7 +26,7 @@ import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
-import { FALLBACK_IMAGES, DEFAULT_FALLBACK_IMAGE } from "@/lib/constants/fallbackImages";
+import { FALLBACK_IMAGE } from "@/lib/constants/fallbackImages";
 
 /**
  * Recover a readable title for anchor activities whose title was corrupted
@@ -53,7 +53,7 @@ function buildFallbackLocation(
     city: fallbackCity,
     region: fallbackCity,
     category: fallbackCategory,
-    image: FALLBACK_IMAGES[fallbackCategory] ?? DEFAULT_FALLBACK_IMAGE,
+    image: FALLBACK_IMAGE,
   };
 }
 
@@ -131,7 +131,7 @@ function useEntryPointLocation(
             city,
             region: city,
             category: fallbackCategory,
-            image: FALLBACK_IMAGES[fallbackCategory] ?? DEFAULT_FALLBACK_IMAGE,
+            image: FALLBACK_IMAGE,
             placeId: place.placeId,
             coordinates: {
               lat: place.location.latitude,
@@ -466,9 +466,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       const primaryPhoto = (placeLocation as Location & { primaryPhotoUrl?: string })?.primaryPhotoUrl;
       if (primaryPhoto) return resizePhotoUrl(primaryPhoto, 800) ?? primaryPhoto;
       if (placeLocation?.image) return resizePhotoUrl(placeLocation.image, 800) ?? placeLocation.image;
-      const category = placeLocation?.category ?? activity.tags?.[0] ?? "culture";
-      return FALLBACK_IMAGES[category] ?? DEFAULT_FALLBACK_IMAGE;
-    }, [placeLocation, activity.tags]);
+      return FALLBACK_IMAGE;
+    }, [placeLocation]);
 
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
@@ -706,7 +705,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <div className="absolute inset-0 animate-pulse bg-surface" />
               )}
               <Image
-                src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
+                src={imageError ? FALLBACK_IMAGE : activityImage}
                 alt={activity.title}
                 fill
                 sizes="128px"
