@@ -11,6 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
+import { z } from "zod";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -334,6 +335,35 @@ amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic f
 Write like a concierge who already knows this traveler. Ground every sentence in something concrete — a place, a sensation, a logistical specificity.
 
 Return JSON with intro, transitions, optional culturalMoment, optional practicalTip, and summary.`;
+}
+
+/**
+ * Zod schema for the header call's output. Fixed shape, no dynamic fields.
+ *
+ * @internal Exported for testing.
+ */
+export function buildHeaderSchema() {
+  return z.object({
+    tripOverview: z.string(),
+    culturalBriefingIntro: z.string().optional(),
+  });
+}
+
+/**
+ * Zod schema for a single day call's output. Fixed shape, no dayId.
+ * The caller (runGuideProseBatch) tracks the dayId out-of-band by tagging
+ * each outcome with the source dayId it fired the call for.
+ *
+ * @internal Exported for testing.
+ */
+export function buildDaySchema() {
+  return z.object({
+    intro: z.string(),
+    transitions: z.array(z.string()).max(3),
+    culturalMoment: z.string().optional(),
+    practicalTip: z.string().optional(),
+    summary: z.string(),
+  });
 }
 
 /**

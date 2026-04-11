@@ -8,6 +8,8 @@ import {
   computeCategoryMix,
   buildHeaderPrompt,
   buildDayPrompt,
+  buildHeaderSchema,
+  buildDaySchema,
   type SettledOutcome,
 } from "../guideProseGenerator";
 
@@ -317,5 +319,70 @@ describe("buildDayPrompt", () => {
     expect(p).toContain("intro");
     expect(p).toContain("transitions");
     expect(p).toContain("summary");
+  });
+});
+
+// ── schema builders ─────────────────────────────────────────────────────────
+
+describe("buildHeaderSchema", () => {
+  it("accepts a minimal valid HeaderProse object", () => {
+    const schema = buildHeaderSchema();
+    const result = schema.safeParse({ tripOverview: "Kyoto quiet." });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts culturalBriefingIntro when present", () => {
+    const schema = buildHeaderSchema();
+    const result = schema.safeParse({
+      tripOverview: "Kyoto quiet.",
+      culturalBriefingIntro: "Temples ask for quiet.",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects missing tripOverview", () => {
+    const schema = buildHeaderSchema();
+    const result = schema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("buildDaySchema", () => {
+  it("accepts a minimal valid DayProse object", () => {
+    const schema = buildDaySchema();
+    const result = schema.safeParse({
+      intro: "Kyoto in the morning.",
+      transitions: [],
+      summary: "A quiet start.",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts all optional fields", () => {
+    const schema = buildDaySchema();
+    const result = schema.safeParse({
+      intro: "A",
+      transitions: ["B", "C"],
+      culturalMoment: "D",
+      practicalTip: "E",
+      summary: "F",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects missing intro", () => {
+    const schema = buildDaySchema();
+    const result = schema.safeParse({ transitions: [], summary: "A" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects more than 3 transitions", () => {
+    const schema = buildDaySchema();
+    const result = schema.safeParse({
+      intro: "A",
+      transitions: ["1", "2", "3", "4"],
+      summary: "Z",
+    });
+    expect(result.success).toBe(false);
   });
 });
