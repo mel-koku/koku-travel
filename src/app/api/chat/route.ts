@@ -104,13 +104,32 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
 
     const result = streamText({
       model: vertex("gemini-2.5-flash"),
-      providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+      // streamFunctionCallArguments defaults to true on Vertex and our project
+      // rejects it with 400 INVALID_ARGUMENT. Must set false explicitly.
+      providerOptions: {
+        google: {
+          streamFunctionCallArguments: false,
+          thinkingConfig: { thinkingBudget: 512 },
+        },
+      },
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 2048,
       maxRetries: 1,
       stopWhen: stepCountIs(3),
+      // Stream errors don't bubble to the outer try/catch because
+      // toUIMessageStreamResponse() has already returned a 200 by the time
+      // Vertex rejects mid-stream. Log them here so regressions surface in
+      // structured logs instead of a raw console dump.
+      onError: ({ error }) => {
+        const details = extractApiErrorDetails(error);
+        logger.error(
+          "Chat stream error",
+          error instanceof Error ? error : new Error(getErrorMessage(error)),
+          { route: "/api/chat", requestId: context.requestId, ...details },
+        );
+      },
     });
 
     return result.toUIMessageStreamResponse() as unknown as NextResponse;
@@ -126,11 +145,40 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
       return serviceUnavailable("Chat is temporarily unavailable. Try again later.", { route: "/api/chat" });
     }
 
+    const apiDetails = extractApiErrorDetails(error);
     logger.error(
       "Chat API error",
       error instanceof Error ? error : new Error(message),
-      { route: "/api/chat", requestId: context.requestId },
+      { route: "/api/chat", requestId: context.requestId, ...apiDetails },
     );
     return internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId });
   }
 }, { rateLimit: RATE_LIMITS.CHAT, dailyQuota: DAILY_QUOTAS.CHAT, optionalAuth: true });
+
+/**
+ * Pulls diagnostic fields off Vercel AI SDK's APICallError without importing
+ * the class (duck-typed to avoid a hard dep).
+ */
+function extractApiErrorDetails(error: unknown): Record<string, unknown> {
+  if (!error || typeof error !== "object") return {};
+  const e = error as Record<string, unknown>;
+  const details: Record<string, unknown> = {};
+  if (typeof e.name === "string") details.errorName = e.name;
+  if (typeof e.statusCode === "number") details.statusCode = e.statusCode;
+  if (typeof e.url === "string") {
+    // Strip query string to avoid logging auth params.
+    details.url = e.url.split("?")[0];
+  }
+  if (typeof e.responseBody === "string") {
+    details.responseBody = e.responseBody.slice(0, 500);
+  }
+  if (e.data && typeof e.data === "object") {
+    const data = e.data as { error?: { code?: unknown; status?: unknown; message?: unknown } };
+    if (data.error) {
+      details.apiErrorCode = data.error.code;
+      details.apiErrorStatus = data.error.status;
+      details.apiErrorMessage = data.error.message;
+    }
+  }
+  return details;
+}

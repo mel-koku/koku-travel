@@ -362,16 +362,45 @@ export const chatTools = {
         .optional()
         .describe("Trip duration in days (1-14). Used if no exact dates given."),
       cities: z
-        .array(z.string())
-        .describe(
-          "City IDs the user wants to visit. Valid IDs: kyoto, osaka, nara, kobe, tokyo, yokohama, nagoya, kanazawa, fukuoka, nagasaki, sapporo, hakodate, sendai, hiroshima, matsuyama, takamatsu, naha",
-        ),
+        .array(
+          z.enum([
+            "kyoto",
+            "osaka",
+            "nara",
+            "kobe",
+            "tokyo",
+            "yokohama",
+            "nagoya",
+            "kanazawa",
+            "fukuoka",
+            "nagasaki",
+            "sapporo",
+            "hakodate",
+            "sendai",
+            "hiroshima",
+            "matsuyama",
+            "takamatsu",
+            "naha",
+          ]),
+        )
+        .describe("Lowercase city IDs the user wants to visit."),
       vibes: z
-        .array(z.string())
+        .array(
+          z.enum([
+            "temples_tradition",
+            "foodie_paradise",
+            "nature_adventure",
+            "zen_wellness",
+            "modern_japan",
+            "art_architecture",
+            "local_secrets",
+            "family_fun",
+            "history_buff",
+          ]),
+        )
+        .max(3)
         .optional()
-        .describe(
-          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), modern_japan (anime, nightlife, gaming arcades, neon-lit streets), art_architecture (art islands, contemporary museums, design landmarks), local_secrets (hidden gems, craft workshops, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites)",
-        ),
+        .describe("Up to 3 travel vibes that match the user's interests."),
       style: z
         .enum(["relaxed", "balanced", "fast"])
         .optional()

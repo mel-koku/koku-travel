@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex } from "./vertexProvider";
+import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { buildGuideProseSchema } from "./llmSchemas";
@@ -165,7 +165,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
   try {
     const result = await generateObject({
       model: vertex("gemini-2.5-flash"),
-      providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+      providerOptions: VERTEX_GENERATE_OPTIONS,
       schema,
       prompt,
       abortSignal: controller.signal,
@@ -194,7 +194,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
       try {
         const retryResult = await generateObject({
           model: vertex("gemini-2.5-flash"),
-          providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+          providerOptions: VERTEX_GENERATE_OPTIONS,
           schema,
           prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
           abortSignal: AbortSignal.timeout(12_000),

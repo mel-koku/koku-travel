@@ -9,7 +9,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex } from "./vertexProvider";
+import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { buildDailyBriefingSchema } from "./llmSchemas";
@@ -134,7 +134,7 @@ export async function generateDailyBriefings(
   try {
     const { object } = await generateObject({
       model: vertex("gemini-2.5-flash"),
-      providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+      providerOptions: VERTEX_GENERATE_OPTIONS,
       schema: buildDailyBriefingSchema(dayIds),
       prompt: buildBriefingPrompt(itinerary, builderData),
       abortSignal: AbortSignal.timeout(15_000),

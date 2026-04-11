@@ -9,6 +9,7 @@ import { vi } from "vitest";
  */
 
 const ORIGINAL_KEY = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+const ORIGINAL_PROJECT = process.env.GOOGLE_VERTEX_PROJECT;
 
 // Resolved reference to the mocked generateObject
 let _generateObject: ReturnType<typeof vi.fn> | null = null;
@@ -28,17 +29,23 @@ function getGenerateObject(): ReturnType<typeof vi.fn> {
   return _generateObject;
 }
 
-/** Set the Gemini API key env var so the code path is entered. */
+/** Set the Gemini env vars so the code path is entered. */
 export function setupLLMEnv() {
   process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = '{"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.iam.gserviceaccount.com"}';
+  process.env.GOOGLE_VERTEX_PROJECT = "test-project";
 }
 
-/** Restore the original API key env var. */
+/** Restore the original env vars. */
 export function teardownLLMEnv() {
   if (ORIGINAL_KEY !== undefined) {
     process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = ORIGINAL_KEY;
   } else {
     delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+  }
+  if (ORIGINAL_PROJECT !== undefined) {
+    process.env.GOOGLE_VERTEX_PROJECT = ORIGINAL_PROJECT;
+  } else {
+    delete process.env.GOOGLE_VERTEX_PROJECT;
   }
 }
 

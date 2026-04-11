@@ -8,7 +8,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex } from "./vertexProvider";
+import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -111,7 +111,7 @@ Return a JSON object mapping each day ID to its intro string.`;
   try {
     const result = await generateObject({
       model: vertex("gemini-2.5-flash"),
-      providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+      providerOptions: VERTEX_GENERATE_OPTIONS,
       schema: introSchema,
       prompt,
     });

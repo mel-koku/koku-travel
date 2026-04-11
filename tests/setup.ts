@@ -54,6 +54,7 @@ if (!Element.prototype.scrollIntoView) {
 
 // Set default environment variables for tests
 process.env.GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY || "test-api-key";
+process.env.GOOGLE_VERTEX_PROJECT = process.env.GOOGLE_VERTEX_PROJECT || "test-project";
 
 // Mock Next.js headers
 vi.mock("next/headers", () => ({

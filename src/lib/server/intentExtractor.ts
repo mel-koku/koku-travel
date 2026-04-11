@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex } from "./vertexProvider";
+import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
@@ -158,7 +158,7 @@ Important:
   try {
     const result = await generateObject({
       model: vertex("gemini-2.5-flash"),
-      providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+      providerOptions: VERTEX_GENERATE_OPTIONS,
       schema: intentExtractionSchema,
       prompt,
       abortSignal: controller.signal,
