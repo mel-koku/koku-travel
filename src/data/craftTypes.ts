@@ -33,7 +33,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "陶芸",
     description: "Wheel-throwing, hand-building, and glazing techniques passed down through generations",
     color: "#C4704F",
-    thumbnail: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600",
+    thumbnail: "",
     patterns: [
       /potter/i, /ceramic/i, /porcelain/i, /stoneware/i, /earthenware/i,
       /raku/i, /tokoname/i, /arita/i, /bizen/i, /mashiko/i, /mino/i,
@@ -47,7 +47,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "織物",
     description: "Silk weaving, kimono making, and traditional fabric arts",
     color: "#4A6FA5",
-    thumbnail: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+    thumbnail: "",
     patterns: [
       /textile/i, /weav/i, /fabric/i, /kimono/i, /silk/i, /loom/i,
       /nishijin/i, /kasuri/i, /orimono/i, /kumihimo/i, /felt/i,
@@ -60,7 +60,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "木工",
     description: "Joinery, carving, and bamboo craft traditions",
     color: "#8B6F47",
-    thumbnail: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600",
+    thumbnail: "",
     patterns: [
       /woodwork/i, /wood\s*carv/i, /carpent/i, /joiner/i, /bamboo/i,
       /lumber/i, /timber/i, /wooden/i, /wood\s*craft/i, /marquetry/i,
@@ -73,7 +73,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "和紙",
     description: "Handmade washi paper, paper folding, and book binding",
     color: "#C9A84C",
-    thumbnail: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600",
+    thumbnail: "",
     patterns: [
       /washi/i, /paper\s*mak/i, /paper\s*craft/i, /origami/i,
       /book\s*bind/i, /calligraph.*paper/i, /和紙/,
@@ -85,7 +85,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "漆器",
     description: "Urushi lacquer coating and decorative techniques",
     color: "#A0413C",
-    thumbnail: "https://images.unsplash.com/photo-1524230659092-07f99a75c013?w=600",
+    thumbnail: "",
     patterns: [
       /lacquer/i, /urushi/i, /maki-?e/i, /wajima/i, /tsugaru/i,
       /漆/i, /漆器/,
@@ -97,7 +97,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "金工",
     description: "Sword forging, knife making, and decorative metalwork",
     color: "#6B7B8D",
-    thumbnail: "https://images.unsplash.com/photo-1564457461758-8ff96e439e83?w=600",
+    thumbnail: "",
     patterns: [
       /metal/i, /forge/i, /forging/i, /sword/i, /katana/i, /blade/i,
       /knife/i, /blacksmith/i, /copper/i, /iron/i, /bronze/i,
@@ -110,7 +110,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "染色",
     description: "Natural indigo dyeing, shibori tie-dye, and color traditions",
     color: "#3B4F8A",
-    thumbnail: "https://images.unsplash.com/photo-1604871000636-074fa5117945?w=600",
+    thumbnail: "",
     patterns: [
       /dye/i, /dyeing/i, /indigo/i, /shibori/i, /aizome/i,
       /bingata/i, /yuzen/i, /katazome/i, /染/i, /藍染/,
@@ -122,7 +122,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "ガラス工芸",
     description: "Blown glass, Edo kiriko cut glass, and decorative glass arts",
     color: "#3D9B8F",
-    thumbnail: "https://images.unsplash.com/photo-1577401239170-897c4e22fc02?w=600",
+    thumbnail: "",
     patterns: [
       /glass/i, /kiriko/i, /blown/i, /glasswork/i, /stained/i,
       /ガラス/,
@@ -134,7 +134,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "書道",
     description: "Brush writing and ink art traditions",
     color: "#3A3A3A",
-    thumbnail: "https://images.unsplash.com/photo-1601823984263-b87b59798b70?w=600",
+    thumbnail: "",
     patterns: [
       /calligraph/i, /shodo/i, /書道/,
     ],
@@ -145,7 +145,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "金継ぎ",
     description: "The art of repairing broken pottery with gold",
     color: "#C9963C",
-    thumbnail: "https://images.unsplash.com/photo-1596367407372-96cb88503db6?w=600",
+    thumbnail: "",
     patterns: [
       /kintsugi/i, /kintsukuroi/i, /金継/i,
     ],
@@ -156,7 +156,7 @@ export const CRAFT_TYPES: readonly CraftTypeDefinition[] = [
     labelJapanese: "その他",
     description: "Multi-craft workshops and other traditional arts",
     color: "#7B6B8D",
-    thumbnail: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600",
+    thumbnail: "",
     patterns: [],
   },
 ] as const;
