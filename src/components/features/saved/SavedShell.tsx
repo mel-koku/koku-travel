@@ -64,7 +64,7 @@ export default function SavedShell() {
             {/* Background image */}
             <div className="absolute inset-0">
               <Image
-                src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80"
+                src="/images/fallback.jpg"
                 alt=""
                 fill
                 className="object-cover opacity-15"

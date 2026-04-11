@@ -43,7 +43,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
         style={prefersReducedMotion ? {} : { scale: imageScale }}
       >
         <Image
-          src={content?.notFoundBackgroundImage?.url ?? "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80"}
+          src={content?.notFoundBackgroundImage?.url ?? "/images/fallback.jpg"}
           alt="Misty bamboo grove"
           fill
           className="object-cover saturate-[0.7] brightness-[0.5]"
