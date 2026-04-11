@@ -15,6 +15,7 @@ export const pagesContent = defineType({
     { name: "signIn", title: "Sign In Page", options: { collapsible: true, collapsed: true } },
     { name: "notFound", title: "404 Page", options: { collapsible: true, collapsed: true } },
     { name: "itinerary", title: "Itinerary Page", options: { collapsible: true, collapsed: true } },
+    { name: "comingSoon", title: "Coming Soon", options: { collapsible: true, collapsed: true } },
   ],
   fields: [
     // ── Places ──────────────────────────────────
@@ -304,6 +305,22 @@ export const pagesContent = defineType({
       fieldset: "dashboard",
       initialValue: "Undo",
     }),
+    defineField({
+      name: "dashboardHeroImage",
+      title: "Dashboard Hero Background",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "dashboard",
+      description: "Hero header background for /dashboard. Also used on the stats section.",
+    }),
+    defineField({
+      name: "dashboardLockImage",
+      title: "Dashboard Lock Screen Image",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "dashboard",
+      description: "Background image for the free-tier lock screen inside /dashboard.",
+    }),
 
     // ── Account ─────────────────────────────────
     defineField({
@@ -477,6 +494,17 @@ export const pagesContent = defineType({
       type: "image",
       options: { hotspot: true },
       fieldset: "notFound",
+    }),
+
+    // ── Coming Soon ─────────────────────────────
+    defineField({
+      name: "comingSoonExpertsImage",
+      title: "Coming Soon (Experts / Experiences) Background",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "comingSoon",
+      description:
+        "Shared background for the /local-experts and /experiences coming-soon pages.",
     }),
 
     // ── Itinerary ───────────────────────────────
