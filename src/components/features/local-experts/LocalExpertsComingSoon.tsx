@@ -13,10 +13,11 @@ import {
   easeCinematicMut,
   staggerWord,
 } from "@/lib/motion";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 const WORDS = ["Guides", "Artisans", "Chefs", "Weavers", "Potters", "Hosts"];
 
-export function LocalExpertsComingSoon() {
+export function LocalExpertsComingSoon({ content }: { content?: PagesContent }) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -29,7 +30,7 @@ export function LocalExpertsComingSoon() {
         transition={{ duration: durationCinematic * 2, ease: easeCinematicMut }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80"
+          src={content?.comingSoonExpertsImage?.url ?? "/images/fallback.jpg"}
           alt="Quiet alley in Japan at dusk"
           fill
           priority
