@@ -206,7 +206,7 @@ export function ExperiencesShell() {
       }
     }
     for (const ct of CRAFT_TYPES) {
-      if (!map.has(ct.id)) {
+      if (!map.has(ct.id) && ct.thumbnail) {
         map.set(ct.id, ct.thumbnail);
       }
     }

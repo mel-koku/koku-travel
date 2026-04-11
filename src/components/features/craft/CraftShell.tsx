@@ -180,9 +180,9 @@ export function CraftShell() {
         }
       }
     }
-    // Fill remaining types with curated thumbnails
+    // Fill remaining types with curated thumbnails (if any)
     for (const ct of CRAFT_TYPES) {
-      if (!map.has(ct.id)) {
+      if (!map.has(ct.id) && ct.thumbnail) {
         map.set(ct.id, ct.thumbnail);
       }
     }
