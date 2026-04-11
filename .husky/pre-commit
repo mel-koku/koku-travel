@@ -22,9 +22,11 @@ fi
 # unsplash detection regex — skip them along with docs and memory.
 UNSPLASH_STAGED=$(git diff --cached --name-only --diff-filter=AM \
   | grep -vE '^(docs/|memory/|\.husky/|\.github/workflows/|scripts/(fill-photo-gaps\.js|enrich-all-locations\.js|clean-unsplash-urls\.ts)$)' \
-  | while IFS= read -r f; do
-      [ -f "$f" ] && grep -l "images\.unsplash\.com" "$f" 2>/dev/null
-    done)
+  | (while IFS= read -r f; do
+      if [ -f "$f" ] && grep -q "images\.unsplash\.com" "$f" 2>/dev/null; then
+        echo "$f"
+      fi
+    done) || true)
 if [ -n "$UNSPLASH_STAGED" ]; then
   echo ""
   echo "  Unsplash URLs found in staged files:"
