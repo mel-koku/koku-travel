@@ -217,7 +217,7 @@ First, determine the **commandType**:
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
+      model: vertex("gemini-2.0-flash-001"),
       schema: placeIntentSchema,
       prompt,
       abortSignal: controller.signal,

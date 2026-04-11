@@ -110,7 +110,7 @@ Return a JSON object mapping each day ID to its intro string.`;
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
+      model: vertex("gemini-2.0-flash-001"),
       schema: introSchema,
       prompt,
     });
