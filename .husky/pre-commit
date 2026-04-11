@@ -2,7 +2,7 @@
 # Block local-only files from ever being committed.
 # These are intentionally untracked (see .gitignore) and should never
 # land in the repo even if someone runs `git add -f` by mistake.
-LOCAL_ONLY='^(CLAUDE\.md|about-yuku\.md)$'
+LOCAL_ONLY='^(CLAUDE\.md|about-yuku\.md|\.claude/)'
 # Only block adds and modifies; allow deletes so files can be untracked.
 STAGED=$(git diff --cached --name-only --diff-filter=AM | grep -E "$LOCAL_ONLY" || true)
 if [ -n "$STAGED" ]; then

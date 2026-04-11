@@ -1,6 +1,9 @@
 # Claude Code project instructions (local only)
 CLAUDE.md
 
+# Claude Code session state (launch configs, worktrees, local settings)
+.claude/
+
 # Internal app documentation (local only, not needed for deployment)
 about-yuku.md
 
