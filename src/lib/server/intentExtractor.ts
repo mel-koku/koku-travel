@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
@@ -32,7 +32,7 @@ const INTENT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 export async function extractTripIntent(
   builderData: TripBuilderData,
 ): Promise<IntentExtractionResult | null> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
   }
 
@@ -157,7 +157,7 @@ Important:
 
   try {
     const result = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       schema: intentExtractionSchema,
       prompt,
       abortSignal: controller.signal,

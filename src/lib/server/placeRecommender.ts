@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "./vertexProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -125,7 +125,7 @@ interface PlaceIntentContext {
 export async function extractPlaceIntent(
   context: PlaceIntentContext,
 ): Promise<PlaceIntent | null> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
   }
 
@@ -217,7 +217,7 @@ First, determine the **commandType**:
 
   try {
     const result = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       schema: placeIntentSchema,
       prompt,
       abortSignal: controller.signal,

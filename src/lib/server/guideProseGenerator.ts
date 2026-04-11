@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { buildGuideProseSchema } from "./llmSchemas";
@@ -49,7 +49,7 @@ export async function generateGuideProse(
   builderData: TripBuilderData,
   intentResult?: IntentExtractionResult,
 ): Promise<GeneratedGuide | null> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
   }
 
@@ -164,7 +164,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
 
   try {
     const result = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       schema,
       prompt,
       abortSignal: controller.signal,
@@ -192,7 +192,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
       logger.warn("Guide prose deny-list violations, retrying", { leaks });
       try {
         const retryResult = await generateObject({
-          model: google("gemini-2.5-flash"),
+          model: vertex("gemini-2.5-flash"),
           schema,
           prompt: prompt + `\n\nCRITICAL: Your previous response used banned words: ${leaks.join(", ")}. Rewrite WITHOUT any of these words.`,
           abortSignal: AbortSignal.timeout(12_000),

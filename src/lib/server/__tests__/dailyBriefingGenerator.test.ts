@@ -7,8 +7,8 @@ vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }));
 
-vi.mock("@ai-sdk/google", () => ({
-  google: vi.fn(() => "mock-model"),
+vi.mock("@ai-sdk/google-vertex", () => ({
+  createVertex: vi.fn().mockReturnValue(vi.fn().mockReturnValue("mock-model")),
 }));
 
 vi.mock("@/lib/logger", () => ({

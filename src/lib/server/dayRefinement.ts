@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { dayRefinementSchema } from "./llmSchemas";
@@ -55,7 +55,7 @@ export async function refineDays(
   allLocations: Location[],
   intentResult?: IntentExtractionResult,
 ): Promise<Itinerary> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return itinerary;
   }
 
@@ -134,7 +134,7 @@ ${runnerUpContext}
 
   try {
     const result = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       schema: dayRefinementSchema,
       prompt,
       abortSignal: controller.signal,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "@/lib/server/vertexProvider";
 import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
@@ -41,7 +41,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
   }
 
   // API key check
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return serviceUnavailable("Chat is not configured", {
       route: "/api/chat",
       requestId: context.requestId,
@@ -103,7 +103,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     const modelMessages = await convertToModelMessages(recentMessages as any);
 
     const result = streamText({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,

@@ -25,7 +25,7 @@ Optional but commonly set:
 - `ROUTING_PROVIDER` / `ROUTING_MAPBOX_ACCESS_TOKEN` / `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` – routing and client-side map rendering. Leave unset to fall back to heuristic estimates.
 - `NEXT_PUBLIC_MAPBOX_STYLE_URL` – override the default Mapbox style URL consumed by all map components via `env.mapboxStyleUrl` (`src/lib/env.ts`). Useful when rotating Mapbox accounts or swapping branded styles without a code change.
 - `SENTRY_AUTH_TOKEN` – build-time Organization Auth Token for uploading sourcemaps. Must be issued by the current Sentry org (the slug is baked into the token and cannot be overridden at runtime).
-- `GOOGLE_GENERATIVE_AI_API_KEY` – powers LLM-backed itinerary refinement passes.
+- `GOOGLE_APPLICATION_CREDENTIALS_JSON` – service account JSON (minified, single line) for Vertex AI; powers LLM-backed itinerary refinement passes. Also set `GOOGLE_VERTEX_PROJECT` and `GOOGLE_VERTEX_LOCATION`.
 
 ## Itinerary Planner & Map Highlights
 

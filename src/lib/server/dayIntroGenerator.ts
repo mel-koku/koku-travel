@@ -8,7 +8,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { vertex } from "./vertexProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -43,7 +43,7 @@ export async function generateDayIntros(
   itinerary: Itinerary,
   builderData: TripBuilderData,
 ): Promise<Record<string, string> | null> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
   }
 
@@ -110,7 +110,7 @@ Return a JSON object mapping each day ID to its intro string.`;
 
   try {
     const result = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: vertex("gemini-2.5-flash"),
       schema: introSchema,
       prompt,
     });

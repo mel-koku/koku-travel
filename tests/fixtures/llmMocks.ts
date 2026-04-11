@@ -8,7 +8,7 @@ import { vi } from "vitest";
  * this module, and then call `await initLLMMocks()` after mocks are set up.
  */
 
-const ORIGINAL_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const ORIGINAL_KEY = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
 
 // Resolved reference to the mocked generateObject
 let _generateObject: ReturnType<typeof vi.fn> | null = null;
@@ -30,15 +30,15 @@ function getGenerateObject(): ReturnType<typeof vi.fn> {
 
 /** Set the Gemini API key env var so the code path is entered. */
 export function setupLLMEnv() {
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY = "test-key-for-unit-tests";
+  process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = '{"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.iam.gserviceaccount.com"}';
 }
 
 /** Restore the original API key env var. */
 export function teardownLLMEnv() {
   if (ORIGINAL_KEY !== undefined) {
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY = ORIGINAL_KEY;
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = ORIGINAL_KEY;
   } else {
-    delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
   }
 }
 

@@ -5,7 +5,9 @@ vi.mock("server-only", () => ({}));
 
 // Mock ai SDK
 vi.mock("ai", () => ({ generateObject: vi.fn() }));
-vi.mock("@ai-sdk/google", () => ({ google: vi.fn() }));
+vi.mock("@ai-sdk/google-vertex", () => ({
+  createVertex: vi.fn().mockReturnValue(vi.fn().mockReturnValue("mock-model")),
+}));
 
 // Mock logger to suppress output and allow assertion
 vi.mock("@/lib/logger", () => ({
