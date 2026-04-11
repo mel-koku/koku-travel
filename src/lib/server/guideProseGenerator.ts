@@ -34,6 +34,42 @@ export type SettledOutcome<T> =
   | { status: "deadline"; index: number };
 
 /**
+ * Output shape of the header LLM call.
+ *
+ * @internal Exported for testing.
+ */
+export type HeaderProse = {
+  tripOverview: string;
+  culturalBriefingIntro?: string;
+};
+
+/**
+ * Output shape of a single day LLM call.
+ *
+ * @internal Exported for testing.
+ */
+export type DayProse = {
+  intro: string;
+  transitions: string[];
+  culturalMoment?: string;
+  practicalTip?: string;
+  summary: string;
+};
+
+/**
+ * Tagged outcome yielded by {@link runGuideProseBatch} as each call settles.
+ *
+ * @internal Exported for testing.
+ */
+export type BatchOutcome =
+  | { kind: "header"; result: HeaderProse }
+  | { kind: "header-failed"; error: unknown }
+  | { kind: "header-deadline" }
+  | { kind: "day"; dayId: string; dayIndex: number; result: DayProse }
+  | { kind: "day-failed"; dayId: string; dayIndex: number; error: unknown }
+  | { kind: "day-deadline"; dayId: string; dayIndex: number };
+
+/**
  * Yields each promise's settlement as it arrives, in completion order (not
  * input order). If `deadlineMs` elapses before all promises settle, yields
  * a synthetic `'deadline'` outcome for every unsettled input and ends
@@ -412,6 +448,140 @@ export async function callVertexWithRetry<T>(
       ...extractApiErrorDetails(err),
     });
     throw err;
+  }
+}
+
+/**
+ * Timeout constants for the guide prose batch.
+ *
+ * Per-call: 10 seconds. Tight at p99 -- see spec Budget numbers § Tuning note.
+ * Raise to 12s if observability shows daysDeadline + daysFailed > 10% of
+ * totalDays consistently in production.
+ *
+ * Global deadline: 18 seconds. Allows 10s per-call + ~5s Vertex AbortController
+ * slippage + 3s drain processing overhead.
+ */
+const PER_CALL_TIMEOUT_MS = 10_000;
+const GLOBAL_DEADLINE_MS = 18_000;
+
+/**
+ * Fires the header call and one call per day in parallel, yielding each
+ * outcome as it settles via {@link settleInOrder}. The global deadline is
+ * enforced by a shared AbortController whose signal is combined with each
+ * per-call timeout inside {@link callVertexWithRetry}.
+ *
+ * This generator is the Stage 2 handoff point -- a future SSE route will
+ * consume it directly and forward each yield as a Server-Sent Event
+ * without changes to the layers underneath.
+ *
+ * @internal Exported for testing. Also the public Stage 2 handoff.
+ */
+export async function* runGuideProseBatch(
+  itinerary: Itinerary,
+  builderData: TripBuilderData,
+  intentResult: IntentExtractionResult | undefined,
+): AsyncGenerator<BatchOutcome, void, void> {
+  const days = itinerary.days ?? [];
+  if (days.length === 0) return;
+
+  // Global batch AbortController. When the deadline fires, this aborts
+  // every in-flight call's combined signal (per-call timeout is still
+  // separate, and the catch in callVertexWithRetry discriminates between
+  // the two via signal.aborted state).
+  const batchController = new AbortController();
+  const deadlineTimer = setTimeout(
+    () => batchController.abort(new Error("batch-deadline")),
+    GLOBAL_DEADLINE_MS,
+  );
+
+  try {
+    // Fire the header call.
+    const headerPromise: Promise<BatchOutcome> = callVertexWithRetry(
+      buildHeaderPrompt(itinerary, builderData, intentResult),
+      buildHeaderSchema(),
+      PER_CALL_TIMEOUT_MS,
+      batchController.signal,
+    ).then(
+      (result): BatchOutcome => ({ kind: "header", result }),
+      (error): BatchOutcome => ({ kind: "header-failed", error }),
+    );
+
+    // Fire one call per day, tagging each promise with its dayId and index.
+    const dayPromises: Promise<BatchOutcome>[] = days.map((day, dayIndex) => {
+      const prevCityId =
+        dayIndex > 0 ? days[dayIndex - 1]?.cityId ?? null : null;
+      const nextCityId =
+        dayIndex < days.length - 1 ? days[dayIndex + 1]?.cityId ?? null : null;
+
+      const placeActivities = (day.activities ?? []).filter(
+        (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+          a.kind === "place",
+      );
+      const categoryMix = computeCategoryMix(
+        placeActivities.map((a) => ({
+          category: a.tags?.[1] ?? a.tags?.[0],
+        })),
+      );
+
+      const prompt = buildDayPrompt(
+        day,
+        dayIndex,
+        days.length,
+        prevCityId ?? null,
+        nextCityId ?? null,
+        categoryMix,
+        builderData,
+        intentResult,
+      );
+
+      return callVertexWithRetry(
+        prompt,
+        buildDaySchema(),
+        PER_CALL_TIMEOUT_MS,
+        batchController.signal,
+      ).then(
+        (result): BatchOutcome => ({
+          kind: "day",
+          dayId: day.id,
+          dayIndex,
+          result,
+        }),
+        (error): BatchOutcome => ({
+          kind: "day-failed",
+          dayId: day.id,
+          dayIndex,
+          error,
+        }),
+      );
+    });
+
+    // Drain all N+1 promises via settleInOrder. The .then handlers above
+    // ensure these never reject -- they always resolve to an outcome tag --
+    // so settleInOrder only sees fulfilled outcomes.
+    for await (const settled of settleInOrder(
+      [headerPromise, ...dayPromises],
+      GLOBAL_DEADLINE_MS,
+    )) {
+      if (settled.status === "fulfilled") {
+        yield settled.value;
+      } else if (settled.status === "deadline") {
+        // Convert the generic deadline outcome into a typed BatchOutcome.
+        // Index 0 is the header; indices 1..N are days (offset by 1).
+        if (settled.index === 0) {
+          yield { kind: "header-deadline" };
+        } else {
+          const dayIndex = settled.index - 1;
+          const day = days[dayIndex];
+          if (day) {
+            yield { kind: "day-deadline", dayId: day.id, dayIndex };
+          }
+        }
+      }
+      // status: 'rejected' is unreachable because the .then handlers above
+      // convert rejections into fulfilled outcome tags. Left unhandled.
+    }
+  } finally {
+    clearTimeout(deadlineTimer);
   }
 }
 

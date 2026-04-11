@@ -19,7 +19,9 @@ import {
   buildHeaderSchema,
   buildDaySchema,
   callVertexWithRetry,
+  runGuideProseBatch,
   type SettledOutcome,
+  type BatchOutcome,
 } from "../guideProseGenerator";
 import { generateObject } from "ai";
 import { logger } from "@/lib/logger";
@@ -475,5 +477,130 @@ describe("callVertexWithRetry", () => {
     ).rejects.toBeTruthy();
 
     expect(logger.warn).toHaveBeenCalledOnce();
+  });
+});
+
+// ── runGuideProseBatch ──────────────────────────────────────────────────────
+
+describe("runGuideProseBatch", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const baseItinerary = {
+    id: "it-1",
+    days: [
+      {
+        id: "d1",
+        cityId: "kyoto",
+        activities: [
+          { kind: "place", id: "a1", title: "Fushimi", tags: ["shrine"], timeOfDay: "morning" },
+        ],
+      },
+      {
+        id: "d2",
+        cityId: "osaka",
+        activities: [
+          { kind: "place", id: "a2", title: "Castle", tags: ["landmark"], timeOfDay: "morning" },
+        ],
+      },
+    ],
+  } as never;
+
+  const baseBuilder = {
+    dates: { start: "2026-05-01" },
+    vibes: ["temples_tradition"],
+    style: "balanced" as const,
+    group: { type: "couple" as const, size: 2 },
+  } as never;
+
+  it("yields one header outcome and one outcome per day on full success", async () => {
+    // Mock: first call returns header, next two return day prose
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { tripOverview: "Kyoto quiet." },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: {
+          intro: "D1 intro",
+          transitions: [],
+          summary: "D1 summary",
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: {
+          intro: "D2 intro",
+          transitions: [],
+          summary: "D2 summary",
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+    const outcomes: BatchOutcome[] = [];
+    for await (const outcome of runGuideProseBatch(baseItinerary, baseBuilder, undefined)) {
+      outcomes.push(outcome);
+    }
+
+    expect(outcomes).toHaveLength(3);
+    const header = outcomes.find((o) => o.kind === "header");
+    const days = outcomes.filter((o) => o.kind === "day");
+    expect(header).toBeDefined();
+    expect(days).toHaveLength(2);
+  });
+
+  it("yields day-failed when a specific day call rejects", async () => {
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { tripOverview: "Header ok." },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D1 intro", transitions: [], summary: "D1 summary" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockRejectedValueOnce(
+        Object.assign(new Error("boom"), { name: "AI_APICallError" }),
+      );
+
+    const outcomes: BatchOutcome[] = [];
+    for await (const outcome of runGuideProseBatch(baseItinerary, baseBuilder, undefined)) {
+      outcomes.push(outcome);
+    }
+
+    expect(outcomes).toHaveLength(3);
+    const failed = outcomes.find((o) => o.kind === "day-failed");
+    expect(failed).toBeDefined();
+    if (failed?.kind === "day-failed") {
+      expect(failed.dayId).toBe("d2");
+      expect(failed.dayIndex).toBe(1);
+    }
+  });
+
+  it("yields header-failed when the header call rejects", async () => {
+    vi.mocked(generateObject)
+      .mockRejectedValueOnce(
+        Object.assign(new Error("boom"), { name: "AI_APICallError" }),
+      )
+      .mockResolvedValueOnce({
+        object: { intro: "D1 intro", transitions: [], summary: "D1 summary" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
+      .mockResolvedValueOnce({
+        object: { intro: "D2 intro", transitions: [], summary: "D2 summary" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+    const outcomes: BatchOutcome[] = [];
+    for await (const outcome of runGuideProseBatch(baseItinerary, baseBuilder, undefined)) {
+      outcomes.push(outcome);
+    }
+
+    expect(outcomes).toHaveLength(3);
+    const headerFailed = outcomes.find((o) => o.kind === "header-failed");
+    const daysSuccess = outcomes.filter((o) => o.kind === "day");
+    expect(headerFailed).toBeDefined();
+    expect(daysSuccess).toHaveLength(2);
   });
 });
