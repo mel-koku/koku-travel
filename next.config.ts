@@ -80,8 +80,8 @@ const isProduction = process.env.NODE_ENV === "production";
 // In production, Next.js uses nonce-based CSP automatically, but we still need 'unsafe-inline' as fallback
 // Consider using 'strict-dynamic' with nonces in the future for better security
 const scriptSrc = isProduction
-  ? ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live", "https://va.vercel-scripts.com"] // Production: allow inline for Next.js hydration + unpkg.com for Leaflet + Vercel
-  : ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live"]; // Development: allow for Next.js hot reload + unpkg.com
+  ? ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live", "https://va.vercel-scripts.com", "https://*.googletagmanager.com"] // Production: allow inline for Next.js hydration + unpkg.com for Leaflet + Vercel + GA4
+  : ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live", "https://*.googletagmanager.com"]; // Development: allow for Next.js hot reload + unpkg.com + GA4
 
 const securityHeaders = [
   {
@@ -124,7 +124,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com", // Allow Google Fonts stylesheets + Tailwind CSS inline styles
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
-      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.sanity.io https://*.apicdn.sanity.io",
+      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.sanity.io https://*.apicdn.sanity.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
       "worker-src 'self' blob:", // Allow Mapbox GL JS Web Workers
       "frame-src 'self' https://*.sanity.io",
       "object-src 'none'",
