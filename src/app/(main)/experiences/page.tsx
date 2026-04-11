@@ -1,4 +1,5 @@
 import { ExperiencesComingSoon } from "@/components/features/experiences/ExperiencesComingSoon";
+import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata = {
   title: "Experiences | Yuku Japan",
@@ -7,6 +8,7 @@ export const metadata = {
   robots: { index: false },
 };
 
-export default function ExperiencesPage() {
-  return <ExperiencesComingSoon variant="a" />;
+export default async function ExperiencesPage() {
+  const content = await getPagesContent();
+  return <ExperiencesComingSoon variant="a" content={content ?? undefined} />;
 }

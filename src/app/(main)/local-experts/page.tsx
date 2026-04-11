@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LocalExpertsComingSoon } from "@/components/features/local-experts/LocalExpertsComingSoon";
+import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
   title: "Local Experts | Yuku Japan",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function LocalExpertsPage() {
-  return <LocalExpertsComingSoon />;
+export default async function LocalExpertsPage() {
+  const content = await getPagesContent();
+  return <LocalExpertsComingSoon content={content ?? undefined} />;
 }

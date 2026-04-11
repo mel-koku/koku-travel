@@ -13,14 +13,16 @@ import {
   easeCinematicMut,
   staggerWord,
 } from "@/lib/motion";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type Props = {
   variant: "a" | "b";
+  content?: PagesContent;
 };
 
 const WORDS = ["Tea", "Craft", "Kintsukuroi", "Calligraphy", "Indigo", "Fermentation"];
 
-export function ExperiencesComingSoon({ variant }: Props) {
+export function ExperiencesComingSoon({ variant, content }: Props) {
   const prefersReducedMotion = useReducedMotion();
   const isA = variant === "a";
   const basePath = isA ? "" : "/b";
@@ -35,7 +37,7 @@ export function ExperiencesComingSoon({ variant }: Props) {
         transition={{ duration: durationCinematic * 2, ease: easeCinematicMut }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80"
+          src={content?.comingSoonExpertsImage?.url ?? "/images/fallback.jpg"}
           alt="Traditional Japanese street at dusk"
           fill
           priority
