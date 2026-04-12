@@ -58,7 +58,7 @@ export function UnlockCard({
 
       <button
         onClick={onUnlock}
-        className="btn-koku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
+        className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
       >
         Unlock for ${launchPricing ? 19 : price}
       </button>

@@ -77,7 +77,7 @@ export function ContextualUnlockPrompt({
             <div className="flex gap-3">
               <button
                 onClick={onUnlock}
-                className="btn-koku flex-1 rounded-lg bg-brand-primary px-6 py-3 text-sm font-medium text-white active:scale-[0.98]"
+                className="btn-yuku flex-1 rounded-lg bg-brand-primary px-6 py-3 text-sm font-medium text-white active:scale-[0.98]"
               >
                 Unlock for ${price}
               </button>
