@@ -567,7 +567,8 @@ function TravelTipsSection({
     return map;
   }, [dailyBriefings]);
 
-  const hasBriefings = !!briefingMap;
+  // Section title: "Daily Briefings" when any day has LLM prose, else "Travel Tips"
+  const hasBriefings = briefingMap && briefingMap.size > 0;
 
   return (
     <div className="space-y-2">
@@ -580,8 +581,8 @@ function TravelTipsSection({
           const label = buildDayLabel(i, { tripStartDate, cityId: day.cityId });
           const briefing = briefingMap?.get(day.id);
 
-          if (hasBriefings) {
-            // LLM briefing mode: show prose paragraph per day
+          if (briefing) {
+            // This specific day has LLM briefing prose
             return (
               <div key={day.id ?? i}>
                 <button
@@ -602,7 +603,7 @@ function TravelTipsSection({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {isExpanded && briefing && (
+                {isExpanded && (
                   <div className="px-4 pb-3">
                     <p className={cn(typography({ intent: "utility-body" }), "text-foreground-body leading-relaxed")}>
                       {briefing}
@@ -613,7 +614,7 @@ function TravelTipsSection({
             );
           }
 
-          // Fallback: consolidated rule-based tips with cross-day dedup
+          // Fallback: rule-based tips for this day (no briefing available)
           const count = tipCounts.get(i) ?? 0;
           return (
             <div key={day.id ?? i}>
