@@ -232,9 +232,18 @@ export function isLocationAvailableOnDate(
   // Get availability rules
   const rules = availability ?? location.availability ?? [];
 
-  // If no rules defined but marked as seasonal, default to unavailable
-  // (conservative approach - requires explicit availability rules)
+  // If no availability rules, fall back to valid_months check
   if (rules.length === 0) {
+    if (location.validMonths && location.validMonths.length > 0) {
+      const month = date.getMonth() + 1; // 1-indexed
+      if (location.validMonths.includes(month)) {
+        return { available: true, reason: `Available in month ${month}` };
+      }
+      return {
+        available: false,
+        reason: `${location.name} not available in month ${month} (operates ${location.validMonths.join(", ")})`,
+      };
+    }
     return {
       available: false,
       reason: `${location.name} is a seasonal location but has no availability rules defined`,

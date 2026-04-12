@@ -448,6 +448,25 @@ describe("Seasonal Availability", () => {
       expect(result.reason).toContain("no availability rules");
     });
 
+    it("should allow seasonal location via valid_months when no availability rules exist", () => {
+      const location = createLocation({
+        name: "Cherry Blossom Park",
+        isSeasonal: true,
+        seasonalType: "seasonal_attraction",
+        availability: [],
+        validMonths: [3, 4, 5],
+      });
+
+      // March — within valid_months
+      const available = isLocationAvailableOnDate(location, new Date("2025-03-20"));
+      expect(available.available).toBe(true);
+
+      // August — outside valid_months
+      const unavailable = isLocationAvailableOnDate(location, new Date("2025-08-10"));
+      expect(unavailable.available).toBe(false);
+      expect(unavailable.reason).toContain("not available in month 8");
+    });
+
     it("should handle location with availability passed as parameter", () => {
       const location = createLocation({
         name: "Test Festival",
