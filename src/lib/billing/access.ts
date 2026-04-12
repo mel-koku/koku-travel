@@ -34,4 +34,5 @@ export function isDayAccessible(
  */
 
 export const MAX_FREE_REFINEMENTS = 1;
+export const MAX_PAID_REFINEMENTS = 75;
 export const UNLOCK_CEREMONY_MIN_MS = 12_000;

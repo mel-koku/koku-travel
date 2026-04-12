@@ -24,6 +24,7 @@ const defaultNavColumns = [
     links: [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
+      { label: "Pricing", href: "/pricing" },
       { label: "Privacy", href: "/privacy" },
     ],
   },

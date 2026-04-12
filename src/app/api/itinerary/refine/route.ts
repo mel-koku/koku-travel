@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
-import { MAX_FREE_REFINEMENTS } from "@/lib/billing/access";
+import { MAX_FREE_REFINEMENTS, MAX_PAID_REFINEMENTS } from "@/lib/billing/access";
 import { isFullAccessEnabled } from "@/lib/billing/accessServer";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
@@ -303,6 +303,18 @@ export const POST = withApiHandler(
             });
           }
         }
+
+        // Hard cap for unlocked trips to prevent abuse
+        if (tripRowStub && tripRowStub.unlocked_at) {
+          const used = tripRowStub.free_refinements_used ?? 0;
+          if (used >= MAX_PAID_REFINEMENTS) {
+            return NextResponse.json({
+              refinedDay: null,
+              updatedTrip: null,
+              message: "You've reached the refinement limit for this trip.",
+            });
+          }
+        }
       }
 
       // Check Redis cache for identical refinement request
@@ -412,6 +424,18 @@ export const POST = withApiHandler(
             updatedTrip: null,
             message: "Unlock your full trip to keep refining.",
             requiresUnlock: true,
+          });
+        }
+      }
+
+      // Hard cap for unlocked trips to prevent abuse
+      if (tripRow && tripRow.unlocked_at) {
+        const used = tripRow.free_refinements_used ?? 0;
+        if (used >= MAX_PAID_REFINEMENTS) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: "You've reached the refinement limit for this trip.",
           });
         }
       }
