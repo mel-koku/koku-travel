@@ -11,10 +11,9 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { dayRefinementSchema } from "./llmSchemas";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -56,7 +55,7 @@ export async function refineDays(
   allLocations: Location[],
   intentResult?: IntentExtractionResult,
 ): Promise<Itinerary> {
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return itinerary;
   }
 
@@ -130,13 +129,16 @@ ${runnerUpContext}
 - If the itinerary looks good, return empty patches array with a high score
 - Swap targets MUST use IDs from the runner-ups list`;
 
+  const model = getModel();
+  if (!model) return itinerary;
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
+      model,
+      providerOptions: VERTEX_PROVIDER_OPTIONS,
       schema: dayRefinementSchema,
       prompt,
       abortSignal: controller.signal,
@@ -182,7 +184,6 @@ ${runnerUpContext}
     clearTimeout(timeout);
     logger.warn("Day refinement failed, using original itinerary", {
       error: getErrorMessage(error),
-      ...extractApiErrorDetails(error),
     });
     return itinerary;
   }

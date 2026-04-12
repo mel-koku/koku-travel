@@ -8,11 +8,10 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import { getSeason } from "@/lib/utils/seasonUtils";
@@ -44,12 +43,15 @@ export async function generateDayIntros(
   itinerary: Itinerary,
   builderData: TripBuilderData,
 ): Promise<Record<string, string> | null> {
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return null;
   }
 
   const days = itinerary.days ?? [];
   if (days.length === 0) return null;
+
+  const model = getModel();
+  if (!model) return null;
 
   const season = getSeason(builderData.dates?.start);
   const vibes = builderData.vibes?.join(", ") ?? "general sightseeing";
@@ -109,18 +111,12 @@ No:
 
 Return a JSON object mapping each day ID to its intro string.`;
 
-  // Defensive hard cap. Vertex can take 50+ seconds for a 13-day trip when
-  // the model is under load. Bound it so a single call can never eat the
-  // caller's entire budget. 12s is enough for typical 3-7 day trips; longer
-  // trips will hit the cap and fall back to template intros — which is
-  // strictly better than letting the call run unbounded.
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
+      model,
+      providerOptions: VERTEX_PROVIDER_OPTIONS,
       schema: introSchema,
       prompt,
-      abortSignal: AbortSignal.timeout(12_000),
     });
 
     logger.info("Generated AI day intros", {
@@ -131,7 +127,6 @@ Return a JSON object mapping each day ID to its intro string.`;
   } catch (error) {
     logger.warn("Failed to generate AI day intros, falling back to templates", {
       error: getErrorMessage(error),
-      ...extractApiErrorDetails(error),
     });
     return null;
   }
