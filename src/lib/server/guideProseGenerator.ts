@@ -608,16 +608,26 @@ export async function* runGuideProseBatch(
  * Vertex calls. Returns a GeneratedGuide containing the assembled header
  * fields and per-day prose.
  *
- * Returns `null` ONLY on precondition failure (missing env var, zero days).
- * Under partial or total call failure, returns a GeneratedGuide shell that
- * may have `tripOverview` undefined and/or an empty `days` array -- the
- * downstream guideBuilder handles this via its three-tier fallback.
- *
  * Public contract is unchanged from the old monolithic implementation except
- * for this one detail: the old code returned `null` on total LLM failure;
- * the new code returns an empty shell. The downstream consumer behavior is
- * identical (templates render via the fallback), but the shell form allows
- * partial-success preservation (e.g., header succeeds but all days fail).
+ * for one detail: the old code returned `null` on total LLM failure; the new
+ * code returns an empty shell. Downstream consumer behavior is identical
+ * (templates render via the three-tier fallback in guideBuilder), but the
+ * shell form allows partial-success preservation (e.g., header succeeds but
+ * some days fail).
+ *
+ * @returns Three distinct shapes:
+ *   - `null` means the function never ran. Triggered only by precondition
+ *     failure: missing GOOGLE_APPLICATION_CREDENTIALS_JSON env var, or zero
+ *     days in the itinerary. Does NOT indicate LLM failure.
+ *   - A GeneratedGuide shell with `tripOverview: undefined` and/or empty
+ *     `days` array means the function ran but some or all Vertex calls
+ *     failed (rejection, per-call timeout, or global deadline). The shell
+ *     still carries whichever calls succeeded.
+ *   - A fully-populated GeneratedGuide means every call (header + N days)
+ *     succeeded.
+ *
+ *   Callers should NOT use `null` as a failure signal -- check
+ *   `result?.tripOverview` and `result?.days.length` instead.
  */
 export async function generateGuideProse(
   itinerary: Itinerary,
