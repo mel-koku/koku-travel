@@ -13,14 +13,12 @@ RETURNS TABLE (
   category text,
   place_id text,
   image text,
-  rating float,
+  rating numeric,
   short_description text,
   tags text[],
   is_hidden_gem boolean,
   jta_approved boolean,
   is_unesco_site boolean,
-  latitude float,
-  longitude float,
   parent_id text,
   cuisine_type text,
   similarity float
@@ -33,7 +31,7 @@ BEGIN
     l.id, l.name, l.city, l.region, l.category, l.place_id,
     l.image, l.rating, l.short_description, l.tags,
     l.is_hidden_gem, l.jta_approved, l.is_unesco_site,
-    l.latitude, l.longitude, l.parent_id, l.cuisine_type,
+    l.parent_id, l.cuisine_type,
     (1 - (l.embedding <=> query_embedding))::float AS similarity
   FROM locations l
   WHERE l.id != exclude_id
@@ -62,7 +60,7 @@ RETURNS TABLE (
   category text,
   place_id text,
   image text,
-  rating float,
+  rating numeric,
   parent_id text,
   similarity float
 )
