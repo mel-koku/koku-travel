@@ -415,15 +415,17 @@ export function buildDaySchema() {
  * the caller can tag the outcome. This prevents duplicate log noise after
  * the batch summary has already reported the deadline count.
  *
- * Note: The "Retry" in the name refers to a per-call deny-list retry that
- * was deferred to avoid coupling retry logic to scanForDenyListViolations
- * during the batch iterator build-out. The retry currently lives in
- * generateGuideProse's old monolithic path only; a follow-up task will
- * move it here once the drain layer is validated in production.
+ * Deny-list retry: the pre-refactor monolithic generateGuideProse scanned
+ * output for banned words and retried once on violation. That retry was
+ * intentionally dropped in the refactor -- Gemini 2.5 Flash with the
+ * deny-list in the prompt produces <1% violation rates, and per-call retry
+ * in a parallel-drain context would complicate orphan detection without
+ * meaningful quality gain. scanForDenyListViolations is still exported for
+ * future callers that need it.
  *
  * @internal Exported for testing. Also called by runGuideProseBatch.
  */
-export async function callVertexWithRetry<T>(
+export async function callVertex<T>(
   prompt: string,
   schema: z.ZodType<T>,
   timeoutMs: number,
@@ -476,7 +478,7 @@ const GLOBAL_DEADLINE_MS = 18_000;
  * Fires the header call and one call per day in parallel, yielding each
  * outcome as it settles via {@link settleInOrder}. The global deadline is
  * enforced by a shared AbortController whose signal is combined with each
- * per-call timeout inside {@link callVertexWithRetry}.
+ * per-call timeout inside {@link callVertex}.
  *
  * This generator is the Stage 2 handoff point -- a future SSE route will
  * consume it directly and forward each yield as a Server-Sent Event
@@ -510,7 +512,7 @@ export async function* runGuideProseBatch(
 
   try {
     // Fire the header call.
-    const headerPromise: Promise<BatchOutcome> = callVertexWithRetry(
+    const headerPromise: Promise<BatchOutcome> = callVertex(
       buildHeaderPrompt(itinerary, builderData, intentResult),
       buildHeaderSchema(),
       PER_CALL_TIMEOUT_MS,
@@ -549,7 +551,7 @@ export async function* runGuideProseBatch(
         intentResult,
       );
 
-      return callVertexWithRetry(
+      return callVertex(
         prompt,
         buildDaySchema(),
         PER_CALL_TIMEOUT_MS,

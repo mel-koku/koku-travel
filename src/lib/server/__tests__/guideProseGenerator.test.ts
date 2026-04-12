@@ -18,7 +18,7 @@ import {
   buildDayPrompt,
   buildHeaderSchema,
   buildDaySchema,
-  callVertexWithRetry,
+  callVertex,
   runGuideProseBatch,
   generateGuideProse,
   type SettledOutcome,
@@ -400,9 +400,9 @@ describe("buildDaySchema", () => {
   });
 });
 
-// ── callVertexWithRetry ─────────────────────────────────────────────────────
+// ── callVertex ─────────────────────────────────────────────────────
 
-describe("callVertexWithRetry", () => {
+describe("callVertex", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -414,7 +414,7 @@ describe("callVertexWithRetry", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    const result = await callVertexWithRetry(
+    const result = await callVertex(
       "test prompt",
       buildHeaderSchema(),
       10_000,
@@ -435,7 +435,7 @@ describe("callVertexWithRetry", () => {
     );
 
     await expect(
-      callVertexWithRetry(
+      callVertex(
         "test prompt",
         buildHeaderSchema(),
         10_000,
@@ -457,7 +457,7 @@ describe("callVertexWithRetry", () => {
     );
 
     await expect(
-      callVertexWithRetry("test prompt", buildHeaderSchema(), 10_000),
+      callVertex("test prompt", buildHeaderSchema(), 10_000),
     ).rejects.toBeTruthy();
 
     // No batch signal was passed, so this is a legitimate failure -- log it.
@@ -476,7 +476,7 @@ describe("callVertexWithRetry", () => {
     vi.mocked(generateObject).mockRejectedValueOnce(apiError);
 
     await expect(
-      callVertexWithRetry("test prompt", buildHeaderSchema(), 10_000),
+      callVertex("test prompt", buildHeaderSchema(), 10_000),
     ).rejects.toBeTruthy();
 
     expect(logger.warn).toHaveBeenCalledOnce();
