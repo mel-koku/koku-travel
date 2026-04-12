@@ -511,6 +511,53 @@ export const pagesContentQuery = groq`
   }
 `;
 
+/** About page singleton with resolved images */
+export const aboutPageQuery = groq`
+  *[_type == "aboutPage"][0] {
+    heroEyebrow,
+    heroHeading,
+    heroSubtext,
+    storyHeading,
+    storyParagraphs,
+    "storyImage": storyImage {
+      ...,
+      "url": asset->url
+    },
+    "photoBreakImage": photoBreakImage {
+      ...,
+      "url": asset->url
+    },
+    photoBreakAlt,
+    valuesHeading,
+    values[] {
+      title,
+      description,
+      "image": image {
+        ...,
+        "url": asset->url
+      }
+    },
+    teamEyebrow,
+    teamHeading,
+    teamMembers[] {
+      name,
+      role,
+      bio,
+      "photo": photo {
+        ...,
+        "url": asset->url
+      },
+      github,
+      linkedin,
+      twitter,
+      website
+    },
+    ctaHeading,
+    ctaDescription,
+    ctaButtonText
+  }
+`;
+
 /** Cultural pillars for Before You Land briefing */
 export const culturalPillarsQuery = groq`
   *[_type == "culturalPillar"] | order(sortOrder asc) {
