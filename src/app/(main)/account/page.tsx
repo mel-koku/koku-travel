@@ -6,11 +6,15 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 export const metadata: Metadata = {
   title: "Account | Yuku Japan",
   description: "Manage your Yuku Japan account settings and preferences.",
+  alternates: { canonical: "/account" },
   openGraph: {
     title: "Account | Yuku Japan",
     description: "Manage your Yuku Japan account settings and preferences.",
+    url: "/account",
     siteName: "Yuku Japan",
+    type: "website",
   },
+  robots: { index: false, follow: true },
 };
 
 // Force dynamic rendering — page shows user-specific content

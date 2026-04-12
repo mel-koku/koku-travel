@@ -7,11 +7,15 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 export const metadata: Metadata = {
   title: "Dashboard | Yuku Japan",
   description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
+  alternates: { canonical: "/dashboard" },
   openGraph: {
     title: "Dashboard | Yuku Japan",
     description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
+    url: "/dashboard",
     siteName: "Yuku Japan",
+    type: "website",
   },
+  robots: { index: false, follow: true },
 };
 
 // Force dynamic rendering because we use server-side authentication

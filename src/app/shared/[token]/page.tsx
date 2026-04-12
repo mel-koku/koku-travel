@@ -76,6 +76,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!trip) {
     return {
       title: "Shared Itinerary - Yuku Japan",
+      alternates: { canonical: `/shared/${token}` },
+      robots: { index: false, follow: false },
     };
   }
 
@@ -96,9 +98,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${trip.name} - Yuku Japan`,
     description,
+    alternates: { canonical: `/shared/${token}` },
     openGraph: {
       title: trip.name,
       description,
+      url: `/shared/${token}`,
       siteName: "Yuku Japan",
       type: "website",
     },
@@ -107,6 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: trip.name,
       description,
     },
+    robots: { index: false, follow: false },
   };
 }
 
