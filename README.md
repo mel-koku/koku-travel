@@ -19,6 +19,7 @@ See `.env.example` for the complete list with descriptions. At minimum, the prod
 
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` – Supabase project credentials (reads and auth).
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` – Sanity CMS config. Required for sitemap generation and Sanity-backed content. If absent, `src/sanity/client.ts` falls back to placeholder values so imports do not throw, and Sanity queries return empty arrays (see `experienceService.ts` try/catch pattern).
+- `NEXT_PUBLIC_SITE_URL` – Canonical production URL (e.g. `https://yukujapan.com`). Load-bearing for SEO: `metadataBase`, every `alternates.canonical`, sitemap/robots URLs, JSON-LD `@graph` entity IDs, OG image absolute URLs, and the host-based `X-Robots-Tag: noindex` rule in `next.config.ts` that protects Vercel previews from indexing all derive from it. If unset, falls back to `https://yukujapan.com`, which is wrong for any non-canonical deployment and will silently mis-canonicalize every page.
 
 Optional but commonly set:
 
