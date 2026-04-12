@@ -6,11 +6,15 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 export const metadata: Metadata = {
   title: "Your Itinerary | Yuku Japan",
   description: "View and customize your personalized Japan itinerary with optimized routes, local insights, and smart recommendations.",
+  alternates: { canonical: "/itinerary" },
   openGraph: {
     title: "Your Itinerary | Yuku Japan",
     description: "View and customize your personalized Japan itinerary with optimized routes, local insights, and smart recommendations.",
+    url: "/itinerary",
     siteName: "Yuku Japan",
+    type: "website",
   },
+  robots: { index: false, follow: true },
 };
 
 // Force dynamic rendering since the client uses useSearchParams()

@@ -72,6 +72,16 @@ if (siteUrl) {
 // Security headers configuration
 const isProduction = process.env.NODE_ENV === "production";
 
+// Canonical production host — only this host is allowed to be indexed.
+// All other hosts (Vercel previews, staging, localhost) get X-Robots-Tag: noindex.
+const productionHost = (() => {
+  try {
+    return siteUrl ? new URL(siteUrl).host : "yukujapan.com";
+  } catch {
+    return "yukujapan.com";
+  }
+})();
+
 // CSP directives - Next.js requires 'unsafe-inline' for hydration scripts
 // In production, Next.js uses nonce-based CSP automatically, but we still need 'unsafe-inline' as fallback
 // Consider using 'strict-dynamic' with nonces in the future for better security
@@ -198,6 +208,23 @@ const nextConfig: NextConfig = {
     });
 
     return [
+      {
+        // Block indexing on every host that isn't the canonical production host.
+        // Covers Vercel preview URLs, staging subdomains, and local dev.
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: `(?!${productionHost.replace(/\./g, "\\.")}$).*`,
+          },
+        ],
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
+          },
+        ],
+      },
       {
         source: "/studio/:path*",
         headers: studioHeaders,

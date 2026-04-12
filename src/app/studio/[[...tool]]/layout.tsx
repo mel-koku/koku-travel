@@ -1,6 +1,9 @@
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Yuku Japan Studio",
   description: "Content management studio for Yuku Japan guides",
+  robots: { index: false, follow: false },
 };
 
 export default function StudioLayout({

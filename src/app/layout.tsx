@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { WebVitals } from "@/components/WebVitals";
 import CookieBanner from "@/components/CookieBanner";
@@ -36,6 +37,38 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Yuku Japan",
+  url: BASE_URL,
+  logo: `${BASE_URL}/icon.png`,
+  description:
+    "Curated travel guides, itineraries, and inspiration for planning trips to Japan, built with local experts.",
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Yuku Japan",
+  url: BASE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${BASE_URL}/places?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
   },
 };
 
@@ -51,6 +84,20 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" />
       </head>
       <body className="min-h-[100dvh] antialiased">
+        <Script
+          id="ld-organization"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify(organizationJsonLd)}
+        </Script>
+        <Script
+          id="ld-website"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify(websiteJsonLd)}
+        </Script>
         <GoogleAnalytics />
         <WebVitals />
         {children}

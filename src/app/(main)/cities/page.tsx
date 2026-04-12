@@ -5,15 +5,24 @@ import { CITY_PAGE_DATA, getAllCitySlugs } from "@/lib/cities/cityData";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { CityIndex } from "@/components/features/cities/CityIndex";
 
+const CITIES_DESCRIPTION =
+  "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.";
+
 export const metadata: Metadata = {
   title: "Cities of Japan | Yuku Japan",
-  description:
-    "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.",
+  description: CITIES_DESCRIPTION,
+  alternates: { canonical: "/cities" },
   openGraph: {
     title: "Cities of Japan | Yuku Japan",
-    description:
-      "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.",
+    description: CITIES_DESCRIPTION,
+    url: "/cities",
     siteName: "Yuku Japan",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cities of Japan | Yuku Japan",
+    description: CITIES_DESCRIPTION,
   },
 };
 

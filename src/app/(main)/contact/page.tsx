@@ -1,5 +1,27 @@
+import type { Metadata } from "next";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+
+export const metadata: Metadata = {
+  title: "Contact | Yuku Japan",
+  description:
+    "Get in touch with Yuku Japan. Have feedback or a question? Reach us at hello@yukujapan.com.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact | Yuku Japan",
+    description:
+      "Get in touch with Yuku Japan. Have feedback or a question? Reach us at hello@yukujapan.com.",
+    url: "/contact",
+    siteName: "Yuku Japan",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Contact | Yuku Japan",
+    description:
+      "Get in touch with Yuku Japan. Have feedback or a question? Reach us at hello@yukujapan.com.",
+  },
+};
 
 export default function ContactPage() {
   return (
