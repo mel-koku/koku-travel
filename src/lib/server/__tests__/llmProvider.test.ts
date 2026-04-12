@@ -3,11 +3,15 @@ import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 vi.mock("server-only", () => ({}));
 
 vi.mock("@ai-sdk/google", () => ({
-  google: vi.fn(() => "mock-google-model"),
+  google: Object.assign(vi.fn(() => "mock-google-model"), {
+    embeddingModel: vi.fn(() => "mock-google-embedding-model"),
+  }),
 }));
 
 vi.mock("@ai-sdk/google-vertex", () => ({
-  vertex: vi.fn(() => "mock-vertex-model"),
+  vertex: Object.assign(vi.fn(() => "mock-vertex-model"), {
+    textEmbeddingModel: vi.fn(() => "mock-vertex-embedding-model"),
+  }),
 }));
 
 describe("llmProvider", () => {
@@ -87,6 +91,28 @@ describe("llmProvider", () => {
       expect(VERTEX_PROVIDER_OPTIONS).toEqual({
         google: { streamFunctionCallArguments: false },
       });
+    });
+  });
+
+  describe("getEmbeddingModel", () => {
+    it("returns null when no provider available", async () => {
+      const { getEmbeddingModel } = await import("../llmProvider");
+      expect(getEmbeddingModel()).toBeNull();
+    });
+
+    it("returns embedding model when google provider available", async () => {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = "test-key";
+      const { getEmbeddingModel } = await import("../llmProvider");
+      const model = getEmbeddingModel();
+      expect(model).not.toBeNull();
+    });
+
+    it("returns embedding model when vertex provider available", async () => {
+      process.env.GOOGLE_VERTEX_PROJECT = "my-project";
+      process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = '{"type":"service_account"}';
+      const { getEmbeddingModel } = await import("../llmProvider");
+      const model = getEmbeddingModel();
+      expect(model).not.toBeNull();
     });
   });
 });

@@ -13,7 +13,7 @@ import "server-only";
 import { google } from "@ai-sdk/google";
 import { vertex } from "@ai-sdk/google-vertex";
 import { logger } from "@/lib/logger";
-import type { LanguageModelV3 } from "@ai-sdk/provider";
+import type { LanguageModelV3, EmbeddingModelV3 } from "@ai-sdk/provider";
 
 const MODEL_ID = "gemini-2.5-flash";
 
@@ -54,6 +54,21 @@ export function getModel(): LanguageModelV3 | null {
   }
 
   logger.warn("No LLM provider configured, AI features disabled");
+  return null;
+}
+
+const EMBEDDING_MODEL_ID = {
+  vertex: "text-embedding-005",
+  google: "text-embedding-004",
+} as const;
+
+export function getEmbeddingModel(): EmbeddingModelV3 | null {
+  if (provider === "vertex") {
+    return vertex.textEmbeddingModel(EMBEDDING_MODEL_ID.vertex);
+  }
+  if (provider === "google") {
+    return google.embeddingModel(EMBEDDING_MODEL_ID.google);
+  }
   return null;
 }
 
