@@ -52,7 +52,7 @@ export function UnlockCard({
 
       {launchPricing && launchSlotsRemaining != null && launchSlotsRemaining > 0 && (
         <p className={cn(typography({ intent: "utility-meta" }), "mb-4 text-brand-primary")}>
-          Launch pricing: {launchSlotsRemaining} of 100 Passes remaining at $19
+          Launch pricing: {launchSlotsRemaining} of 300 Passes remaining at $19
         </p>
       )}
 

@@ -17,13 +17,13 @@ ALTER TABLE user_preferences
 -- Launch pricing counter table
 CREATE TABLE IF NOT EXISTS launch_pricing (
   id TEXT PRIMARY KEY DEFAULT 'default',
-  total_slots INTEGER NOT NULL DEFAULT 100,
-  remaining_slots INTEGER NOT NULL DEFAULT 100
+  total_slots INTEGER NOT NULL DEFAULT 300,
+  remaining_slots INTEGER NOT NULL DEFAULT 300
 );
 
--- Seed with 100 launch pricing slots
+-- Seed with 300 launch pricing slots
 INSERT INTO launch_pricing (id, total_slots, remaining_slots)
-VALUES ('default', 100, 100)
+VALUES ('default', 300, 300)
 ON CONFLICT (id) DO NOTHING;
 
 -- Access log for refund exception checks
