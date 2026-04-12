@@ -651,3 +651,36 @@ export async function fetchSeasonalLocations(
 
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
 }
+
+/**
+ * Returns the ids of every active location for sitemap generation.
+ * Paginated in 1000-row chunks to bypass Supabase's default row limit.
+ */
+export async function getSitemapLocationIds(): Promise<string[]> {
+  const supabase = await createClient();
+  const pageSize = 1000;
+  const ids: string[] = [];
+
+  for (let page = 0; ; page += 1) {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id")
+      .eq("is_active", true)
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+      .order("id", { ascending: true })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (error) {
+      logger.warn("Failed to fetch locations for sitemap", { error: error.message, page });
+      break;
+    }
+    if (!data || data.length === 0) break;
+
+    for (const row of data) {
+      if (row && typeof row.id === "string") ids.push(row.id);
+    }
+    if (data.length < pageSize) break;
+  }
+
+  return ids;
+}

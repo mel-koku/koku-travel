@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getPublishedGuides } from "@/lib/guides/guideService";
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { getAllCitySlugs } from "@/lib/cities/cityData";
+import { getSitemapLocationIds } from "@/lib/locations/locationService";
+import { logger } from "@/lib/logger";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
 
@@ -24,23 +26,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Dynamic guide routes
-  const guides = await getPublishedGuides();
-  const guideRoutes: MetadataRoute.Sitemap = guides.map((guide) => ({
-    url: `${BASE_URL}/guides/${guide.id}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  // Fetch dynamic content in parallel — sitemap generation is the slowest route,
+  // and a failure in any single fetcher should not sink the whole file.
+  const [guidesResult, experiencesResult, locationIdsResult] = await Promise.allSettled([
+    getPublishedGuides(),
+    getPublishedExperiences(),
+    getSitemapLocationIds(),
+  ]);
 
-  // Dynamic experience routes (redirected to /guides/ canonical URLs)
-  const experiences = await getPublishedExperiences();
-  const experienceRoutes: MetadataRoute.Sitemap = experiences.map((exp) => ({
-    url: `${BASE_URL}/guides/${exp.slug}`,
-    lastModified: exp.publishedAt ? new Date(exp.publishedAt) : new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const guideRoutes: MetadataRoute.Sitemap =
+    guidesResult.status === "fulfilled"
+      ? guidesResult.value.map((guide) => ({
+          url: `${BASE_URL}/guides/${guide.id}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        }))
+      : (logger.warn("sitemap: guides fetch failed", { error: String(guidesResult.reason) }), []);
 
-  return [...staticRoutes, ...cityRoutes, ...guideRoutes, ...experienceRoutes];
+  // Experience routes redirect to /guides/{slug} canonical URLs
+  const experienceRoutes: MetadataRoute.Sitemap =
+    experiencesResult.status === "fulfilled"
+      ? experiencesResult.value.map((exp) => ({
+          url: `${BASE_URL}/guides/${exp.slug}`,
+          lastModified: exp.publishedAt ? new Date(exp.publishedAt) : new Date(),
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        }))
+      : (logger.warn("sitemap: experiences fetch failed", { error: String(experiencesResult.reason) }), []);
+
+  const placeRoutes: MetadataRoute.Sitemap =
+    locationIdsResult.status === "fulfilled"
+      ? locationIdsResult.value.map((id) => ({
+          url: `${BASE_URL}/places/${id}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly" as const,
+          priority: 0.6,
+        }))
+      : (logger.warn("sitemap: places fetch failed", { error: String(locationIdsResult.reason) }), []);
+
+  return [...staticRoutes, ...cityRoutes, ...guideRoutes, ...experienceRoutes, ...placeRoutes];
 }
