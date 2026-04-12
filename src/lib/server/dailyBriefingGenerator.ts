@@ -8,125 +8,15 @@ import "server-only";
  * Falls back to null on any failure → consolidated rule-based tips render instead.
  */
 
-import { generateObject } from "ai";
 import { z } from "zod";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
-import { buildDailyBriefingSchema } from "./llmSchemas";
-import { getFestivalsForDay } from "@/data/festivalCalendar";
-import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { getSeason } from "@/lib/utils/seasonUtils";
 import { callVertex, settleInOrder } from "./_llmBatchPrimitives";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { GeneratedBriefings, DayBriefing } from "@/types/llmConstraints";
-
-function buildBriefingPrompt(
-  itinerary: Itinerary,
-  builderData: TripBuilderData,
-): string {
-  const days = itinerary.days;
-  const startDate = builderData.dates.start
-    ? parseLocalDate(builderData.dates.start)
-    : null;
-  const month = startDate ? startDate.getMonth() + 1 : null;
-
-  const dayContexts = days.map((day, i) => {
-    const date = startDate
-      ? new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i)
-      : null;
-    const dayMonth = date ? date.getMonth() + 1 : month;
-    const dayDate = date ? date.getDate() : null;
-
-    const activities = day.activities
-      .filter((a) => a.kind === "place" && !a.isAnchor)
-      .map((a) => {
-        const parts = [a.title];
-        if (a.kind === "place" && a.mealType) parts.push(`(${a.mealType})`);
-        if (a.kind === "place" && a.schedule?.arrivalTime)
-          parts.push(`at ${a.schedule.arrivalTime}`);
-        if (a.kind === "place" && a.tags?.includes("cash-only"))
-          parts.push("[cash-only]");
-        return parts.join(" ");
-      });
-
-    const hasLongTrain = day.activities.some(
-      (a) =>
-        a.kind === "place" &&
-        a.travelFromPrevious &&
-        (a.travelFromPrevious.durationMinutes ?? 0) >= 60,
-    );
-
-    const festivals =
-      dayMonth && dayDate && day.cityId
-        ? getFestivalsForDay(dayMonth, dayDate, day.cityId)
-        : [];
-
-    const isNewCity = i === 0 || days[i - 1]?.cityId !== day.cityId;
-
-    const transitCount = day.activities.filter(
-      (a) =>
-        a.kind === "place" &&
-        a.travelFromPrevious &&
-        ["train", "subway", "bus", "tram", "ferry", "transit"].includes(
-          a.travelFromPrevious.mode,
-        ),
-    ).length;
-
-    return {
-      dayId: day.id,
-      index: i + 1,
-      city: day.cityId,
-      isNewCity,
-      isCityTransition: !!day.cityTransition,
-      activities: activities.slice(0, 6),
-      hasLongTrain,
-      transitCount,
-      festivals: festivals.map((f) => f.name),
-      dateStr: date
-        ? date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-        : `Day ${i + 1}`,
-    };
-  });
-
-  const citySequence = days.map((d) => d.cityId).filter(Boolean);
-  const uniqueCities = [...new Set(citySequence)];
-
-  return `You are a concise travel briefing writer for a Japan trip planning app.
-
-Write ONE short briefing paragraph (2-4 sentences, max 80 words) per day.
-
-RULES:
-- Each day's briefing should only mention what is NEW or SPECIFIC to that day
-- Do NOT repeat information from prior days. If Day 1 covered escalator rules, Day 2 must not mention them again.
-- Do NOT repeat generic advice (IC cards, rail passes, escalator etiquette). Those are in a separate section.
-- Focus on: logistics that matter TODAY (specific cash-only venues, specific transit timing, specific crowd conditions), cultural context for TODAY's activities, city-specific notes on arrival days
-- Name specific places and times from the schedule
-- On city transition days: mention luggage forwarding if relevant
-- On festival days: mention the specific festival
-- If a day has nothing noteworthy beyond the activities themselves, write a very short 1-sentence briefing
-- Tone: knowledgeable concierge, not a guidebook. Direct, specific, no filler.
-
-DENY LIST (never use these words): amazing, incredible, breathtaking, stunning, embark, venture, journey, delve, tapestry, embrace, discover, explore, vibrant, bustling, nestled, hidden gem, best-kept secret, off the beaten path, must-see, bucket list, unforgettable
-
-TRIP CONTEXT:
-- Cities: ${uniqueCities.join(" \u2192 ")}
-- ${days.length} days total
-- Pace: ${builderData.style ?? "balanced"}
-- Group: ${builderData.group?.type ?? "solo"}
-
-DAILY SCHEDULE:
-${dayContexts
-  .map(
-    (d) =>
-      `Day ${d.index} (${d.dateStr}, ${d.city}${d.isNewCity ? " - NEW CITY" : ""}${d.isCityTransition ? " - LEAVING CITY" : ""}):
-  Activities: ${d.activities.join("; ") || "Free day"}
-  Transit segments: ${d.transitCount}${d.hasLongTrain ? " (includes long train ride)" : ""}${d.festivals.length ? `\n  Festivals: ${d.festivals.join(", ")}` : ""}`,
-  )
-  .join("\n\n")}`;
-}
 
 // ── Per-day parallel infrastructure ────────────────────────────────────
 
@@ -301,57 +191,88 @@ export async function* runBriefingBatch(
   }
 }
 
+/**
+ * Generates personalized daily briefings for a trip via per-day parallel
+ * Vertex calls. Returns a GeneratedBriefings containing the assembled
+ * per-day prose.
+ *
+ * Public contract change from pre-refactor: the old monolithic code returned
+ * `null` on total LLM failure; the new drain returns an empty shell.
+ * Downstream consumer behavior is identical for the total-failure case
+ * (rule-based tips render via fallback), but the shell form allows
+ * partial-success preservation.
+ *
+ * @returns `null` only on precondition failure (no credentials, zero days).
+ *   Otherwise returns a GeneratedBriefings shell (possibly with empty days
+ *   array on total failure).
+ */
 export async function generateDailyBriefings(
   itinerary: Itinerary,
   builderData: TripBuilderData,
 ): Promise<GeneratedBriefings | null> {
-  const dayIds = itinerary.days.map((d) => d.id);
-  if (dayIds.length === 0) return null;
-
-  // Budget scales with trip length — the 15s base was sized for 3-7 day
-  // trips and was hitting the cap on a 13-day trip (incident
-  // req_1775916704399_jeo2x94nkx). Capped at 25s to stay under the parallel
-  // block budget.
-  const briefingsTimeoutMs = Math.min(
-    25_000,
-    15_000 + Math.max(0, dayIds.length - 5) * 1_000,
-  );
-
-  try {
-    const { object } = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
-      schema: buildDailyBriefingSchema(dayIds),
-      prompt: buildBriefingPrompt(itinerary, builderData),
-      abortSignal: AbortSignal.timeout(briefingsTimeoutMs),
-    });
-
-    // Validate all day IDs present
-    const returnedIds = new Set(object.days.map((d) => d.dayId));
-    const missing = dayIds.filter((id) => !returnedIds.has(id));
-    if (missing.length > 0) {
-      logger.warn("Daily briefings missing days", { missing });
-      return null;
-    }
-
-    // Validate no empty briefing text
-    const emptyBriefings = object.days.filter((d) => !d.briefing?.trim());
-    if (emptyBriefings.length > 0) {
-      logger.warn("Daily briefings contain empty content", {
-        emptyDayIds: emptyBriefings.map((d) => d.dayId),
-      });
-      return null;
-    }
-
-    return object as GeneratedBriefings;
-  } catch (error) {
-    logger.warn(
-      "Daily briefings generation failed, falling back to rule-based tips",
-      {
-        error: getErrorMessage(error),
-        ...extractApiErrorDetails(error),
-      },
-    );
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
   }
+
+  const days = itinerary.days ?? [];
+  if (days.length === 0) return null;
+
+  const dayEntries: Array<{ dayIndex: number; day: DayBriefing }> = [];
+  let daysSuccess = 0;
+  let daysFailed = 0;
+  let daysDeadline = 0;
+
+  const startTime = Date.now();
+
+  for await (const outcome of runBriefingBatch(itinerary, builderData)) {
+    switch (outcome.kind) {
+      case "day": {
+        const briefing = outcome.result.briefing?.trim();
+        if (!briefing) {
+          logger.warn("Daily briefing empty content", {
+            dayId: outcome.dayId,
+            dayIndex: outcome.dayIndex,
+          });
+          daysFailed++;
+          break;
+        }
+        dayEntries.push({
+          dayIndex: outcome.dayIndex,
+          day: { dayId: outcome.dayId, briefing },
+        });
+        daysSuccess++;
+        break;
+      }
+      case "day-failed":
+        logger.warn("Daily briefing day call failed", {
+          dayId: outcome.dayId,
+          dayIndex: outcome.dayIndex,
+          error: getErrorMessage(outcome.error),
+          ...extractApiErrorDetails(outcome.error),
+        });
+        daysFailed++;
+        break;
+      case "day-deadline":
+        daysDeadline++;
+        break;
+    }
+  }
+
+  dayEntries.sort((a, b) => a.dayIndex - b.dayIndex);
+  const shell: GeneratedBriefings = { days: dayEntries.map(({ day }) => day) };
+
+  const elapsedMs = Date.now() - startTime;
+  const totalDays = days.length;
+  const deadlineFired = daysDeadline > 0;
+
+  logger.info("Daily briefings batch complete", {
+    daysSuccess,
+    daysFailed,
+    daysDeadline,
+    totalDays,
+    elapsedMs,
+    deadlineFired,
+  });
+
+  return shell;
 }
