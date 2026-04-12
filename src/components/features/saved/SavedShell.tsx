@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,10 +11,36 @@ import { useSaved } from "@/context/SavedContext";
 import { useSavedLocations } from "@/hooks/useSavedLocations";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import { CATEGORY_HIERARCHY } from "@/data/categoryHierarchy";
+import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
+
+const FILTER_OPTIONS = [
+  { id: "all", label: "All" },
+  ...CATEGORY_HIERARCHY.map((c) => ({ id: c.id, label: c.label })),
+];
 
 export default function SavedShell() {
   const { saved } = useSaved();
   const { data: savedLocations = [], isLoading, error } = useSavedLocations(saved);
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filteredLocations = useMemo(() => {
+    if (activeFilter === "all") return savedLocations;
+    return savedLocations.filter((loc) => {
+      const parent = getParentCategoryForDatabaseCategory(loc.category);
+      return parent === activeFilter;
+    });
+  }, [savedLocations, activeFilter]);
+
+  // Count locations per parent category for badge numbers
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const loc of savedLocations) {
+      const parent = getParentCategoryForDatabaseCategory(loc.category);
+      if (parent) counts[parent] = (counts[parent] ?? 0) + 1;
+    }
+    return counts;
+  }, [savedLocations]);
 
   // Show loading state
   if (isLoading && saved.length > 0) {
@@ -58,6 +85,38 @@ export default function SavedShell() {
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Category filter bar */}
+        {savedLocations.length > 0 && (
+          <div className="mb-8 flex flex-wrap gap-2">
+            {FILTER_OPTIONS.map((opt) => {
+              const isActive = activeFilter === opt.id;
+              const count = opt.id === "all" ? savedLocations.length : (categoryCounts[opt.id] ?? 0);
+              if (opt.id !== "all" && count === 0) return null;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setActiveFilter(opt.id)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-colors",
+                    isActive
+                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary font-medium"
+                      : "border-border bg-background text-foreground-secondary hover:bg-surface"
+                  )}
+                >
+                  {opt.label}
+                  <span className={cn(
+                    "font-mono text-xs",
+                    isActive ? "text-brand-primary/70" : "text-stone"
+                  )}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {savedLocations.length === 0 ? (
           /* Atmospheric empty state */
           <div className="relative overflow-hidden rounded-lg">
@@ -114,9 +173,20 @@ export default function SavedShell() {
               </ScrollReveal>
             </div>
           </div>
+        ) : filteredLocations.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="text-foreground-secondary">No saved places in this category.</p>
+            <button
+              type="button"
+              onClick={() => setActiveFilter("all")}
+              className="mt-3 text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors"
+            >
+              Show all
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-            {savedLocations.map((loc, i) => (
+            {filteredLocations.map((loc, i) => (
               <ScrollReveal key={loc.id} delay={i * 0.05} distance={20}>
                 <div className="space-y-3">
                   <LocationCard location={loc} />
