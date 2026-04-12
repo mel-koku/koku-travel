@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 5
 
     # Only run if secrets are configured
-    if: github.repository == 'meljunpicardal/yuku-japan'
+    if: github.repository == 'mel-koku/yuku-japan'
 
     steps:
       - name: Checkout code
