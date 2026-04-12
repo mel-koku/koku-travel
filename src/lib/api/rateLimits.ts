@@ -8,7 +8,7 @@ export const RATE_LIMITS = {
   PLACES: { maxRequests: 60, windowMs: 60_000 },
   ITINERARY_PLAN: { maxRequests: 20, windowMs: 60_000 },
   /** Stricter limit for unauthenticated itinerary generation (expensive AI) */
-  ITINERARY_PLAN_UNAUTH: { maxRequests: 2, windowMs: 60_000, keySuffix: "unauth" },
+  ITINERARY_PLAN_UNAUTH: { maxRequests: 4, windowMs: 60_000, keySuffix: "unauth" },
   ITINERARY_REFINE: { maxRequests: 30, windowMs: 60_000 },
   ITINERARY_SCHEDULE: { maxRequests: 30, windowMs: 60_000 },
   ITINERARY_AVAILABILITY: { maxRequests: 60, windowMs: 60_000 },
@@ -38,8 +38,10 @@ export const RATE_LIMITS = {
  */
 export const DAILY_QUOTAS = {
   ITINERARY_PLAN: { name: "itinerary-plan", maxPerDay: 15 },
+  ITINERARY_REFINE: { name: "itinerary-refine", maxPerDay: 50 },
   CHAT: { name: "chat", maxPerDay: 50 },
   DAY_TRIPS_PLAN: { name: "day-trip-plan", maxPerDay: 10 },
   AI_RECOMMEND: { name: "ai-recommend", maxPerDay: 30 },
   SMART_PROMPTS: { name: "smart-prompts", maxPerDay: 30 },
+  PLACES: { name: "places", maxPerDay: 200 },
 } as const;

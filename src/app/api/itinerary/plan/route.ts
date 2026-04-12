@@ -48,7 +48,7 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 export const maxDuration = 60;
 
 export const POST = withApiHandler(async (request: NextRequest, { context, user }) => {
-  // Stricter rate limit for unauthenticated requests (5 req/min vs 20)
+  // Stricter rate limit for unauthenticated requests (4 req/min vs 20)
   if (!user) {
     const unauthRateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_PLAN_UNAUTH);
     if (unauthRateLimitResponse) {
