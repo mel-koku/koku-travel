@@ -41,6 +41,7 @@ type EnvConfig = {
   GOOGLE_VERTEX_LOCATION?: string;
   ENABLE_CHAT?: string;
   GUIDE_PROSE_PER_CALL_TIMEOUT_MS?: string;
+  DAILY_BRIEFING_PER_CALL_TIMEOUT_MS?: string;
 
   // NAVITIME (Japan transit routing via RapidAPI)
   NAVITIME_RAPIDAPI_KEY?: string;
@@ -112,6 +113,7 @@ function createLenientConfig(): EnvConfig {
     GOOGLE_VERTEX_LOCATION: process.env.GOOGLE_VERTEX_LOCATION,
     ENABLE_CHAT: process.env.ENABLE_CHAT,
     GUIDE_PROSE_PER_CALL_TIMEOUT_MS: process.env.GUIDE_PROSE_PER_CALL_TIMEOUT_MS,
+    DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: process.env.DAILY_BRIEFING_PER_CALL_TIMEOUT_MS,
     NAVITIME_RAPIDAPI_KEY: process.env.NAVITIME_RAPIDAPI_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
@@ -182,6 +184,7 @@ function validateEnv(): EnvConfig {
     GOOGLE_VERTEX_LOCATION: getOptionalEnv("GOOGLE_VERTEX_LOCATION"),
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
     GUIDE_PROSE_PER_CALL_TIMEOUT_MS: getOptionalEnv("GUIDE_PROSE_PER_CALL_TIMEOUT_MS"),
+    DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: getOptionalEnv("DAILY_BRIEFING_PER_CALL_TIMEOUT_MS"),
     NAVITIME_RAPIDAPI_KEY: getOptionalEnv("NAVITIME_RAPIDAPI_KEY"),
     RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
   };
@@ -270,6 +273,19 @@ export const env = {
    */
   get guideProsePerCallTimeoutMs(): number {
     const raw = envConfig.GUIDE_PROSE_PER_CALL_TIMEOUT_MS;
+    if (!raw) return 10_000;
+    const parsed = Number.parseInt(raw, 10);
+    if (Number.isNaN(parsed)) return 10_000;
+    return Math.min(15_000, Math.max(5_000, parsed));
+  },
+  /**
+   * Per-call Vertex timeout for daily briefing generation, in milliseconds.
+   * Default 10_000. Clamped to [5_000, 15_000]. Same tuning guidance as
+   * guideProsePerCallTimeoutMs: raise toward 12_000 if observability shows
+   * daysDeadline + daysFailed > 10% of totalDays consistently.
+   */
+  get dailyBriefingPerCallTimeoutMs(): number {
+    const raw = envConfig.DAILY_BRIEFING_PER_CALL_TIMEOUT_MS;
     if (!raw) return 10_000;
     const parsed = Number.parseInt(raw, 10);
     if (Number.isNaN(parsed)) return 10_000;

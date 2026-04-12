@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { fetchPlaceDetailsByPlaceId } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
 import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
@@ -90,5 +90,5 @@ export const GET = withApiHandler(
       });
     }
   },
-  { rateLimit: RATE_LIMITS.PLACES, optionalAuth: true },
+  { rateLimit: RATE_LIMITS.PLACES, dailyQuota: DAILY_QUOTAS.PLACES, optionalAuth: true },
 );

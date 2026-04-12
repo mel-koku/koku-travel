@@ -6,7 +6,7 @@ import { badRequest, serviceUnavailable } from "@/lib/api/errors";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
 import { withApiHandler } from "@/lib/api/withApiHandler";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
 
@@ -196,7 +196,7 @@ export const POST = withApiHandler(
       throw error;
     }
   },
-  { rateLimit: RATE_LIMITS.PLACES, optionalAuth: true },
+  { rateLimit: RATE_LIMITS.PLACES, dailyQuota: DAILY_QUOTAS.PLACES, optionalAuth: true },
 );
 
 /**
@@ -259,5 +259,5 @@ export const GET = withApiHandler(
       throw error;
     }
   },
-  { rateLimit: RATE_LIMITS.PLACES, optionalAuth: true },
+  { rateLimit: RATE_LIMITS.PLACES, dailyQuota: DAILY_QUOTAS.PLACES, optionalAuth: true },
 );

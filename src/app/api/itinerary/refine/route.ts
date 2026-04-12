@@ -5,7 +5,7 @@ import { convertItineraryToTrip } from "@/lib/server/itineraryEngine";
 import { badRequest } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 import { withApiHandler } from "@/lib/api/withApiHandler";
-import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { getRedisClient } from "@/lib/cache/itineraryCache";
 import { z } from "zod";
@@ -392,5 +392,5 @@ export const POST = withApiHandler(
 
     return NextResponse.json(responseBody);
   },
-  { rateLimit: RATE_LIMITS.ITINERARY_REFINE, requireJson: true, optionalAuth: true },
+  { rateLimit: RATE_LIMITS.ITINERARY_REFINE, dailyQuota: DAILY_QUOTAS.ITINERARY_REFINE, requireJson: true, optionalAuth: true },
 );

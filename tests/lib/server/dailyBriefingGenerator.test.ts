@@ -1,11 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   createTestItinerary,
   createTestItineraryDay,
   createTestPlaceActivity,
   createTestBuilderData,
 } from "../../fixtures/itinerary";
-import type { GeneratedBriefings } from "@/types/llmConstraints";
 
 // Mock server-only, AI SDK
 vi.mock("server-only", () => ({}));
@@ -15,14 +14,15 @@ vi.mock("ai", () => ({
 vi.mock("@ai-sdk/google-vertex", () => ({
   createVertex: vi.fn().mockReturnValue(vi.fn().mockReturnValue("mock-model")),
 }));
+vi.mock("@/lib/server/vertexProvider", () => ({
+  vertex: vi.fn().mockReturnValue({}),
+  VERTEX_GENERATE_OPTIONS: { google: { streamFunctionCallArguments: false } },
+}));
 vi.mock("@/lib/logger", () => ({
   logger: { info: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 vi.mock("@/lib/utils/errorUtils", () => ({
   getErrorMessage: (e: unknown) => String(e),
-}));
-vi.mock("@/data/festivalCalendar", () => ({
-  getFestivalsForDay: vi.fn().mockReturnValue([]),
 }));
 
 const { generateObject } = await import("ai");
@@ -58,28 +58,30 @@ const testBuilderData = createTestBuilderData({
 });
 
 describe("generateDailyBriefings", () => {
+  const originalEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = "fake-creds-json";
+  });
+
+  afterEach(() => {
+    if (originalEnv === undefined) {
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    } else {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = originalEnv;
+    }
   });
 
   it("returns briefings for all days on success", async () => {
-    const mockResult: GeneratedBriefings = {
-      days: [
-        { dayId: "day-1", briefing: "Arrive in Kyoto and head to Kiyomizu Temple early." },
-        { dayId: "day-2", briefing: "Cross to Osaka for street food at Dotonbori." },
-      ],
-    };
-
-    vi.mocked(generateObject).mockResolvedValueOnce({
-      object: mockResult,
-      finishReason: "stop",
-      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
-      rawResponse: undefined,
-      warnings: [],
-      request: {},
-      response: {},
-      toJsonResponse: () => new Response(),
-    } as never);
+    // New per-day drain: one generateObject call per day
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { briefing: "Arrive in Kyoto and head to Kiyomizu Temple early." },
+      } as never)
+      .mockResolvedValueOnce({
+        object: { briefing: "Cross to Osaka for street food at Dotonbori." },
+      } as never);
 
     const result = await generateDailyBriefings(testItinerary, testBuilderData);
 
@@ -89,34 +91,29 @@ describe("generateDailyBriefings", () => {
     expect(result!.days[1]!.dayId).toBe("day-2");
   });
 
-  it("returns null when LLM returns incomplete days", async () => {
-    vi.mocked(generateObject).mockResolvedValueOnce({
-      object: {
-        days: [
-          { dayId: "day-1", briefing: "Only one day returned." },
-          // day-2 missing
-        ],
-      },
-      finishReason: "stop",
-      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
-      rawResponse: undefined,
-      warnings: [],
-      request: {},
-      response: {},
-      toJsonResponse: () => new Response(),
-    } as never);
+  it("returns a partial shell when one day fails", async () => {
+    vi.mocked(generateObject)
+      .mockResolvedValueOnce({
+        object: { briefing: "Only one day returned." },
+      } as never)
+      .mockRejectedValueOnce(new Error("day 2 failed"));
 
     const result = await generateDailyBriefings(testItinerary, testBuilderData);
-    expect(result).toBeNull();
+    // New contract: returns a shell with partial days, not null
+    expect(result).not.toBeNull();
+    expect(result!.days).toHaveLength(1);
+    expect(result!.days[0]!.dayId).toBe("day-1");
   });
 
-  it("returns null on timeout", async () => {
-    vi.mocked(generateObject).mockRejectedValueOnce(
-      new DOMException("The operation was aborted", "AbortError"),
-    );
+  it("returns an empty shell on total failure", async () => {
+    vi.mocked(generateObject)
+      .mockRejectedValueOnce(new DOMException("aborted", "AbortError"))
+      .mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
 
     const result = await generateDailyBriefings(testItinerary, testBuilderData);
-    expect(result).toBeNull();
+    // New contract: returns empty shell, not null
+    expect(result).not.toBeNull();
+    expect(result!.days).toEqual([]);
   });
 
   it("returns null for empty itinerary", async () => {
