@@ -43,6 +43,12 @@ type EnvConfig = {
   GUIDE_PROSE_PER_CALL_TIMEOUT_MS?: string;
   DAILY_BRIEFING_PER_CALL_TIMEOUT_MS?: string;
 
+  // Vertex AI (optional, auto-detected by llmProvider)
+  GOOGLE_VERTEX_PROJECT?: string;
+  GOOGLE_VERTEX_LOCATION?: string;
+  GOOGLE_APPLICATION_CREDENTIALS_JSON?: string;
+  LLM_PROVIDER?: string;
+
   // NAVITIME (Japan transit routing via RapidAPI)
   NAVITIME_RAPIDAPI_KEY?: string;
 
