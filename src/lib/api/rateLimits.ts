@@ -33,6 +33,7 @@ export const RATE_LIMITS = {
   BILLING_VERIFY: { maxRequests: 30, windowMs: 60_000 },
   BILLING_WEBHOOK: { maxRequests: 50, windowMs: 60_000 },
   BILLING_COMPLETE: { maxRequests: 5, windowMs: 60_000 },
+  CONTACT: { maxRequests: 5, windowMs: 15 * 60_000 },
 } as const;
 
 /**
