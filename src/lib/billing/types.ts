@@ -24,6 +24,6 @@ export const TIER_PRICES: Record<UnlockTier, number> = {
 };
 
 export const TIER_THRESHOLDS = {
-  short: 4,
-  standard: 9,
+  short: 7,
+  standard: 14,
 } as const;

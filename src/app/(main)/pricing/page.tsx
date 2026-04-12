@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 };
 
 const tiers: { tier: UnlockTier; label: string; days: string }[] = [
-  { tier: "short", label: "Short Trip", days: "1\u20134 days" },
-  { tier: "standard", label: "Standard Trip", days: "5\u20139 days" },
-  { tier: "long", label: "Extended Trip", days: "10\u201314 days" },
+  { tier: "short", label: "Short Trip", days: "1\u20137 days" },
+  { tier: "standard", label: "Standard Trip", days: "8\u201314 days" },
+  { tier: "long", label: "Extended Trip", days: "15\u201321 days" },
 ];
 
 const features = [

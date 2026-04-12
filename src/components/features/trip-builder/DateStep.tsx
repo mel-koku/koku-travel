@@ -9,7 +9,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
-import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDate, parseLocalDateWithOffset, formatLocalDateString } from "@/lib/utils/dateUtils";
 import { durationFast, easeReveal } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -19,7 +19,7 @@ type DateFormValues = {
 };
 
 const MIN_DURATION = 1;
-const MAX_DURATION = 14;
+const MAX_DURATION = 21;
 
 export type DateStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -77,7 +77,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
     if (!startValue) return undefined;
     const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);
     if (!maxDate) return undefined;
-    return maxDate.toISOString().split("T")[0];
+    return formatLocalDateString(maxDate);
   }, [startValue]);
 
   const syncDates = useCallback(() => {
@@ -140,7 +140,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
           </motion.h2>
 
           <p className="mt-2 text-sm text-stone">
-            {sanityConfig?.dateStepDescription ?? "Season shapes the trip. Cherry blossoms, fall color, rainy season. Up to 14 days."}
+            {sanityConfig?.dateStepDescription ?? "Season shapes the trip. Cherry blossoms, fall color, rainy season. Up to 21 days."}
           </p>
 
           <div className="mt-8 flex flex-col gap-6">

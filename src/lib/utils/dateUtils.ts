@@ -23,3 +23,14 @@ export function parseLocalDateWithOffset(dateStr: string | undefined | null, day
   if (!y || !m || !d) return null;
   return new Date(y, m - 1, d + dayOffset);
 }
+
+/**
+ * Format a Date as "YYYY-MM-DD" using local date parts.
+ * Avoids the UTC shift that `.toISOString().split("T")[0]` introduces.
+ */
+export function formatLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}

@@ -12,21 +12,21 @@ describe("billing/access", () => {
   });
 
   describe("getTripTier", () => {
-    it("returns short for 1-4 day trips", async () => {
+    it("returns short for 1-7 day trips", async () => {
       const { getTripTier } = await import("@/lib/billing/access");
       expect(getTripTier(1)).toBe("short");
-      expect(getTripTier(4)).toBe("short");
+      expect(getTripTier(7)).toBe("short");
     });
 
-    it("returns standard for 5-9 day trips", async () => {
+    it("returns standard for 8-14 day trips", async () => {
       const { getTripTier } = await import("@/lib/billing/access");
-      expect(getTripTier(5)).toBe("standard");
-      expect(getTripTier(9)).toBe("standard");
+      expect(getTripTier(8)).toBe("standard");
+      expect(getTripTier(14)).toBe("standard");
     });
 
-    it("returns long for 10+ day trips", async () => {
+    it("returns long for 15+ day trips", async () => {
       const { getTripTier } = await import("@/lib/billing/access");
-      expect(getTripTier(10)).toBe("long");
+      expect(getTripTier(15)).toBe("long");
       expect(getTripTier(21)).toBe("long");
     });
   });

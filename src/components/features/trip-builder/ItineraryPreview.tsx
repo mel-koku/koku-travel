@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
-import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDateWithOffset, formatLocalDateString } from "@/lib/utils/dateUtils";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import type { InterestId } from "@/types/trip";
 import { vibesToInterests } from "@/data/vibes";
@@ -41,7 +41,7 @@ export function ItineraryPreview() {
       if (startDate) {
         const dayDate = parseLocalDateWithOffset(startDate, i);
         if (dayDate) {
-          date = dayDate.toISOString().split("T")[0] ?? null;
+          date = formatLocalDateString(dayDate);
 
           const formatter = new Intl.DateTimeFormat(undefined, {
             weekday: "short",

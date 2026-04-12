@@ -10,7 +10,7 @@ import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
 import { vibesToCategoryWeights } from "@/data/vibeFilterMapping";
-import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDateWithOffset, formatLocalDateString } from "@/lib/utils/dateUtils";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -545,7 +545,7 @@ export async function generateItinerary(
     const dayDate = data.dates.start
       ? (() => {
           const d = parseLocalDateWithOffset(data.dates.start, dayIndex);
-          return d ? d.toISOString().split("T")[0] : undefined;
+          return d ? formatLocalDateString(d) : undefined;
         })()
       : undefined;
     const isWeekend = dayDate
