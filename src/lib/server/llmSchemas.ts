@@ -79,31 +79,6 @@ export const dayRefinementSchema = z.object({
   summary: z.string(),
 });
 
-// ── Pass 3: Guide Prose (dynamic schema) ───────────────────────────
-
-/**
- * Builds a dynamic guide prose schema with exact day IDs from the itinerary.
- * This ensures Gemini returns prose keyed to real day IDs.
- */
-export function buildGuideProseSchema(
-  dayIds: string[],
-) {
-  return z.object({
-    tripOverview: z.string(),
-    culturalBriefingIntro: z.string().optional(),
-    days: z.array(
-      z.object({
-        dayId: dayIds.length > 0 ? z.enum(dayIds as [string, ...string[]]) : z.string(),
-        intro: z.string(),
-        transitions: z.array(z.string()).max(5),
-        culturalMoment: z.string().optional(),
-        practicalTip: z.string().optional(),
-        summary: z.string(),
-      }),
-    ),
-  });
-}
-
 // ── Pass 4: Daily Briefings (dynamic schema) ─────────────────────
 
 /**
