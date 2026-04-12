@@ -10,6 +10,7 @@ import {
   getCityHeroImage,
 } from "@/lib/cities/cityHelpers";
 import { buildCityJsonLd } from "@/lib/cities/cityJsonLd";
+import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
 import { fetchLocationsByCity } from "@/lib/locations/locationService";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { CityDetail } from "@/components/features/cities/CityDetail";
@@ -85,7 +86,16 @@ export default async function CityDetailPage({ params }: RouteProps) {
   const meta = getCityMetadata(slug);
   const coordinates = meta?.coordinates;
 
-  const jsonLd = buildCityJsonLd(city, stats, topLocations, coordinates);
+  const citySchema = buildCityJsonLd(city, stats, topLocations, coordinates);
+  const breadcrumbs = buildBreadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Cities", path: "/cities" },
+    { name: `${city.name}, Japan`, path: `/cities/${slug}` },
+  ]);
+  const jsonLd = buildJsonLdGraph(
+    citySchema as unknown as Record<string, unknown>,
+    breadcrumbs,
+  );
 
   return (
     <>

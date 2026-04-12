@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PlaceDetail } from "@/components/features/places/PlaceDetail";
 import { buildPlaceJsonLd } from "@/lib/places/placeJsonLd";
+import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
 import type { Location } from "@/types/location";
 
 export const revalidate = 3600;
@@ -106,7 +107,13 @@ export default async function PlaceDetailPage({ params }: RouteProps) {
 
   if (!location) notFound();
 
-  const jsonLd = buildPlaceJsonLd(location);
+  const placeSchema = buildPlaceJsonLd(location);
+  const breadcrumbs = buildBreadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Places", path: "/places" },
+    { name: location.name, path: `/places/${id}` },
+  ]);
+  const jsonLd = buildJsonLdGraph(placeSchema, breadcrumbs);
 
   return (
     <>

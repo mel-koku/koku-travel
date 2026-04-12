@@ -10,6 +10,7 @@ import {
 } from "@/lib/guides/guideService";
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
 import { buildGuideJsonLd } from "@/lib/guides/guideJsonLd";
+import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
 import { urlFor } from "@/sanity/image";
 
 // Request-scoped cache: deduplicates fetches between generateMetadata() and page component
@@ -100,7 +101,7 @@ export default async function GuideDetailPage({ params }: Props) {
     const imageUrl =
       guide.featuredImage?.url ||
       urlFor(guide.featuredImage).width(1200).url();
-    const jsonLd = buildGuideJsonLd({
+    const guideSchema = buildGuideJsonLd({
       slug: guide.slug,
       title: guide.title,
       summary: guide.summary,
@@ -110,6 +111,12 @@ export default async function GuideDetailPage({ params }: Props) {
       publishedAt: guide.publishedAt,
       updatedAt: guide._updatedAt,
     });
+    const breadcrumbs = buildBreadcrumbList([
+      { name: "Home", path: "/" },
+      { name: "Guides", path: "/guides" },
+      { name: guide.title, path: `/guides/${guide.slug}` },
+    ]);
+    const jsonLd = buildJsonLdGraph(guideSchema, breadcrumbs);
 
     return (
       <>
@@ -143,7 +150,7 @@ export default async function GuideDetailPage({ params }: Props) {
   }
   const relatedGuide = relatedGuides[0] ?? null;
 
-  const jsonLd = buildGuideJsonLd({
+  const guideSchema = buildGuideJsonLd({
     slug,
     title: guide.title,
     summary: guide.summary,
@@ -151,6 +158,12 @@ export default async function GuideDetailPage({ params }: Props) {
     publishedAt: guide.publishedAt,
     updatedAt: guide.updatedAt,
   });
+  const breadcrumbs = buildBreadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides" },
+    { name: guide.title, path: `/guides/${slug}` },
+  ]);
+  const jsonLd = buildJsonLdGraph(guideSchema, breadcrumbs);
 
   return (
     <>
