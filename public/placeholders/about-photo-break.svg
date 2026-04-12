@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600">
+  <rect width="1600" height="600" fill="#D4CFC7"/>
+  <text x="800" y="290" text-anchor="middle" font-family="system-ui" font-size="18" fill="#6B6058" opacity="0.5">Full-width photo break</text>
+  <text x="800" y="318" text-anchor="middle" font-family="system-ui" font-size="14" fill="#6B6058" opacity="0.35">Replace via Sanity Studio</text>
+</svg>
