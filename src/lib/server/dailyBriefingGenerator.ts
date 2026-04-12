@@ -13,6 +13,7 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { getSeason } from "@/lib/utils/seasonUtils";
+import { env } from "@/lib/env";
 import { callVertex, settleInOrder } from "./_llmBatchPrimitives";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -122,8 +123,7 @@ export type BriefingBatchOutcome =
   | { kind: "day-failed"; dayId: string; dayIndex: number; error: unknown }
   | { kind: "day-deadline"; dayId: string; dayIndex: number };
 
-// TODO(task-8): replace with env.dailyBriefingPerCallTimeoutMs
-const PER_CALL_TIMEOUT_MS = 10_000;
+const PER_CALL_TIMEOUT_MS = env.dailyBriefingPerCallTimeoutMs;
 const GLOBAL_DEADLINE_MS = 18_000;
 
 /**
