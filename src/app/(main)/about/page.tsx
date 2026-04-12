@@ -147,7 +147,7 @@ export default function AboutPage() {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="mb-6 h-40 w-40 rounded-lg object-cover shadow-(--shadow-card)"
+                    className="mb-6 h-40 w-40 rounded-lg object-cover shadow-[var(--shadow-card)]"
                   />
                   <h3 className={typography({ intent: "utility-h2" })}>
                     {member.name}
@@ -228,7 +228,7 @@ export default function AboutPage() {
           <ScrollReveal delay={0.16}>
             <a
               href="/trip-builder"
-              className="btn-yuku inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-(--shadow-glow) hover:bg-brand-secondary active:scale-[0.98]"
+              className="btn-yuku inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
             >
               <span className="relative">Build My Trip</span>
             </a>
