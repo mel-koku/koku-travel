@@ -2,7 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import { logger } from "@/lib/logger";
 
-const FROM_ADDRESS = "Koku Travel <trips@kokutravel.com>";
+const FROM_ADDRESS = "Yuku Japan <trips@yukujapan.com>";
 
 type UnlockEmailParams = {
   to: string;
@@ -33,7 +33,7 @@ export async function sendUnlockConfirmationEmail(params: UnlockEmailParams) {
       to: params.to,
       subject: `Your ${params.totalDays}-day Japan trip is ready`,
       text: [
-        "Your Koku Trip Pass is confirmed.",
+        "Your Yuku Trip Pass is confirmed.",
         "",
         params.tripName,
         `${params.totalDays} days across ${cityList}`,
@@ -46,7 +46,7 @@ export async function sendUnlockConfirmationEmail(params: UnlockEmailParams) {
         "If your plans change or something isn't right, reply to this email.",
         "",
         "Safe travels,",
-        "Koku Travel",
+        "Yuku Japan",
       ]
         .filter(Boolean)
         .join("\n"),

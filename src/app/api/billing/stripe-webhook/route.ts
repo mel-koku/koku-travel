@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       logger.info("Trip unlocked via webhook", { tripId, userId, tier });
 
       if (session.customer_details?.email) {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
         const cities = (session.metadata?.cities ?? "").split(", ");
         void sendUnlockConfirmationEmail({
           to: session.customer_details.email,

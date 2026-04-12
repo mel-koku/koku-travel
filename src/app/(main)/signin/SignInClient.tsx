@@ -73,7 +73,7 @@ export function SignInClient({ content }: SignInClientProps) {
   return (
     <div
       ref={containerRef}
-      className="flex min-h-[100dvh] flex-col lg:flex-row"
+      className="relative flex min-h-[100dvh] flex-col lg:flex-row"
     >
       {/* Left panel — atmospheric image */}
       <div className="relative w-full overflow-hidden lg:w-1/2 min-h-[40vh] lg:min-h-[100dvh]">

@@ -43,7 +43,7 @@ export async function createCheckoutSession(params: CreateCheckoutParams) {
           currency: "usd",
           unit_amount: priceCents,
           product_data: {
-            name: "Koku Trip Pass",
+            name: "Yuku Trip Pass",
             description: `Your ${params.tripLengthDays}-day journey across ${citiesLabel}. ${params.tripDates}.`,
           },
         },
