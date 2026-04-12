@@ -767,4 +767,88 @@ describe("generateGuideProse (new drain)", () => {
 
     expect(result?.days.map((d) => d.dayId)).toEqual(["d1", "d2", "d3"]);
   });
+
+  it("distinguishes day-failed from day-deadline when deadline fires mid-batch", async () => {
+    // The deadline-race scenario: global batch AbortController fires at 18s.
+    // Some in-flight calls listen to the abort signal and reject promptly
+    // (becoming "day-failed" outcomes via the .then rejectHandler). Others
+    // never propagate the abort and get synthetic "day-deadline" outcomes
+    // from settleInOrder's internal deadline timer.
+    //
+    // This test also verifies orphan-log suppression: calls that reject
+    // because of the batch abort (not their own per-call timer) must NOT
+    // trigger callVertex's "Guide prose call failed" warn. The drain still
+    // logs "Guide prose day call failed" once per day-failed outcome, which
+    // is a separate layer.
+    vi.useFakeTimers();
+    try {
+      vi.mocked(generateObject)
+        // Call 1: header -- resolves immediately
+        .mockResolvedValueOnce({
+          object: { tripOverview: "Header." },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any)
+        // Call 2: d1 -- resolves immediately
+        .mockResolvedValueOnce({
+          object: { intro: "D1", transitions: [], summary: "S1" },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any)
+        // Call 3: d2 -- listens to abortSignal and rejects on abort
+        // (simulates abort propagation -> day-failed via .then rejectHandler)
+        .mockImplementationOnce(((options: { abortSignal: AbortSignal }) => {
+          return new Promise((_, reject) => {
+            options.abortSignal.addEventListener("abort", () => {
+              reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+            });
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }) as any)
+        // Call 4: d3 -- never settles (simulates abort non-propagation
+        // -> day-deadline via settleInOrder's internal timer)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .mockImplementationOnce((() => new Promise(() => {})) as any);
+
+      const promise = generateGuideProse(baseItinerary, baseBuilder, undefined);
+      // Advance past the 18s global deadline.
+      await vi.advanceTimersByTimeAsync(18_001);
+      const result = await promise;
+
+      // Shell is returned (not null) with the successful days only.
+      expect(result).not.toBeNull();
+      expect(result?.tripOverview).toBe("Header.");
+      expect(result?.days).toHaveLength(1);
+      expect(result?.days[0]?.dayId).toBe("d1");
+
+      // Drain logs exactly one "Guide prose day call failed" (for d2 which
+      // became a day-failed outcome via abort propagation).
+      const warnCalls = vi.mocked(logger.warn).mock.calls;
+      const dayFailedWarns = warnCalls.filter(
+        (call) => call[0] === "Guide prose day call failed",
+      );
+      expect(dayFailedWarns).toHaveLength(1);
+
+      // Orphan suppression: callVertex's "Guide prose call failed" was NOT
+      // logged, even though d2 rejected with AbortError. The suppression
+      // fires because batchSignal.aborted === true and
+      // perCallTimeout.aborted === false at the time of the catch.
+      const callFailedWarns = warnCalls.filter(
+        (call) => call[0] === "Guide prose call failed",
+      );
+      expect(callFailedWarns).toHaveLength(0);
+
+      // Batch summary reflects the mixed outcome.
+      const infoCalls = vi.mocked(logger.info).mock.calls;
+      const summaryCall = infoCalls.find(
+        (call) => call[0] === "Guide prose batch complete",
+      );
+      expect(summaryCall).toBeDefined();
+      const summary = summaryCall?.[1] as Record<string, unknown>;
+      expect(summary?.deadlineFired).toBe(true);
+      expect(summary?.daysSuccess).toBe(1);
+      expect(summary?.daysFailed).toBe(1);
+      expect(summary?.daysDeadline).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
