@@ -14,6 +14,7 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { getSeason } from "@/lib/utils/seasonUtils";
@@ -464,14 +465,18 @@ export async function callVertex<T>(
 /**
  * Timeout constants for the guide prose batch.
  *
- * Per-call: 10 seconds. Tight at p99 -- see spec Budget numbers § Tuning note.
- * Raise to 12s if observability shows daysDeadline + daysFailed > 10% of
- * totalDays consistently in production.
+ * Per-call: 10 seconds default, runtime-tunable via
+ * GUIDE_PROSE_PER_CALL_TIMEOUT_MS env var (clamped [5_000, 15_000] in env.ts).
+ * Tight at p99 -- see spec Budget numbers § Tuning note. Raise toward 12_000
+ * if observability shows daysDeadline + daysFailed > 10% of totalDays
+ * consistently in production.
  *
- * Global deadline: 18 seconds. Allows 10s per-call + ~5s Vertex AbortController
- * slippage + 3s drain processing overhead.
+ * Global deadline: 18 seconds, not env-configurable. Allows 10s per-call +
+ * ~5s Vertex AbortController slippage + 3s drain processing overhead. If
+ * per-call is raised significantly via env var, this constant may need to
+ * move in lockstep via code change.
  */
-const PER_CALL_TIMEOUT_MS = 10_000;
+const PER_CALL_TIMEOUT_MS = env.guideProsePerCallTimeoutMs;
 const GLOBAL_DEADLINE_MS = 18_000;
 
 /**

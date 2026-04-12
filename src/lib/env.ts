@@ -40,6 +40,7 @@ type EnvConfig = {
   GOOGLE_VERTEX_PROJECT?: string;
   GOOGLE_VERTEX_LOCATION?: string;
   ENABLE_CHAT?: string;
+  GUIDE_PROSE_PER_CALL_TIMEOUT_MS?: string;
 
   // NAVITIME (Japan transit routing via RapidAPI)
   NAVITIME_RAPIDAPI_KEY?: string;
@@ -110,6 +111,7 @@ function createLenientConfig(): EnvConfig {
     GOOGLE_VERTEX_PROJECT: process.env.GOOGLE_VERTEX_PROJECT,
     GOOGLE_VERTEX_LOCATION: process.env.GOOGLE_VERTEX_LOCATION,
     ENABLE_CHAT: process.env.ENABLE_CHAT,
+    GUIDE_PROSE_PER_CALL_TIMEOUT_MS: process.env.GUIDE_PROSE_PER_CALL_TIMEOUT_MS,
     NAVITIME_RAPIDAPI_KEY: process.env.NAVITIME_RAPIDAPI_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
@@ -179,6 +181,7 @@ function validateEnv(): EnvConfig {
     GOOGLE_VERTEX_PROJECT: getOptionalEnv("GOOGLE_VERTEX_PROJECT"),
     GOOGLE_VERTEX_LOCATION: getOptionalEnv("GOOGLE_VERTEX_LOCATION"),
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
+    GUIDE_PROSE_PER_CALL_TIMEOUT_MS: getOptionalEnv("GUIDE_PROSE_PER_CALL_TIMEOUT_MS"),
     NAVITIME_RAPIDAPI_KEY: getOptionalEnv("NAVITIME_RAPIDAPI_KEY"),
     RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
   };
@@ -254,6 +257,23 @@ export const env = {
   },
   get isChatEnabled() {
     return envConfig.ENABLE_CHAT !== "false";
+  },
+  /**
+   * Per-call Vertex timeout for guide prose generation, in milliseconds.
+   * Default 10_000. Clamped to [5_000, 15_000] -- outside this range the
+   * call will either fail immediately (too low) or blow past the 18s global
+   * deadline's slippage budget (too high). Raise toward 12_000 if
+   * observability shows daysDeadline + daysFailed > 10% of totalDays
+   * consistently. The global deadline stays at 18_000 and is not
+   * env-configurable; if per-call is raised significantly, update the
+   * GLOBAL_DEADLINE_MS constant in code in lockstep.
+   */
+  get guideProsePerCallTimeoutMs(): number {
+    const raw = envConfig.GUIDE_PROSE_PER_CALL_TIMEOUT_MS;
+    if (!raw) return 10_000;
+    const parsed = Number.parseInt(raw, 10);
+    if (Number.isNaN(parsed)) return 10_000;
+    return Math.min(15_000, Math.max(5_000, parsed));
   },
   get navitimeRapidApiKey() {
     return envConfig.NAVITIME_RAPIDAPI_KEY;
