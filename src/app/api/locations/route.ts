@@ -40,6 +40,11 @@ export const GET = withApiHandler(
     const category = searchParams.get("category");
     const search = searchParams.get("search");
     const featured = searchParams.get("featured");
+    const city = searchParams.get("city");
+    // Match fetchAllLocations: prefer planning_city, fall back to city.
+    const cityFilter = city
+      ? `planning_city.eq.${city.toLowerCase()},city.ilike.${city}`
+      : null;
 
     // Get total count for pagination metadata (with filters)
     // Exclude permanently closed locations at the database level
@@ -49,6 +54,7 @@ export const GET = withApiHandler(
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
     if (featured === "true") countQuery = countQuery.eq("is_featured", true);
+    if (cityFilter) countQuery = countQuery.or(cityFilter);
     if (search) {
       // Search matches ALL locations (including children, which show "in {parent}" annotation)
       countQuery = applySearchFilter(countQuery, search);
@@ -75,6 +81,7 @@ export const GET = withApiHandler(
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
     if (featured === "true") dataQuery = dataQuery.eq("is_featured", true);
+    if (cityFilter) dataQuery = dataQuery.or(cityFilter);
     if (search) {
       dataQuery = applySearchFilter(dataQuery, search);
     } else {
