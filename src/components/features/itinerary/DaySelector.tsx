@@ -47,6 +47,8 @@ type DaySelectorProps = {
   dayHealthLevels?: DayHealthLevel[];
   /** Indices of days that are locked (paywalled) */
   lockedDayIndices?: Set<number>;
+  /** Called when a locked day is clicked (overrides onChange for those indices) */
+  onLockedClick?: (index: number) => void;
 };
 
 /**
@@ -89,6 +91,7 @@ export const DaySelector = ({
   autoScrollToToday = true,
   dayHealthLevels,
   lockedDayIndices,
+  onLockedClick,
 }: DaySelectorProps) => {
   const hasAutoScrolled = useRef(false);
   const [open, setOpen] = useState(false);
@@ -154,10 +157,15 @@ export const DaySelector = ({
 
   const handleSelect = useCallback(
     (idx: number) => {
+      if (lockedDayIndices?.has(idx) && onLockedClick) {
+        onLockedClick(idx);
+        setOpen(false);
+        return;
+      }
       onChange(idx);
       setOpen(false);
     },
-    [onChange]
+    [onChange, lockedDayIndices, onLockedClick]
   );
 
   // Keyboard navigation

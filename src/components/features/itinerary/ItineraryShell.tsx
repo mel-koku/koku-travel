@@ -54,7 +54,10 @@ import { useReplacementState } from "@/hooks/useReplacementState";
 import { useDayTripActions } from "@/hooks/useDayTripActions";
 import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
 import { UnlockCard } from "./UnlockCard";
+import { ContextualUnlockPrompt } from "./ContextualUnlockPrompt";
 import { isDayAccessible, getTripTier } from "@/lib/billing/access";
+
+type UnlockPromptContext = "locked_day" | "refinement" | "day_trip" | "share" | "pdf";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -172,6 +175,16 @@ export const ItineraryShell = ({
   }, [tripId, isUsingMock, getTripById]);
 
   const fullAccessEnabled = process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
+  const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
+  const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
+  const requireUnlock = useCallback(
+    (ctx: UnlockPromptContext): boolean => {
+      if (!isTripLocked) return false;
+      setUnlockPromptCtx(ctx);
+      return true;
+    },
+    [isTripLocked],
+  );
 
   const {
     replacementActivityId,
@@ -644,8 +657,16 @@ export const ItineraryShell = ({
                   )}
                   {!isReadOnly && tripId && !isUsingMock && (
                     <>
-                      <DownloadBookButton tripId={tripId} />
-                      <ShareButton tripId={tripId} />
+                      <DownloadBookButton
+                        tripId={tripId}
+                        locked={isTripLocked}
+                        onLockedClick={() => requireUnlock("pdf")}
+                      />
+                      <ShareButton
+                        tripId={tripId}
+                        locked={isTripLocked}
+                        onLockedClick={() => requireUnlock("share")}
+                      />
                     </>
                   )}
                 </div>
@@ -662,9 +683,10 @@ export const ItineraryShell = ({
                   cityIds={days.map((day) => day.cityId)}
                   tripStartDate={tripStartDate}
                   dayHealthLevels={dayHealthLevels}
-                  lockedDayIndices={!(tripUnlocked ?? false) && !fullAccessEnabled
+                  lockedDayIndices={isTripLocked
                     ? new Set(days.map((_, i) => i).filter((i) => i > 0))
                     : undefined}
+                  onLockedClick={() => requireUnlock("locked_day")}
                 />
                 {!isReadOnly && !isUsingMock && currentDay && (
                   <div className="flex items-center gap-2">
@@ -683,6 +705,7 @@ export const ItineraryShell = ({
                         onRefine={handleRefineDay}
                         currentStartTime={currentDay.bounds?.startTime ?? "09:00"}
                         onStartTimeChange={handleDayStartTimeChange}
+                        onRequireUnlock={() => requireUnlock("refinement")}
                       />
                     )}
                   </div>
@@ -707,7 +730,10 @@ export const ItineraryShell = ({
                   }}
                   tripBuilderData={tripBuilderData}
                   dayTripSuggestions={dayTripSuggestions}
-                  onAcceptDayTrip={handleAcceptDayTrip}
+                  onAcceptDayTrip={(suggestion, dayIndex) => {
+                    if (requireUnlock("day_trip")) return;
+                    handleAcceptDayTrip(suggestion, dayIndex);
+                  }}
                   isAcceptingDayTrip={isAcceptingDayTrip}
                   suggestions={suggestions}
                   dailyBriefings={dailyBriefings}
@@ -944,6 +970,16 @@ export const ItineraryShell = ({
       })()}
     </section>
     <PrintFooter />
+    <ContextualUnlockPrompt
+      isOpen={unlockPromptCtx !== null}
+      context={unlockPromptCtx ?? "locked_day"}
+      tier={getTripTier(model.days.length)}
+      onUnlock={() => {
+        setUnlockPromptCtx(null);
+        onUnlockClick?.();
+      }}
+      onClose={() => setUnlockPromptCtx(null)}
+    />
     </ActivityRatingsProvider>
   );
 };
