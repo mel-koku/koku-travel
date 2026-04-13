@@ -33,7 +33,13 @@ export function GuidePlanCTA({
       city,
       region,
     };
-    localStorage.setItem(CONTENT_CONTEXT_KEY, JSON.stringify(contentContext));
+    // localStorage throws in iOS Safari Private mode (0 quota) and when
+    // full. Catch so the navigation still happens.
+    try {
+      localStorage.setItem(CONTENT_CONTEXT_KEY, JSON.stringify(contentContext));
+    } catch {
+      // Best-effort — proceed without seed context
+    }
     router.push("/trip-builder");
   }
 
