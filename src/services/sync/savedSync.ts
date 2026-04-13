@@ -92,7 +92,7 @@ async function lookupLocationId(
       .select("id")
       .eq("place_id", placeId)
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error || !data) {
       return undefined;
