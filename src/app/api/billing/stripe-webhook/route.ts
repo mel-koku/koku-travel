@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { constructWebhookEvent } from "@/lib/billing/stripe";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
+import { isUuid } from "@/lib/api/validation";
 import { sendUnlockConfirmationEmail } from "@/lib/billing/email";
 
 export async function POST(request: NextRequest) {
@@ -29,8 +30,12 @@ export async function POST(request: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object;
       const { tripId, userId, tier } = session.metadata ?? {};
-      if (!tripId || !userId) {
-        logger.warn("Webhook missing metadata", { sessionId: session.id });
+      if (!isUuid(tripId) || !isUuid(userId)) {
+        logger.warn("Webhook metadata missing or malformed", {
+          sessionId: session.id,
+          hasTripId: !!tripId,
+          hasUserId: !!userId,
+        });
         break;
       }
 
