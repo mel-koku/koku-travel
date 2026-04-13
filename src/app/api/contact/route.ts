@@ -17,8 +17,16 @@ const ALLOWED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
+// Letters (unicode), digits, dot, underscore, dash, space. No slashes, no CR/LF, no null.
+// Unicode letter/number classes accept Japanese / non-Latin filenames.
+const SAFE_FILENAME_RE = /^[\p{L}\p{N} ._-]+$/u;
+
 const attachmentSchema = z.object({
-  filename: z.string().min(1),
+  filename: z
+    .string()
+    .min(1)
+    .max(255)
+    .regex(SAFE_FILENAME_RE, "Filename contains unsupported characters"),
   content: z.string().min(1), // base64-encoded
   contentType: z.string().refine(
     (type) => ALLOWED_FILE_TYPES.includes(type),
