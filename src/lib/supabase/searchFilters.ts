@@ -17,7 +17,7 @@ import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "./search";
 export function applySearchFilter<T extends Record<string, any>>(
   query: T,
   search: string,
-  columns: string[] = ["name", "city", "region", "category", "cuisine_type", "short_description"],
+  columns: string[] = ["name", "name_japanese", "city", "region", "category", "cuisine_type", "short_description"],
 ): T {
   if (shouldUseFts(search)) {
     return query.textSearch("search_vector", sanitizeTsQuery(search), {

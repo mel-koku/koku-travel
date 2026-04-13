@@ -87,8 +87,14 @@ export const GET = withApiHandler(
     } else {
       dataQuery = dataQuery.is("parent_id", null);
     }
-    const { data, error } = await dataQuery
-      .order("name", { ascending: true })
+    // Search mode: don't force alphabetical — it buries real matches
+    // behind irrelevant A-named rows. Without ts_rank we can't sort by
+    // relevance, but unordered beats wrong order. Browse mode keeps
+    // the alphabetical listing.
+    const orderedQuery = search
+      ? dataQuery
+      : dataQuery.order("name", { ascending: true });
+    const { data, error } = await orderedQuery
       .range(pagination.offset, pagination.offset + pagination.limit - 1);
 
     if (error) {
