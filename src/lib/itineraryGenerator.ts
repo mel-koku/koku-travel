@@ -10,7 +10,7 @@ import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
 import { vibesToCategoryWeights } from "@/data/vibeFilterMapping";
-import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -85,9 +85,13 @@ function resolveTotalDays(data: TripBuilderData): number {
   }
   const { start, end } = data.dates ?? {};
   if (typeof start === "string" && typeof end === "string") {
-    const s = new Date(start);
-    const e = new Date(end);
-    if (!Number.isNaN(s.getTime()) && !Number.isNaN(e.getTime()) && e >= s) {
+    // Use the project's local-date parser to stay consistent with
+    // dayLabel / weatherService / seasonUtils. new Date("YYYY-MM-DD")
+    // parses as UTC midnight, which is fine for diff math but leaks
+    // the wrong style into the codebase.
+    const s = parseLocalDate(start);
+    const e = parseLocalDate(end);
+    if (s && e && e >= s) {
       return Math.round((e.getTime() - s.getTime()) / 86_400_000) + 1;
     }
   }
