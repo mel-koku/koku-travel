@@ -5,7 +5,10 @@ import { getAllCitySlugs } from "@/lib/cities/cityData";
 import { getSitemapLocationIds } from "@/lib/locations/locationService";
 import { logger } from "@/lib/logger";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
+// Strip any trailing slash so `${BASE_URL}/path` never produces `//path`.
+// A misconfigured env var with a trailing slash (e.g. set to a Vercel preview
+// URL through the dashboard) would otherwise emit malformed sitemap entries.
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes

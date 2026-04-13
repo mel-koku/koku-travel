@@ -72,8 +72,9 @@ if (siteUrl) {
 // Security headers configuration
 const isProduction = process.env.NODE_ENV === "production";
 
-// Canonical production host — only this host is allowed to be indexed.
-// All other hosts (Vercel previews, staging, localhost) get X-Robots-Tag: noindex.
+// Canonical production host — only this host (and its www variant) are
+// allowed to be indexed. All other hosts (Vercel previews, staging,
+// localhost) get X-Robots-Tag: noindex.
 const productionHost = (() => {
   try {
     return siteUrl ? new URL(siteUrl).host : "yukujapan.com";
@@ -81,6 +82,11 @@ const productionHost = (() => {
     return "yukujapan.com";
   }
 })();
+
+// Strip a leading "www." so the regex below can pair the apex with its
+// www variant. Without this, apex and www point at the same content but
+// only one of them indexes.
+const productionApex = productionHost.replace(/^www\./, "");
 
 // CSP directives - Next.js requires 'unsafe-inline' for hydration scripts
 // In production, Next.js uses nonce-based CSP automatically, but we still need 'unsafe-inline' as fallback
@@ -221,7 +227,7 @@ const nextConfig: NextConfig = {
         has: [
           {
             type: "host",
-            value: `(?!${productionHost.replace(/\./g, "\\.")}$).*`,
+            value: `(?!(?:www\\.)?${productionApex.replace(/\./g, "\\.")}$).*`,
           },
         ],
         headers: [

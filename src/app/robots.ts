@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
+// Strip any trailing slash so the sitemap URL doesn't end up `//sitemap.xml`.
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
 
 export default function robots(): MetadataRoute.Robots {
   return {
