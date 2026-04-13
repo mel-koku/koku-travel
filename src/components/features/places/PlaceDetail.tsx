@@ -14,6 +14,7 @@ import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon, LocationCard } from "./LocationCard";
@@ -286,7 +287,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         {activePhoto?.attribution && (
           <p className="absolute bottom-2 right-3 text-[11px] text-white/80 drop-shadow-sm">
             Photo:{" "}
-            {activePhoto.attributionUri ? (
+            {activePhoto.attributionUri && isSafeUrl(activePhoto.attributionUri) ? (
               <a
                 href={activePhoto.attributionUri}
                 target="_blank"
