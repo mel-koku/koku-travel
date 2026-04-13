@@ -360,7 +360,8 @@ export const POST = withApiHandler(
       return badRequest("Invalid request body", { errors: validation.error.issues });
     }
     const body = validation.data as RecommendRequest;
-    const { gap, dayActivities, cityId, tripBuilderData, usedLocationIds, excludeLocationIds, refinementFilters } = body;
+    const { gap, cityId, tripBuilderData, usedLocationIds, excludeLocationIds, refinementFilters } = body;
+    const dayActivities = body.dayActivities ?? [];
 
     if (!gap || !gap.action) {
       return badRequest("Missing required gap action");
