@@ -27,6 +27,15 @@ import { assembleBriefing } from "@/lib/briefing/briefingAssembler";
 import { getCulturalPillars } from "@/lib/sanity/contentService";
 import type { CulturalBriefing } from "@/types/culturalBriefing";
 
+function deriveTimeSlotFromStart(startTime: string | undefined): "morning" | "afternoon" | "evening" | null {
+  if (!startTime) return null;
+  const mins = parseTimeToMinutes(startTime);
+  if (mins == null) return null;
+  if (mins < 12 * 60) return "morning";
+  if (mins < 17 * 60) return "afternoon";
+  return "evening";
+}
+
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
  */
@@ -92,7 +101,7 @@ export function convertItineraryToTrip(
           id: activity.id,
           locationId: activity.locationId ?? location?.id ?? `unknown-${activity.id}`,
           location: location,
-          timeSlot: activity.timeOfDay,
+          timeSlot: deriveTimeSlotFromStart(activity.schedule?.arrivalTime) ?? activity.timeOfDay,
           duration: activity.durationMin ?? 90,
           startTime: activity.schedule?.arrivalTime,
           endTime: activity.schedule?.departureTime,
