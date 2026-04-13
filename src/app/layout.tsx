@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

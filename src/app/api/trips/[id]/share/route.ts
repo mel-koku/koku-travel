@@ -7,6 +7,10 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
+// Strip trailing slash so share URLs never end up with a double slash
+// when NEXT_PUBLIC_SITE_URL is misconfigured with one.
+const SHARE_BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
+
 const uuidSchema = z.string().uuid("Invalid trip ID format");
 
 const toggleSchema = z.object({
@@ -53,7 +57,7 @@ export async function GET(
           ? {
               id: share.id,
               shareToken: share.share_token,
-              shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com"}/shared/${share.share_token}`,
+              shareUrl: `${SHARE_BASE_URL}/shared/${share.share_token}`,
               isActive: share.is_active,
               viewCount: share.view_count,
               createdAt: share.created_at,
@@ -120,7 +124,7 @@ export async function POST(
           share: {
             id: existing.id,
             shareToken: existing.share_token,
-            shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com"}/shared/${existing.share_token}`,
+            shareUrl: `${SHARE_BASE_URL}/shared/${existing.share_token}`,
             isActive: true,
             viewCount: existing.view_count,
             createdAt: existing.created_at,
@@ -154,7 +158,7 @@ export async function POST(
           share: {
             id: share.id,
             shareToken: share.share_token,
-            shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com"}/shared/${share.share_token}`,
+            shareUrl: `${SHARE_BASE_URL}/shared/${share.share_token}`,
             isActive: share.is_active,
             viewCount: share.view_count,
             createdAt: share.created_at,
@@ -227,7 +231,7 @@ export async function PATCH(
         share: {
           id: share.id,
           shareToken: share.share_token,
-          shareUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com"}/shared/${share.share_token}`,
+          shareUrl: `${SHARE_BASE_URL}/shared/${share.share_token}`,
           isActive: share.is_active,
           viewCount: share.view_count,
           createdAt: share.created_at,
