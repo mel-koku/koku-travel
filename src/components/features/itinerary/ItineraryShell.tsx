@@ -151,7 +151,12 @@ export const ItineraryShell = ({
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
   const [cultureTabSeen, setCultureTabSeen] = useState(() => {
     if (typeof window === "undefined") return true;
-    return localStorage.getItem("yuku-culture-tab-seen") === "true";
+    // localStorage.getItem throws in iOS Safari Private mode.
+    try {
+      return localStorage.getItem("yuku-culture-tab-seen") === "true";
+    } catch {
+      return true;
+    }
   });
 
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -205,7 +210,11 @@ export const ItineraryShell = ({
   useEffect(() => {
     if (viewMode === "culture" && !cultureTabSeen) {
       setCultureTabSeen(true);
-      localStorage.setItem("yuku-culture-tab-seen", "true");
+      try {
+        localStorage.setItem("yuku-culture-tab-seen", "true");
+      } catch {
+        // iOS Safari Private mode / quota exceeded — state-only update is fine
+      }
     }
   }, [viewMode, cultureTabSeen]);
 
