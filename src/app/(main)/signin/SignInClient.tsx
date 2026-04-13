@@ -22,12 +22,22 @@ function getRedirectUrl(): string {
   const base = siteUrl ?? (typeof window !== "undefined" ? window.location.origin : "");
   const callbackUrl = `${base}/auth/callback`;
 
-  // Preserve current page as post-sign-in redirect target
+  // Preserve current page as post-sign-in redirect target.
+  // Same-origin guard: ad-hoc prefix checks are bypassed by `/\evil.com`
+  // (browsers normalize \ to /). Resolve via URL and compare origins.
   if (typeof window !== "undefined") {
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");
-    if (next && next.startsWith("/") && !next.startsWith("//")) {
-      return `${callbackUrl}?next=${encodeURIComponent(next)}`;
+    if (next) {
+      try {
+        const target = new URL(next, window.location.origin);
+        if (target.origin === window.location.origin) {
+          const safeNext = target.pathname + target.search + target.hash;
+          return `${callbackUrl}?next=${encodeURIComponent(safeNext)}`;
+        }
+      } catch {
+        // malformed — fall through to callbackUrl
+      }
     }
   }
   return callbackUrl;
