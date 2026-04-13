@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Github, Linkedin, Twitter, Globe } from "lucide-react";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
@@ -228,11 +229,13 @@ export default async function AboutPage() {
 
             {storyImageUrl && (
               <ScrollReveal direction="right" delay={0.16}>
-                <div className="overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
-                  <img
+                <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
+                  <Image
                     src={storyImageUrl}
                     alt=""
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
                   />
                 </div>
               </ScrollReveal>
@@ -245,10 +248,13 @@ export default async function AboutPage() {
       {photoBreakUrl && (
         <ScrollReveal>
           <section className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-            <img
+            <Image
               src={photoBreakUrl}
               alt={photoBreakAlt}
-              className="h-full w-full object-cover"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
             />
             <div className="absolute inset-0 scrim-20" />
           </section>
@@ -280,8 +286,14 @@ export default async function AboutPage() {
                       : "mx-auto max-w-2xl text-center"
                   )}>
                     {hasImage && isEven && (
-                      <div className="overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
-                        <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
+                        <Image
+                          src={imageUrl}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover"
+                        />
                       </div>
                     )}
 
@@ -293,8 +305,14 @@ export default async function AboutPage() {
                     </div>
 
                     {hasImage && !isEven && (
-                      <div className="overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
-                        <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
+                        <Image
+                          src={imageUrl}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover"
+                        />
                       </div>
                     )}
                   </div>
@@ -333,9 +351,11 @@ export default async function AboutPage() {
                 return (
                   <div key={name} className="flex flex-col items-center text-center">
                     {photoUrl ? (
-                      <img
+                      <Image
                         src={photoUrl}
                         alt={name}
+                        width={160}
+                        height={160}
                         className="mb-6 h-40 w-40 rounded-lg object-cover shadow-[var(--shadow-card)]"
                       />
                     ) : (
