@@ -8,6 +8,7 @@ import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { fetchTrips, saveTrip } from "@/services/sync/tripSync";
 import type { StoredTrip } from "@/services/trip/types";
+import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
 /**
  * Schema for itinerary activity (loose validation for creation)
@@ -130,6 +131,27 @@ export const POST = withApiHandler(
 
     const supabase = await createClient();
     const now = new Date().toISOString();
+
+    // POST is create-only. If the client passes an id that already exists
+    // (own trip OR another user's trip), reject uniformly with 409 instead
+    // of letting the upsert hit RLS and 500. The unified error closes the
+    // existence-oracle that previously distinguished "exists but not yours"
+    // (500) from "doesn't exist" (201). Use service-role for the existence
+    // probe so we can see other users' rows; we only return a boolean.
+    if (id) {
+      const admin = getServiceRoleClient();
+      const { data: existing } = await admin
+        .from("trips")
+        .select("id")
+        .eq("id", id)
+        .maybeSingle();
+      if (existing) {
+        return NextResponse.json(
+          { error: "Trip with this id already exists; use PATCH to update", code: "CONFLICT" },
+          { status: 409, headers: { "X-Request-ID": context.requestId } },
+        );
+      }
+    }
 
     // Create the trip object
     const trip: StoredTrip = {
