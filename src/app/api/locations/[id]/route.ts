@@ -10,64 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBestSummary } from "@/lib/utils/editorialSummary";
 import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
-/**
- * Columns needed for location detail API endpoint
- * Includes all enrichment fields for building LocationDetails without Google API call
- */
-const LOCATION_DETAIL_API_COLUMNS = `
-  id,
-  name,
-  region,
-  city,
-  category,
-  image,
-  description,
-  short_description,
-  rating,
-  review_count,
-  estimated_duration,
-  min_budget,
-  operating_hours,
-  recommended_visit,
-  coordinates,
-  timezone,
-  place_id,
-  preferred_transit_modes,
-  primary_photo_url,
-  editorial_summary,
-  website_uri,
-  phone_number,
-  google_maps_uri
-`.replace(/\s+/g, "");
-
-/**
- * Database row type for location detail endpoint
- */
-type LocationDetailApiRow = {
-  id: string;
-  name: string;
-  region: string;
-  city: string;
-  category: string;
-  image: string;
-  description: string | null;
-  short_description: string | null;
-  rating: number | null;
-  review_count: number | null;
-  estimated_duration: string | null;
-  min_budget: string | null;
-  operating_hours: Location["operatingHours"] | null;
-  recommended_visit: Location["recommendedVisit"] | null;
-  coordinates: { lat: number; lng: number } | null;
-  timezone: string | null;
-  place_id: string | null;
-  preferred_transit_modes: Location["preferredTransitModes"] | null;
-  primary_photo_url: string | null;
-  editorial_summary: string | null;
-  website_uri: string | null;
-  phone_number: string | null;
-  google_maps_uri: string | null;
-};
+import { LOCATION_DETAIL_COLUMNS } from "@/lib/supabase/projections";
 
 /**
  * GET /api/locations/[id]
@@ -104,7 +47,7 @@ export async function GET(
       const supabase = await createClient();
       const { data: locationData, error: dbError } = await supabase
         .from("locations")
-        .select(LOCATION_DETAIL_API_COLUMNS)
+        .select(LOCATION_DETAIL_COLUMNS)
         .eq("id", validatedId)
         .single();
 
@@ -112,50 +55,84 @@ export async function GET(
         return notFound("Location not found");
       }
 
-      // Transform database row to Location type
-      const row = locationData as unknown as LocationDetailApiRow;
+      // Transform database row to Location type.
+      // Must populate every enrichment field the UI reads — PlaceDetail
+      // hydrates the server-rendered location with this response, and any
+      // field we omit here gets wiped from the DOM after hydration.
+      const row = locationData as unknown as Record<string, unknown>;
       const location: Location = {
-        id: row.id,
-        name: row.name,
-        region: row.region,
-        city: row.city,
-        category: row.category,
-        image: row.image,
-        description: row.description ?? undefined,
-        minBudget: row.min_budget ?? undefined,
-        estimatedDuration: row.estimated_duration ?? undefined,
+        id: row.id as string,
+        name: row.name as string,
+        nameJapanese: (row.name_japanese as string | null) ?? undefined,
+        region: row.region as string,
+        city: row.city as string,
+        prefecture: (row.prefecture as string | null) ?? undefined,
+        planningCity: (row.planning_city as string | null) ?? undefined,
+        neighborhood: (row.neighborhood as string | null) ?? undefined,
+        category: row.category as string,
+        image: row.image as string,
+        description: (row.description as string | null) ?? undefined,
+        shortDescription: (row.short_description as string | null) ?? undefined,
+        editorialSummary: (row.editorial_summary as string | null) ?? undefined,
+        insiderTip: (row.insider_tip as string | null) ?? undefined,
+        minBudget: (row.min_budget as string | null) ?? undefined,
+        estimatedDuration: (row.estimated_duration as string | null) ?? undefined,
         operatingHours: normalizeOperatingHours(row.operating_hours),
-        recommendedVisit: row.recommended_visit ?? undefined,
-        preferredTransitModes: row.preferred_transit_modes ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        timezone: row.timezone ?? undefined,
-        shortDescription: row.short_description ?? undefined,
-        rating: row.rating ?? undefined,
-        reviewCount: row.review_count ?? undefined,
-        placeId: row.place_id ?? undefined,
-        primaryPhotoUrl: row.primary_photo_url ?? undefined,
-        editorialSummary: row.editorial_summary ?? undefined,
-        websiteUri: row.website_uri ?? undefined,
-        phoneNumber: row.phone_number ?? undefined,
-        googleMapsUri: row.google_maps_uri ?? undefined,
+        recommendedVisit: (row.recommended_visit as Location["recommendedVisit"]) ?? undefined,
+        preferredTransitModes: (row.preferred_transit_modes as Location["preferredTransitModes"]) ?? undefined,
+        coordinates: (row.coordinates as Location["coordinates"]) ?? undefined,
+        timezone: (row.timezone as string | null) ?? undefined,
+        rating: (row.rating as number | null) ?? undefined,
+        reviewCount: (row.review_count as number | null) ?? undefined,
+        placeId: (row.place_id as string | null) ?? undefined,
+        primaryPhotoUrl: (row.primary_photo_url as string | null) ?? undefined,
+        websiteUri: (row.website_uri as string | null) ?? undefined,
+        phoneNumber: (row.phone_number as string | null) ?? undefined,
+        googleMapsUri: (row.google_maps_uri as string | null) ?? undefined,
+        googlePrimaryType: (row.google_primary_type as string | null) ?? undefined,
+        googleTypes: (row.google_types as string[] | null) ?? undefined,
+        businessStatus: (row.business_status as Location["businessStatus"]) ?? undefined,
+        nearestStation: (row.nearest_station as string | null) ?? undefined,
+        cashOnly: (row.cash_only as boolean | null) ?? undefined,
+        reservationInfo: (row.reservation_info as Location["reservationInfo"]) ?? undefined,
+        tags: (row.tags as string[] | null) ?? undefined,
+        accessibilityOptions: (row.accessibility_options as Location["accessibilityOptions"]) ?? undefined,
+        mealOptions: (row.meal_options as Location["mealOptions"]) ?? undefined,
+        serviceOptions: (row.service_options as Location["serviceOptions"]) ?? undefined,
+        dietaryOptions: (row.dietary_options as Location["dietaryOptions"]) ?? undefined,
+        cuisineType: (row.cuisine_type as string | null) ?? undefined,
+        priceLevel: (row.price_level as Location["priceLevel"]) ?? undefined,
+        goodForChildren: (row.good_for_children as boolean | null) ?? undefined,
+        goodForGroups: (row.good_for_groups as boolean | null) ?? undefined,
+        outdoorSeating: (row.outdoor_seating as boolean | null) ?? undefined,
+        reservable: (row.reservable as boolean | null) ?? undefined,
+        isHiddenGem: (row.is_hidden_gem as boolean | null) ?? undefined,
+        isSeasonal: (row.is_seasonal as boolean | null) ?? undefined,
+        seasonalType: (row.seasonal_type as Location["seasonalType"]) ?? undefined,
+        validMonths: (row.valid_months as number[] | null) ?? undefined,
+        tattooPolicy: (row.tattoo_policy as Location["tattooPolicy"]) ?? undefined,
+        jtaApproved: (row.jta_approved as boolean | null) ?? undefined,
+        isUnescoSite: (row.is_unesco_site as boolean | null) ?? undefined,
+        parentId: (row.parent_id as string | null) ?? undefined,
+        parentMode: (row.parent_mode as Location["parentMode"]) ?? undefined,
       };
 
       // Build LocationDetails from database data (no Google API call)
       // All data was pre-enriched during location ingestion
       const details: LocationDetails = {
-        placeId: row.place_id ?? row.id,
-        displayName: row.name,
-        formattedAddress: `${row.city}, ${row.region}`,
-        rating: row.rating ?? undefined,
-        userRatingCount: row.review_count ?? undefined,
-        editorialSummary: getBestSummary(location, row.editorial_summary ?? undefined),
-        websiteUri: row.website_uri ?? undefined,
-        internationalPhoneNumber: row.phone_number ?? undefined,
-        googleMapsUri: row.google_maps_uri ?? undefined,
-        regularOpeningHours: formatOperatingHoursForDisplay(normalizeOperatingHours(row.operating_hours) ?? null),
+        placeId: (location.placeId ?? location.id) as string,
+        displayName: location.name,
+        formattedAddress: `${location.city}, ${location.region}`,
+        rating: location.rating,
+        userRatingCount: location.reviewCount,
+        editorialSummary: getBestSummary(location, location.editorialSummary),
+        websiteUri: location.websiteUri,
+        internationalPhoneNumber: location.phoneNumber,
+        googleMapsUri: location.googleMapsUri,
+        regularOpeningHours: formatOperatingHoursForDisplay(location.operatingHours ?? null),
         reviews: [],
-        photos: row.primary_photo_url
-          ? [{ name: "primary", proxyUrl: row.primary_photo_url, attributions: [] }]
+        photos: location.primaryPhotoUrl
+          ? [{ name: "primary", proxyUrl: location.primaryPhotoUrl, attributions: [] }]
           : [],
         fetchedAt: new Date().toISOString(),
       };
