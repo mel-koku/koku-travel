@@ -221,7 +221,10 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     (details?.currentOpeningHours?.length ?? 0) >= 3 ||
     (details?.regularOpeningHours?.length ?? 0) >= 3;
 
-  const hasLinks = details?.websiteUri || details?.internationalPhoneNumber || details?.googleMapsUri;
+  const hasLinks =
+    (details?.websiteUri && isSafeUrl(details.websiteUri)) ||
+    details?.internationalPhoneNumber ||
+    (details?.googleMapsUri && isSafeUrl(details.googleMapsUri));
 
   return (
     <>
@@ -651,10 +654,10 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 Links
               </h3>
               <ul className="space-y-1 text-sm text-brand-primary">
-                {details?.websiteUri && (
+                {details?.websiteUri && isSafeUrl(details.websiteUri) && (
                   <li>
                     <a
-                      href={details?.websiteUri}
+                      href={details.websiteUri}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex min-h-11 items-center py-1 transition hover:underline"
@@ -666,10 +669,10 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 {details?.internationalPhoneNumber && (
                   <li className="text-foreground-secondary">{details?.internationalPhoneNumber}</li>
                 )}
-                {details?.googleMapsUri && (
+                {details?.googleMapsUri && isSafeUrl(details.googleMapsUri) && (
                   <li>
                     <a
-                      href={details?.googleMapsUri}
+                      href={details.googleMapsUri}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex min-h-11 items-center py-1 transition hover:underline"

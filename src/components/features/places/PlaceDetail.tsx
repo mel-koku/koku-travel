@@ -267,7 +267,10 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
   const hasOpeningHours =
     (details?.currentOpeningHours?.length ?? 0) >= 3 ||
     (details?.regularOpeningHours?.length ?? 0) >= 3;
-  const hasLinks = details?.websiteUri || details?.internationalPhoneNumber || details?.googleMapsUri;
+  const hasLinks =
+    (details?.websiteUri && isSafeUrl(details.websiteUri)) ||
+    details?.internationalPhoneNumber ||
+    (details?.googleMapsUri && isSafeUrl(details.googleMapsUri));
 
   const activePhoto = allPhotos[activePhotoIndex];
 
@@ -656,7 +659,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           <motion.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Links</h2>
             <ul className="space-y-1 text-sm text-brand-primary">
-              {details?.websiteUri && (
+              {details?.websiteUri && isSafeUrl(details.websiteUri) && (
                 <li>
                   <a href={details.websiteUri} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center py-1 transition hover:underline">
                     Official website
@@ -666,7 +669,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               {details?.internationalPhoneNumber && (
                 <li className="text-foreground-secondary">{details.internationalPhoneNumber}</li>
               )}
-              {details?.googleMapsUri && (
+              {details?.googleMapsUri && isSafeUrl(details.googleMapsUri) && (
                 <li>
                   <a href={details.googleMapsUri} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center py-1 transition hover:underline">
                     View on Google Maps

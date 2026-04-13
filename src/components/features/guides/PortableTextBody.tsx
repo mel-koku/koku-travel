@@ -10,6 +10,7 @@ import { TipCalloutBlock } from "./blocks/TipCalloutBlock";
 import { LocationEmbedBlock } from "./blocks/LocationEmbedBlock";
 import { ImageGalleryBlock } from "./blocks/ImageGalleryBlock";
 import { ExperienceHighlightBlock } from "@/components/features/experiences/blocks/ExperienceHighlightBlock";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 type PortableTextBodyProps = {
   body: unknown[];
@@ -78,6 +79,12 @@ const components: PortableTextComponents = {
     em: ({ children }) => <em className="italic">{children}</em>,
     link: ({ children, value }) => {
       const href = value?.href || "";
+      // Reject javascript:, data:, and other dangerous schemes. A Sanity
+      // editor with a bad link (or a compromised CMS) should not be able
+      // to inject arbitrary URIs into the article body.
+      if (!isSafeUrl(href)) {
+        return <span className="text-foreground">{children}</span>;
+      }
       const isExternal = href.startsWith("http");
       return (
         <a
