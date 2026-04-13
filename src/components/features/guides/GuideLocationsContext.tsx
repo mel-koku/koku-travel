@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext } from "react";
 import type { Location } from "@/types/location";
 
 type GuideLocationsContextType = {
@@ -28,21 +28,27 @@ export function GuideLocationsProvider({
   onSelectLocation: (location: Location) => void;
   children: React.ReactNode;
 }) {
+  // Counter must reset to 0 at the start of every render so that the
+  // first LocationBreakoutCard lays out as "left", second as "right",
+  // etc. Previously a `let counter = 0` declaration outside useMemo
+  // combined with the memo cache produced a stale closure that kept
+  // incrementing across renders — a re-render of GuideContent flipped
+  // every card's left/right layout instead of preserving order.
+  //
+  // Recreating value each render is fine here: the provider only renders
+  // when its props (locations, onSelectLocation) change anyway, so the
+  // context-driven re-render cost matches what useMemo achieved.
   let counter = 0;
-
-  const value = useMemo(() => {
-    const map = new Map<string, Location>();
-    for (const loc of locations) {
-      map.set(loc.id, loc);
-    }
-    return {
-      locations,
-      getLocationById: (id: string) => map.get(id),
-      nextIndex: () => counter++,
-      onSelectLocation,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations, onSelectLocation]);
+  const map = new Map<string, Location>();
+  for (const loc of locations) {
+    map.set(loc.id, loc);
+  }
+  const value: GuideLocationsContextType = {
+    locations,
+    getLocationById: (id: string) => map.get(id),
+    nextIndex: () => counter++,
+    onSelectLocation,
+  };
 
   return (
     <GuideLocationsContext.Provider value={value}>
