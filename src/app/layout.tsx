@@ -3,6 +3,7 @@ import Script from "next/script";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { WebVitals } from "@/components/WebVitals";
 import CookieBanner from "@/components/CookieBanner";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -89,14 +90,14 @@ export default function RootLayout({
           type="application/ld+json"
           strategy="beforeInteractive"
         >
-          {JSON.stringify(organizationJsonLd)}
+          {serializeJsonLd(organizationJsonLd)}
         </Script>
         <Script
           id="ld-website"
           type="application/ld+json"
           strategy="beforeInteractive"
         >
-          {JSON.stringify(websiteJsonLd)}
+          {serializeJsonLd(websiteJsonLd)}
         </Script>
         <GoogleAnalytics />
         <WebVitals />
