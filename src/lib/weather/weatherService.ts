@@ -1,7 +1,7 @@
 import type { WeatherForecast, WeatherCondition } from "@/types/weather";
 import type { CityId } from "@/types/trip";
 import { logger } from "@/lib/logger";
-import { parseLocalDate } from "@/lib/utils/dateUtils";
+import { parseLocalDate, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 
 /** Weather API timeout — 4s is plenty; mock data is fine if it's slower */
@@ -104,7 +104,7 @@ export async function fetchWeatherForecast(
 
     for (const item of data.list || []) {
       const date = new Date(item.dt * 1000);
-      const dateKey = date.toISOString().split("T")[0];
+      const dateKey = formatLocalDateISO(date);
       
       if (!dateKey) continue;
 
@@ -224,7 +224,10 @@ function getMockWeatherForecast(
 
   const current = new Date(start);
   while (current <= end) {
-    const dateKey = current.toISOString().split("T")[0];
+    // Local YYYY-MM-DD via formatLocalDateISO. Using toISOString() here
+    // would convert to UTC first and shift the date by one for users east
+    // of GMT (every JST user would have gotten yesterday's mock forecast).
+    const dateKey = formatLocalDateISO(current);
     if (!dateKey) {
       current.setDate(current.getDate() + 1);
       continue;

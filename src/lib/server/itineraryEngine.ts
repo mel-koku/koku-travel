@@ -9,6 +9,7 @@ import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
+import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { extractTripIntent } from "./intentExtractor";
@@ -44,7 +45,7 @@ export function convertItineraryToTrip(
       tripId,
     });
   }
-  const startDate = builderData.dates.start ?? new Date().toISOString().split("T")[0] ?? "";
+  const startDate = builderData.dates.start ?? formatLocalDateISO(new Date());
   const duration = builderData.duration ?? itinerary.days.length;
 
   if (!startDate) {
