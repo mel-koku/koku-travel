@@ -150,8 +150,14 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
 
     const { trip, itinerary, dayIntros, guideProse, dailyBriefings, culturalBriefing } = generationResult;
 
-    // Cache the generated itinerary for future requests
-    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse, dailyBriefings, culturalBriefing);
+    // Cache the generated itinerary for future requests — but ONLY when
+    // the result wasn't personalized. Without this gate, caching a
+    // savedIds-injected trip under the bare-builderData key would leak
+    // user A's favorites into user B's response next time B (or anyone)
+    // asks with the same builderData and no personalization.
+    if (!hasPersonalization) {
+      await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse, dailyBriefings, culturalBriefing);
+    }
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
