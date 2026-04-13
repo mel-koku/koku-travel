@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { badRequest } from "@/lib/api/errors";
+import { isUuid } from "@/lib/api/validation";
 import { fetchLocationById } from "@/lib/locations/locationService";
 import { fetchHierarchyContext } from "@/lib/locations/hierarchyService";
 
@@ -21,6 +22,10 @@ export async function GET(
 
   return withApiHandler(
     async () => {
+      if (!isUuid(id)) {
+        return badRequest("Invalid location ID format");
+      }
+
       const location = await fetchLocationById(id);
       if (!location) {
         return badRequest("Location not found");
