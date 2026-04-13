@@ -13,6 +13,7 @@ type UnlockCardProps = {
   totalDays: number;
   launchPricing?: boolean;
   launchSlotsRemaining?: number;
+  isGuest?: boolean;
   onUnlock: () => void;
 };
 
@@ -22,6 +23,7 @@ export function UnlockCard({
   totalDays,
   launchPricing,
   launchSlotsRemaining,
+  isGuest,
   onUnlock,
 }: UnlockCardProps) {
   const price = getTierPriceDollars(tier);
@@ -60,8 +62,14 @@ export function UnlockCard({
         onClick={onUnlock}
         className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
       >
-        Unlock for ${launchPricing ? 19 : price}
+        {isGuest ? "Sign in to unlock" : `Unlock for $${launchPricing ? 19 : price}`}
       </button>
+
+      {isGuest && (
+        <p className={cn(typography({ intent: "utility-meta" }), "mt-3 text-foreground-secondary")}>
+          Create a free account or sign in to purchase.
+        </p>
+      )}
     </motion.div>
   );
 }

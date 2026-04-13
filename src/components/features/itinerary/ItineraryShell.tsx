@@ -98,6 +98,7 @@ type ItineraryShellProps = {
   dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
   onUnlockClick?: () => void;
   tripUnlocked?: boolean;
+  isGuest?: boolean;
 };
 
 export const ItineraryShell = ({
@@ -128,6 +129,7 @@ export const ItineraryShell = ({
   dayTripSuggestions,
   onUnlockClick,
   tripUnlocked,
+  isGuest,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
@@ -831,6 +833,7 @@ export const ItineraryShell = ({
                   tier={getTripTier(model.days.length)}
                   cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
                   totalDays={model.days.length}
+                  isGuest={isGuest}
                   onUnlock={onUnlockClick ?? (() => {})}
                 />
               )}

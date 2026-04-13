@@ -11,6 +11,8 @@ import { ItinerarySkeleton } from "@/components/features/itinerary/ItinerarySkel
 import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
+import { STABLE_DEFAULT_USER_ID } from "@/lib/constants";
+import { logger } from "@/lib/logger";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
@@ -46,7 +48,7 @@ const formatDateLabel = (iso: string | undefined) => {
 function ItineraryPageContent({ content }: { content?: PagesContent }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
-  const { trips, updateTripItinerary } = useAppState();
+  const { trips, updateTripItinerary, user } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
   const [showCeremony, setShowCeremony] = useState(false);
@@ -120,29 +122,46 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   const handleStartUnlock = useCallback(async () => {
     if (!selectedTrip) return;
 
-    const res = await fetch("/api/billing/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tripId: selectedTrip.id,
-        tripLengthDays: selectedTrip.itinerary.days.length,
-        cities: [...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))],
-        tripDates: (() => {
-          const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-          const start = selectedTrip.builderData?.dates?.start;
-          const end = selectedTrip.builderData?.dates?.end;
-          if (start && end) return `${fmt(start)} - ${fmt(end)}`;
-          if (start) return fmt(start);
-          return "";
-        })(),
-      }),
-    });
-
-    const data = await res.json();
-    if (data.checkoutUrl) {
-      window.location.href = data.checkoutUrl;
+    // Redirect guests to sign in first, then return here
+    if (user.id === STABLE_DEFAULT_USER_ID) {
+      const returnUrl = `/itinerary?trip=${encodeURIComponent(selectedTrip.id)}`;
+      window.location.href = `/signin?next=${encodeURIComponent(returnUrl)}`;
+      return;
     }
-  }, [selectedTrip]);
+
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tripId: selectedTrip.id,
+          tripLengthDays: selectedTrip.itinerary.days.length,
+          cities: [...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))],
+          tripDates: (() => {
+            const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            const start = selectedTrip.builderData?.dates?.start;
+            const end = selectedTrip.builderData?.dates?.end;
+            if (start && end) return `${fmt(start)} - ${fmt(end)}`;
+            if (start) return fmt(start);
+            return "";
+          })(),
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        logger.error("Checkout API error", null, { status: res.status, error: errorData?.error });
+        return;
+      }
+
+      const data = await res.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (err) {
+      logger.error("Checkout network error", err);
+    }
+  }, [selectedTrip, user.id]);
 
   const activeItinerary: Itinerary | null = selectedTrip
     ? selectedTrip.itinerary
@@ -336,6 +355,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           dayTripSuggestions={dayTripSuggestions.suggestions}
           onUnlockClick={handleStartUnlock}
           tripUnlocked={!!selectedTrip?.unlockedAt}
+          isGuest={user.id === STABLE_DEFAULT_USER_ID}
         />
       </ErrorBoundary>
 
