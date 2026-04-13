@@ -140,6 +140,13 @@ export const POST = withApiHandler(
       return badRequest("Target location not found or missing coordinates");
     }
 
+    // Guard: the target must be in a different planning city than the base.
+    // A "day trip" from Kyoto to a Kyoto location isn't a day trip.
+    const targetPlanningCity = (targetRow.planning_city ?? targetRow.city ?? "").toLowerCase();
+    if (targetPlanningCity && targetPlanningCity === baseCityId.toLowerCase()) {
+      return badRequest("Target location is in the base city; day trips must be to a different city");
+    }
+
     // Fetch nearby locations for additional activities
     const targetCoords = targetRow.coordinates;
     const bbox = {
