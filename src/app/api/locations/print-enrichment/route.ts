@@ -3,9 +3,9 @@ import { badRequest } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
+import { isValidLocationId } from "@/lib/api/validation";
 
 const MAX_IDS = 200;
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const PRINT_COLUMNS = `id, name_japanese, nearest_station, cash_only, reservation_info`;
 
@@ -39,8 +39,11 @@ export const GET = withApiHandler(
       });
     }
 
+    // Location IDs are slug-format (e.g. arabica-kyoto-kansai-40fdfc3d), not
+    // UUIDs. Use the same allow-list validator the rest of the codebase
+    // uses for /api/locations/[id] paths.
     const ids = [...new Set(
-      idsParam.split(",").map((id) => id.trim()).filter((id) => UUID_RE.test(id)),
+      idsParam.split(",").map((id) => id.trim()).filter((id) => isValidLocationId(id)),
     )];
 
     if (ids.length === 0) {
