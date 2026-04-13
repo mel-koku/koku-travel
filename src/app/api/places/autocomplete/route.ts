@@ -196,7 +196,7 @@ export const POST = withApiHandler(
       throw error;
     }
   },
-  { rateLimit: RATE_LIMITS.PLACES, dailyQuota: DAILY_QUOTAS.PLACES, optionalAuth: true },
+  { rateLimit: RATE_LIMITS.PLACES, dailyQuota: DAILY_QUOTAS.PLACES, optionalAuth: true, requireJson: true },
 );
 
 /**

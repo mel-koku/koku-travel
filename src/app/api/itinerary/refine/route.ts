@@ -344,10 +344,22 @@ export const POST = withApiHandler(
         requestId: context.requestId,
       });
     }
-    if (!builderData || !itinerary || !Array.isArray(itinerary.days) || itinerary.days.length === 0) {
-      return badRequest("builderData and itinerary are required to refine a trip", undefined, {
-        requestId: context.requestId,
-      });
+    // Refinement is stateless: tripId is just a cache tag, not a DB lookup
+    // key. The client must POST the trip body it wants to refine — either
+    // via { trip } (handled by the earlier branch) or via { builderData,
+    // itinerary } (handled here). Spell that out so callers don't think
+    // \"trip not found\" when they pass a tripId that the server can't see.
+    const missing: string[] = [];
+    if (!builderData) missing.push("builderData");
+    if (!itinerary || !Array.isArray(itinerary.days) || itinerary.days.length === 0) {
+      missing.push("itinerary (with at least one day)");
+    }
+    if (missing.length > 0) {
+      return badRequest(
+        `Refinement is stateless — POST the trip data alongside tripId. Missing: ${missing.join(", ")}.`,
+        undefined,
+        { requestId: context.requestId },
+      );
     }
 
     // Determine cities to filter by for optimized database queries
