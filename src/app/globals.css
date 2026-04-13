@@ -15,7 +15,7 @@
   --card-foreground: #2c2825;
   --popover: #ffffff;
   --popover-foreground: #2c2825;
-  --primary: #e23828;
+  --primary: #c93022;
   --primary-foreground: #ffffff;
   --secondary: #f5f2ee;
   --secondary-foreground: #2c2825;
@@ -27,7 +27,7 @@
   --destructive-foreground: #ffffff;
   --border: #e5e0d8;
   --input: #e5e0d8;
-  --ring: #e23828;
+  --ring: #c93022;
   --radius: 0.5rem;
 
   /* Chart colors */
@@ -40,17 +40,19 @@
   /* Sidebar */
   --sidebar: #f5f2ee;
   --sidebar-foreground: #2c2825;
-  --sidebar-primary: #e23828;
+  --sidebar-primary: #c93022;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #faf8f5;
   --sidebar-accent-foreground: #2c2825;
   --sidebar-border: #e5e0d8;
-  --sidebar-ring: #e23828;
+  --sidebar-ring: #c93022;
 
   /* Extended palette */
   --foreground-secondary: #6b6058;
   --surface: #f5f2ee;
-  --brand-primary: #e23828;
+  /* Deep vermilion — #c93022 on white = 5.01:1 (WCAG AA). */
+  /* Previous value #e23828 was 4.36:1, failing AA on CTAs with white text. */
+  --brand-primary: #c93022;
   --brand-secondary: #c93022;
   --success: #4a6b53;
   --warning: #d99b29;
@@ -109,7 +111,7 @@
   --card-foreground: #f0e8dc;
   --popover: #252220;
   --popover-foreground: #f0e8dc;
-  --primary: #e23828;
+  --primary: #c93022;
   --primary-foreground: #ffffff;
   --secondary: #252220;
   --secondary-foreground: #f0e8dc;
@@ -121,7 +123,7 @@
   --destructive-foreground: #ffffff;
   --border: #3a332a;
   --input: #3a332a;
-  --ring: #e23828;
+  --ring: #c93022;
 
   /* Chart colors */
   --chart-1: #e23828;
@@ -133,17 +135,19 @@
   /* Sidebar */
   --sidebar: #1c1917;
   --sidebar-foreground: #f0e8dc;
-  --sidebar-primary: #e23828;
+  --sidebar-primary: #c93022;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #252220;
   --sidebar-accent-foreground: #f0e8dc;
   --sidebar-border: #3a332a;
-  --sidebar-ring: #e23828;
+  --sidebar-ring: #c93022;
 
   /* Extended palette */
   --foreground-secondary: #b8ad9e;
   --surface: #252220;
-  --brand-primary: #e23828;
+  /* Deep vermilion — #c93022 on white = 5.01:1 (WCAG AA). */
+  /* Previous value #e23828 was 4.36:1, failing AA on CTAs with white text. */
+  --brand-primary: #c93022;
   --brand-secondary: #c93022;
   --success: #4a6b53;
   --warning: #d99b29;

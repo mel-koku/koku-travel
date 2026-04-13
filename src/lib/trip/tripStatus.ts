@@ -78,11 +78,15 @@ export function groupTrips(trips: StoredTrip[]): TripGroup {
   return groups;
 }
 
+// Border-only badges instead of tinted fills: text-on-own-tint couldn't
+// reach WCAG AA 4.5:1 for warm-gray or vermilion (stone/brand-secondary
+// foregrounds sit too close to their own /10 tints). Matches the
+// JTA / UNESCO badge pattern used in PlaceDetail.
 const STATUS_CONFIG: Record<TripLifecycleStatus, { label: string; colorClass: string; bgClass: string }> = {
-  active: { label: "Active", colorClass: "text-success", bgClass: "bg-sage/15" },
-  upcoming: { label: "Upcoming", colorClass: "text-brand-primary", bgClass: "bg-brand-primary/15" },
-  completed: { label: "Completed", colorClass: "text-stone", bgClass: "bg-stone/15" },
-  planning: { label: "Planning", colorClass: "text-brand-secondary", bgClass: "bg-brand-secondary/15" },
+  active: { label: "Active", colorClass: "text-success", bgClass: "border border-success/40" },
+  upcoming: { label: "Upcoming", colorClass: "text-brand-primary", bgClass: "border border-brand-primary/40" },
+  completed: { label: "Completed", colorClass: "text-stone", bgClass: "border border-stone/40" },
+  planning: { label: "Planning", colorClass: "text-brand-secondary", bgClass: "border border-brand-secondary/40" },
 };
 
 export function getStatusConfig(status: TripLifecycleStatus) {
