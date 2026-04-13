@@ -118,11 +118,17 @@ export async function pullCloudToLocal() {
   const bookmarksList = (bookmarks ?? []).map((row) => row.guide_id);
 
   if (typeof window !== "undefined") {
-    const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    parsed.saved = savedList;
-    parsed.guideBookmarks = bookmarksList;
-    localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(parsed));
+    // localStorage throws in iOS Safari Private mode and on quota exceeded.
+    // The post-signin sync still completes — we just lose the local mirror.
+    try {
+      const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      parsed.saved = savedList;
+      parsed.guideBookmarks = bookmarksList;
+      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(parsed));
+    } catch {
+      // Best-effort
+    }
   }
 
   return { saved: savedList, guideBookmarks: bookmarksList, ok: true as const };

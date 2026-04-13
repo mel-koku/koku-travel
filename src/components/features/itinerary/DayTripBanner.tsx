@@ -21,7 +21,12 @@ export function DayTripBanner({
   const storageKey = `daytrip-banner-dismissed-${tripId}`;
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
-    return localStorage.getItem(storageKey) === "1";
+    // localStorage.getItem can throw in iOS Safari Private mode.
+    try {
+      return localStorage.getItem(storageKey) === "1";
+    } catch {
+      return false;
+    }
   });
 
   if (suggestions.length === 0 || dismissed) return null;
