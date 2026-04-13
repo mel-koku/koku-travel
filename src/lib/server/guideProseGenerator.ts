@@ -561,6 +561,20 @@ export async function generateGuideProse(
   const totalDays = days.length;
   const deadlineFired = daysDeadline > 0 || headerStatus === "deadline";
 
+  // Fire-and-forget deny-list scan for observability. Per
+   // _llmBatchPrimitives.ts the per-call retry was dropped because Gemini
+  // 2.5 Flash with the deny-list in the prompt produces <1% violations.
+  // We still want to know when one slips through so we can monitor the
+  // rate over time and react if a model update degrades compliance.
+  const denyListViolations = scanForDenyListViolations(shell);
+  if (denyListViolations.length > 0) {
+    logger.warn("Guide prose deny-list violations slipped through", {
+      violations: denyListViolations.slice(0, 10),
+      totalViolations: denyListViolations.length,
+      totalDays,
+    });
+  }
+
   logger.info("Guide prose batch complete", {
     headerStatus,
     daysSuccess,
@@ -569,6 +583,7 @@ export async function generateGuideProse(
     totalDays,
     elapsedMs,
     deadlineFired,
+    denyListViolations: denyListViolations.length,
   });
 
   return shell;
