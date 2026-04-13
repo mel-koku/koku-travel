@@ -443,6 +443,9 @@ export const planRequestSchema = z.object({
  */
 export const availabilityRequestSchema = z.object({
   activities: z.array(z.object({
+    // ItineraryActivity.id is required — findLocationsForActivities crashes
+    // on `activityId.match(...)` if it's missing. Enforce at the boundary.
+    id: z.string().min(1).max(500),
     locationId: z.string().min(1).max(255).optional(),
     startTime: z.string().regex(/^\d{1,2}:\d{2}$/).optional(),
     endTime: z.string().regex(/^\d{1,2}:\d{2}$/).optional(),
