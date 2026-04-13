@@ -615,7 +615,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                       href={details?.websiteUri}
                       target="_blank"
                       rel="noreferrer"
-                      className="transition hover:underline"
+                      className="inline-flex min-h-11 items-center py-1 transition hover:underline"
                     >
                       Official website
                     </a>
@@ -630,7 +630,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                       href={details?.googleMapsUri}
                       target="_blank"
                       rel="noreferrer"
-                      className="transition hover:underline"
+                      className="inline-flex min-h-11 items-center py-1 transition hover:underline"
                     >
                       View on Google Maps
                     </a>

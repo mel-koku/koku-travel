@@ -176,7 +176,7 @@ export function LocationBreakoutCard({
                 e.stopPropagation();
                 onSelectLocation(location);
               }}
-              className="mt-4 inline-flex items-center text-left text-sm font-medium text-brand-primary transition-colors hover:text-brand-secondary group-hover:text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:rounded-sm"
+              className="mt-4 inline-flex min-h-11 items-center self-start py-2 text-left text-sm font-medium text-brand-primary transition-colors hover:text-brand-secondary group-hover:text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:rounded-sm"
             >
               View details
               <span className="ml-1 inline-block transition-transform duration-200 group-hover:translate-x-0.5">

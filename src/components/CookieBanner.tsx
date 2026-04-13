@@ -39,13 +39,13 @@ export default function CookieBanner() {
       <div className="mt-3 flex items-center gap-3">
         <button
           onClick={() => dismiss(true)}
-          className="rounded-md bg-white/15 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-white/25 active:scale-[0.98]"
+          className="inline-flex min-h-11 items-center rounded-md bg-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/25 active:scale-[0.98]"
         >
           Got it
         </button>
         <button
           onClick={() => dismiss(false)}
-          className="text-sm text-white/60 transition hover:text-white/80"
+          className="inline-flex min-h-11 items-center px-2 text-sm text-white/60 transition hover:text-white/80"
         >
           Decline
         </button>
