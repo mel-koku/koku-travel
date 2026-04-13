@@ -107,8 +107,14 @@ const securityHeaders = [
     value: "nosniff",
   },
   {
+    // Chrome (2019) and Edge (2018) removed their XSS auditors; Firefox
+    // never shipped one. Keeping the header set to `1; mode=block` still
+    // enables a known info-disclosure side channel in Safari and older
+    // Edge ("Silent Block"). OWASP's current guidance is to send `0`
+    // explicitly and rely on CSP instead. See:
+    // https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-xss-protection
     key: "X-XSS-Protection",
-    value: "1; mode=block",
+    value: "0",
   },
   {
     key: "Referrer-Policy",
