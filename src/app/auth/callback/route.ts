@@ -80,9 +80,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}/auth/error?message=session_creation_failed`);
     }
 
-    // Redirect to the page the user came from, or dashboard as fallback
+    // Redirect to the page the user came from, or dashboard as fallback.
+    // Guard against open-redirects: strict-prefix checks like
+    // `.startsWith("/") && !.startsWith("//")` are bypassed by `/\evil.com`
+    // — browsers normalize backslash to forward slash during URL parsing,
+    // so `Location: http://site/\evil.com` resolves to `//evil.com`.
+    // Resolve against origin and require same-origin instead.
     const next = searchParams.get("next");
-    const redirectPath = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+    let redirectPath = "/dashboard";
+    if (next) {
+      try {
+        const target = new URL(next, origin);
+        if (target.origin === origin) {
+          redirectPath = target.pathname + target.search + target.hash;
+        }
+      } catch {
+        // malformed — fall through to dashboard
+      }
+    }
     return NextResponse.redirect(`${origin}${redirectPath}`);
   } catch (error) {
     logger.error("Supabase callback client unavailable", error);
