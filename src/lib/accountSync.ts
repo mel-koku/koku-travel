@@ -36,7 +36,7 @@ export async function syncLocalToCloudOnce() {
   const { saved, guideBookmarks } = getLocalAppState();
 
   const [{ data: remoteSaved }, { data: remoteBookmarks }] = (await Promise.all([
-    supabase.from("saved").select("place_id").eq("user_id", user.id),
+    supabase.from("favorites").select("place_id").eq("user_id", user.id),
     supabase.from("guide_bookmarks").select("guide_id").eq("user_id", user.id),
   ])) as [
     { data: SavedRow[] | null },
@@ -47,7 +47,7 @@ export async function syncLocalToCloudOnce() {
   const bookmarkRows = guideBookmarks.map((guide_id) => ({ user_id: user.id, guide_id }));
 
   if (savedRows.length) {
-    await supabase.from("saved").upsert(savedRows, { onConflict: "user_id,place_id" });
+    await supabase.from("favorites").upsert(savedRows, { onConflict: "user_id,place_id" });
   }
 
   if (bookmarkRows.length) {
@@ -71,9 +71,9 @@ export async function syncLocalToCloudOnce() {
   }
 
   if (saved.length === 0 && (remoteSaved?.length ?? 0) > 0) {
-    await supabase.from("saved").delete().eq("user_id", user.id);
+    await supabase.from("favorites").delete().eq("user_id", user.id);
   } else if (savedToDelete.length) {
-    await supabase.from("saved").delete().eq("user_id", user.id).in("place_id", savedToDelete);
+    await supabase.from("favorites").delete().eq("user_id", user.id).in("place_id", savedToDelete);
   }
 
   if (guideBookmarks.length === 0 && (remoteBookmarks?.length ?? 0) > 0) {
@@ -106,7 +106,7 @@ export async function pullCloudToLocal() {
   if (!user) return { saved: [], guideBookmarks: [], ok: false as const, reason: "no-user" as const };
 
   const { data: savedData } = (await supabase
-    .from("saved")
+    .from("favorites")
     .select("place_id")
     .eq("user_id", user.id)) as { data: SavedRow[] | null };
   const { data: bookmarks } = (await supabase
