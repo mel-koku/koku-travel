@@ -420,15 +420,6 @@ export const planRequestSchema = z.object({
 }).strict();
 
 /**
- * Schema for itinerary refine request (more flexible for backward compatibility)
- * Accepts partial TripBuilderData updates
- */
-export const refineRequestSchema = z.object({
-  builderData: tripBuilderDataSchema.partial().passthrough(),
-  tripId: tripIdSchema,
-}).strict();
-
-/**
  * Schema for availability check request
  */
 export const availabilityRequestSchema = z.object({
