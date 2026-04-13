@@ -3,6 +3,7 @@ import { badRequest } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { fetchLocationsByIdsForListing } from "@/lib/locations/locationService";
+import { isValidLocationId } from "@/lib/api/validation";
 
 /**
  * Maximum number of location IDs allowed per request
@@ -34,12 +35,14 @@ export const GET = withApiHandler(
       });
     }
 
-    // Parse, validate, and deduplicate IDs
+    // Parse, validate, and deduplicate IDs.
+    // Use the same allow-list ([A-Za-z0-9._-]) the other location-id
+    // routes apply, so dangerous characters can't reach the DB layer.
     const ids = [...new Set(
       idsParam
         .split(",")
         .map((id) => id.trim())
-        .filter((id) => id.length > 0),
+        .filter((id) => id.length > 0 && isValidLocationId(id)),
     )];
 
     if (ids.length === 0) {
