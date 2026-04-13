@@ -75,12 +75,30 @@ export type GenerateItineraryOptions = {
   intentConstraints?: IntentExtractionResult;
 };
 
+function resolveTotalDays(data: TripBuilderData): number {
+  if (typeof data.duration === "number" && data.duration > 0) {
+    return data.duration;
+  }
+  if (Array.isArray(data.cityDays) && data.cityDays.length > 0) {
+    const sum = data.cityDays.reduce((acc, n) => acc + (typeof n === "number" && n > 0 ? n : 0), 0);
+    if (sum > 0) return sum;
+  }
+  const { start, end } = data.dates ?? {};
+  if (typeof start === "string" && typeof end === "string") {
+    const s = new Date(start);
+    const e = new Date(end);
+    if (!Number.isNaN(s.getTime()) && !Number.isNaN(e.getTime()) && e >= s) {
+      return Math.round((e.getTime() - s.getTime()) / 86_400_000) + 1;
+    }
+  }
+  return DEFAULT_TOTAL_DAYS;
+}
+
 export async function generateItinerary(
   data: TripBuilderData,
   options?: GenerateItineraryOptions,
 ): Promise<Itinerary> {
-  const totalDays =
-    typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
+  const totalDays = resolveTotalDays(data);
 
   // Use provided locations or fetch from database
   let allLocations: Location[];

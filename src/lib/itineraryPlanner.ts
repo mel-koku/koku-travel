@@ -671,10 +671,11 @@ async function planItineraryDay(
           .map((step) => step.instruction)
           .filter((instruction): instruction is string => Boolean(instruction)),
       );
-      const travelPath = mergePathSegments([
-        route.geometry,
-        ...route.legs.map((leg) => leg.geometry),
-      ]);
+      // Prefer the full route geometry when present; otherwise stitch from legs.
+      // Using both double-counts the path since `geometry` already spans all legs.
+      const travelPath = route.geometry && route.geometry.length > 0
+        ? mergePathSegments([route.geometry])
+        : mergePathSegments(route.legs.map((leg) => leg.geometry));
 
       // Build structured transit steps from routing leg steps
       const transitSteps = buildTransitSteps(route);
