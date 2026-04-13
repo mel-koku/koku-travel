@@ -1,4 +1,13 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
+
+/**
+ * JSON-LD `image` must be an absolute URL — Google's structured-data
+ * validator rejects relative paths. Resolve against BASE_URL when needed.
+ */
+function absoluteImageUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
 
 type GuideJsonLdInput = {
   slug: string;
@@ -21,7 +30,7 @@ export function buildGuideJsonLd(guide: GuideJsonLdInput) {
     headline: guide.title,
     ...(guide.summary && { description: guide.summary }),
     url: `${BASE_URL}/guides/${guide.slug}`,
-    ...(guide.imageUrl && { image: guide.imageUrl }),
+    ...(guide.imageUrl && { image: absoluteImageUrl(guide.imageUrl) }),
     ...(guide.publishedAt && { datePublished: guide.publishedAt }),
     ...(guide.updatedAt && { dateModified: guide.updatedAt }),
     author: guide.authorName && guide.authorName !== "Yuku Japan"

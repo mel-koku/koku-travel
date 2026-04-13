@@ -1,6 +1,17 @@
 import type { Location } from "@/types/location";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").replace(/\/+$/, "");
+
+/**
+ * Resolve a possibly-relative photo URL to an absolute one. Schema.org's
+ * ImageObject and Google's structured-data validator both require the
+ * `image` field to be a fully-qualified URL — relative paths produce
+ * "Invalid URL" warnings in Search Console.
+ */
+function absoluteImageUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
 
 /**
  * Build JSON-LD structured data for a place detail page.
@@ -28,7 +39,7 @@ export function buildPlaceJsonLd(location: Location) {
         description: location.description.slice(0, 300),
       }),
     url: `${BASE_URL}/places/${location.id}`,
-    ...(location.primaryPhotoUrl && { image: location.primaryPhotoUrl }),
+    ...(location.primaryPhotoUrl && { image: absoluteImageUrl(location.primaryPhotoUrl) }),
     ...(location.coordinates && {
       geo: {
         "@type": "GeoCoordinates",
