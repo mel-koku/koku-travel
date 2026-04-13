@@ -31,7 +31,14 @@ export function ExperiencePlanCTA({
       city,
       region,
     };
-    localStorage.setItem(CONTENT_CONTEXT_KEY, JSON.stringify(contentContext));
+    // localStorage throws QuotaExceededError when full, and SecurityError
+    // in iOS Safari Private mode (quota is 0). Don't let either swallow
+    // the navigation — the trip-builder still works without seed context.
+    try {
+      localStorage.setItem(CONTENT_CONTEXT_KEY, JSON.stringify(contentContext));
+    } catch {
+      // Best-effort — proceed without seed context
+    }
     router.push("/trip-builder");
   }
 
