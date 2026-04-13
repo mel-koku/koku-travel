@@ -14,6 +14,7 @@ import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon } from "./LocationCard";
@@ -62,25 +63,48 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     return () => clearTimeout(timer);
   }, [status, location.id]);
 
-  // Build deduplicated photo list: hero first, then details photos
+  // Build deduplicated photo list: hero first, then details photos.
+  // Each entry carries attribution (Google TOS requires visible credit).
   const allPhotos = useMemo(() => {
-    const hero = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
-    const detailPhotos = (details?.photos ?? [])
-      .map((p) => p.proxyUrl)
-      .filter((url): url is string => Boolean(url));
+    type PhotoEntry = { url: string; attribution?: string; attributionUri?: string };
 
-    // Start with hero, then add detail photos that aren't the same as hero
-    const photos: string[] = [];
-    if (hero) photos.push(hero);
-    for (const url of detailPhotos) {
-      // Deduplicate by comparing the photoName param
-      const heroName = hero ? new URL(hero, "http://x").searchParams.get("photoName") : null;
-      const detailName = new URL(url, "http://x").searchParams.get("photoName");
-      if (heroName && detailName && heroName === detailName) continue;
-      if (!photos.includes(url)) photos.push(url);
+    const heroUrl = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
+    const heroName = heroUrl
+      ? new URL(heroUrl, "http://x").searchParams.get("photoName")
+      : null;
+
+    const detailEntries: PhotoEntry[] = (details?.photos ?? [])
+      .filter((p) => p.proxyUrl)
+      .map((p) => {
+        const attr = p.attributions?.[0];
+        return {
+          url: p.proxyUrl as string,
+          attribution: attr?.displayName,
+          attributionUri: attr?.uri,
+        };
+      });
+
+    const photos: PhotoEntry[] = [];
+    if (heroUrl) {
+      const match = detailEntries.find((e) => {
+        const n = new URL(e.url, "http://x").searchParams.get("photoName");
+        return heroName && n === heroName;
+      });
+      photos.push({
+        url: heroUrl,
+        attribution: match?.attribution,
+        attributionUri: match?.attributionUri,
+      });
+    }
+    for (const entry of detailEntries) {
+      const entryName = new URL(entry.url, "http://x").searchParams.get("photoName");
+      if (heroName && entryName === heroName) continue;
+      if (!photos.some((p) => p.url === entry.url)) photos.push(entry);
     }
     return photos.slice(0, 5);
   }, [location.primaryPhotoUrl, location.image, details?.photos]);
+
+  const activePhoto = allPhotos[activePhotoIndex];
 
   const displayName = useMemo(() => {
     return getLocationDisplayName(details?.displayName, location);
@@ -236,7 +260,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         {/* Hero image — flush edges */}
         <div className="relative aspect-[16/9] w-full overflow-hidden">
           <Image
-            src={allPhotos[activePhotoIndex] || "/placeholder.jpg"}
+            src={activePhoto?.url || "/placeholder.jpg"}
             alt={displayName}
             fill
             className="object-cover"
@@ -254,14 +278,32 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               {displayName}
             </h2>
           </div>
+
+          {activePhoto?.attribution && (
+            <p className="absolute top-2 left-3 text-[10px] text-white/75 drop-shadow-sm">
+              Photo:{" "}
+              {activePhoto.attributionUri && isSafeUrl(activePhoto.attributionUri) ? (
+                <a
+                  href={activePhoto.attributionUri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-white/40 hover:decoration-white"
+                >
+                  {activePhoto.attribution}
+                </a>
+              ) : (
+                activePhoto.attribution
+              )}
+            </p>
+          )}
         </div>
 
         {/* Photo thumbnail strip */}
         {allPhotos.length > 1 && (
           <div className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide px-4 py-2">
-            {allPhotos.map((src, i) => (
+            {allPhotos.map((photo, i) => (
               <button
-                key={src}
+                key={photo.url}
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
                 aria-label={`View photo ${i + 1} of ${allPhotos.length}`}
@@ -273,7 +315,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 )}
               >
                 <Image
-                  src={resizePhotoUrl(src, 128) || src}
+                  src={resizePhotoUrl(photo.url, 128) || photo.url}
                   alt={`${displayName} photo ${i + 1}`}
                   fill
                   className="object-cover"

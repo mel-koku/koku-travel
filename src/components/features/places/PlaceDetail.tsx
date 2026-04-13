@@ -127,20 +127,43 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
   // Hierarchy context (children, sub-experiences, relationships)
   const { data: hierarchy } = useLocationHierarchy(location.id);
 
-  // Photos
+  // Photos — each entry carries its attribution (Google TOS requires a
+  // clickable credit alongside every displayed photo).
   const allPhotos = useMemo(() => {
-    const hero = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
-    const detailPhotos = (details?.photos ?? [])
-      .map((p) => p.proxyUrl)
-      .filter((url): url is string => Boolean(url));
+    type PhotoEntry = { url: string; attribution?: string; attributionUri?: string };
 
-    const photos: string[] = [];
-    if (hero) photos.push(hero);
-    for (const url of detailPhotos) {
-      const heroName = hero ? new URL(hero, "http://x").searchParams.get("photoName") : null;
-      const detailName = new URL(url, "http://x").searchParams.get("photoName");
-      if (heroName && detailName && heroName === detailName) continue;
-      if (!photos.includes(url)) photos.push(url);
+    const heroUrl = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
+    const heroName = heroUrl
+      ? new URL(heroUrl, "http://x").searchParams.get("photoName")
+      : null;
+
+    const detailEntries: PhotoEntry[] = (details?.photos ?? [])
+      .filter((p) => p.proxyUrl)
+      .map((p) => {
+        const attr = p.attributions?.[0];
+        return {
+          url: p.proxyUrl as string,
+          attribution: attr?.displayName,
+          attributionUri: attr?.uri,
+        };
+      });
+
+    const photos: PhotoEntry[] = [];
+    if (heroUrl) {
+      const match = detailEntries.find((e) => {
+        const n = new URL(e.url, "http://x").searchParams.get("photoName");
+        return heroName && n === heroName;
+      });
+      photos.push({
+        url: heroUrl,
+        attribution: match?.attribution,
+        attributionUri: match?.attributionUri,
+      });
+    }
+    for (const entry of detailEntries) {
+      const entryName = new URL(entry.url, "http://x").searchParams.get("photoName");
+      if (heroName && entryName === heroName) continue;
+      if (!photos.some((p) => p.url === entry.url)) photos.push(entry);
     }
     return photos.slice(0, 5);
   }, [location.primaryPhotoUrl, location.image, details?.photos]);
@@ -245,12 +268,14 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
     (details?.regularOpeningHours?.length ?? 0) >= 3;
   const hasLinks = details?.websiteUri || details?.internationalPhoneNumber || details?.googleMapsUri;
 
+  const activePhoto = allPhotos[activePhotoIndex];
+
   return (
     <div className="min-h-[100dvh] bg-background">
       {/* Hero image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden sm:aspect-[16/9] lg:aspect-[21/9]">
         <Image
-          src={allPhotos[activePhotoIndex] || "/placeholder.jpg"}
+          src={activePhoto?.url || "/placeholder.jpg"}
           alt={displayName}
           fill
           className="object-cover"
@@ -258,6 +283,23 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           priority
         />
         <div className="absolute inset-0 scrim-70" />
+        {activePhoto?.attribution && (
+          <p className="absolute bottom-2 right-3 text-[11px] text-white/80 drop-shadow-sm">
+            Photo:{" "}
+            {activePhoto.attributionUri ? (
+              <a
+                href={activePhoto.attributionUri}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-white/40 hover:decoration-white"
+              >
+                {activePhoto.attribution}
+              </a>
+            ) : (
+              activePhoto.attribution
+            )}
+          </p>
+        )}
       </div>
 
       {/* Sticky back bar */}
@@ -388,9 +430,9 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       {allPhotos.length > 1 && (
         <div className="mx-auto max-w-4xl px-6 pb-6">
           <div className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide">
-            {allPhotos.map((src, i) => (
+            {allPhotos.map((photo, i) => (
               <button
-                key={src}
+                key={photo.url}
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
                 aria-label={`View photo ${i + 1} of ${allPhotos.length}`}
@@ -402,7 +444,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 )}
               >
                 <Image
-                  src={resizePhotoUrl(src, 128) || src}
+                  src={resizePhotoUrl(photo.url, 128) || photo.url}
                   alt={`${displayName} photo ${i + 1}`}
                   fill
                   className="object-cover"
