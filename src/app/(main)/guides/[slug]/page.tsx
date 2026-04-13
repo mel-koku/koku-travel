@@ -11,6 +11,7 @@ import {
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
 import { buildGuideJsonLd } from "@/lib/guides/guideJsonLd";
 import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import { urlFor } from "@/sanity/image";
 
 // Request-scoped cache: deduplicates fetches between generateMetadata() and page component
@@ -122,7 +123,7 @@ export default async function GuideDetailPage({ params }: Props) {
       <>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
         <GuideDetailClient
           sanityGuide={guide}
@@ -169,7 +170,7 @@ export default async function GuideDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <GuideDetailClient
         guide={guide}
