@@ -214,6 +214,9 @@ export const POST = withApiHandler(
     // Schema must match VALID_REFINEMENT_TYPES for consistency
 
     // Schema for Trip object in refinement requests (loose validation, detailed validation in engine)
+    // Passthrough on the outer trip and day shapes so travelerProfile,
+    // dates, entryPoint, etc. survive validation — the engine needs them.
+    // Inner activity objects stay strict to block injection in arrays.
     const tripForRefinementSchema = z.object({
       id: z.string().optional(),
       days: z.array(z.object({
@@ -222,9 +225,9 @@ export const POST = withApiHandler(
         activities: z.array(z.object({
           id: z.string(),
           locationId: z.string(),
-        }).strip()).optional(),
-      }).strip()).optional(),
-    }).strip().optional();
+        }).passthrough()).optional(),
+      }).passthrough()).optional(),
+    }).passthrough().optional();
 
     const refineSchema = z.object({
       trip: tripForRefinementSchema, // Trip object with basic structure validation
@@ -265,6 +268,14 @@ export const POST = withApiHandler(
 
       if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
         return badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
+          requestId: context.requestId,
+        });
+      }
+
+      // Engine reads trip.travelerProfile.interests unconditionally. Reject
+      // upfront with 400 rather than crashing to 500 when the caller forgot it.
+      if (!trip.travelerProfile?.interests) {
+        return badRequest("trip.travelerProfile.interests is required", undefined, {
           requestId: context.requestId,
         });
       }
