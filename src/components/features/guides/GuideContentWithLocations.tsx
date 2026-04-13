@@ -7,6 +7,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { LocationBreakoutCard } from "./LocationBreakoutCard";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 import type { Location } from "@/types/location";
 
 type GuideContentWithLocationsProps = {
@@ -110,16 +111,21 @@ const markdownComponents = {
   }: {
     href?: string;
     children?: React.ReactNode;
-  }) => (
-    <a
-      href={href}
-      className="link-reveal text-brand-primary"
-      target={href?.startsWith("http") ? "_blank" : undefined}
-      rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-    >
-      {children}
-    </a>
-  ),
+  }) => {
+    // Gate LLM/Sanity-sourced hrefs through the safety check so
+    // javascript:/data:/vbscript: URLs can't execute.
+    const safe = isSafeUrl(href);
+    return (
+      <a
+        href={safe ? href : undefined}
+        className="link-reveal text-brand-primary"
+        target={safe && href?.startsWith("http") ? "_blank" : undefined}
+        rel={safe && href?.startsWith("http") ? "noopener noreferrer" : undefined}
+      >
+        {children}
+      </a>
+    );
+  },
   blockquote: ({ children }: { children?: React.ReactNode }) => (
     <div className="mx-auto max-w-3xl px-6 my-12">
       <div className="h-px w-12 bg-brand-primary/40 mb-8" />
