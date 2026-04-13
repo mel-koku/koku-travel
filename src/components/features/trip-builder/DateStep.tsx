@@ -19,7 +19,7 @@ type DateFormValues = {
 };
 
 const MIN_DURATION = 1;
-const MAX_DURATION = 14;
+const MAX_DURATION = 21;
 
 export type DateStepProps = {
   onValidityChange?: (isValid: boolean) => void;

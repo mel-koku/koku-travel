@@ -354,7 +354,7 @@ const contentContextSchema = z.object({
 }).strict().optional();
 
 export const tripBuilderDataSchema = z.object({
-  duration: z.number().int().min(1).max(14).optional(),
+  duration: z.number().int().min(1).max(21).optional(),
   dates: travelDatesSchema,
   regions: z.array(regionIdSchema).max(50).optional(),
   cities: z.array(cityIdSchema).max(50).optional(),
@@ -381,8 +381,8 @@ export const tripBuilderDataSchema = z.object({
   isFirstTimeVisitor: z.boolean().optional(),
   // Per-city day allocation overrides (array = new format, record = legacy)
   cityDays: z.union([
-    z.array(z.number().int().min(1).max(14)),
-    z.record(cityIdSchema, z.number().int().min(1).max(14)),
+    z.array(z.number().int().min(1).max(21)),
+    z.record(cityIdSchema, z.number().int().min(1).max(21)),
   ]).optional(),
   // Custom city order flag
   customCityOrder: z.boolean().optional(),
