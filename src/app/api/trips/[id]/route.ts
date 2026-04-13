@@ -374,6 +374,9 @@ export async function DELETE(
       const result = await deleteTrip(supabase, user!.id, tripId);
 
       if (!result.success) {
+        if (result.notFound) {
+          return notFound("Trip not found", { requestId: context.requestId });
+        }
         logger.error("Failed to delete trip", new Error(result.error), {
           requestId: context.requestId,
           userId: user!.id,

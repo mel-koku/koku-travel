@@ -152,16 +152,25 @@ export async function deleteTrip(
   supabase: SupabaseClient,
   userId: string,
   tripId: string,
-): Promise<SyncResult<void>> {
+): Promise<SyncResult<void> & { notFound?: boolean }> {
   try {
-    const { error } = await supabase
+    // `.select("id")` forces PostgREST to return affected rows so we can
+    // distinguish "0 rows matched" (trip doesn't exist, or belongs to
+    // someone else) from "1 row updated". Without this, Supabase returns
+    // success for no-op updates and callers can't tell.
+    const { data, error } = await supabase
       .from("trips")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", tripId)
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .select("id");
 
     if (error) {
       throw error;
+    }
+
+    if (!data || data.length === 0) {
+      return { success: false, notFound: true, error: "Trip not found" };
     }
 
     return { success: true };
