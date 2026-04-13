@@ -106,74 +106,76 @@ export async function getTipCount(): Promise<number> {
  * Works with both full LocationDbRow and LocationListingDbRow
  */
 export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbRow): Location {
-  // Base fields present in both types
+  // Every column is mapped via the `"key" in row` guard pattern so that
+  // adding a column to a projection automatically surfaces it here.
+  // Previously serviceOptions/isFeatured were in LOCATION_LISTING_COLUMNS
+  // but never mapped, and nameJapanese/nearestStation/cashOnly/coordinates
+  // were only mapped in the full-row branch — so listing-projection
+  // callers (places map, batch, saved) silently dropped those fields.
+  const r = row as Record<string, unknown>;
   const base: Location = {
     id: row.id,
     name: row.name,
     region: row.region,
     city: row.city,
-    planningCity: "planning_city" in row ? row.planning_city ?? undefined : undefined,
-    prefecture: row.prefecture ?? undefined,
-    parentId: "parent_id" in row ? row.parent_id ?? undefined : undefined,
-    parentMode: "parent_mode" in row ? row.parent_mode ?? undefined : undefined,
-    sortOrder: "sort_order" in row ? row.sort_order ?? undefined : undefined,
     category: row.category,
     image: row.image,
+    planningCity: "planning_city" in r ? (r.planning_city as string | null) ?? undefined : undefined,
+    prefecture: row.prefecture ?? undefined,
+    parentId: "parent_id" in r ? (r.parent_id as string | null) ?? undefined : undefined,
+    parentMode: "parent_mode" in r ? (r.parent_mode as Location["parentMode"]) ?? undefined : undefined,
+    sortOrder: "sort_order" in r ? (r.sort_order as number | null) ?? undefined : undefined,
     minBudget: row.min_budget ?? undefined,
     estimatedDuration: row.estimated_duration ?? undefined,
-    shortDescription: "short_description" in row ? row.short_description ?? undefined : undefined,
-    rating: "rating" in row ? row.rating ?? undefined : undefined,
-    reviewCount: "review_count" in row ? row.review_count ?? undefined : undefined,
+    shortDescription: "short_description" in r ? (r.short_description as string | null) ?? undefined : undefined,
+    rating: "rating" in r ? (r.rating as number | null) ?? undefined : undefined,
+    reviewCount: "review_count" in r ? (r.review_count as number | null) ?? undefined : undefined,
     placeId: row.place_id ?? undefined,
-    primaryPhotoUrl: "primary_photo_url" in row ? row.primary_photo_url ?? undefined : undefined,
-    // Google Places enrichment fields (present in both types)
-    googlePrimaryType: "google_primary_type" in row ? row.google_primary_type ?? undefined : undefined,
-    googleTypes: "google_types" in row ? row.google_types ?? undefined : undefined,
-    businessStatus: "business_status" in row ? row.business_status as Location["businessStatus"] ?? undefined : undefined,
-    priceLevel: "price_level" in row ? (row.price_level as 0 | 1 | 2 | 3 | 4 | null) ?? undefined : undefined,
-    accessibilityOptions: "accessibility_options" in row ? row.accessibility_options ?? undefined : undefined,
-    dietaryOptions: "dietary_options" in row ? row.dietary_options ?? undefined : undefined,
-    // Tags are present in both LocationDbRow and LocationListingDbRow
-    tags: "tags" in row ? row.tags ?? undefined : undefined,
-    insiderTip: "insider_tip" in row ? (row as LocationDbRow).insider_tip ?? undefined : undefined,
+    primaryPhotoUrl: "primary_photo_url" in r ? (r.primary_photo_url as string | null) ?? undefined : undefined,
+    coordinates: "coordinates" in r ? (r.coordinates as Location["coordinates"]) ?? undefined : undefined,
+    // Google Places enrichment fields
+    googlePrimaryType: "google_primary_type" in r ? (r.google_primary_type as string | null) ?? undefined : undefined,
+    googleTypes: "google_types" in r ? (r.google_types as string[] | null) ?? undefined : undefined,
+    businessStatus: "business_status" in r ? (r.business_status as Location["businessStatus"]) ?? undefined : undefined,
+    priceLevel: "price_level" in r ? (r.price_level as Location["priceLevel"]) ?? undefined : undefined,
+    accessibilityOptions: "accessibility_options" in r ? (r.accessibility_options as Location["accessibilityOptions"]) ?? undefined : undefined,
+    dietaryOptions: "dietary_options" in r ? (r.dietary_options as Location["dietaryOptions"]) ?? undefined : undefined,
+    serviceOptions: "service_options" in r ? (r.service_options as Location["serviceOptions"]) ?? undefined : undefined,
+    tags: "tags" in r ? (r.tags as string[] | null) ?? undefined : undefined,
+    insiderTip: "insider_tip" in r ? (r.insider_tip as string | null) ?? undefined : undefined,
+    nameJapanese: "name_japanese" in r ? (r.name_japanese as string | null) ?? undefined : undefined,
+    nearestStation: "nearest_station" in r ? (r.nearest_station as string | null) ?? undefined : undefined,
+    cashOnly: "cash_only" in r ? (r.cash_only as boolean | null) ?? undefined : undefined,
+    reservationInfo: "reservation_info" in r ? (r.reservation_info as Location["reservationInfo"]) ?? undefined : undefined,
+    isFeatured: "is_featured" in r ? (r.is_featured as boolean | null) ?? undefined : undefined,
+    isHiddenGem: "is_hidden_gem" in r ? (r.is_hidden_gem as boolean | null) ?? undefined : undefined,
+    jtaApproved: "jta_approved" in r ? (r.jta_approved as boolean | null) ?? undefined : undefined,
+    isUnescoSite: "is_unesco_site" in r ? (r.is_unesco_site as boolean | null) ?? undefined : undefined,
   };
 
-  // Extended fields only present in full LocationDbRow
-  if ("operating_hours" in row) {
-    const fullRow = row as LocationDbRow;
+  // Fields that only exist on the full LocationDbRow projection.
+  if ("operating_hours" in r) {
     return {
       ...base,
-      neighborhood: fullRow.neighborhood ?? undefined,
-      description: fullRow.description ?? undefined,
-      operatingHours: normalizeOperatingHours(fullRow.operating_hours),
-      recommendedVisit: fullRow.recommended_visit ?? undefined,
-      preferredTransitModes: fullRow.preferred_transit_modes ?? undefined,
-      coordinates: fullRow.coordinates ?? undefined,
-      timezone: fullRow.timezone ?? undefined,
-      // Additional Google Places enrichment fields
-      mealOptions: fullRow.meal_options ?? undefined,
-      goodForChildren: fullRow.good_for_children ?? undefined,
-      goodForGroups: fullRow.good_for_groups ?? undefined,
-      outdoorSeating: fullRow.outdoor_seating ?? undefined,
-      reservable: fullRow.reservable ?? undefined,
-      editorialSummary: fullRow.editorial_summary ?? undefined,
-      // Seasonal fields
-      isSeasonal: fullRow.is_seasonal ?? undefined,
-      seasonalType: fullRow.seasonal_type ?? undefined,
-      validMonths: fullRow.valid_months ?? undefined,
-      // Enrichment fields used by scoring (tags, cuisine, hidden gems, practical info)
-      cuisineType: fullRow.cuisine_type ?? undefined,
-      isHiddenGem: fullRow.is_hidden_gem ?? undefined,
-      jtaApproved: fullRow.jta_approved ?? undefined,
-      cashOnly: fullRow.cash_only ?? undefined,
-      reservationInfo: fullRow.reservation_info ?? undefined,
-      nameJapanese: fullRow.name_japanese ?? undefined,
-      nearestStation: fullRow.nearest_station ?? undefined,
-      // Source tracking
-      source: (fullRow.source as 'community' | null) ?? undefined,
-      sourceUrl: fullRow.source_url ?? undefined,
-      // Tattoo policy
-      tattooPolicy: fullRow.tattoo_policy ?? undefined,
+      neighborhood: (r.neighborhood as string | null) ?? undefined,
+      description: (r.description as string | null) ?? undefined,
+      operatingHours: normalizeOperatingHours(r.operating_hours),
+      recommendedVisit: (r.recommended_visit as Location["recommendedVisit"]) ?? undefined,
+      preferredTransitModes: (r.preferred_transit_modes as Location["preferredTransitModes"]) ?? undefined,
+      timezone: (r.timezone as string | null) ?? undefined,
+      mealOptions: (r.meal_options as Location["mealOptions"]) ?? undefined,
+      goodForChildren: (r.good_for_children as boolean | null) ?? undefined,
+      goodForGroups: (r.good_for_groups as boolean | null) ?? undefined,
+      outdoorSeating: (r.outdoor_seating as boolean | null) ?? undefined,
+      reservable: (r.reservable as boolean | null) ?? undefined,
+      editorialSummary: (r.editorial_summary as string | null) ?? undefined,
+      isSeasonal: (r.is_seasonal as boolean | null) ?? undefined,
+      seasonalType: (r.seasonal_type as Location["seasonalType"]) ?? undefined,
+      validMonths: (r.valid_months as number[] | null) ?? undefined,
+      cuisineType: (r.cuisine_type as string | null) ?? undefined,
+      source: (r.source as 'community' | null) ?? undefined,
+      sourceUrl: (r.source_url as string | null) ?? undefined,
+      tattooPolicy: (r.tattoo_policy as Location["tattooPolicy"]) ?? undefined,
     };
   }
 
