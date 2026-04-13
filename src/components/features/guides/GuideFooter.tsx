@@ -89,7 +89,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
       <div className="mx-auto mt-12 max-w-2xl px-6 text-center">
         <Link
           href="/guides"
-          className="link-reveal inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-stone transition-colors hover:text-foreground"
+          className="link-reveal inline-flex min-h-11 items-center gap-2 px-3 font-mono text-xs uppercase tracking-wide text-stone transition-colors hover:text-foreground"
           aria-label="Back to all guides"
         >
           <svg

@@ -309,7 +309,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-1.5 text-sm font-medium text-brand-primary hover:text-foreground transition shrink-0"
+            className="flex min-h-11 items-center gap-1.5 py-2 text-sm font-medium text-brand-primary hover:text-foreground transition shrink-0"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -658,7 +658,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             <ul className="space-y-1 text-sm text-brand-primary">
               {details?.websiteUri && (
                 <li>
-                  <a href={details.websiteUri} target="_blank" rel="noreferrer" className="transition hover:underline">
+                  <a href={details.websiteUri} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center py-1 transition hover:underline">
                     Official website
                   </a>
                 </li>
@@ -668,7 +668,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               )}
               {details?.googleMapsUri && (
                 <li>
-                  <a href={details.googleMapsUri} target="_blank" rel="noreferrer" className="transition hover:underline">
+                  <a href={details.googleMapsUri} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center py-1 transition hover:underline">
                     View on Google Maps
                   </a>
                 </li>
@@ -761,7 +761,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-2 text-sm font-medium text-brand-primary hover:underline transition"
+          className="inline-flex min-h-11 items-center gap-2 px-3 text-sm font-medium text-brand-primary hover:underline transition"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
