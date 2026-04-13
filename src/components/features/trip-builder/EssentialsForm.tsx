@@ -21,7 +21,7 @@ export type EssentialsFormProps = {
 };
 
 const MIN_DURATION = 1;
-const MAX_DURATION = 14;
+const MAX_DURATION = 21;
 
 export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   const { data, setData } = useTripBuilder();
@@ -69,7 +69,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     return startValue;
   }, [startValue]);
 
-  // Calculate maximum end date (14 days from start)
+  // Calculate maximum end date (21 days from start)
   const maxEndDate = useMemo(() => {
     if (!startValue) return undefined;
     const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);

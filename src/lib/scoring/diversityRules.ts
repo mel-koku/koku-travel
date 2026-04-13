@@ -26,28 +26,41 @@ export function applyDiversityFilter(
     return candidates;
   }
 
-  // Filter out locations that would create streaks > 2
+  // Filter out locations that would extend category OR neighborhood streaks past the cap.
+  // Same streak threshold applies to both dimensions.
+  const recentNeighborhoods = context.recentNeighborhoods ?? [];
   const filtered = candidates.filter((candidate) => {
     const category = candidate.location.category;
-    if (!category) {
-      return true; // Keep locations without categories
+    if (category) {
+      const catStreak = countTrailingStreak(context.recentCategories, category);
+      if (catStreak >= MAX_CONSECUTIVE_SAME) return false;
     }
 
-    // Count consecutive occurrences of this category
-    const streakCount = countTrailingStreak(context.recentCategories, category);
+    if (recentNeighborhoods.length > 0) {
+      const neighborhood = candidate.location.neighborhood ?? candidate.location.city;
+      if (neighborhood) {
+        const hoodStreak = countTrailingStreak(recentNeighborhoods, neighborhood);
+        if (hoodStreak >= MAX_CONSECUTIVE_SAME) return false;
+      }
+    }
 
-    // Allow up to 2 consecutive occurrences
-    return streakCount < MAX_CONSECUTIVE_SAME;
+    return true;
   });
 
-  // If filtering removed all candidates, return the single best candidate
-  // (lowest streak penalty) rather than all of them
+  // If filtering removed all candidates, return the single best candidate —
+  // prefer the one with the lowest combined streak, ties broken by score.
   if (filtered.length === 0) {
+    const combinedStreak = (c: LocationScore): number => {
+      const catStreak = countTrailingStreak(context.recentCategories, c.location.category ?? "");
+      const hood = c.location.neighborhood ?? c.location.city ?? "";
+      const hoodStreak = hood ? countTrailingStreak(recentNeighborhoods, hood) : 0;
+      return catStreak + hoodStreak;
+    };
     let best = candidates[0]!;
     for (const c of candidates) {
-      const cStreak = countTrailingStreak(context.recentCategories, c.location.category ?? "");
-      const bestStreak = countTrailingStreak(context.recentCategories, best.location.category ?? "");
-      if (cStreak < bestStreak || (cStreak === bestStreak && c.score > best.score)) {
+      const cs = combinedStreak(c);
+      const bs = combinedStreak(best);
+      if (cs < bs || (cs === bs && c.score > best.score)) {
         best = c;
       }
     }

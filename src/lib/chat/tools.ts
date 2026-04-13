@@ -363,9 +363,9 @@ export const chatTools = {
       duration: z
         .number()
         .min(1)
-        .max(14)
+        .max(21)
         .optional()
-        .describe("Trip duration in days (1-14). Used if no exact dates given."),
+        .describe("Trip duration in days (1-21). Used if no exact dates given."),
       cities: z
         .array(z.enum(CITY_ID_ENUM))
         .min(1)

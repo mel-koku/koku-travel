@@ -128,7 +128,7 @@ export type CityAccommodation = {
  * The travelerProfile field is optional and will be populated automatically when needed.
  */
 export type TripBuilderData = {
-  duration?: number; // 1-14
+  duration?: number; // 1-21
   dates: TravelDates; // ISO yyyy-mm-dd
   vibes?: VibeId[]; // aspirational vibe selections
   regions?: RegionId[];
