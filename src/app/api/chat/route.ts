@@ -147,4 +147,4 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     );
     return internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId });
   }
-}, { rateLimit: RATE_LIMITS.CHAT, dailyQuota: DAILY_QUOTAS.CHAT, optionalAuth: true });
+}, { rateLimit: RATE_LIMITS.CHAT, dailyQuota: DAILY_QUOTAS.CHAT, optionalAuth: true, requireJson: true });
