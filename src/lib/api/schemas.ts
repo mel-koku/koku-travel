@@ -179,9 +179,12 @@ const entryPointTypeSchema = z.literal("airport");
 /**
  * Schema for coordinates
  */
+// Japan bounding box (covers Okinawa to Hokkaido with a small buffer).
+// Rejects coordinates from outside Japan, which otherwise produce nonsensical
+// itineraries (e.g., JFK entry-point → 10,000 km transit to Kyoto).
 const coordinatesSchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
+  lat: z.number().min(20).max(46),
+  lng: z.number().min(122).max(154),
 }).strict();
 
 /**
@@ -417,7 +420,23 @@ export const planRequestSchema = z.object({
   builderData: tripBuilderDataSchema,
   tripId: tripIdSchema,
   savedIds: z.array(z.string().min(1).max(255)).max(200).optional(),
-}).strict();
+}).strict().superRefine((data, ctx) => {
+  // When both cityDays and duration are provided, their sum must match.
+  // Without this check the generator crashes with "City info not found for
+  // day N" when it advances past the last allocated city.
+  const { cityDays, duration } = data.builderData;
+  if (cityDays && duration != null) {
+    const days = Array.isArray(cityDays) ? cityDays : Object.values(cityDays);
+    const sum = days.reduce((acc, n) => acc + n, 0);
+    if (sum !== duration) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["builderData", "cityDays"],
+        message: `cityDays sum (${sum}) must equal duration (${duration})`,
+      });
+    }
+  }
+});
 
 /**
  * Schema for availability check request
