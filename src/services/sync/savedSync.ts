@@ -28,7 +28,7 @@ export async function fetchSaved(
 ): Promise<SyncResult<string[]>> {
   try {
     const { data, error } = await supabase
-      .from("saved")
+      .from("favorites")
       .select("place_id, location_id")
       .eq("user_id", userId);
 
@@ -55,7 +55,7 @@ export async function fetchSavedWithLocationId(
 ): Promise<SyncResult<SavedData[]>> {
   try {
     const { data, error } = await supabase
-      .from("saved")
+      .from("favorites")
       .select("place_id, location_id")
       .eq("user_id", userId);
 
@@ -122,7 +122,7 @@ export async function addSaved(
     }
 
     const { error } = await supabase
-      .from("saved")
+      .from("favorites")
       .upsert(
         {
           user_id: userId,
@@ -154,7 +154,7 @@ export async function removeSaved(
 ): Promise<SyncResult<void>> {
   try {
     const { error } = await supabase
-      .from("saved")
+      .from("favorites")
       .delete()
       .eq("user_id", userId)
       .eq("place_id", placeId);
