@@ -392,6 +392,13 @@ export async function generateItinerary(
       // 7. Exclude categories from LLM intent extraction (e.g., "bar" for family trips)
       if (excludedCategories?.has(loc.category?.toLowerCase())) return false;
 
+      // 8. Hard-filter non-accessible locations when mobility assistance is required.
+      //    Only excludes on *explicit* negative signal (entrance === false). Unknown
+      //    accessibility (null/undefined) stays in — scoring handles those softly.
+      if (data.accessibility?.mobility && loc.accessibilityOptions?.wheelchairAccessibleEntrance === false) {
+        return false;
+      }
+
       return true;
     });
 
