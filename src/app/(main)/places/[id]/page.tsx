@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PlaceDetail } from "@/components/features/places/PlaceDetail";
 import { buildPlaceJsonLd } from "@/lib/places/placeJsonLd";
 import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import type { Location } from "@/types/location";
 
 export const revalidate = 3600;
@@ -119,7 +120,7 @@ export default async function PlaceDetailPage({ params }: RouteProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <PlaceDetail initialLocation={location} />
     </>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/cities/cityHelpers";
 import { buildCityJsonLd } from "@/lib/cities/cityJsonLd";
 import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import { fetchLocationsByCity } from "@/lib/locations/locationService";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { CityDetail } from "@/components/features/cities/CityDetail";
@@ -101,7 +102,7 @@ export default async function CityDetailPage({ params }: RouteProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <CityDetail
         city={city}
