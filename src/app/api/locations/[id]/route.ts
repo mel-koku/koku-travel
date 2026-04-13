@@ -8,6 +8,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 import { getBestSummary } from "@/lib/utils/editorialSummary";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 /**
  * Columns needed for location detail API endpoint
@@ -123,7 +124,7 @@ export async function GET(
         description: row.description ?? undefined,
         minBudget: row.min_budget ?? undefined,
         estimatedDuration: row.estimated_duration ?? undefined,
-        operatingHours: row.operating_hours ?? undefined,
+        operatingHours: normalizeOperatingHours(row.operating_hours),
         recommendedVisit: row.recommended_visit ?? undefined,
         preferredTransitModes: row.preferred_transit_modes ?? undefined,
         coordinates: row.coordinates ?? undefined,
@@ -151,7 +152,7 @@ export async function GET(
         websiteUri: row.website_uri ?? undefined,
         internationalPhoneNumber: row.phone_number ?? undefined,
         googleMapsUri: row.google_maps_uri ?? undefined,
-        regularOpeningHours: formatOperatingHoursForDisplay(row.operating_hours),
+        regularOpeningHours: formatOperatingHoursForDisplay(normalizeOperatingHours(row.operating_hours) ?? null),
         reviews: [],
         photos: row.primary_photo_url
           ? [{ name: "primary", proxyUrl: row.primary_photo_url, attributions: [] }]

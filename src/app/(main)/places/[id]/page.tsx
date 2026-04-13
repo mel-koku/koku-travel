@@ -6,6 +6,7 @@ import { buildPlaceJsonLd } from "@/lib/places/placeJsonLd";
 import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import type { Location } from "@/types/location";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 export const revalidate = 3600;
 
@@ -48,7 +49,7 @@ async function fetchLocation(id: string): Promise<Location | null> {
     reviewCount: row.review_count ?? undefined,
     estimatedDuration: row.estimated_duration ?? undefined,
     minBudget: row.min_budget ?? undefined,
-    operatingHours: row.operating_hours ?? undefined,
+    operatingHours: normalizeOperatingHours(row.operating_hours),
     recommendedVisit: row.recommended_visit ?? undefined,
     coordinates: row.coordinates ?? undefined,
     timezone: row.timezone ?? undefined,

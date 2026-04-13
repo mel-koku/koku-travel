@@ -6,6 +6,7 @@ import { internalError } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 const NEARBY_COLUMNS = `
   id,
@@ -136,10 +137,12 @@ export const GET = withApiHandler(
       })
       .filter(Boolean) as { row: NearbyRow; distance: number }[];
 
-    // Filter by open now if requested
+    // Filter by open now if requested. Normalize the raw DB shape first —
+    // ~26% of rows use Google Places v1 (nested day/hour/minute objects)
+    // which isCurrentlyOpen cannot read directly.
     const filtered = openNow
       ? withDistance.filter(({ row }) =>
-          isCurrentlyOpen(row.operating_hours, currentDay as string, currentMinutes),
+          isCurrentlyOpen(normalizeOperatingHours(row.operating_hours) ?? null, currentDay as string, currentMinutes),
         )
       : withDistance;
 
@@ -178,7 +181,7 @@ export const GET = withApiHandler(
         nearestStation: row.nearest_station ?? undefined,
         cashOnly: row.cash_only ?? undefined,
         reservationInfo: row.reservation_info ?? undefined,
-        operatingHours: row.operating_hours ?? undefined,
+        operatingHours: normalizeOperatingHours(row.operating_hours),
         shortDescription: row.short_description ?? undefined,
         distance: Math.round(distance * 1000), // meters
       }));

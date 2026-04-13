@@ -8,6 +8,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { EXPERIENCE_EXPLORE_COLUMNS } from "@/lib/supabase/projections";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 /**
  * Two-tier cache: globalThis + file cache.
@@ -66,7 +67,7 @@ function mapToLocation(row: SupabaseExperience): Location {
     tags: row.tags ?? undefined,
     isHiddenGem: row.is_hidden_gem ?? undefined,
     insiderTip: row.insider_tip ?? undefined,
-    operatingHours: row.operating_hours as Location["operatingHours"],
+    operatingHours: normalizeOperatingHours(row.operating_hours),
     nameJapanese: row.name_japanese ?? undefined,
     nearestStation: row.nearest_station ?? undefined,
     priceLevel: row.price_level as Location["priceLevel"] ?? undefined,

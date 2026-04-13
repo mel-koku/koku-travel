@@ -4,6 +4,7 @@ import type { LocationChatDbRow } from "@/lib/supabase/projections";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { logger } from "@/lib/logger";
 import { calculateDistance } from "@/lib/utils/geoUtils";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 export type ChatLocationResult = {
   id: string;
@@ -42,7 +43,7 @@ function transformChatRow(row: LocationChatDbRow): ChatLocationResult {
     reviewCount: row.review_count,
     priceLevel: row.price_level,
     estimatedDuration: row.estimated_duration,
-    operatingHours: row.operating_hours,
+    operatingHours: normalizeOperatingHours(row.operating_hours) ?? null,
     coordinates: row.coordinates,
     primaryPhotoUrl: row.primary_photo_url,
     jtaApproved: row.jta_approved,
@@ -181,7 +182,7 @@ export async function searchNearbyLocations(
     // Filter by open now if requested
     if (params.openNow) {
       rows = rows.filter(({ row }) =>
-        getOpenStatus(row.operating_hours).state === "open",
+        getOpenStatus(normalizeOperatingHours(row.operating_hours)).state === "open",
       );
     }
 

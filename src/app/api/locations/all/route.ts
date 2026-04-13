@@ -8,6 +8,7 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { LOCATION_EXPLORE_COLUMNS, type LocationExploreDbRow } from "@/lib/supabase/projections";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
+import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 
 /**
  * Two-tier cache: globalThis (survives Turbopack module re-eval) +
@@ -144,7 +145,7 @@ export const GET = withApiHandler(
       nearestStation: row.nearest_station ?? undefined,
       cashOnly: row.cash_only ?? undefined,
       reservationInfo: row.reservation_info ?? undefined,
-      operatingHours: row.operating_hours ?? undefined,
+      operatingHours: normalizeOperatingHours(row.operating_hours),
       goodForChildren: row.good_for_children ?? undefined,
       goodForGroups: row.good_for_groups ?? undefined,
       mealOptions: row.meal_options ?? undefined,
