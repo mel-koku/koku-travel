@@ -1,6 +1,7 @@
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
+import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 
 export type DayHealth = {
   dayId: string;
@@ -273,7 +274,7 @@ export function formatItineraryForCSV(
       if (year && month && dayNum) {
         const date = new Date(year, month - 1, dayNum);
         date.setDate(date.getDate() + dayIndex);
-        dateStr = date.toISOString().split("T")[0] ?? "";
+        dateStr = formatLocalDateISO(date);
       }
     }
 

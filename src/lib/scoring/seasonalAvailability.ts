@@ -8,6 +8,7 @@
  */
 
 import type { Location, LocationAvailability } from "@/types/location";
+import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 
 export type AvailabilityCheckResult = {
   available: boolean;
@@ -278,7 +279,7 @@ export function isLocationAvailableOnDate(
   // For seasonal locations, default to unavailable (e.g., festival not happening)
   return {
     available: false,
-    reason: `${location.name} is not available on ${date.toISOString().split("T")[0]}`,
+    reason: `${location.name} is not available on ${formatLocalDateISO(date)}`,
   };
 }
 
@@ -310,7 +311,7 @@ export function isLocationAvailableDuringTrip(
     if (result.available) {
       return {
         available: true,
-        reason: `Available on ${currentDate.toISOString().split("T")[0]}: ${result.reason}`,
+        reason: `Available on ${formatLocalDateISO(currentDate)}: ${result.reason}`,
       };
     }
     currentDate.setDate(currentDate.getDate() + 1);

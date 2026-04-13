@@ -21,7 +21,7 @@ import {
   type ChecklistItem,
 } from "@/lib/itinerary/tripHealth";
 import { easeReveal, durationBase } from "@/lib/motion";
-import { parseLocalDate } from "@/lib/utils/dateUtils";
+import { parseLocalDate, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { DayTripSection } from "./DayTripSection";
 import { DayTips } from "./DayTips";
 import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
@@ -133,7 +133,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const cities = tripCities?.join("-") ?? "trip";
-    const date = tripStartDate ?? new Date().toISOString().split("T")[0];
+    const date = tripStartDate ?? formatLocalDateISO(new Date());
     a.href = url;
     a.download = `yuku-trip-${cities}-${date}.csv`;
     document.body.appendChild(a);

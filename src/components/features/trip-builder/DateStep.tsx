@@ -9,7 +9,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
-import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDate, parseLocalDateWithOffset, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { durationFast, easeReveal } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -77,7 +77,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
     if (!startValue) return undefined;
     const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);
     if (!maxDate) return undefined;
-    return maxDate.toISOString().split("T")[0];
+    return formatLocalDateISO(maxDate);
   }, [startValue]);
 
   const syncDates = useCallback(() => {

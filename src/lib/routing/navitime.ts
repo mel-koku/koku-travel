@@ -1,6 +1,7 @@
 import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep } from "./types";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { TIMEOUT_10_SECONDS } from "@/lib/constants";
+import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 
 // -- NAVITIME Route(totalnavi) response types --
 
@@ -291,7 +292,7 @@ function resolveStartTime(departureTime?: string, _timezone?: string): string {
   // HH:MM format - build a date in the future (tomorrow) to ensure valid transit schedules
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const dateStr = tomorrow.toISOString().split("T")[0];
+  const dateStr = formatLocalDateISO(tomorrow);
   return `${dateStr}T${departureTime}:00`;
 }
 

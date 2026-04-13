@@ -19,7 +19,7 @@ import {
   type LocationAvailabilityRow,
 } from "@/lib/availability/seasonalFilter";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
-import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDateWithOffset, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { filterByMealType } from "@/lib/mealFiltering";
 
 /**
@@ -385,7 +385,7 @@ export const POST = withApiHandler(
     let tripDate: string | undefined;
     if (tripBuilderData?.dates?.start && typeof gap.dayIndex === "number") {
       const d = parseLocalDateWithOffset(tripBuilderData.dates.start, gap.dayIndex);
-      tripDate = d ? d.toISOString().split("T")[0] : undefined;
+      tripDate = d ? formatLocalDateISO(d) : undefined;
     }
 
     // Pre-compute scoring criteria shared across all action branches

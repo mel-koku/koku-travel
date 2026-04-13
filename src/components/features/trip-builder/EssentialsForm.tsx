@@ -6,7 +6,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Calendar } from "lucide-react";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import { parseLocalDate, parseLocalDateWithOffset, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { typography } from "@/lib/typography-system";
 import { EntryPointSelector } from "./EntryPointSelector";
 import type { EntryPoint } from "@/types/trip";
@@ -74,7 +74,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     if (!startValue) return undefined;
     const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);
     if (!maxDate) return undefined;
-    return maxDate.toISOString().split("T")[0];
+    return formatLocalDateISO(maxDate);
   }, [startValue]);
 
   // Handle entry point change from EntryPointSelector
