@@ -21,12 +21,10 @@ import {
 import { easeReveal } from "@/lib/motion";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
-import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { FALLBACK_IMAGE } from "@/lib/constants/fallbackImages";
 
 /**
@@ -206,7 +204,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
   (
     {
       activity,
-      allActivities = [],
+      allActivities: _allActivities = [],
       dayTimezone: _dayTimezone,
       onDelete,
       onUpdate,
@@ -227,8 +225,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       isReadOnly,
       activeDragId,
       onViewDetails,
-      tripStartDate,
-      dayIndex,
+      tripStartDate: _tripStartDate,
+      dayIndex: _dayIndex,
     },
     ref,
   ) => {
@@ -240,7 +238,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       message?: string;
       reservationRequired?: boolean;
     } | null>(null);
-    const [tips, setTips] = useState<ActivityTip[]>([]);
     const [insiderTipOpen, setInsiderTipOpen] = useState(false);
     const prefersReducedMotion = useReducedMotion();
     const timePickerRef = useReactRef<HTMLDivElement>(null);
@@ -383,33 +380,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-fetching
     }, [activityId, activityStartTime, placeId, isEntryPoint, activity.availabilityStatus, activity.availabilityMessage]);
-
-    // Generate tips when location is available
-    // Use stable identifiers to prevent excessive re-computation
-    const allActivityIds = useMemo(
-      () => allActivities.map((a) => a.id).join(","),
-      [allActivities]
-    );
-    const placeLocationId = placeLocation?.id;
-
-    useEffect(() => {
-      if (placeLocation && activity.kind === "place") {
-        // Use async tip generation to include etiquette tips from database
-        const activityDate = tripStartDate ? (() => {
-          const d = parseLocalDate(tripStartDate);
-          if (!d) return undefined;
-          if (dayIndex !== undefined) d.setDate(d.getDate() + dayIndex);
-          return d;
-        })() : undefined;
-        generateActivityTipsAsync(activity, placeLocation, {
-          allActivities,
-          activityDate,
-        }).then(setTips).catch(() => {
-          // Silently fail - tips are optional
-        });
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-computation
-    }, [activityId, placeLocationId, allActivityIds]);
 
     const summary = placeLocation
       ? stripStationReferences(
@@ -736,7 +706,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 isOutOfHours={isOutOfHours}
                 waitLabel={waitLabel}
                 conflicts={conflicts}
-                tipCount={tips.length}
               />
 
               {/* Getting there */}

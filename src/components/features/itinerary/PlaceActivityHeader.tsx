@@ -29,7 +29,6 @@ type PlaceActivityHeaderProps = {
   isOutOfHours: boolean;
   waitLabel: string | null;
   conflicts?: ItineraryConflict[];
-  tipCount?: number;
 };
 
 export function PlaceActivityHeader({
@@ -44,7 +43,6 @@ export function PlaceActivityHeader({
   isOutOfHours,
   waitLabel,
   conflicts,
-  tipCount,
 }: PlaceActivityHeaderProps) {
   const [expanded, setExpanded] = useState(false);
   const canExpand = !!summary && summary.length > SUMMARY_EXPAND_THRESHOLD;
@@ -119,11 +117,6 @@ export function PlaceActivityHeader({
         )}
         {conflicts && conflicts.length > 0 && (
           <ActivityConflictIndicator conflicts={conflicts} />
-        )}
-        {tipCount != null && tipCount > 0 && (
-          <span className="inline-flex items-center gap-0.5 text-[11px] text-sage">
-            {"💡"} {tipCount} {tipCount === 1 ? "tip" : "tips"}
-          </span>
         )}
       </div>
 
