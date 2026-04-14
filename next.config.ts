@@ -11,7 +11,7 @@ const localPatterns = [
     pathname: "/api/places/photo",
   },
   {
-    pathname: "/images/regions/**",
+    pathname: "/images/**",
   },
 ];
 
