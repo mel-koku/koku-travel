@@ -150,7 +150,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 toggleSave(location.id);
               }}
               aria-label={active ? "Remove from saved" : "Save for trip"}
-              className="pointer-events-auto flex h-10 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
+              className="pointer-events-auto flex min-h-11 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
               <span className="text-xs font-medium text-foreground">

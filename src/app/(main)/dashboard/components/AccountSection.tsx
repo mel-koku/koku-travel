@@ -191,7 +191,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
         <button
           type="submit"
           disabled={supabaseUnavailable}
-          className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
+          className="h-11 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90 active:scale-[0.98] transition-transform"
         >
           Send sign-in link
         </button>

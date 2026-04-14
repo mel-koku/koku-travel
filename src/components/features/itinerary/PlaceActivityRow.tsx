@@ -16,6 +16,7 @@ import {
   getShortOverview,
   getLocationRating,
   getLocationReviewCount,
+  stripStationReferences,
 } from "./activityUtils";
 import { easeReveal } from "@/lib/motion";
 import { logger } from "@/lib/logger";
@@ -411,7 +412,10 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     }, [activityId, placeLocationId, allActivityIds]);
 
     const summary = placeLocation
-      ? getShortOverview(placeLocation, locationDetails?.editorialSummary ?? null)
+      ? stripStationReferences(
+          getShortOverview(placeLocation, locationDetails?.editorialSummary ?? null),
+          placeLocation.nearestStation,
+        )
       : null;
     const rating = placeLocation ? getLocationRating(placeLocation) : null;
     const reviewCount = placeLocation
@@ -778,7 +782,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <button
                   type="button"
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleNotes(); }}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                  aria-label={notesOpen ? `Hide note on ${activity.title}` : `Add note to ${activity.title}`}
                   title={notesOpen ? "Hide note" : "Add note"}
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -789,7 +794,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); onReplace(); }}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                    className="flex h-11 w-11 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                    aria-label={`Find alternatives to ${activity.title}`}
                     title="Find alternatives"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -800,7 +806,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <button
                   type="button"
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(); }}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-error/10 hover:text-error"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-stone/40 transition hover:bg-error/10 hover:text-error"
                   aria-label={`Delete ${activity.title}`}
                   title="Remove this activity"
                 >

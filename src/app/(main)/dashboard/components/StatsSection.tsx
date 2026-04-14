@@ -94,7 +94,7 @@ export function StatsSection({
               )}
               <Link
                 href={savedCount > 0 ? "/saved" : "/places"}
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-flex min-h-11 items-center py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 {savedCount > 0 ? "View saved" : "Explore places"}
               </Link>
@@ -112,7 +112,7 @@ export function StatsSection({
               </p>
               <Link
                 href="/guides/bookmarks"
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-flex min-h-11 items-center py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 View guides
               </Link>
@@ -130,7 +130,7 @@ export function StatsSection({
               </p>
               <Link
                 href="#trips"
-                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-flex min-h-11 items-center py-2 px-1 text-[11px] uppercase tracking-wide text-white/60 transition-colors hover:text-white/80"
               >
                 View trips
               </Link>

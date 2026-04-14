@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -5,6 +8,10 @@ import { StarIcon } from "./activityIcons";
 import { numberFormatter } from "./activityUtils";
 import { ActivityConflictIndicator } from "./ConflictBadge";
 import { PracticalBadges } from "@/components/ui/PracticalBadges";
+
+// Roughly 2 lines of 40-char mobile text; anything longer gets clamped and
+// deserves a "Read more" affordance.
+const SUMMARY_EXPAND_THRESHOLD = 80;
 
 type PlaceActivityHeaderProps = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
@@ -39,6 +46,8 @@ export function PlaceActivityHeader({
   conflicts,
   tipCount,
 }: PlaceActivityHeaderProps) {
+  const [expanded, setExpanded] = useState(false);
+  const canExpand = !!summary && summary.length > SUMMARY_EXPAND_THRESHOLD;
   return (
     <>
       {/* Title */}
@@ -82,7 +91,7 @@ export function PlaceActivityHeader({
             {durationLabel.replace("~", "")}
           </span>
         ) : null}
-        <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
+        <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} showStation={false} />
         {availabilityStatus && availabilityStatus.status === "closed" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
             Closed
@@ -120,9 +129,27 @@ export function PlaceActivityHeader({
 
       {/* Summary */}
       {summary && (
-        <p className="mt-1.5 text-xs leading-relaxed text-stone line-clamp-2">
-          {summary}
-        </p>
+        <div className="mt-1.5">
+          <p
+            className={`text-xs leading-relaxed text-stone ${expanded ? "" : "line-clamp-2"}`}
+          >
+            {summary}
+          </p>
+          {canExpand && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setExpanded((v) => !v);
+              }}
+              className="mt-0.5 inline-flex min-h-7 items-center text-[11px] font-medium text-foreground-secondary underline-offset-2 transition-colors hover:text-foreground hover:underline"
+              aria-expanded={expanded}
+            >
+              {expanded ? "Show less" : "Read more"}
+            </button>
+          )}
+        </div>
       )}
     </>
   );

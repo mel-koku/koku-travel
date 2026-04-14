@@ -599,20 +599,22 @@ export const ItineraryShell = ({
               }}
             >
               {/* Unified toolbar: title | tabs + share */}
-              <div className="flex items-center justify-between gap-2">
-                <h1
-                  ref={finalHeadingRef}
-                  tabIndex={-1}
-                  className="min-w-0 truncate font-serif text-base font-semibold tracking-heading leading-snug text-foreground focus:outline-none sm:text-lg"
-                >
-                  {tripName}
-                </h1>
-                <div className="flex shrink-0 items-center gap-1">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-2">
+                  <h1
+                    ref={finalHeadingRef}
+                    tabIndex={-1}
+                    className="min-w-0 truncate font-serif text-base font-semibold tracking-heading leading-snug text-foreground focus:outline-none sm:text-lg"
+                  >
+                    {tripName}
+                  </h1>
                   {isUsingMock && (
-                    <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                    <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
                       Mock
                     </span>
                   )}
+                </div>
+                <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
                   {!isReadOnly && (
                     <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
                       {(
@@ -627,7 +629,7 @@ export const ItineraryShell = ({
                           key={tab.key}
                           type="button"
                           onClick={() => setViewMode(tab.key)}
-                          className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                          className={`inline-flex min-h-11 items-center rounded-md px-3 py-2 text-xs font-medium transition-colors ${
                             viewMode === tab.key
                               ? "bg-brand-primary text-white"
                               : "text-stone hover:text-foreground"

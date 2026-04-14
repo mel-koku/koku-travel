@@ -12,6 +12,8 @@ type PracticalBadgesProps = {
   variant?: "default" | "overlay";
   /** Max number of badges to show */
   max?: number;
+  /** Include the nearest-station badge. Off when the host card renders its own. */
+  showStation?: boolean;
 };
 
 /**
@@ -23,6 +25,7 @@ export const PracticalBadges = memo(function PracticalBadges({
   showOpenStatus = true,
   variant = "default",
   max = 3,
+  showStation = true,
 }: PracticalBadgesProps) {
   const openLabel = useMemo(() => {
     if (!showOpenStatus) return null;
@@ -58,7 +61,7 @@ export const PracticalBadges = memo(function PracticalBadges({
   }
 
   // Nearest station (truncate to station name only if too long)
-  if (location.nearestStation) {
+  if (showStation && location.nearestStation) {
     const station = location.nearestStation.length > 28
       ? location.nearestStation.slice(0, 26) + "…"
       : location.nearestStation;

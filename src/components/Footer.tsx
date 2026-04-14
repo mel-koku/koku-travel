@@ -105,12 +105,12 @@ function NavColumn({
   return (
     <div>
       <p className="text-xs uppercase tracking-[0.3em] text-white/60">{title}</p>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-4 space-y-1">
         {links.map((link) => (
           <li key={link.label}>
             <Link
               href={link.href}
-              className="text-sm text-white/70 transition-colors hover:text-white"
+              className="inline-flex min-h-11 items-center text-sm text-white/70 transition-colors hover:text-white"
             >
               {link.label}
             </Link>

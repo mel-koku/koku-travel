@@ -76,7 +76,7 @@ export function LocationEditorialGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
       {locations.map((location, i) => (
         <motion.div
           key={location.id}
@@ -145,7 +145,7 @@ const PlacesCard = memo(function PlacesCard({
           />
 
           {/* Save button */}
-          <div className={`absolute top-3 right-3 z-10 sm:transition-opacity sm:duration-300 ${
+          <div className={`touch-visible absolute top-3 right-3 z-10 sm:transition-opacity sm:duration-300 ${
             active ? "sm:opacity-100" : "sm:opacity-0 sm:group-hover:opacity-100"
           }`}>
             <button

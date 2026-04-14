@@ -91,7 +91,7 @@ export function TravelPreferencesSection({ disabled = false }: TravelPreferences
   }
 
   const chipBase =
-    "inline-flex items-center rounded-md border px-3 py-1.5 text-sm transition-colors";
+    "inline-flex min-h-11 items-center rounded-md border px-3 py-1.5 text-sm transition-colors active:scale-[0.98]";
   const chipSelected = "border-brand-primary bg-brand-primary/10 text-brand-primary font-medium";
   const chipUnselected =
     "border-border bg-background text-foreground-secondary hover:bg-surface";

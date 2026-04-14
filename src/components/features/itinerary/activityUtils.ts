@@ -74,3 +74,46 @@ function clamp(value: number, min: number, max: number): number {
 
 export const numberFormatter = new Intl.NumberFormat("en-US");
 
+/**
+ * Strip nearby-station references from an editorial summary so they don't
+ * duplicate the station pill and travel segment already rendered on the card.
+ *
+ * Removes, in order:
+ *   1. The exact nearestStation substring (e.g. "Kitaoji Station (20 min walk)")
+ *   2. Generic "<Name> Station (N min walk|drive|ride)" fragments
+ *   3. Dangling sentence fragments caused by the removal (leading/trailing
+ *      conjunctions, double spaces, orphaned punctuation).
+ */
+export function stripStationReferences(
+  summary: string | null | undefined,
+  nearestStation: string | null | undefined,
+): string | null {
+  if (!summary) return null;
+  let out = summary;
+
+  if (nearestStation) {
+    const escaped = nearestStation.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(escaped, "gi"), "");
+  }
+
+  // Generic "<ProperName> Station (N min walk)" fragments. Requires
+  // capitalized name words to avoid eating neighboring prose.
+  out = out.replace(
+    /(?:[A-ZŌŪĀĒĪ][\w'-]*(?:\s+[A-ZŌŪĀĒĪ][\w'-]*){0,2}\s+)?Station\b\s*(?:\([^)]*(?:min|minute)[^)]*\))?/g,
+    "",
+  );
+
+  // Clean up: "near , nestled" → "nestled"; "Located near ," → ""
+  out = out
+    .replace(/\s*,\s*,+/g, ", ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([,.;])/g, "$1")
+    .replace(/\b(?:located|nestled|set|situated|sitting)\s+(?:just\s+)?(?:near|by|close to|beside)\s*[,.]/gi, "")
+    .replace(/\b(?:near|close to|beside)\s*[,.]/gi, "")
+    .replace(/^[\s,.;:—–-]+/, "")
+    .replace(/\s+$/, "")
+    .trim();
+
+  return out.length > 0 ? out : null;
+}
+

@@ -203,11 +203,15 @@ export const DaySelector = ({
         type="button"
         onClick={() => setOpen((v) => !v)}
         onKeyDown={handleKeyDown}
-        className="flex h-10 items-center gap-1.5 rounded-lg border border-border bg-surface/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-surface active:scale-[0.98]"
+        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-surface/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-surface active:scale-[0.98]"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Select day"
+        aria-label={`Select day, currently day ${selected + 1} of ${days.length}`}
       >
+        <span className="font-mono text-[10px] uppercase tracking-wide text-stone">
+          Day {selected + 1}/{days.length}
+        </span>
+        <span className="h-3 w-px bg-border" aria-hidden />
         <span className="whitespace-nowrap">
           {selectedDay?.label}
           {selectedDay?.isToday && (
