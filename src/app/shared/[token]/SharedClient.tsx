@@ -108,26 +108,32 @@ export function SharedClient({ trip, token }: SharedClientProps) {
         </div>
       </header>
 
-      {/* Trip name */}
-      <div className="mx-auto max-w-screen-2xl px-4 pt-6 sm:px-6">
-        <h1 className={typography({ intent: "editorial-h1" })}>
-          {trip.name}
-        </h1>
-      </div>
+      <main>
+        {/*
+         * Trip name — visual prominence only. ItineraryShell renders the
+         * canonical h1 in its sticky toolbar; rendering another h1 here with
+         * identical text duplicates the page outline.
+         */}
+        <div className="mx-auto max-w-screen-2xl px-4 pt-6 sm:px-6">
+          <p className={typography({ intent: "editorial-h1" })} aria-hidden="true">
+            {trip.name}
+          </p>
+        </div>
 
-      {/* Itinerary shell in read-only mode */}
-      <ErrorBoundary>
-        <ItineraryShell
-          tripId="shared"
-          itinerary={itinerary}
-          createdLabel={createdLabel}
-          updatedLabel={updatedLabel}
-          isUsingMock={true}
-          isReadOnly={true}
-          tripStartDate={tripStartDate}
-          tripBuilderData={builderData}
-        />
-      </ErrorBoundary>
+        {/* Itinerary shell in read-only mode */}
+        <ErrorBoundary>
+          <ItineraryShell
+            tripId="shared"
+            itinerary={itinerary}
+            createdLabel={createdLabel}
+            updatedLabel={updatedLabel}
+            isUsingMock={true}
+            isReadOnly={true}
+            tripStartDate={tripStartDate}
+            tripBuilderData={builderData}
+          />
+        </ErrorBoundary>
+      </main>
 
       {/* Footer CTA */}
       <div className="border-t border-border bg-canvas py-12 sm:py-16">
