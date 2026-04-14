@@ -292,7 +292,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
 
       if (authError) {
-        logger.warn("Failed to read auth session", { error: authError });
+        // "Auth session missing!" is the normal guest-user path — no session
+        // exists, not an error. Only log when it's something else (expired
+        // token, network failure, malformed JWT, etc.).
+        const isMissingSession =
+          authError.name === "AuthSessionMissingError" ||
+          /auth session missing/i.test(authError.message ?? "");
+        if (!isMissingSession) {
+          logger.warn("Failed to read auth session", { error: authError });
+        }
       }
 
       if (!user) {
