@@ -297,7 +297,7 @@ export function useItineraryPlanning({
     pendingPlanRef.current = null;
     skipNextPlanRef.current = true;
     skipSyncRef.current = true;
-    setTimeout(() => {
+    const modelSetTimeout = window.setTimeout(() => {
       setModelState(nextNormalized);
     }, 0);
 
@@ -314,7 +314,7 @@ export function useItineraryPlanning({
       setIsPlanning(false);
     }, 15000);
 
-    setTimeout(() => {
+    const isPlanningSetTimeout = window.setTimeout(() => {
       setIsPlanning(true);
       setPlanningError(null);
     }, 0);
@@ -360,8 +360,16 @@ export function useItineraryPlanning({
         clearTimeout(planWatchdogRef.current);
         planWatchdogRef.current = null;
       }
+      // Clear the queued state-setter timeouts — otherwise a cleanup that
+      // runs before the macrotask fires (e.g. parent re-render with a new
+      // itinerary reference but identical fingerprint) leaves setIsPlanning
+      // (true) pending, which strands the "Updating schedule…" badge forever
+      // since the next effect run early-returns without starting new work.
+      clearTimeout(modelSetTimeout);
+      clearTimeout(isPlanningSetTimeout);
+      setIsPlanning(false);
     };
-  }, [itineraryFingerprint, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
+  }, [itineraryFingerprint, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData, setIsPlanning]);
 
   // Replan when accommodation (dayEntryPoints or cityAccommodations) changes
   const accommodationFingerprint = useMemo(() => {
