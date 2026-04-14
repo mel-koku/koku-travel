@@ -8,6 +8,8 @@ import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
+import { PlacesPagination } from "./PlacesPagination";
+import { PLACES_PAGE_SIZE } from "@/lib/filters/filterUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 import { SeasonalBanner } from "./SeasonalBanner";
@@ -83,7 +85,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     jtaApprovedOnly, setJtaApprovedOnly,
     unescoOnly, setUnescoOnly,
     selectedSort, setSelectedSort,
-    setPage, hasMore, filterVersion,
+    page, setPage, totalPages, filterVersion,
     filteredLocations,
     sortedLocations,
     visibleLocations,
@@ -166,6 +168,13 @@ export function PlacesShell({ content }: PlacesShellProps) {
     if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
     if (searchParams.get("featured") === "true") setFeaturedOnly(true);
     if (searchParams.get("unesco") === "true") setUnescoOnly(true);
+    const pageParam = searchParams.get("page");
+    if (pageParam) {
+      const parsed = Number.parseInt(pageParam, 10);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        setPage(parsed);
+      }
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
@@ -181,25 +190,17 @@ export function PlacesShell({ content }: PlacesShellProps) {
     }
   }, [locationParam, locations]);
 
-  // IntersectionObserver for progressive loading
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const gridSectionRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setPage((current) => current + 1);
-        }
-      },
-      { rootMargin: "0px 0px 200% 0px" }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMore, visibleLocations.length, setPage]);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPage(newPage);
+      requestAnimationFrame(() => {
+        gridSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    },
+    [setPage],
+  );
 
   const handleSelectLocation = useCallback((location: Location) => {
     setExpandedLocation(location);
@@ -279,6 +280,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       if (vegetarianFriendly) params.set("vegetarian", "true");
       if (featuredOnly) params.set("featured", "true");
       if (unescoOnly) params.set("unesco", "true");
+      if (viewMode === "grid" && page > 1) params.set("page", String(page));
       if (yukuIds.length > 0) params.set("yuku", yukuIds.join(","));
       if (locationParam) params.set("location", locationParam);
       const qs = params.toString();
@@ -289,7 +291,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewMode, query, selectedCity, selectedCategory, jtaApprovedOnly,
     selectedSort, selectedPrefectures, selectedVibes, selectedPriceLevel,
     selectedDuration, openNow, wheelchairAccessible, vegetarianFriendly,
-    featuredOnly, unescoOnly, yukuIds, locationParam, router,
+    featuredOnly, unescoOnly, yukuIds, locationParam, router, page,
   ]);
 
   return (
@@ -386,17 +388,16 @@ export function PlacesShell({ content }: PlacesShellProps) {
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
           {/*
-           * Match PAGE_SIZE (24) AND the real card's rendered height so the
+           * Match PLACES_PAGE_SIZE (36) AND the real card's rendered height so the
            * grid doesn't change size when cards swap in. Measured real cards
            * at ~413px vs a previous 353px skeleton → everything below the
-           * grid (infinite-scroll sentinel, footer) shifted when cards
-           * landed, producing ~0.15 CLS on /places.
+           * grid shifted when cards landed, producing ~0.15 CLS on /places.
            *
            * Content block mirrors the real card: name, city/duration, 2-line
            * summary, category+badge row.
            */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-            {Array.from({ length: 24 }).map((_, index) => (
+            {Array.from({ length: PLACES_PAGE_SIZE }).map((_, index) => (
               <div key={index} className="rounded-lg bg-surface animate-pulse">
                 <div className="aspect-[4/3]" />
                 <div className="p-3.5 space-y-2">
@@ -412,12 +413,12 @@ export function PlacesShell({ content }: PlacesShellProps) {
               </div>
             ))}
           </div>
-          {/* Reserve the infinite-scroll sentinel's footprint so it doesn't
-              pop into existence (shifting layout) when cards finish loading. */}
-          <div className="py-8" aria-hidden="true" />
         </div>
       ) : (
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <main
+          ref={gridSectionRef}
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20"
+        >
           <LocationEditorialGrid
             locations={visibleLocations}
             onSelect={handleSelectLocation}
@@ -426,18 +427,18 @@ export function PlacesShell({ content }: PlacesShellProps) {
             onClearFilters={activeFilterCount > 0 ? handleClearAll : undefined}
           />
 
-          {hasMore && (
-            <div ref={sentinelRef} className="py-8 flex flex-col items-center gap-2">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-stone/30 border-t-stone" />
-              <p className="text-sm text-stone">Loading more places...</p>
-            </div>
-          )}
-
-          {!hasMore && visibleLocations.length > 0 && (
-            <div className="py-16 text-center">
-              <p className="font-serif text-lg text-stone">
-                {(content?.placesEndMessage ?? "That's all {count}. For now.").replace("{count}", sortedLocations.length.toLocaleString())}
+          {totalPages > 1 && (
+            <div className="mt-12 flex flex-col items-center gap-4">
+              <p className="font-mono text-xs uppercase tracking-wide text-foreground-secondary">
+                {`Showing ${(page - 1) * PLACES_PAGE_SIZE + 1}–${
+                  (page - 1) * PLACES_PAGE_SIZE + visibleLocations.length
+                } of ${sortedLocations.length.toLocaleString()} places`}
               </p>
+              <PlacesPagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           )}
         </main>

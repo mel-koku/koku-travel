@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Location } from "@/types/location";
 import type { ActiveFilter, FilterMetadata } from "@/types/filters";
 import { locationMatchesVibes } from "@/data/vibeFilterMapping";
@@ -14,7 +14,7 @@ import {
   calculatePopularityScore,
   parseDuration,
   normalizePrefecture,
-  PAGE_SIZE,
+  PLACES_PAGE_SIZE,
 } from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
@@ -121,9 +121,15 @@ export function usePlacesFilters(
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [page, setPage] = useState(1);
 
-  // Track filter changes for scroll-to-top and page reset
+  // Track filter changes for scroll-to-top and page reset.
+  // Skip on first mount so URL-restored state (e.g. ?sort=x&page=3) isn't clobbered.
   const [filterVersion, setFilterVersion] = useState(0);
+  const didMountFiltersRef = useRef(false);
   useEffect(() => {
+    if (!didMountFiltersRef.current) {
+      didMountFiltersRef.current = true;
+      return;
+    }
     setPage(1);
     setFilterVersion((v) => v + 1);
   }, [
@@ -341,13 +347,23 @@ export function usePlacesFilters(
     }
   }, [filteredLocations, selectedSort]);
 
-  // Pagination
-  const visibleLocations = useMemo(
-    () => sortedLocations.slice(0, page * PAGE_SIZE),
-    [sortedLocations, page]
+  // Pagination (windowed — one page at a time)
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(sortedLocations.length / PLACES_PAGE_SIZE)),
+    [sortedLocations.length]
   );
 
-  const hasMore = visibleLocations.length < sortedLocations.length;
+  // Clamp page if totalPages shrank (e.g., filter narrowed results below current page)
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const visibleLocations = useMemo(() => {
+    const start = (page - 1) * PLACES_PAGE_SIZE;
+    return sortedLocations.slice(start, start + PLACES_PAGE_SIZE);
+  }, [sortedLocations, page]);
 
   // Active filters for chips
   const activeFilters = useMemo<ActiveFilter[]>(() => {
@@ -538,7 +554,7 @@ export function usePlacesFilters(
     // Sort
     selectedSort, setSelectedSort,
     // Pagination
-    page, setPage, hasMore, filterVersion,
+    page, setPage, totalPages, filterVersion,
     // Computed
     filteredLocations,
     sortedLocations,
