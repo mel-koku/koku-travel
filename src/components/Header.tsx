@@ -121,6 +121,7 @@ function UserMenu({
       label={<IdentityBadge compact />}
       align="end"
       hideChevron={true}
+      ariaLabel="Account menu"
       triggerClassName="!border-0 !bg-transparent !shadow-none !p-0 hover:!bg-transparent !rounded-none gap-0"
       items={items}
     />

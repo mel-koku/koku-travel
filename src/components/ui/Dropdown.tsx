@@ -20,6 +20,8 @@ type DropdownProps = {
   menuClassName?: string;
   triggerClassName?: string;
   hideChevron?: boolean;
+  /** aria-label for the trigger button — required when label is icon-only or shows just an initial */
+  ariaLabel?: string;
 };
 
 export function Dropdown({
@@ -30,6 +32,7 @@ export function Dropdown({
   menuClassName,
   triggerClassName,
   hideChevron = false,
+  ariaLabel,
 }: DropdownProps) {
   const triggerId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -357,6 +360,7 @@ export function Dropdown({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
+        aria-label={ariaLabel}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
         onMouseEnter={clearHoverTimeout}

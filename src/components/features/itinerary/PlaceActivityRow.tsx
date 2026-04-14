@@ -575,7 +575,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {displayLabel !== undefined && (
                 <span
                   className={`font-mono text-xl font-bold ${
-                    isSelected ? "text-sage" : "text-foreground/20"
+                    isSelected ? "text-sage" : "text-foreground/60"
                   }`}
                 >
                   {String(displayLabel).padStart(2, "0")}

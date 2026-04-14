@@ -36,6 +36,17 @@ export function SmartPromptsDrawer({
     }
   }, [gaps.length]);
 
+  // Escape collapses the drawer to its minimized state (doesn't dismiss —
+  // dismiss is a stronger action reserved for the explicit Dismiss button).
+  useEffect(() => {
+    if (!isExpanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsExpanded(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isExpanded]);
+
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
     onDismissAll();

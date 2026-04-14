@@ -36,6 +36,16 @@ export function AskYukuButton() {
     return () => window.removeEventListener(CONSENT_EVENT, handler);
   }, [consentResolved]);
 
+  // Escape closes the chat panel
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   const context = deriveContext(pathname);
 
   // Serialize trip context when on itinerary page

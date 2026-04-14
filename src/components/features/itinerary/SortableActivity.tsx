@@ -75,7 +75,18 @@ export const SortableActivity = memo(function SortableActivity({
       : undefined;
 
   return (
-    <li ref={setNodeRef} className="relative space-y-0" style={dragStyles} {...attributes}>
+    <li
+      ref={setNodeRef}
+      className="relative space-y-0"
+      style={dragStyles}
+      {...attributes}
+      // dnd-kit spreads role="button" + tabIndex onto the draggable
+      // container, which nests interactive controls (activity cards have
+      // their own buttons). We use a dedicated DragHandle child for
+      // keyboard drag activation, so remove the redundant role here.
+      role={undefined}
+      tabIndex={undefined}
+    >
       {/* Drop indicator line */}
       {showDropIndicator && (
         <div className="absolute -top-1.5 left-0 right-0 z-10 flex items-center gap-2">

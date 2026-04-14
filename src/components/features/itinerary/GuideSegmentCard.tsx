@@ -84,7 +84,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
             <span className="text-[10px] font-semibold uppercase tracking-wider text-stone">
               {style.label}
             </span>
-            <p className={`mt-0.5 text-xs leading-relaxed ${isCollapsed ? "truncate text-stone/70" : "text-foreground-secondary"}`}>
+            <p className={`mt-0.5 text-xs leading-relaxed ${isCollapsed ? "truncate text-foreground-secondary" : "text-foreground-secondary"}`}>
               {segment.content}
             </p>
           </div>
