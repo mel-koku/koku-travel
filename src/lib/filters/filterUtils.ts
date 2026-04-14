@@ -10,3 +10,9 @@ export { generateFallbackRating, generateFallbackReviewCount } from "@/lib/utils
 export { DURATION_FILTERS } from "@/data/durationFilters";
 
 export const PAGE_SIZE = 24;
+
+/**
+ * Page size for the /places grid view (numbered pagination).
+ * Separate from PAGE_SIZE so other grids (crafts, experiences) are unaffected.
+ */
+export const PLACES_PAGE_SIZE = 36;
