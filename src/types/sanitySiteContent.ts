@@ -272,3 +272,35 @@ export type PagesContent = {
   itineraryEmptyState?: string;
   itineraryBuilderLink?: string;
 };
+
+export type AboutPageContent = {
+  heroEyebrow?: string;
+  heroHeading?: string;
+  heroSubtext?: string;
+  storyHeading?: string;
+  storyParagraphs?: string[];
+  storyImage?: SanityImageAsset & { url?: string };
+  photoBreakImage?: SanityImageAsset & { url?: string };
+  photoBreakAlt?: string;
+  valuesHeading?: string;
+  values?: Array<{
+    title?: string;
+    description?: string;
+    image?: SanityImageAsset & { url?: string };
+  }>;
+  teamEyebrow?: string;
+  teamHeading?: string;
+  teamMembers?: Array<{
+    name?: string;
+    role?: string;
+    bio?: string;
+    photo?: SanityImageAsset & { url?: string };
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    website?: string;
+  }>;
+  ctaHeading?: string;
+  ctaDescription?: string;
+  ctaButtonText?: string;
+};

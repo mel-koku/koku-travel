@@ -9,6 +9,7 @@ import { siteSettings } from "./siteSettings";
 import { landingPage } from "./landingPage";
 import { tripBuilderConfig } from "./tripBuilderConfig";
 import { pagesContent } from "./pagesContent";
+import { aboutPage } from "./aboutPage";
 import { culturalPillar } from "./culturalPillar";
 import { person } from "./person";
 export const schemaTypes = [
@@ -24,5 +25,6 @@ export const schemaTypes = [
   landingPage,
   tripBuilderConfig,
   pagesContent,
+  aboutPage,
   culturalPillar,
 ];
