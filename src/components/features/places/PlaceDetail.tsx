@@ -84,8 +84,10 @@ function OverviewSection({
           </p>
           {needsClamp && (
             <button
+              type="button"
               onClick={() => setExpanded(!expanded)}
-              className="mt-1 text-sm font-medium text-brand-primary hover:underline"
+              aria-expanded={expanded}
+              className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-brand-primary hover:underline"
             >
               {expanded ? "Show less" : "Read more"}
             </button>
