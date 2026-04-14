@@ -615,16 +615,15 @@ export const ItineraryShell = ({
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
-                  {!isReadOnly && (
-                    <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
-                      {(
-                        [
-                          { key: "timeline", label: "Timeline" },
-                          { key: "dashboard", label: "Overview" },
-                          ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
-                          ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
-                        ] as { key: ItineraryViewMode; label: string }[]
-                      ).map((tab) => (
+                  <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
+                    {(
+                      [
+                        { key: "timeline", label: "Timeline" },
+                        { key: "dashboard", label: "Overview" },
+                        ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
+                        ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
+                      ] as { key: ItineraryViewMode; label: string }[]
+                    ).map((tab) => (
                         <button
                           key={tab.key}
                           type="button"
@@ -639,10 +638,9 @@ export const ItineraryShell = ({
                           {tab.key === "culture" && !cultureTabSeen && (
                             <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
                           )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                      </button>
+                    ))}
+                  </div>
                   {!isReadOnly && tripId && !isUsingMock && (
                     <>
                       <DownloadBookButton tripId={tripId} />
