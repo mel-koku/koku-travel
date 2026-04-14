@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Location } from "@/types/location";
 import type { ActiveFilter, FilterMetadata } from "@/types/filters";
 import { locationMatchesVibes } from "@/data/vibeFilterMapping";
@@ -121,9 +121,15 @@ export function usePlacesFilters(
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [page, setPage] = useState(1);
 
-  // Track filter changes for scroll-to-top and page reset
+  // Track filter changes for scroll-to-top and page reset.
+  // Skip on first mount so URL-restored state (e.g. ?sort=x&page=3) isn't clobbered.
   const [filterVersion, setFilterVersion] = useState(0);
+  const didMountFiltersRef = useRef(false);
   useEffect(() => {
+    if (!didMountFiltersRef.current) {
+      didMountFiltersRef.current = true;
+      return;
+    }
     setPage(1);
     setFilterVersion((v) => v + 1);
   }, [
