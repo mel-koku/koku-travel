@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { getAuthUser } from "@/lib/auth/middleware";
 import { DashboardClient } from "./DashboardClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
+import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Dashboard | Yuku Japan",
   description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
   alternates: { canonical: "/dashboard" },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Dashboard | Yuku Japan",
     description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
     url: "/dashboard",

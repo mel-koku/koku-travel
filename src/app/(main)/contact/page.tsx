@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Contact | Yuku Japan",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
     "Get in touch with Yuku Japan. Have feedback or a question? Reach us at hello@yukujapan.com.",
   alternates: { canonical: "/contact" },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Contact | Yuku Japan",
     description:
       "Get in touch with Yuku Japan. Have feedback or a question? Reach us at hello@yukujapan.com.",
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
+    images: DEFAULT_TWITTER_IMAGES,
     card: "summary",
     title: "Contact | Yuku Japan",
     description:

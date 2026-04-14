@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 export const metadata: Metadata = {
   title: "About | Yuku Japan",
   description:
-    "Yuku is a Japan trip planning tool built for curious travelers. We combine local knowledge with smart planning to help you experience Japan beyond the guidebook.",
+    "Yuku is a Japan trip planner for curious travelers. Local knowledge plus smart planning, built to help you experience Japan beyond the guidebook.",
   alternates: {
     canonical: "/about",
   },

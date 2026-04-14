@@ -28,12 +28,24 @@ export const metadata: Metadata = {
     siteName: "Yuku Japan",
     type: "website",
     locale: "en_US",
+    // Fallback share image. Pages with richer content (guides, places,
+    // cities) override via their own generateMetadata openGraph.images.
+    // Replace with a dedicated 1200×630 OG asset when branding is ready.
+    images: [
+      {
+        url: "/images/fallback.jpg",
+        width: 800,
+        height: 533,
+        alt: "Yuku Japan",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Yuku Japan - Discover Japan with Local Experts",
     description:
       "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    images: ["/images/fallback.jpg"],
   },
   robots: {
     index: true,

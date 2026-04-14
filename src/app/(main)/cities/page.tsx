@@ -4,6 +4,7 @@ import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { CITY_PAGE_DATA, getAllCitySlugs } from "@/lib/cities/cityData";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 import { CityIndex } from "@/components/features/cities/CityIndex";
+import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 const CITIES_DESCRIPTION =
   "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
   description: CITIES_DESCRIPTION,
   alternates: { canonical: "/cities" },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Cities of Japan | Yuku Japan",
     description: CITIES_DESCRIPTION,
     url: "/cities",
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
+    images: DEFAULT_TWITTER_IMAGES,
     card: "summary_large_image",
     title: "Cities of Japan | Yuku Japan",
     description: CITIES_DESCRIPTION,

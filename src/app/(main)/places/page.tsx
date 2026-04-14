@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PlacesShellLazy } from "@/components/features/places/PlacesShellLazy";
 import { getPagesContent } from "@/lib/sanity/contentService";
+import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 const PLACES_DESCRIPTION =
   "Over 6,000 locations across Japan. Cultural landmarks, neighborhood favorites, and an interactive map.";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     canonical: "/places",
   },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Places in Japan | Yuku Japan",
     description: PLACES_DESCRIPTION,
     url: "/places",
@@ -21,6 +23,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
+    images: DEFAULT_TWITTER_IMAGES,
     card: "summary_large_image",
     title: "Places in Japan | Yuku Japan",
     description: PLACES_DESCRIPTION,

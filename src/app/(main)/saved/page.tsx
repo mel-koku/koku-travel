@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 
 import { SavedClient } from "./SavedClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
+import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Saved Places | Yuku Japan",
   description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
   alternates: { canonical: "/saved" },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Saved Places | Yuku Japan",
     description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
     url: "/saved",

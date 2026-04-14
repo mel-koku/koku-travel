@@ -70,6 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: guide.summary,
       images: [guide.featuredImage],
       type: "article",
+      url: `/guides/${slug}`,
     },
     twitter: {
       card: "summary_large_image",

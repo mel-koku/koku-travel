@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedGuides } from "@/lib/guides/guideService";
 import { GuidesPageClient } from "@/components/features/guides/GuidesPageClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
+import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 const GUIDES_DESCRIPTION =
   "Curated travel guides for Japan. Seasonal highlights, regional deep dives, and expert tips for your trip.";
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
   description: GUIDES_DESCRIPTION,
   alternates: { canonical: "/guides" },
   openGraph: {
+    images: DEFAULT_OG_IMAGES,
     title: "Travel Guides | Yuku Japan",
     description: GUIDES_DESCRIPTION,
     url: "/guides",
@@ -18,6 +20,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
+    images: DEFAULT_TWITTER_IMAGES,
     card: "summary_large_image",
     title: "Travel Guides | Yuku Japan",
     description: GUIDES_DESCRIPTION,

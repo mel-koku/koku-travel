@@ -2,6 +2,8 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -238,6 +240,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   if (!activeItinerary) {
     return (
       <div className="p-16 text-center text-foreground-secondary">
+        <h1 className={cn(typography({ intent: "editorial-h2" }), "mb-3")}>Your Itineraries</h1>
         <p>{content?.itineraryEmptyState ?? "No itineraries yet. Build your first trip."}</p>
         <Link href="/trip-builder" className="link-reveal inline-flex min-h-11 items-center px-2 text-sage transition-colors hover:text-sage/80">
           {content?.itineraryBuilderLink ?? "Build a Trip"}

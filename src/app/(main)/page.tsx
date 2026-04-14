@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 import {
   HeroOpening,
@@ -28,6 +29,9 @@ export const metadata: Metadata = {
     title: "Yuku Japan | Plan Your Trip to Japan",
     description: "Thousands of curated places across all 47 prefectures. Build a trip, day by day, with routing and timing handled for you.",
     siteName: "Yuku Japan",
+    type: "website",
+    url: "/",
+    images: DEFAULT_OG_IMAGES,
   },
 };
 
