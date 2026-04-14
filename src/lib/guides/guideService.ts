@@ -8,6 +8,10 @@ import { createClient } from "@/lib/supabase/server";
 import type { Guide, GuideRow, GuideSummary } from "@/types/guide";
 import { rowToGuide } from "@/types/guide";
 import { fetchLocationsByIds } from "@/lib/locations/locationService";
+import {
+  attachLocationFallbackImages,
+  patchLocationHeroPhotos,
+} from "@/services/guides/fallbackImages";
 import type { Location } from "@/types/location";
 import { sanityClient } from "@/sanity/client";
 import { guideBySlugQuery, authorBySlugQuery, allAuthorsQuery } from "@/sanity/queries";
@@ -56,8 +60,53 @@ const GUIDE_SUMMARY_COLUMNS = `
   city,
   region,
   reading_time_minutes,
-  tags
+  tags,
+  location_ids
 `;
+
+type GuideSummaryRow = {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  summary: string;
+  featured_image: string;
+  thumbnail_image: string | null;
+  guide_type: GuideSummary["guideType"];
+  seasons: string[] | null;
+  city: string | null;
+  region: string | null;
+  reading_time_minutes: number | null;
+  tags: string[];
+  location_ids: string[] | null;
+};
+
+function rowToSummary(row: GuideSummaryRow): GuideSummary {
+  return {
+    id: row.id,
+    title: row.title,
+    subtitle: row.subtitle ?? undefined,
+    summary: row.summary,
+    featuredImage: row.featured_image,
+    thumbnailImage: row.thumbnail_image ?? undefined,
+    guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
+    city: row.city ?? undefined,
+    region: row.region ?? undefined,
+    readingTimeMinutes: row.reading_time_minutes ?? undefined,
+    tags: row.tags,
+  };
+}
+
+async function summariesWithFallbacks(
+  rows: GuideSummaryRow[]
+): Promise<GuideSummary[]> {
+  const summaries = rows.map(rowToSummary);
+  const locationIdsByGuide = new Map<string, string[]>();
+  for (const row of rows) {
+    locationIdsByGuide.set(row.id, row.location_ids ?? []);
+  }
+  return attachLocationFallbackImages(summaries, locationIdsByGuide);
+}
 
 /**
  * Returns the total number of published guides.
@@ -96,20 +145,7 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? undefined,
-    summary: row.summary,
-    featuredImage: row.featured_image,
-    thumbnailImage: row.thumbnail_image ?? undefined,
-    guideType: row.guide_type,
-    seasons: row.seasons ?? undefined,
-    city: row.city ?? undefined,
-    region: row.region ?? undefined,
-    readingTimeMinutes: row.reading_time_minutes ?? undefined,
-    tags: row.tags,
-  }));
+  return summariesWithFallbacks(data as unknown as GuideSummaryRow[]);
 }
 
 /**
@@ -156,20 +192,7 @@ export async function getFeaturedGuides(limit: number = 3): Promise<GuideSummary
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? undefined,
-    summary: row.summary,
-    featuredImage: row.featured_image,
-    thumbnailImage: row.thumbnail_image ?? undefined,
-    guideType: row.guide_type,
-    seasons: row.seasons ?? undefined,
-    city: row.city ?? undefined,
-    region: row.region ?? undefined,
-    readingTimeMinutes: row.reading_time_minutes ?? undefined,
-    tags: row.tags,
-  }));
+  return summariesWithFallbacks(data as unknown as GuideSummaryRow[]);
 }
 
 /**
@@ -187,7 +210,9 @@ export async function getGuideWithLocations(
     return null;
   }
 
-  const locations = await fetchLocationsByIds(guide.locationIds);
+  const locations = await patchLocationHeroPhotos(
+    await fetchLocationsByIds(guide.locationIds)
+  );
 
   return { guide, locations };
 }
@@ -225,20 +250,7 @@ export async function getGuidesByCity(
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? undefined,
-    summary: row.summary,
-    featuredImage: row.featured_image,
-    thumbnailImage: row.thumbnail_image ?? undefined,
-    guideType: row.guide_type,
-    seasons: row.seasons ?? undefined,
-    city: row.city ?? undefined,
-    region: row.region ?? undefined,
-    readingTimeMinutes: row.reading_time_minutes ?? undefined,
-    tags: row.tags,
-  }));
+  return summariesWithFallbacks(data as unknown as GuideSummaryRow[]);
 }
 
 /**
@@ -274,20 +286,7 @@ export async function getGuidesByType(
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? undefined,
-    summary: row.summary,
-    featuredImage: row.featured_image,
-    thumbnailImage: row.thumbnail_image ?? undefined,
-    guideType: row.guide_type,
-    seasons: row.seasons ?? undefined,
-    city: row.city ?? undefined,
-    region: row.region ?? undefined,
-    readingTimeMinutes: row.reading_time_minutes ?? undefined,
-    tags: row.tags,
-  }));
+  return summariesWithFallbacks(data as unknown as GuideSummaryRow[]);
 }
 
 /**
@@ -313,20 +312,7 @@ export async function getGuidesBySeason(
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? undefined,
-    summary: row.summary,
-    featuredImage: row.featured_image,
-    thumbnailImage: row.thumbnail_image ?? undefined,
-    guideType: row.guide_type,
-    seasons: row.seasons ?? undefined,
-    city: row.city ?? undefined,
-    region: row.region ?? undefined,
-    readingTimeMinutes: row.reading_time_minutes ?? undefined,
-    tags: row.tags,
-  }));
+  return summariesWithFallbacks(data as unknown as GuideSummaryRow[]);
 }
 
 // ---------------------------------------------------------------------------
@@ -361,9 +347,10 @@ export async function getSanityGuideWithLocations(
   const guide = await getSanityGuideBySlug(slug);
   if (!guide) return null;
 
-  const locations = guide.locationIds?.length
+  const rawLocations = guide.locationIds?.length
     ? await fetchLocationsByIds(guide.locationIds)
     : [];
+  const locations = await patchLocationHeroPhotos(rawLocations);
 
   return { guide, locations };
 }
