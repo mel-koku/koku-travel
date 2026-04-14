@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { SanityAuthorFull } from "@/types/sanityGuide";
 import type { GuideType } from "@/types/guide";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   itinerary: "Itinerary",
@@ -64,10 +65,15 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                   </p>
                 )}
 
-                {/* Social links */}
+                {/*
+                 * Social links — gate each on isSafeUrl so a Sanity author
+                 * record with a javascript:/data: URL can't render a live
+                 * clickable link. Author-authored content is usually trusted
+                 * but this is cheap defense-in-depth.
+                 */}
                 {author.socialLinks && (
                   <div className="mt-4 flex items-center gap-4 justify-center sm:justify-start">
-                    {author.socialLinks.twitter && (
+                    {author.socialLinks.twitter && isSafeUrl(author.socialLinks.twitter) && (
                       <a
                         href={author.socialLinks.twitter}
                         target="_blank"
@@ -77,7 +83,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                         <span className="font-mono text-xs uppercase tracking-wide">Twitter</span>
                       </a>
                     )}
-                    {author.socialLinks.instagram && (
+                    {author.socialLinks.instagram && isSafeUrl(author.socialLinks.instagram) && (
                       <a
                         href={author.socialLinks.instagram}
                         target="_blank"
@@ -87,7 +93,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                         <span className="font-mono text-xs uppercase tracking-wide">Instagram</span>
                       </a>
                     )}
-                    {author.socialLinks.website && (
+                    {author.socialLinks.website && isSafeUrl(author.socialLinks.website) && (
                       <a
                         href={author.socialLinks.website}
                         target="_blank"

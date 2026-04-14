@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { SiteSettings } from "@/types/sanitySiteContent";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 const defaultNavColumns = [
   {
@@ -76,7 +77,7 @@ export default function Footer({ settings }: FooterProps) {
             &copy; {currentYear} Yuku Japan. All rights reserved.
           </p>
           <div className="flex items-center gap-3">
-            {socialLinks.map((icon) => (
+            {socialLinks.filter((icon) => isSafeUrl(icon.href)).map((icon) => (
               <a
                 key={icon.label}
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-white/20 text-xs font-semibold uppercase tracking-[0.3em] text-white/60 transition-colors hover:border-white/40 hover:text-white"

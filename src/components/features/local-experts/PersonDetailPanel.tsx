@@ -8,6 +8,7 @@ import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
 import { useLenis } from "@/providers/LenisProvider";
 import { usePersonDetail } from "@/hooks/usePeopleQuery";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 import {
   resolvePersonCategoryId,
   getCategoryById,
@@ -248,8 +249,9 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Website */}
-                {displayPerson.website_url && (
+                {/* Website — gate on isSafeUrl so a DB row with a
+                    javascript:/data: URL can't render a live link. */}
+                {displayPerson.website_url && isSafeUrl(displayPerson.website_url) && (
                   <div className="mt-6">
                     <p className="eyebrow-editorial">Website</p>
                     <a
