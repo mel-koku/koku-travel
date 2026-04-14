@@ -14,9 +14,9 @@ export function SearchHeader({ query, onQueryChange, totalCount }: SearchHeaderP
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className={typography({ intent: "editorial-h2" })}>
+            <h2 className={typography({ intent: "editorial-h2" })}>
               Places in Japan
-            </h1>
+            </h2>
             <p className="mt-1 text-sm text-stone">
               Discover {totalCount.toLocaleString()} unique destinations
             </p>

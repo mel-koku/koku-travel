@@ -42,6 +42,7 @@ export function ThemeToggle() {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="h-5 w-5"
+              aria-hidden="true"
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: -90, scale: 0.6 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, rotate: 0, scale: 1 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: 90, scale: 0.6 }}
@@ -68,6 +69,7 @@ export function ThemeToggle() {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="h-5 w-5"
+              aria-hidden="true"
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: 90, scale: 0.6 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, rotate: 0, scale: 1 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: -90, scale: 0.6 }}

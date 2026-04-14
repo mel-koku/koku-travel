@@ -48,6 +48,7 @@ function getSummary(location: Location): string {
 export function LocationEditorialGrid({
   locations,
   onSelect,
+  activeCategory,
   onClearFilters,
 }: LocationEditorialGridProps) {
   if (locations.length === 0) {
@@ -76,6 +77,17 @@ export function LocationEditorialGrid({
   }
 
   return (
+    <>
+      {/*
+       * Visually-hidden h2 establishes a heading level between the page h1
+       * and the card h3s. Without it, screen readers see a heading-jump from
+       * h1 directly to h3 across the long card grid.
+       */}
+      <h2 className="sr-only">
+        {activeCategory && activeCategory !== "all"
+          ? `${activeCategory} places`
+          : "All places"}
+      </h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
       {locations.map((location, i) => (
         <motion.div
@@ -93,6 +105,7 @@ export function LocationEditorialGrid({
         </motion.div>
       ))}
     </div>
+    </>
   );
 }
 

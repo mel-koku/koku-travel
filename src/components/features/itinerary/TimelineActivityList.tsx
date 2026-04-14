@@ -3,6 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { buildDayLabel } from "@/lib/itinerary/dayLabel";
 import type {
   ItineraryActivity,
   ItineraryDay,
@@ -125,6 +126,15 @@ export const TimelineActivityList = memo(function TimelineActivityList({
           totalDays={totalDays}
         />
 
+        {/*
+         * Visually-hidden h2 establishes a semantic level between the page h1
+         * (trip name) and activity card h3s. Without it, screen readers see a
+         * heading-jump from h1 to h3. Visual hierarchy is unchanged — DaySelector
+         * already shows day context above this list.
+         */}
+        <h2 className="sr-only">
+          {buildDayLabel(dayIndex ?? 0, { tripStartDate, cityId: day.cityId })} itinerary
+        </h2>
         <ul className="space-y-3">
           {extendedActivities.map((activity, index) => {
             let placeNumber: number | undefined = undefined;

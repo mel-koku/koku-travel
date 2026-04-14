@@ -103,6 +103,7 @@ export function CategoryBar({
               }}
             >
               <svg
+                aria-hidden="true"
                 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone pointer-events-none"
                 fill="none"
                 viewBox="0 0 24 24"
