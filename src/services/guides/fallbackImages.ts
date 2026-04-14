@@ -18,7 +18,9 @@ function buildProxyUrl(photoName: string, maxWidthPx = 1200): string {
 }
 
 /**
- * Returns a map of location_id -> first harvested Google photo proxy URL.
+ * Returns a map of location_id -> best available hero photo URL. Prefers
+ * harvested `location_photos` rows (vetted + attributed), falls back to
+ * the location's own `primary_photo_url` column when the gallery is empty.
  * Silently returns an empty map on error so callers never fail because of
  * photo enrichment hiccups.
  */
@@ -29,28 +31,47 @@ async function fetchHeroPhotosByLocationIds(
   if (ids.length === 0) return map;
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("location_photos")
-      .select("location_id, photo_name, sort_order")
-      .in("location_id", ids)
-      .eq("source", "google")
-      .eq("moderation", "approved")
-      .order("sort_order", { ascending: true });
-    if (error || !data) {
-      if (error) {
-        logger.warn("[fallbackImages] location_photos query failed", {
-          code: error.code,
-        });
-      }
-      return map;
+    const [photos, locations] = await Promise.all([
+      supabase
+        .from("location_photos")
+        .select("location_id, photo_name, sort_order")
+        .in("location_id", ids)
+        .eq("source", "google")
+        .eq("moderation", "approved")
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("locations")
+        .select("id, primary_photo_url")
+        .in("id", ids),
+    ]);
+    if (photos.error) {
+      logger.warn("[fallbackImages] location_photos query failed", {
+        code: photos.error.code,
+      });
     }
-    for (const row of data as Array<{ location_id: string; photo_name: string }>) {
+    for (const row of (photos.data ?? []) as Array<{
+      location_id: string;
+      photo_name: string;
+    }>) {
       if (!map.has(row.location_id)) {
         map.set(row.location_id, buildProxyUrl(row.photo_name));
       }
     }
+    if (locations.error) {
+      logger.warn("[fallbackImages] locations query failed", {
+        code: locations.error.code,
+      });
+    }
+    for (const row of (locations.data ?? []) as Array<{
+      id: string;
+      primary_photo_url: string | null;
+    }>) {
+      if (map.has(row.id)) continue;
+      if (isMissingImage(row.primary_photo_url)) continue;
+      map.set(row.id, row.primary_photo_url as string);
+    }
   } catch (error) {
-    logger.warn("[fallbackImages] location_photos query threw", { error });
+    logger.warn("[fallbackImages] hero photo lookup threw", { error });
   }
   return map;
 }
