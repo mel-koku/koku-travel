@@ -116,10 +116,27 @@ export function useFilterMetadataQuery() {
 export function useAllLocationsSingle() {
   const { data, status, error } = useQuery({
     queryKey: [...locationsKeys.all, "all-single"],
-    queryFn: async () => {
-      const res = await fetch("/api/locations/all");
-      if (!res.ok) throw new Error("Failed to load locations");
-      return res.json() as Promise<{ data: Location[]; total: number }>;
+    queryFn: async ({ signal }) => {
+      // 30s client-side timeout. Without this, a hung Supabase / proxy
+      // leaves the page on the loading skeleton indefinitely; with it,
+      // the user sees the error UI + retry button after a bounded wait.
+      // React Query passes us an AbortSignal we forward to fetch.
+      const timeout = new AbortController();
+      const timer = setTimeout(() => timeout.abort(), 30_000);
+      // Combine React Query's signal with our timeout signal
+      signal?.addEventListener("abort", () => timeout.abort(), { once: true });
+      try {
+        const res = await fetch("/api/locations/all", { signal: timeout.signal });
+        if (!res.ok) throw new Error("Failed to load locations");
+        return (await res.json()) as { data: Location[]; total: number };
+      } catch (e) {
+        if (timeout.signal.aborted && !signal?.aborted) {
+          throw new Error("Loading locations took too long. Try again.");
+        }
+        throw e;
+      } finally {
+        clearTimeout(timer);
+      }
     },
     staleTime: LOCATION_STALE_TIME,
     gcTime: LOCATION_GC_TIME,
