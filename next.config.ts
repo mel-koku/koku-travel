@@ -128,7 +128,32 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    // feature=() blocks the feature everywhere, including the top-level
+    // document. feature=(self) allows the top-level document but blocks
+    // cross-origin iframes. feature=() is appropriate only for features
+    // the app genuinely doesn't use.
+    //
+    // Yuku uses: geolocation (Near Me), clipboard (share buttons —
+    // default-allowed, no need to set), fullscreen (Mapbox — default-
+    // allowed). Everything else is safe to lock down explicitly as
+    // defense-in-depth.
+    value: [
+      "camera=()",
+      "microphone=()",
+      "geolocation=(self)",
+      "payment=()",
+      "usb=()",
+      "bluetooth=()",
+      "midi=()",
+      "magnetometer=()",
+      "gyroscope=()",
+      "accelerometer=()",
+      "autoplay=()",
+      "picture-in-picture=()",
+      "sync-xhr=()",
+      "interest-cohort=()",
+      "browsing-topics=()",
+    ].join(", "),
   },
   {
     key: "X-Permitted-Cross-Domain-Policies",
@@ -156,6 +181,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Strip the X-Powered-By: Next.js fingerprint from responses. Harmless
+  // on its own but removes a free hint for attackers scanning for
+  // framework-specific vulnerabilities.
+  poweredByHeader: false,
   images: {
     localPatterns,
     remotePatterns,
