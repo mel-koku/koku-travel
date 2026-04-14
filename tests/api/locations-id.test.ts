@@ -11,15 +11,31 @@ vi.mock("@/lib/api/rateLimit", () => ({
 // Mock Supabase client - use hoisted variable pattern
 let mockSupabaseResponse: { data: unknown; error: unknown } = { data: null, error: null };
 
+// The route fires two parallel queries: `locations` (single row) and
+// `location_photos` (filtered list). Dispatch by table so the harvested
+// photos query returns an empty array instead of blowing up the handler.
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockImplementation(async () => ({
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          single: () => Promise.resolve(mockSupabaseResponse),
+    from: (table: string) => {
+      if (table === "location_photos") {
+        const thenable = Promise.resolve({ data: [], error: null });
+        const chain = {
+          select: () => chain,
+          eq: () => chain,
+          order: () => chain,
+          limit: () => thenable,
+          then: thenable.then.bind(thenable),
+        };
+        return chain;
+      }
+      return {
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve(mockSupabaseResponse),
+          }),
         }),
-      }),
-    }),
+      };
+    },
   })),
 }));
 

@@ -19,6 +19,7 @@ import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TravelerProfile } from "@/types/traveler";
 import type { TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
+import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
@@ -400,7 +401,9 @@ describe("convertItineraryToTrip date arithmetic", () => {
     // set a start date get today's date, not an error. Flagged as a latent
     // issue: the API schema allows `dates.start` to be undefined, so this
     // silent fallback can mask frontend bugs.
-    const today = new Date().toISOString().split("T")[0]!;
+    // Must match the engine's own local-date formatter; `toISOString()` would
+    // disagree with `formatLocalDateISO` whenever UTC and local date differ.
+    const today = formatLocalDateISO(new Date());
     const trip = convertItineraryToTrip(
       makeItineraryWithDays(1),
       { ...makeBuilderData(), dates: { start: undefined } } as unknown as TripBuilderData,
