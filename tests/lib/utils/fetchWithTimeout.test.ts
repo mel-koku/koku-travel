@@ -31,9 +31,12 @@ describe("fetchWithTimeout", () => {
     );
 
     const promise = fetchWithTimeout("/slow", {}, 1000);
-    // Run the internal timer
+    // Attach the assertion first so the rejection has a handler before
+    // `advanceTimersByTimeAsync` flushes microtasks — otherwise Node flags
+    // it as an unhandled rejection even though the test does handle it.
+    const assertion = expect(promise).rejects.toThrow(/took longer than 1s/);
     await vi.advanceTimersByTimeAsync(1000);
-    await expect(promise).rejects.toThrow(/took longer than 1s/);
+    await assertion;
   });
 
   it("propagates caller abort without rewriting the error", async () => {
