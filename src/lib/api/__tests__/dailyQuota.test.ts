@@ -132,12 +132,18 @@ describe("Daily Quota", () => {
     mockIncr.mockResolvedValue(1);
     mockExpire.mockResolvedValue(true);
 
-    await checkDailyQuota("user-123", TEST_QUOTA);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"));
+    try {
+      await checkDailyQuota("user-123", TEST_QUOTA);
 
-    const key = mockIncr.mock.calls[0][0] as string;
-    // Key should contain today's date in yyyy-mm-dd format
-    const today = new Date().toISOString().slice(0, 10);
-    expect(key).toContain(today);
+      const key = mockIncr.mock.calls[0][0] as string;
+      // Key should contain today's date in yyyy-mm-dd format
+      const today = new Date().toISOString().slice(0, 10);
+      expect(key).toContain(today);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

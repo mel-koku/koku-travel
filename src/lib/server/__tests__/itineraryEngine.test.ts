@@ -401,16 +401,20 @@ describe("convertItineraryToTrip date arithmetic", () => {
     // set a start date get today's date, not an error. Flagged as a latent
     // issue: the API schema allows `dates.start` to be undefined, so this
     // silent fallback can mask frontend bugs.
-    // Must match the engine's own local-date formatter; `toISOString()` would
-    // disagree with `formatLocalDateISO` whenever UTC and local date differ.
-    const today = formatLocalDateISO(new Date());
-    const trip = convertItineraryToTrip(
-      makeItineraryWithDays(1),
-      { ...makeBuilderData(), dates: { start: undefined } } as unknown as TripBuilderData,
-      "trip-missing",
-      [],
-    );
-    expect(trip.dates.start).toBe(today);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"));
+    try {
+      const today = formatLocalDateISO(new Date());
+      const trip = convertItineraryToTrip(
+        makeItineraryWithDays(1),
+        { ...makeBuilderData(), dates: { start: undefined } } as unknown as TripBuilderData,
+        "trip-missing",
+        [],
+      );
+      expect(trip.dates.start).toBe(today);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("throws on malformed start date", () => {
