@@ -78,7 +78,7 @@ export const CityCard = memo(function CityCard({
           </p>
 
           <div className="flex items-center gap-2 pt-0.5 flex-wrap">
-            <span className="text-[11px] font-medium text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-lg">
+            <span className="text-[11px] font-medium text-foreground bg-brand-primary/10 px-2 py-0.5 rounded-lg">
               {locationCount} places
             </span>
             {topCategories.slice(0, 3).map((cat) => (

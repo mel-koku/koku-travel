@@ -56,7 +56,8 @@ const COLOR_SCHEMES = {
     border: "border-l-warning",
     background: "bg-warning/10",
     badge: "bg-warning",
-    badgeText: "text-white",
+    // White on yuzu warning yellow is ~2.4:1 (fails AA). Dark text reads.
+    badgeText: "text-foreground",
   },
   // View — crimson (cultural)
   view: {

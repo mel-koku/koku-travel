@@ -30,7 +30,9 @@ const toneStyles: Record<
     outline: "text-success ring-1 ring-inset ring-success/30 bg-background",
   },
   warning: {
-    solid: "bg-warning text-white",
+    // Yuzu (warm amber) needs dark text — white-on-yuzu is ~2.4:1 and
+    // fails WCAG AA. Standard pattern for warning yellow surfaces.
+    solid: "bg-warning text-foreground",
     soft: "bg-warning/10 text-warning ring-1 ring-inset ring-warning/20",
     outline: "text-warning ring-1 ring-inset ring-warning/30 bg-background",
   },
