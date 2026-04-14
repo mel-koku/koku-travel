@@ -40,6 +40,23 @@ describe("PlacesPagination", () => {
     expect(screen.queryByRole("button", { name: "Go to page 25" })).not.toBeInTheDocument();
   });
 
+  it("windows with ellipsis when current is at the end", () => {
+    renderPagination({ currentPage: 50, totalPages: 50 });
+    expect(screen.getByRole("button", { name: "Go to page 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go to page 48" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go to page 49" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go to page 50" })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByRole("button", { name: "Go to page 25" })).not.toBeInTheDocument();
+  });
+
+  it("expands window near the second page (currentPage=2)", () => {
+    renderPagination({ currentPage: 2, totalPages: 50 });
+    expect(screen.getByRole("button", { name: "Go to page 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go to page 2" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Go to page 3" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go to page 50" })).toBeInTheDocument();
+  });
+
   it("windows with ellipsis on both sides when current is in the middle", () => {
     renderPagination({ currentPage: 25, totalPages: 50 });
     expect(screen.getByRole("button", { name: "Go to page 1" })).toBeInTheDocument();
