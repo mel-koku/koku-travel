@@ -111,16 +111,23 @@
   --card-foreground: #f0e8dc;
   --popover: #252220;
   --popover-foreground: #f0e8dc;
+  /* Brand vermilion stays deep for dark-mode fills — white-on-brand
+     reads at 5.01:1 (AA). For inline text use (`text-brand-primary`),
+     the utility is remapped further down with a lighter shade that
+     reads against the dark page bg. */
   --primary: #c93022;
   --primary-foreground: #ffffff;
   --secondary: #252220;
   --secondary-foreground: #f0e8dc;
   --muted: #252220;
   --muted-foreground: #9a8d7e;
-  --accent: #2f455c;
-  --accent-foreground: #ffffff;
-  --destructive: #593a40;
-  --destructive-foreground: #ffffff;
+  /* Ai blue lightened — #2f455c on #1c1917 is 1.6:1. #7896b8 is 5.2:1. */
+  --accent: #7896b8;
+  --accent-foreground: #1c1917;
+  /* Nasu purple lightened — #593a40 on #1c1917 is 1.68:1. #b8828d gives
+     ~4.6:1 even against the slightly-lighter card bg #292120. */
+  --destructive: #b8828d;
+  --destructive-foreground: #1c1917;
   --border: #3a332a;
   --input: #3a332a;
   --ring: #c93022;
@@ -147,15 +154,19 @@
   --surface: #252220;
   /* Deep vermilion — #c93022 on white = 5.01:1 (WCAG AA). */
   /* Previous value #e23828 was 4.36:1, failing AA on CTAs with white text. */
+  /* Semantic status colors — lightened for dark-mode inline text contrast.
+     Light-mode values fail 4.5:1 against the dark #1c1917 bg. Brand
+     colors stay deep here (used as fills); the text utility is remapped
+     below for the `text-brand-*` use case. */
   --brand-primary: #c93022;
   --brand-secondary: #c93022;
-  --success: #4a6b53;
-  --warning: #d99b29;
-  --error: #593a40;
+  --success: #7fa88a;
+  --warning: #e0a835;
+  --error: #b07584;
   --stone: #9a8d7e;
   --cream: #252220;
-  --sage: #4a6b53;
-  --terracotta: #d99b29;
+  --sage: #7fa88a;
+  --terracotta: #e0a835;
   --charcoal: #1c1917;
   --sand: #3a332a;
   --warm-gray: #b8ad9e;
@@ -180,6 +191,23 @@
   --shadow-elevated:
     0 2px 6px rgba(226, 56, 40, 0.06), 0 8px 24px -4px rgba(28, 25, 23, 0.5);
   --shadow-glow: 0 0 20px rgba(226, 56, 40, 0.25);
+}
+
+/*
+ * Dark-mode inline-text brand remap.
+ * `--brand-primary` stays #c93022 in dark mode so CTA fills read white-on-
+ * brand at 5:1 (AA). But the Tailwind `text-brand-primary` utility picks up
+ * that same value, which only gives 3.43:1 against the dark page bg — fails
+ * AA for small inline text like "View" links and JTA/UNESCO label badges.
+ *
+ * Target those utilities with a lighter vermilion when the page is in dark
+ * mode. Visual hierarchy stays consistent; contrast passes.
+ */
+[data-theme="dark"] .text-brand-primary {
+  color: #ea5e50;
+}
+[data-theme="dark"] .text-brand-secondary {
+  color: #ea5e50;
 }
 
 /* Dark sections within light pages (hero, accent blocks) */
