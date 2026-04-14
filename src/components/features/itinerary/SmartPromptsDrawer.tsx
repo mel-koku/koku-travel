@@ -49,6 +49,7 @@ export function SmartPromptsDrawer({
     <>
       {/* Mobile: Bottom Sheet */}
       <div
+        data-smart-prompts
         className={cn(
           "fixed inset-x-0 bottom-0 z-40 lg:hidden",
           "transform transition-transform duration-300 ease-out",
@@ -116,6 +117,7 @@ export function SmartPromptsDrawer({
 
       {/* Desktop: Side Panel */}
       <div
+        data-smart-prompts
         className={cn(
           "hidden lg:block fixed right-0 top-16 bottom-0 z-40 w-80 xl:w-96",
           "border-l border-border bg-background shadow-[var(--shadow-elevated)]",

@@ -522,7 +522,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
   // Format the day's date and extract city from label
   return (
     <>
-      <aside className="relative h-full">
+      <aside data-map-container className="relative h-full">
         {useMapbox ? (
           <ItineraryMap
             day={{ id: `day-${day}`, dateLabel: `Day ${day + 1}`, activities: activities ?? [] } as ItineraryDay}

@@ -461,6 +461,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           style={dragStyles}
           className="focus-visible:outline-none"
           data-kind="place"
+          data-activity-row
           data-activity-id={activity.id}
         >
           <div className="flex items-center gap-2.5 rounded-lg bg-background px-3 py-2 shadow-[var(--shadow-card)]">
@@ -515,6 +516,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           style={dragStyles}
           className="focus-visible:outline-none"
           data-kind="place"
+          data-activity-row
           data-activity-id={activity.id}
         >
           <div className="flex items-center gap-2.5 rounded-md bg-surface px-3 py-2">
@@ -539,6 +541,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         style={dragStyles}
         className="focus-visible:outline-none"
         data-kind="place"
+        data-activity-row
         data-selected={isSelected || undefined}
         data-activity-id={activity.id}
       >
@@ -674,7 +677,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             </div>
 
             {/* Thumbnail — fills card height */}
-            <div className="relative w-28 shrink-0 self-stretch overflow-hidden rounded-md sm:w-32">
+            <div data-activity-image className="relative w-28 shrink-0 self-stretch overflow-hidden rounded-md sm:w-32">
               {!imageLoaded && !imageError && (
                 <div className="absolute inset-0 animate-pulse bg-surface" />
               )}

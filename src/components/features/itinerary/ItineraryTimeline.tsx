@@ -581,7 +581,7 @@ export const ItineraryTimeline = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="space-y-6">
+      <div data-itinerary-day className="space-y-6">
         {/* Day Header (conflicts + accommodation only) */}
         {/* On arrival day, accommodation picker moves below the anchor card */}
         {(() => {

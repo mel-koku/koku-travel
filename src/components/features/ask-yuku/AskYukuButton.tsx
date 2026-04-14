@@ -59,6 +59,7 @@ export function AskYukuButton() {
     <>
       {/* FAB */}
       <button
+        data-ask-yuku
         onClick={() => setOpen((prev) => !prev)}
         className={`fixed right-6 z-50 flex h-11 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] ${open ? "w-11" : "px-4"} ${isTripBuilder ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"}`}
         aria-label={open ? "Close chat" : "Ask Yuku"}

@@ -146,6 +146,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   return (
     <>
     <motion.div
+      data-confidence-dashboard
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
