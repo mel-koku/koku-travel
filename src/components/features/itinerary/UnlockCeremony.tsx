@@ -70,7 +70,7 @@ export function UnlockCeremony({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
       >
-        Planning your journey.
+        Unlocking the rest of your journey.
       </motion.h2>
 
       <AnimatePresence mode="wait">

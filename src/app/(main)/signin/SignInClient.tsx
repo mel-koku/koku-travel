@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -36,6 +37,8 @@ function getRedirectUrl(): string {
 export function SignInClient({ content }: SignInClientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const searchParams = useSearchParams();
+  const intent = searchParams.get("intent");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const supabase = createClient();
@@ -130,6 +133,16 @@ export function SignInClient({ content }: SignInClientProps) {
               {content?.signInFormDescription ?? "Save your trips and access them anywhere."}
             </p>
           </ScrollReveal>
+
+          {intent === "unlock" && (
+            <ScrollReveal delay={0.4} distance={10}>
+              <div className="mt-6 rounded-md border border-brand-primary/30 bg-brand-primary/5 px-4 py-3">
+                <p className="text-sm text-foreground">
+                  Sign in to purchase your Trip Pass. We&apos;ll bring you back to your itinerary.
+                </p>
+              </div>
+            </ScrollReveal>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

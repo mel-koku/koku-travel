@@ -11,7 +11,6 @@ import { ItinerarySkeleton } from "@/components/features/itinerary/ItinerarySkel
 import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
-import { STABLE_DEFAULT_USER_ID } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
@@ -27,6 +26,8 @@ import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ItineraryClientProps = {
   content?: PagesContent;
+  launchPricing?: boolean;
+  launchSlotsRemaining?: number;
 };
 
 /** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
@@ -45,10 +46,10 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-function ItineraryPageContent({ content }: { content?: PagesContent }) {
+function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: { content?: PagesContent; launchPricing?: boolean; launchSlotsRemaining?: number }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
-  const { trips, updateTripItinerary, user } = useAppState();
+  const { trips, updateTripItinerary, user, refreshFromSupabase } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
   const [showCeremony, setShowCeremony] = useState(false);
@@ -115,17 +116,18 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
       setGenerationPromise(promise);
       setShowCeremony(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-run when selectedTrip finishes loading from async state
+  }, [selectedTrip?.id, selectedTrip?.unlockedAt]);
 
   // Unlock button handler (passed down to UnlockCard via ItineraryShell)
   const handleStartUnlock = useCallback(async () => {
     if (!selectedTrip) return;
 
-    // Redirect guests to sign in first, then return here
-    if (user.id === STABLE_DEFAULT_USER_ID) {
+    // Redirect guests to sign in first, then return here.
+    // Guest ID gets rotated to a UUID on first trip creation, so use email presence instead.
+    if (!user.email) {
       const returnUrl = `/itinerary?trip=${encodeURIComponent(selectedTrip.id)}`;
-      window.location.href = `/signin?next=${encodeURIComponent(returnUrl)}`;
+      window.location.href = `/signin?next=${encodeURIComponent(returnUrl)}&intent=unlock`;
       return;
     }
 
@@ -355,7 +357,9 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           dayTripSuggestions={dayTripSuggestions.suggestions}
           onUnlockClick={handleStartUnlock}
           tripUnlocked={!!selectedTrip?.unlockedAt}
-          isGuest={user.id === STABLE_DEFAULT_USER_ID}
+          isGuest={!user.email}
+          launchPricing={launchPricing}
+          launchSlotsRemaining={launchSlotsRemaining}
         />
       </ErrorBoundary>
 
@@ -363,10 +367,13 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
         {showCeremony && generationPromise && selectedTrip && (
           <UnlockCeremony
             cities={[...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))] as string[]}
-            onComplete={() => {
+            onComplete={async () => {
+              // Pull fresh trip state (with unlocked_at) from Supabase so the
+              // UI reflects the unlock without a full page reload.
+              await refreshFromSupabase();
               setShowCeremony(false);
-              // Force refresh trip data
-              window.location.href = `/itinerary?trip=${selectedTrip.id}`;
+              // Clean up the ?unlocked=1&session_id=... query params
+              window.history.replaceState(null, "", `/itinerary?trip=${selectedTrip.id}`);
             }}
             generationPromise={generationPromise}
           />
@@ -376,10 +383,10 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   );
 }
 
-export function ItineraryClient({ content }: ItineraryClientProps) {
+export function ItineraryClient({ content, launchPricing, launchSlotsRemaining }: ItineraryClientProps) {
   return (
     <Suspense fallback={<ItinerarySkeleton />}>
-      <ItineraryPageContent content={content} />
+      <ItineraryPageContent content={content} launchPricing={launchPricing} launchSlotsRemaining={launchSlotsRemaining} />
     </Suspense>
   );
 }
