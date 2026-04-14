@@ -13,24 +13,20 @@ type Props = {
 type PageItem = { kind: "page"; page: number } | { kind: "ellipsis"; key: string };
 
 function buildPageItems(current: number, total: number): PageItem[] {
-  if (total <= 10) {
+  if (total <= 7) {
     return Array.from({ length: total }, (_, i) => ({ kind: "page", page: i + 1 }));
   }
 
   const items: PageItem[] = [{ kind: "page", page: 1 }];
-
-  // Build a window around current page (current-1, current, current+1)
-  // But if we're at the start, show (1, 2, 3) instead
-  // And adjust for boundaries
   let windowStart = Math.max(2, current - 1);
   let windowEnd = Math.min(total - 1, current + 1);
 
-  // Expand window if it's small and we have room
-  if (windowEnd - windowStart < 2 && windowStart > 2) {
-    windowStart = Math.max(2, windowStart - 1);
-  }
+  // Keep the inner window at 3 pages wide near boundaries (e.g. current=1 shows 2,3 not just 2)
   if (windowEnd - windowStart < 2 && windowEnd < total - 1) {
-    windowEnd = Math.min(total - 1, windowEnd + 1);
+    windowEnd = Math.min(total - 1, windowStart + 2);
+  }
+  if (windowEnd - windowStart < 2 && windowStart > 2) {
+    windowStart = Math.max(2, windowEnd - 2);
   }
 
   if (windowStart > 2) items.push({ kind: "ellipsis", key: "start" });

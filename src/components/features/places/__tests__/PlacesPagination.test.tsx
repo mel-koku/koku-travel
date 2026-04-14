@@ -64,8 +64,8 @@ describe("PlacesPagination", () => {
   it("calls onPageChange with the clicked page number", async () => {
     const user = userEvent.setup();
     const { onPageChange } = renderPagination({ currentPage: 3, totalPages: 10 });
-    await user.click(screen.getByRole("button", { name: "Go to page 5" }));
-    expect(onPageChange).toHaveBeenCalledWith(5);
+    await user.click(screen.getByRole("button", { name: "Go to page 4" }));
+    expect(onPageChange).toHaveBeenCalledWith(4);
   });
 
   it("Previous and Next move one page", async () => {
