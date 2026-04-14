@@ -43,13 +43,26 @@ export async function GET(
 
       const validatedId = idValidation.data;
 
-      // Fetch location from database with all enrichment fields
+      // Fetch location + harvested photos in parallel.
+      // `location_photos` holds up to 5 Google photo_name refs per location
+      // (harvested during enrichment). Surfacing them here lights up the
+      // detail/modal gallery and the per-photo attribution credit.
       const supabase = await createClient();
-      const { data: locationData, error: dbError } = await supabase
-        .from("locations")
-        .select(LOCATION_DETAIL_COLUMNS)
-        .eq("id", validatedId)
-        .single();
+      const [{ data: locationData, error: dbError }, { data: photoRows }] = await Promise.all([
+        supabase
+          .from("locations")
+          .select(LOCATION_DETAIL_COLUMNS)
+          .eq("id", validatedId)
+          .single(),
+        supabase
+          .from("location_photos")
+          .select("photo_name, width_px, height_px, attribution, attribution_uri")
+          .eq("location_id", validatedId)
+          .eq("source", "google")
+          .eq("moderation", "approved")
+          .order("sort_order", { ascending: true })
+          .limit(5),
+      ]);
 
       if (dbError || !locationData) {
         return notFound("Location not found");
@@ -117,6 +130,31 @@ export async function GET(
         parentMode: (row.parent_mode as Location["parentMode"]) ?? undefined,
       };
 
+      // Gallery photos — prefer harvested location_photos rows (with
+      // attribution), fall back to the primary hero when the table is empty.
+      type PhotoRow = {
+        photo_name: string;
+        width_px: number | null;
+        height_px: number | null;
+        attribution: string | null;
+        attribution_uri: string | null;
+      };
+      const harvestedPhotos = ((photoRows ?? []) as PhotoRow[]).map((p) => ({
+        name: p.photo_name,
+        widthPx: p.width_px ?? undefined,
+        heightPx: p.height_px ?? undefined,
+        proxyUrl: `/api/places/photo?photoName=${encodeURIComponent(p.photo_name)}&maxWidthPx=1600`,
+        attributions: p.attribution
+          ? [{ displayName: p.attribution, uri: p.attribution_uri ?? undefined }]
+          : [],
+      }));
+
+      const galleryPhotos = harvestedPhotos.length > 0
+        ? harvestedPhotos
+        : location.primaryPhotoUrl
+          ? [{ name: "primary", proxyUrl: location.primaryPhotoUrl, attributions: [] }]
+          : [];
+
       // Build LocationDetails from database data (no Google API call)
       // All data was pre-enriched during location ingestion
       const details: LocationDetails = {
@@ -131,9 +169,7 @@ export async function GET(
         googleMapsUri: location.googleMapsUri,
         regularOpeningHours: formatOperatingHoursForDisplay(location.operatingHours ?? null),
         reviews: [],
-        photos: location.primaryPhotoUrl
-          ? [{ name: "primary", proxyUrl: location.primaryPhotoUrl, attributions: [] }]
-          : [],
+        photos: galleryPhotos,
         fetchedAt: new Date().toISOString(),
       };
 
