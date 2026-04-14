@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/context/ToastContext";
+import { fetchWithTimeout } from "@/lib/utils/fetchWithTimeout";
 import type {
   BookingWithPerson,
   BookingSession,
@@ -88,8 +89,8 @@ export function useUserBookings(filters?: {
 
   return useQuery<{ bookings: BookingWithPerson[] }>({
     queryKey: ["user-bookings", filters],
-    queryFn: async () => {
-      const res = await fetch(`/api/bookings?${params}`);
+    queryFn: async ({ signal }) => {
+      const res = await fetchWithTimeout(`/api/bookings?${params}`, { signal });
       if (!res.ok) throw new Error("Failed to fetch bookings");
       return res.json();
     },
@@ -104,9 +105,10 @@ export function usePersonBookedSlots(
   return useQuery<{ bookedSlots: string[] }>({
     queryKey: ["person-booked-slots", personSlug, month],
     enabled: !!personSlug && !!month,
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/people/${personSlug}/availability?month=${month}&includeBooked=true`
+    queryFn: async ({ signal }) => {
+      const res = await fetchWithTimeout(
+        `/api/people/${personSlug}/availability?month=${month}&includeBooked=true`,
+        { signal }
       );
       if (!res.ok) throw new Error("Failed to fetch booked slots");
       return res.json();
@@ -123,9 +125,10 @@ export function useSlotAvailability(
   return useQuery<{ available: boolean; reason?: string }>({
     queryKey: ["slot-availability", personId, date, session],
     enabled: !!personId && !!date && !!session,
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/bookings/availability?personId=${personId}&date=${date}&session=${session}`
+    queryFn: async ({ signal }) => {
+      const res = await fetchWithTimeout(
+        `/api/bookings/availability?personId=${personId}&date=${date}&session=${session}`,
+        { signal }
       );
       if (!res.ok) throw new Error("Failed to check availability");
       return res.json();
@@ -143,12 +146,12 @@ export function useBookingPrice(
   return useQuery<{ price: PriceBreakdown | null }>({
     queryKey: ["booking-price", personId, groupSize, experienceSlug, date],
     enabled: !!personId,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const params = new URLSearchParams({ personId: personId! });
       params.set("groupSize", String(groupSize));
       if (experienceSlug) params.set("experienceSlug", experienceSlug);
       if (date) params.set("date", date);
-      const res = await fetch(`/api/bookings/pricing?${params}`);
+      const res = await fetchWithTimeout(`/api/bookings/pricing?${params}`, { signal });
       if (!res.ok) throw new Error("Failed to fetch pricing");
       return res.json();
     },

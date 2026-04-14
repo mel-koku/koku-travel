@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { Location, SubExperience, LocationRelationship } from "@/types/location";
+import { fetchWithTimeout } from "@/lib/utils/fetchWithTimeout";
 
 export type HierarchyContext = {
   children: Location[];
@@ -21,8 +22,8 @@ export const locationHierarchyKeys = {
 export function useLocationHierarchy(locationId: string | undefined) {
   return useQuery<HierarchyContext>({
     queryKey: locationHierarchyKeys.detail(locationId ?? ""),
-    queryFn: async () => {
-      const res = await fetch(`/api/locations/${locationId}/hierarchy`);
+    queryFn: async ({ signal }) => {
+      const res = await fetchWithTimeout(`/api/locations/${locationId}/hierarchy`, { signal });
       if (!res.ok) {
         throw new Error(`Failed to fetch hierarchy: ${res.status}`);
       }

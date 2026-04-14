@@ -6,6 +6,7 @@ import {
   LOCATION_STALE_TIME,
   LOCATION_GC_TIME,
 } from "@/lib/constants/time";
+import { fetchWithTimeout } from "@/lib/utils/fetchWithTimeout";
 
 /**
  * Query key factory for experiences
@@ -21,8 +22,8 @@ export const experiencesKeys = {
 export function useAllExperiences() {
   const { data, status, error } = useQuery({
     queryKey: [...experiencesKeys.all, "all-single"],
-    queryFn: async () => {
-      const res = await fetch("/api/experiences/all");
+    queryFn: async ({ signal }) => {
+      const res = await fetchWithTimeout("/api/experiences/all", { signal });
       if (!res.ok) throw new Error("Failed to load experiences");
       return res.json() as Promise<{ data: Location[]; total: number }>;
     },
