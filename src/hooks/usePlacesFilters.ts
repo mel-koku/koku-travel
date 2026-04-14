@@ -14,7 +14,7 @@ import {
   calculatePopularityScore,
   parseDuration,
   normalizePrefecture,
-  PAGE_SIZE,
+  PLACES_PAGE_SIZE,
 } from "@/lib/filters/filterUtils";
 
 // ── Constants ──────────────────────────────────────────────
@@ -341,13 +341,23 @@ export function usePlacesFilters(
     }
   }, [filteredLocations, selectedSort]);
 
-  // Pagination
-  const visibleLocations = useMemo(
-    () => sortedLocations.slice(0, page * PAGE_SIZE),
-    [sortedLocations, page]
+  // Pagination (windowed — one page at a time)
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(sortedLocations.length / PLACES_PAGE_SIZE)),
+    [sortedLocations.length]
   );
 
-  const hasMore = visibleLocations.length < sortedLocations.length;
+  // Clamp page if totalPages shrank (e.g., filter narrowed results below current page)
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const visibleLocations = useMemo(() => {
+    const start = (page - 1) * PLACES_PAGE_SIZE;
+    return sortedLocations.slice(start, start + PLACES_PAGE_SIZE);
+  }, [sortedLocations, page]);
 
   // Active filters for chips
   const activeFilters = useMemo<ActiveFilter[]>(() => {
@@ -538,7 +548,7 @@ export function usePlacesFilters(
     // Sort
     selectedSort, setSelectedSort,
     // Pagination
-    page, setPage, hasMore, filterVersion,
+    page, setPage, totalPages, filterVersion,
     // Computed
     filteredLocations,
     sortedLocations,
