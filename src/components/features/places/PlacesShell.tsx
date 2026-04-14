@@ -385,18 +385,36 @@ export function PlacesShell({ content }: PlacesShellProps) {
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          {/*
+           * Match PAGE_SIZE (24) AND the real card's rendered height so the
+           * grid doesn't change size when cards swap in. Measured real cards
+           * at ~413px vs a previous 353px skeleton → everything below the
+           * grid (infinite-scroll sentinel, footer) shifted when cards
+           * landed, producing ~0.15 CLS on /places.
+           *
+           * Content block mirrors the real card: name, city/duration, 2-line
+           * summary, category+badge row.
+           */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-            {Array.from({ length: 12 }).map((_, index) => (
+            {Array.from({ length: 24 }).map((_, index) => (
               <div key={index} className="rounded-lg bg-surface animate-pulse">
                 <div className="aspect-[4/3]" />
                 <div className="p-3.5 space-y-2">
                   <div className="h-4 w-3/4 rounded bg-border" />
                   <div className="h-3 w-1/2 rounded bg-border" />
                   <div className="h-3 w-full rounded bg-border" />
+                  <div className="h-3 w-5/6 rounded bg-border" />
+                  <div className="flex gap-2 pt-1">
+                    <div className="h-5 w-16 rounded-md bg-border" />
+                    <div className="h-5 w-12 rounded-md bg-border" />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+          {/* Reserve the infinite-scroll sentinel's footprint so it doesn't
+              pop into existence (shifting layout) when cards finish loading. */}
+          <div className="py-8" aria-hidden="true" />
         </div>
       ) : (
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
