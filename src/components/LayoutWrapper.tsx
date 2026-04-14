@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "next-themes";
+import { MotionConfig } from "framer-motion";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -39,6 +40,14 @@ export function LayoutWrapper({
 
   return (
     <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
+      {/*
+       * reducedMotion="user" tells framer-motion to respect the OS-level
+       * prefers-reduced-motion setting across every motion.* component
+       * without each one needing to wire up useReducedMotion manually.
+       * LenisProvider already checks the same media query and disables
+       * smooth scroll accordingly.
+       */}
+      <MotionConfig reducedMotion="user">
       <SharedProviders>
         <LenisProvider>
           <ScrollProgressBar />
@@ -60,6 +69,7 @@ export function LayoutWrapper({
           <AskYukuButton />
         </LenisProvider>
       </SharedProviders>
+      </MotionConfig>
     </ThemeProvider>
   );
 }
