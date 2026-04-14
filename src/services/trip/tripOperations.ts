@@ -194,6 +194,9 @@ export function sanitizeTrips(raw: unknown): StoredTrip[] {
       if (record.dailyBriefings && typeof record.dailyBriefings === "object") {
         trip.dailyBriefings = record.dailyBriefings as StoredTrip["dailyBriefings"];
       }
+      if (record.culturalBriefing && typeof record.culturalBriefing === "object") {
+        trip.culturalBriefing = record.culturalBriefing as StoredTrip["culturalBriefing"];
+      }
       return trip;
     })
     .filter((entry): entry is StoredTrip => Boolean(entry));

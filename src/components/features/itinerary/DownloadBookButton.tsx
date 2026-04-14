@@ -20,7 +20,7 @@ export function DownloadBookButton({ tripId }: DownloadBookButtonProps) {
       href={`/print/trip/${tripId}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas"
+      className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas"
       title="Open as printable book"
     >
       Book

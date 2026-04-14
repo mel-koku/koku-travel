@@ -68,7 +68,7 @@ export function ItineraryDiscoverPanel({
               key={chip.id}
               type="button"
               onClick={() => onCategoryChange(chip.id as DiscoverCategoryId)}
-              className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 category === chip.id
                   ? "bg-brand-primary text-white"
                   : "bg-surface text-stone hover:text-foreground"
@@ -97,13 +97,13 @@ export function ItineraryDiscoverPanel({
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
               placeholder="Search nearby..."
-              className="h-9 w-full rounded-lg border border-border bg-surface pl-8 pr-3 text-sm text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none"
+              className="h-11 w-full rounded-lg border border-border bg-surface pl-8 pr-3 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none sm:text-sm"
             />
           </div>
           <button
             type="button"
             onClick={() => onOpenNowChange(!openNow)}
-            className={`flex h-9 shrink-0 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-colors ${
+            className={`inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium transition-colors ${
               openNow
                 ? "border-sage bg-sage/10 text-sage"
                 : "border-border text-stone hover:text-foreground"
@@ -121,7 +121,7 @@ export function ItineraryDiscoverPanel({
               type="button"
               onClick={onRequestGeolocation}
               disabled={geoLoading}
-              className="flex w-full items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
+              className="flex min-h-11 w-full items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs text-brand-primary transition-colors hover:bg-brand-primary/15"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="8" cy="8" r="3" />
@@ -226,7 +226,7 @@ export function ItineraryDiscoverPanel({
                             e.stopPropagation();
                             onAddToDay(loc);
                           }}
-                          className="rounded-lg bg-brand-primary px-2.5 py-1.5 text-[11px] font-medium text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98]"
+                          className="inline-flex min-h-11 items-center rounded-lg bg-brand-primary px-2.5 text-[11px] font-medium text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98]"
                         >
                           + {dayLabel}
                         </button>

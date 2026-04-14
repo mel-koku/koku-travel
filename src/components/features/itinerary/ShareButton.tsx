@@ -151,7 +151,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
         type="button"
         onClick={share?.isActive ? () => setMenuOpen((prev) => !prev) : handleShare}
         disabled={isLoading}
-        className={`flex h-[42px] items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition shrink-0 ${
+        className={`flex min-h-11 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition shrink-0 ${
           share?.isActive
             ? "border-sage bg-sage/10 text-sage"
             : "border-border text-stone hover:border-sage hover:text-foreground"

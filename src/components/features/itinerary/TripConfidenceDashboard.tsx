@@ -362,7 +362,7 @@ function RouteSummary({
                 onSelectDay?.(seg.startIndex);
                 onClose();
               }}
-              className="flex items-baseline gap-1.5 rounded-lg border border-border bg-surface/40 px-3 py-2 text-left transition hover:bg-surface/70 hover:border-brand-primary/30"
+              className="flex min-h-11 items-baseline gap-1.5 rounded-lg border border-border bg-surface/40 px-3 py-2 text-left transition hover:bg-surface/70 hover:border-brand-primary/30"
             >
               <span className="text-sm font-medium text-foreground">{seg.city}</span>
               <span className="font-mono text-[10px] text-stone">
@@ -409,7 +409,7 @@ function ChecklistRow({
                   href={`/places/${item.locationId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-brand-primary hover:underline"
+                  className="inline-flex min-h-11 items-center font-medium text-brand-primary hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
                   View contact details
@@ -465,7 +465,7 @@ function TravelEssentialsAccordion({ tips }: { tips: TripLevelTip[] }) {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+          className="flex min-h-11 w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
         >
           <span className="flex-1 min-w-0 text-sm text-foreground">
             {tips.length} tips for your trip
@@ -589,7 +589,7 @@ function TravelTipsSection({
                 <button
                   type="button"
                   onClick={() => setExpandedDay(isExpanded ? null : i)}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+                  className="flex min-h-11 w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
                 >
                   <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
                     {i + 1}
@@ -622,7 +622,7 @@ function TravelTipsSection({
               <button
                 type="button"
                 onClick={() => setExpandedDay(isExpanded ? null : i)}
-                className="flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
+                className="flex min-h-11 w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-surface/50 transition"
               >
                 <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
                   {i + 1}
