@@ -45,6 +45,13 @@ vi.mock("@/lib/api/withApiHandler", () => ({
         user: { id: "22222222-2222-2222-2222-222222222222" },
       }),
 }));
+vi.mock("@/lib/api/costLimit", () => ({
+  reserveCost: vi.fn(() =>
+    Promise.resolve({ allowed: true, reservationId: "test-reservation", reservedCents: 0 }),
+  ),
+  reconcileCost: vi.fn(() => Promise.resolve()),
+  costLimitResponse: vi.fn(),
+}));
 
 function buildRequest() {
   return new NextRequest("https://example.com/api/billing/complete-generation", {

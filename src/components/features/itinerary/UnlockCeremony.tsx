@@ -13,6 +13,7 @@ type UnlockCeremonyProps = {
   onComplete: () => void;
   generationPromise: Promise<unknown> | null;
   retryable?: boolean;
+  costLimited?: boolean;
   onRetry?: () => void;
 };
 
@@ -30,6 +31,7 @@ export function UnlockCeremony({
   onComplete,
   generationPromise,
   retryable,
+  costLimited,
   onRetry,
 }: UnlockCeremonyProps) {
   const [stepIndex, setStepIndex] = useState(0);
@@ -113,7 +115,14 @@ export function UnlockCeremony({
         />
       </div>
 
-      {retryable && onRetry && (
+      {costLimited && (
+        <div className="mt-8 text-center">
+          <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
+            Your trip is unlocked! Your written guide hit today&apos;s generation limit — it&apos;ll be ready tomorrow.
+          </p>
+        </div>
+      )}
+      {retryable && !costLimited && onRetry && (
         <div className="mt-8 text-center">
           <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
             Your trip is unlocked. We&apos;re still assembling your written guide.

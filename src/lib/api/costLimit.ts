@@ -249,6 +249,52 @@ export async function reserveCost(opts: ReserveOpts): Promise<ReserveResult> {
 
   const reservationId = randomUUID();
   const client = getRedis();
+
+  // Fire-and-forget 75% threshold warnings, deduped per key per window via Redis.
+  // Uses logger.error so they surface in Sentry.
+  void (async () => {
+    if (!client) return;
+    try {
+      if (dailyAfter >= USER_DAILY_LIMIT_TC * 0.75) {
+        const warnKey = `cost:warn:user:${dailyKey(opts.key, now)}`;
+        const alreadyWarned = await client.get(warnKey);
+        if (!alreadyWarned) {
+          await client.set(warnKey, "1");
+          await client.expire(warnKey, DAILY_TTL_SECONDS);
+          logger.error(
+            "costLimit: user daily budget at 75%+",
+            new Error("cost_budget_warning"),
+            {
+              scope: "user",
+              key: opts.key,
+              usedCents: tcToCents(dailyAfter),
+              limitCents: tcToCents(USER_DAILY_LIMIT_TC),
+            },
+          );
+        }
+      }
+      if (hourlyAfter >= GLOBAL_HOURLY_LIMIT_TC * 0.75) {
+        const warnKey = `cost:warn:global:${hourlyKey(now)}`;
+        const alreadyWarned = await client.get(warnKey);
+        if (!alreadyWarned) {
+          await client.set(warnKey, "1");
+          await client.expire(warnKey, HOURLY_TTL_SECONDS);
+          logger.error(
+            "costLimit: global hourly budget at 75%+",
+            new Error("cost_budget_warning"),
+            {
+              scope: "global",
+              usedCents: tcToCents(hourlyAfter),
+              limitCents: tcToCents(GLOBAL_HOURLY_LIMIT_TC),
+            },
+          );
+        }
+      }
+    } catch {
+      /* best effort — don't block reservation on warn failure */
+    }
+  })();
+
   if (client) {
     try {
       const record: ReservationRecord = {

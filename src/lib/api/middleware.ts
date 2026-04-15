@@ -19,7 +19,7 @@ const CORS_CONFIG = {
   /** Allowed request headers */
   allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
   /** Headers exposed to the client */
-  exposedHeaders: ["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+  exposedHeaders: ["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "X-Cost-Remaining", "X-Cost-Reset", "Retry-After"],
   /** Max age for preflight cache (in seconds) */
   maxAge: 86400, // 24 hours
 } as const;
