@@ -113,7 +113,7 @@ async function filterBySeasonalAvailability(
       availability,
       tripStart,
       tripEnd,
-      location.valid_months,
+      location.validMonths,
     );
   });
 
