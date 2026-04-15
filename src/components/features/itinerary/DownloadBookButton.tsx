@@ -21,20 +21,27 @@ const CLIENT_TIMEOUT_MS = 20_000;
 export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBookButtonProps) {
   const [state, setState] = useState<DownloadState>("idle");
   const resetTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isUnmountedRef = useRef(false);
   const { showToast } = useToast();
 
   useEffect(() => {
     return () => {
+      isUnmountedRef.current = true;
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      abortControllerRef.current?.abort();
     };
   }, []);
 
   const fallbackToPrintTab = useCallback(
     (message: string) => {
+      if (isUnmountedRef.current) return;
       setState("fallback");
       showToast(message, { variant: "info", duration: 4000 });
       window.open(`/print/trip/${tripId}`, "_blank", "noopener,noreferrer");
-      resetTimerRef.current = setTimeout(() => setState("idle"), 1500);
+      resetTimerRef.current = setTimeout(() => {
+        if (!isUnmountedRef.current) setState("idle");
+      }, 1500);
     },
     [tripId, showToast],
   );
@@ -47,6 +54,7 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
 
     setState("generating");
     const controller = new AbortController();
+    abortControllerRef.current = controller;
     const timeoutId = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
 
     try {
@@ -60,23 +68,29 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
       }
 
       const blob = await res.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const filenameMatch = res.headers
-        .get("Content-Disposition")
-        ?.match(/filename="([^"]+)"/);
-      const filename = filenameMatch?.[1] ?? `yuku-trip-${tripId}.pdf`;
+      if (isUnmountedRef.current) return;
 
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = filename;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(objectUrl);
+      const objectUrl = URL.createObjectURL(blob);
+      try {
+        const filenameMatch = res.headers
+          .get("Content-Disposition")
+          ?.match(/filename="([^"]+)"/);
+        const filename = filenameMatch?.[1] ?? `yuku-trip-${tripId}.pdf`;
+
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
 
       setState("idle");
       showToast("Your book is downloading", { variant: "success", duration: 3000 });
     } catch (err) {
+      if (isUnmountedRef.current) return;
       const aborted = err instanceof Error && err.name === "AbortError";
       fallbackToPrintTab(
         aborted
@@ -85,6 +99,9 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
       );
     } finally {
       clearTimeout(timeoutId);
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
     }
   }, [tripId, fallbackToPrintTab, showToast]);
 
