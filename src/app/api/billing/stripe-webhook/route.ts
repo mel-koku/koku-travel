@@ -39,6 +39,30 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      // Idempotency: insert event.id; if it already exists, this delivery is a retry.
+      const { data: insertedEvent, error: insertError } = await supabase
+        .from("billing_webhook_events")
+        .insert({ event_id: event.id, event_type: event.type })
+        .select("event_id")
+        .maybeSingle();
+
+      if (insertError) {
+        if (insertError.code === "23505") {
+          logger.info("Webhook event already processed, skipping", { eventId: event.id });
+          break;
+        }
+        logger.error(
+          "Failed to record webhook event",
+          insertError instanceof Error ? insertError : new Error(JSON.stringify(insertError)),
+          { eventId: event.id },
+        );
+        return NextResponse.json({ error: "Internal error" }, { status: 500 });
+      }
+      if (!insertedEvent) {
+        logger.info("Webhook event already processed, skipping", { eventId: event.id });
+        break;
+      }
+
       await supabase
         .from("trips")
         .update({
@@ -71,15 +95,40 @@ export async function POST(request: NextRequest) {
       if (session.customer_details?.email) {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
         const cities = (session.metadata?.cities ?? "").split(", ");
-        void sendUnlockConfirmationEmail({
-          to: session.customer_details.email,
-          tripName: `${cities.join(", ")} Trip`,
-          tripUrl: `${siteUrl}/itinerary?trip=${tripId}`,
-          amountFormatted: `$${((session.amount_total ?? 0) / 100).toFixed(2)}`,
-          tier: tier ?? "standard",
-          cities,
-          totalDays: parseInt(session.metadata?.tripLengthDays ?? "1", 10),
-        });
+        try {
+          await sendUnlockConfirmationEmail({
+            to: session.customer_details.email,
+            tripName: `${cities.join(", ")} Trip`,
+            tripUrl: `${siteUrl}/itinerary?trip=${tripId}`,
+            amountFormatted: `$${((session.amount_total ?? 0) / 100).toFixed(2)}`,
+            tier: tier ?? "standard",
+            cities,
+            totalDays: parseInt(session.metadata?.tripLengthDays ?? "1", 10),
+          });
+          await supabase
+            .from("trips")
+            .update({
+              unlock_email_sent_at: new Date().toISOString(),
+              unlock_email_error: null,
+            })
+            .eq("id", tripId)
+            .eq("user_id", userId);
+        } catch (emailError) {
+          const message = emailError instanceof Error ? emailError.message : String(emailError);
+          logger.error(
+            "Failed to send unlock confirmation email",
+            emailError instanceof Error ? emailError : new Error(message),
+            { tripId, userId, sessionId: session.id },
+          );
+          await supabase
+            .from("trips")
+            .update({
+              unlock_email_sent_at: null,
+              unlock_email_error: message.slice(0, 500),
+            })
+            .eq("id", tripId)
+            .eq("user_id", userId);
+        }
       }
 
       break;
