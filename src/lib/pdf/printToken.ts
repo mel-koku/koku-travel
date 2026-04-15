@@ -36,7 +36,7 @@ export function signPrintToken(tripId: string, userId: string): string {
 export function verifyPrintToken(token: string): Payload | null {
   const parts = token.split(".");
   if (parts.length !== 2) return null;
-  const [body, sig] = parts;
+  const [body, sig] = parts as [string, string];
 
   const expectedSig = b64url(
     crypto.createHmac("sha256", getSecret()).update(body).digest()
