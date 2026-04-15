@@ -8,8 +8,8 @@ export const RATE_LIMITS = {
   PLACES: { maxRequests: 60, windowMs: 60_000 },
   ITINERARY_PLAN: { maxRequests: 20, windowMs: 60_000 },
   /** Stricter limit for unauthenticated itinerary generation (expensive AI) */
-  ITINERARY_PLAN_UNAUTH: { maxRequests: 4, windowMs: 60_000, keySuffix: "unauth" },
-  ITINERARY_REFINE: { maxRequests: 30, windowMs: 60_000 },
+  ITINERARY_PLAN_UNAUTH: { maxRequests: 2, windowMs: 60_000, keySuffix: "unauth" },
+  ITINERARY_REFINE: { maxRequests: 10, windowMs: 60_000 },
   ITINERARY_SCHEDULE: { maxRequests: 30, windowMs: 60_000 },
   ITINERARY_AVAILABILITY: { maxRequests: 60, windowMs: 60_000 },
   SMART_PROMPTS: { maxRequests: 30, windowMs: 60_000 },
