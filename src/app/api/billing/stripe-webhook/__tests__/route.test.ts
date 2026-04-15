@@ -33,6 +33,7 @@ const GOOD_UUID_2 = "660e8400-e29b-41d4-a716-446655440001";
 describe("stripe-webhook metadata validation", () => {
   let supabaseMock: {
     from: Mock;
+    insert: Mock;
     update: Mock;
     eq: Mock;
     upsert: Mock;
@@ -43,6 +44,7 @@ describe("stripe-webhook metadata validation", () => {
     vi.clearAllMocks();
     supabaseMock = {
       from: vi.fn(),
+      insert: vi.fn(),
       update: vi.fn(),
       eq: vi.fn(),
       upsert: vi.fn(),
@@ -55,6 +57,12 @@ describe("stripe-webhook metadata validation", () => {
         resolve({ data: null, error: null }),
     };
     supabaseMock.from.mockReturnValue(supabaseMock);
+    supabaseMock.insert.mockReturnValue({
+      select: () => ({
+        maybeSingle: () =>
+          Promise.resolve({ data: { event_id: "evt_test" }, error: null }),
+      }),
+    });
     supabaseMock.update.mockReturnValue(chainable);
     supabaseMock.eq = chainable.eq as Mock;
     supabaseMock.upsert.mockReturnValue(Promise.resolve({ data: null, error: null }));

@@ -34,35 +34,40 @@ export async function createCheckoutSession(params: CreateCheckoutParams) {
     .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
     .join(", ");
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    customer: params.stripeCustomerId || undefined,
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: priceCents,
-          product_data: {
-            name: "Yuku Trip Pass",
-            description: `Your ${params.tripLengthDays}-day journey across ${citiesLabel}. ${params.tripDates}.`,
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      customer: params.stripeCustomerId || undefined,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: priceCents,
+            product_data: {
+              name: "Yuku Trip Pass",
+              description: `Your ${params.tripLengthDays}-day journey across ${citiesLabel}. ${params.tripDates}.`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      metadata: {
+        tripId: params.tripId,
+        userId: params.userId,
+        tripLengthDays: String(params.tripLengthDays),
+        tier: params.tier,
+        launchPricing: String(params.launchPricing ?? false),
+        cities: citiesLabel.slice(0, 100),
       },
-    ],
-    metadata: {
-      tripId: params.tripId,
-      userId: params.userId,
-      tripLengthDays: String(params.tripLengthDays),
-      tier: params.tier,
-      launchPricing: String(params.launchPricing ?? false),
-      cities: citiesLabel.slice(0, 100),
+      client_reference_id: `unlock-${params.tripId}-${params.userId}`,
+      success_url: params.successUrl + "&session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: params.cancelUrl,
+      automatic_tax: { enabled: true },
     },
-    client_reference_id: `unlock-${params.tripId}-${params.userId}`,
-    success_url: params.successUrl + "&session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: params.cancelUrl,
-    automatic_tax: { enabled: true },
-  });
+    {
+      idempotencyKey: `unlock-${params.tripId}-${params.userId}`,
+    },
+  );
 
   return { sessionId: session.id, url: session.url };
 }

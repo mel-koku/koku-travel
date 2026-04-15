@@ -1,18 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+const { mockCreate, mockRetrieve } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
+  mockRetrieve: vi.fn(),
+}));
+
 vi.mock("stripe", () => {
   const mockCheckout = {
     sessions: {
-      create: vi.fn().mockResolvedValue({
-        id: "cs_test_123",
-        url: "https://checkout.stripe.com/test",
-      }),
-      retrieve: vi.fn().mockResolvedValue({
-        id: "cs_test_123",
-        payment_status: "paid",
-        metadata: { tripId: "trip-1", userId: "user-1", tier: "standard" },
-        amount_total: 2900,
-      }),
+      create: mockCreate,
+      retrieve: mockRetrieve,
     },
   };
   const mockCustomers = {
@@ -31,6 +28,18 @@ describe("billing/stripe", () => {
   beforeEach(() => {
     vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake");
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "whsec_test_fake");
+    mockCreate.mockReset();
+    mockCreate.mockResolvedValue({
+      id: "cs_test_123",
+      url: "https://checkout.stripe.com/test",
+    });
+    mockRetrieve.mockReset();
+    mockRetrieve.mockResolvedValue({
+      id: "cs_test_123",
+      payment_status: "paid",
+      metadata: { tripId: "trip-1", userId: "user-1", tier: "standard" },
+      amount_total: 2900,
+    });
   });
 
   it("createCheckoutSession returns session URL and ID", async () => {
@@ -48,6 +57,24 @@ describe("billing/stripe", () => {
     });
     expect(result.url).toBeTruthy();
     expect(result.sessionId).toBe("cs_test_123");
+  });
+
+  it("createCheckoutSession passes idempotencyKey scoped to tripId+userId", async () => {
+    const { createCheckoutSession } = await import("@/lib/billing/stripe");
+    await createCheckoutSession({
+      tripId: "trip-42",
+      userId: "user-99",
+      tier: "standard",
+      tripLengthDays: 5,
+      cities: ["tokyo"],
+      tripDates: "Apr 2 - Apr 6",
+      successUrl: "http://localhost:3000/x",
+      cancelUrl: "http://localhost:3000/y",
+    });
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.any(Object),
+      { idempotencyKey: "unlock-trip-42-user-99" },
+    );
   });
 
   it("verifySession returns payment status and metadata", async () => {
