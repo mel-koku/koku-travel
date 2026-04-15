@@ -166,6 +166,11 @@ export function DatePicker({
                 hidden: "invisible",
               }}
               components={{
+                MonthCaption: ({ calendarMonth, displayIndex, ...props }) => (
+                  <div {...props} aria-live="polite" aria-atomic="true">
+                    {format(calendarMonth.date, "MMMM yyyy")}
+                  </div>
+                ),
                 Chevron: ({ orientation }) =>
                   orientation === "left" ? (
                     <ChevronLeft className="h-4 w-4" />

@@ -205,18 +205,55 @@ export function DiscoverMap({
         },
       });
 
-      // Locations source (no clustering for small datasets)
+      // Locations source with clustering for dense marker areas
       map.addSource(SOURCE_ID, {
         type: "geojson",
         data: featureCollectionRef.current,
-        cluster: false,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
       });
 
-      // Location points
+      // Cluster circles
+      map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: SOURCE_ID,
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": [
+            "step", ["get", "point_count"],
+            "#E5E0D8", 10, "#C9C2B8", 50, "#6B6058",
+          ],
+          "circle-radius": [
+            "step", ["get", "point_count"],
+            18, 10, 24, 50, 32,
+          ],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      // Cluster count labels
+      map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: SOURCE_ID,
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-font": ["DIN Pro Medium", "Arial Unicode MS Regular"],
+          "text-size": 13,
+        },
+        paint: { "text-color": "#2C2825" },
+      });
+
+      // Location points (unclustered only)
       map.addLayer({
         id: UNCLUSTERED_LAYER,
         type: "circle",
         source: SOURCE_ID,
+        filter: ["!", ["has", "point_count"]],
         paint: {
           "circle-color": ["get", "color"],
           "circle-radius": [
@@ -231,11 +268,12 @@ export function DiscoverMap({
         },
       });
 
-      // Location name labels
+      // Location name labels (unclustered only)
       map.addLayer({
         id: UNCLUSTERED_LABEL_LAYER,
         type: "symbol",
         source: SOURCE_ID,
+        filter: ["!", ["has", "point_count"]],
         minzoom: 10,
         layout: {
           "text-field": ["get", "name"],
@@ -254,6 +292,31 @@ export function DiscoverMap({
       });
 
       setMapReady(true);
+    });
+
+    // Click cluster to zoom in
+    map.on("click", "clusters", (e) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
+      const feature = features[0];
+      if (!feature?.properties) return;
+      const clusterId = feature.properties.cluster_id as number | undefined;
+      if (clusterId == null) return;
+      const geometry = feature.geometry;
+      if (!geometry || geometry.type !== "Point") return;
+      const clusterSource = map.getSource(SOURCE_ID) as InstanceType<MapboxModule["GeoJSONSource"]>;
+      clusterSource.getClusterExpansionZoom(clusterId, (err: Error | null | undefined, zoom: number | null | undefined) => {
+        if (err) return;
+        map.easeTo({
+          center: geometry.coordinates as [number, number],
+          zoom: zoom ?? 15,
+        });
+      });
+    });
+    map.on("mouseenter", "clusters", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", "clusters", () => {
+      map.getCanvas().style.cursor = "";
     });
 
     // Click location point

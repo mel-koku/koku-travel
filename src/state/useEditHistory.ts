@@ -21,13 +21,15 @@ export type EditHistoryInternalState = {
   trips: StoredTrip[];
   editHistory: Record<string, ItineraryEdit[]>;
   currentHistoryIndex: Record<string, number>;
+  /** Epoch ms of most recent local mutation per trip. Internal bookkeeping. */
+  localTripUpdatedAt: Record<string, number>;
 };
 
 type EditHistoryDeps = {
   setState: (updater: (s: EditHistoryInternalState) => EditHistoryInternalState) => void;
   supabase: ReturnType<typeof import("@/lib/supabase/client").createClient> | null;
   tripSyncTimeouts: React.MutableRefObject<Map<string, NodeJS.Timeout>>;
-  syncTripSave: (supabase: NonNullable<EditHistoryDeps["supabase"]>, trip: StoredTrip) => Promise<unknown>;
+  syncTripSave: (supabase: NonNullable<EditHistoryDeps["supabase"]>, trip: StoredTrip) => Promise<{ success: boolean }>;
   tripSyncDebounceMs: number;
 };
 
@@ -89,7 +91,14 @@ export function useEditHistory({
             // Read from ref to get the most recent trips, not a stale closure snapshot
             const currentTrip = latestTripsRef.current.find((t) => t.id === tripId);
             if (currentTrip) {
-              void syncTripSave(supabase, currentTrip);
+              syncTripSave(supabase, currentTrip).then((result) => {
+                if (result.success) {
+                  setState((prev) => {
+                    const { [tripId]: _, ...rest } = prev.localTripUpdatedAt;
+                    return { ...prev, localTripUpdatedAt: rest };
+                  });
+                }
+              });
             }
             tripSyncTimeouts.current.delete(tripId);
           }, tripSyncDebounceMs);
@@ -102,6 +111,7 @@ export function useEditHistory({
           trips: updatedTrips,
           editHistory: newHistoryState.editHistory,
           currentHistoryIndex: newHistoryState.currentHistoryIndex,
+          localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() },
         };
       });
     },
@@ -188,6 +198,7 @@ export function useEditHistory({
           trips: result.trips,
           editHistory: result.historyState.editHistory,
           currentHistoryIndex: result.historyState.currentHistoryIndex,
+          localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() },
         };
       });
     },
@@ -209,6 +220,7 @@ export function useEditHistory({
           trips: result.trips,
           editHistory: result.historyState.editHistory,
           currentHistoryIndex: result.historyState.currentHistoryIndex,
+          localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() },
         };
       });
     },

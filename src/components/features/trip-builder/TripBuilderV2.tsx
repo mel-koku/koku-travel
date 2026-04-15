@@ -257,11 +257,12 @@ function StepDots({
                   canClick && !isActive && "cursor-pointer"
                 )}
                 aria-label={`Go to ${STEP_LABELS[step]}`}
+                aria-describedby={canClick ? `step-tooltip-${step}` : undefined}
               />
 
               {/* Tooltip — shows on hover */}
               {canClick && (
-                <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+                <div id={`step-tooltip-${step}`} role="tooltip" className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
                   <span className="rounded-md bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-[var(--shadow-card)]">
                     {STEP_LABELS[step]}
                   </span>
@@ -357,7 +358,7 @@ function StepShell({
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-1.5" onClick={handleDisabledClick} onMouseEnter={showDisabledHint}>
+          <div className="flex flex-col items-end gap-1.5 min-h-[2.5rem]" onClick={handleDisabledClick} onMouseEnter={showDisabledHint}>
             {showHint && disabledHint && (
               <p id="step-disabled-hint" className="rounded-md bg-nasu-tint px-3 py-1.5 text-xs font-medium text-error animate-in fade-in slide-in-from-bottom-1 duration-200" role="alert">
                 {disabledHint}
@@ -383,11 +384,13 @@ function StepShell({
             onStepClick={onStepClick}
           />
         </div>
-        {showHint && disabledHint && (
-          <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
-            {disabledHint}
-          </p>
-        )}
+        <div className="min-h-[1.25rem]">
+          {showHint && disabledHint && (
+            <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
+              {disabledHint}
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <button
             type="button"

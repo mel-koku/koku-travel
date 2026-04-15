@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type DownloadBookButtonProps = {
   tripId: string;
@@ -17,8 +17,20 @@ type DownloadBookButtonProps = {
  * side Playwright API that returns a PDF stream directly.
  */
 export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBookButtonProps) {
-  const className =
-    "inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas";
+  const [isOpening, setIsOpening] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  const handleClick = useCallback(() => {
+    window.open(`/print/trip/${tripId}`, "_blank", "noopener,noreferrer");
+    setIsOpening(true);
+    timerRef.current = setTimeout(() => setIsOpening(false), 2000);
+  }, [tripId]);
+
+  const className = "inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas";
 
   if (locked && onLockedClick) {
     return (
@@ -29,14 +41,8 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
   }
 
   return (
-    <Link
-      href={`/print/trip/${tripId}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={className}
-      title="Open as printable book"
-    >
-      Book
-    </Link>
+    <button type="button" onClick={handleClick} disabled={isOpening} className={className} title="Open as printable book">
+      {isOpening ? "Opening\u2026" : "Book"}
+    </button>
   );
 }

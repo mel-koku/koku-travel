@@ -94,6 +94,7 @@ export function DragHandle({
       <button
         type="button"
         aria-label={label}
+        aria-roledescription="sortable"
         data-dragging={isDragging}
         className="mt-0.5 flex items-center justify-center rounded-md py-1 px-0.5 text-stone/30 transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.95] active:scale-[0.97]"
         {...dragAttributeProps}
@@ -123,6 +124,7 @@ export function DragHandle({
     <button
       type="button"
       aria-label={label}
+      aria-roledescription="sortable"
       data-dragging={isDragging}
       className={
         isPlace

@@ -63,6 +63,9 @@ export function AskYukuChat({ onClose, context = "default", tripData }: AskYukuC
     <div className="flex min-h-0 h-full flex-col">
       <div
         ref={scrollRef}
+        role="log"
+        aria-live="polite"
+        aria-label="Chat messages"
         className="min-h-0 flex-1 overflow-y-auto px-3 py-4"
         data-lenis-prevent
       >

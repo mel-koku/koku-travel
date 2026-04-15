@@ -18,7 +18,9 @@ export const maxDuration = 60;
 
 const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
 
-const chatRequestSchema = z.object({
+const CHAT_MESSAGE_MAX_LENGTH = 4000;
+
+export const chatRequestSchema = z.object({
   messages: z
     .array(
       z
@@ -27,7 +29,22 @@ const chatRequestSchema = z.object({
         })
         .passthrough(),
     )
-    .min(1, "At least one message is required"),
+    .min(1, "At least one message is required")
+    .superRefine((messages, ctx) => {
+      for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i] as { content?: unknown };
+        if (typeof msg.content === "string" && msg.content.length > CHAT_MESSAGE_MAX_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: CHAT_MESSAGE_MAX_LENGTH,
+            type: "string",
+            inclusive: true,
+            message: `Message content must be at most ${CHAT_MESSAGE_MAX_LENGTH} characters`,
+            path: [i, "content"],
+          });
+        }
+      }
+    }),
   context: z.string().optional(),
   tripContext: z.string().max(10240).optional(),
 });
