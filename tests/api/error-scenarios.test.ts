@@ -61,8 +61,8 @@ function createMockTrip() {
     name: "Test Trip",
     days: [],
     metadata: {
-      startDate: "2026-03-01",
-      endDate: "2026-03-03",
+      startDate: "2027-03-01",
+      endDate: "2027-03-03",
       totalDays: 3,
     },
     createdAt: new Date().toISOString(),
@@ -73,7 +73,7 @@ function createMockTrip() {
 function createValidBuilderData() {
   return {
     duration: 3,
-    dates: { start: "2026-03-01", end: "2026-03-03" },
+    dates: { start: "2027-03-01", end: "2027-03-03" },
     regions: ["Kansai"],
     cities: ["Kyoto"],
     vibes: ["temples_tradition"],
@@ -193,7 +193,7 @@ describe("API Error Scenarios", () => {
         body: JSON.stringify({
           builderData: {
             duration: 3,
-            dates: { start: "2026-03-01", end: "2026-03-03" },
+            dates: { start: "2027-03-01", end: "2027-03-03" },
             regions: ["Kansai"],
             cities: ["Kyoto"],
             interests: ["culture"],

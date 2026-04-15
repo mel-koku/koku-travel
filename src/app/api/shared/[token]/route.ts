@@ -125,17 +125,15 @@ export async function GET(
         };
       }
 
-      // Sanitize builderData: strip sensitive personal fields
+      // Sanitize builderData: strip all PII-adjacent fields (dietary restrictions,
+      // accessibility needs) -- not just free-text notes but also boolean flags
+      // and enum arrays, which are personal health/mobility information.
       const sanitizedBuilderData = trip.builder_data
         ? {
             ...trip.builder_data,
-            accessibility: trip.builder_data.accessibility
-              ? {
-                  ...trip.builder_data.accessibility,
-                  notes: undefined,  // Strip free-text accessibility notes
-                }
-              : undefined,
-            dietaryOther: undefined,  // Strip free-text dietary notes
+            dietary: undefined,
+            dietaryOther: undefined,
+            accessibility: undefined,
           }
         : null;
 

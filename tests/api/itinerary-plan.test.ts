@@ -62,8 +62,8 @@ function createValidBuilderData() {
   return {
     duration: 3,
     dates: {
-      start: "2026-03-01",
-      end: "2026-03-03",
+      start: "2027-03-01",
+      end: "2027-03-03",
     },
     regions: ["Kansai"],
     cities: ["Kyoto"],
@@ -80,14 +80,14 @@ function createMockTrip(tripId: string) {
     days: [
       {
         id: "day-1",
-        date: "2026-03-01",
+        date: "2027-03-01",
         cityId: "kyoto",
         activities: [],
       },
     ],
     metadata: {
-      startDate: "2026-03-01",
-      endDate: "2026-03-03",
+      startDate: "2027-03-01",
+      endDate: "2027-03-03",
       totalDays: 3,
     },
     createdAt: new Date().toISOString(),
@@ -183,7 +183,7 @@ describe("POST /api/itinerary/plan", () => {
             ...createValidBuilderData(),
             dates: {
               start: "invalid-date",
-              end: "2026-03-03",
+              end: "2027-03-03",
             },
           },
         }),

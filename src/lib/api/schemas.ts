@@ -151,22 +151,39 @@ const isoDateSchema = z
 
 /**
  * Schema for travel dates
- * Validates that end date is on or after start date
+ * Validates that start date is not more than 1 day in the past (timezone grace)
+ * and that end date is strictly after start date (no 0-day trips).
  */
-const travelDatesSchema = z.object({
+export const travelDatesSchema = z.object({
   start: isoDateSchema,
   end: isoDateSchema,
 }).strict().refine(
+  (dates) => {
+    // Allow if start is missing (optional field)
+    if (!dates.start) {
+      return true;
+    }
+    // start must be >= yesterday UTC (1-day grace period for timezone differences)
+    const now = new Date();
+    now.setUTCDate(now.getUTCDate() - 1);
+    const yesterday = now.toISOString().slice(0, 10);
+    return dates.start >= yesterday;
+  },
+  {
+    message: "Start date cannot be more than 1 day in the past",
+    path: ["start"],
+  },
+).refine(
   (dates) => {
     // Allow if either date is missing (optional fields)
     if (!dates.start || !dates.end) {
       return true;
     }
-    // Validate that end is on or after start
-    return dates.end >= dates.start;
+    // end must be strictly after start (no 0-day trips)
+    return dates.end > dates.start;
   },
   {
-    message: "End date must be on or after start date",
+    message: "End date must be after start date",
     path: ["end"],
   },
 );
