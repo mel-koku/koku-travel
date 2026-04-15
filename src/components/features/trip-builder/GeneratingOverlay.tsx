@@ -19,7 +19,7 @@ const SUCCESS_DISPLAY_MS = 2500;
 
 type GeneratingOverlayProps = {
   sanityConfig?: TripBuilderConfig;
-  successData?: { tripName: string } | null;
+  successData?: { tripName: string; tripId: string } | null;
   onSuccessComplete?: () => void;
   isGuest?: boolean;
   onSkipSignIn?: () => void;
@@ -117,7 +117,10 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                   <p className="text-center text-xs text-foreground-secondary">
                     This trip is only on this device.
                   </p>
-                  <GoogleSignInButton label="Sign in to save it everywhere" />
+                  <GoogleSignInButton
+                    label="Sign in to save it everywhere"
+                    redirectTo={successData?.tripId ? `/itinerary?trip=${successData.tripId}` : undefined}
+                  />
                   <button
                     type="button"
                     onClick={onSkipSignIn}

@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           await sendUnlockConfirmationEmail({
             to: session.customer_details.email,
             tripName: `${cities.join(", ")} Trip`,
-            tripUrl: `${siteUrl}/itinerary?trip=${tripId}`,
+            tripUrl: `${siteUrl}/signin?next=${encodeURIComponent(`/itinerary?trip=${tripId}`)}`,
             amountFormatted: `$${((session.amount_total ?? 0) / 100).toFixed(2)}`,
             tier: tier ?? "standard",
             cities,
