@@ -88,6 +88,8 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid request body");
   }
 
+  let reservation: Awaited<ReturnType<typeof reserveCost>> | undefined;
+
   try {
     const { messages, context: bodyContext, tripContext } = parsed.data;
     const chatContext = bodyContext ?? request.headers.get("X-Yuku-Context");
@@ -132,7 +134,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       if (typeof c === "string") inputText.push(c);
     }
     const inputTokens = estimateInputTokens(inputText);
-    const reservation = await reserveCost({
+    reservation = await reserveCost({
       key: costKey,
       model: CHAT_MODEL_ID,
       inputTokens,
@@ -148,9 +150,11 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       return costLimitResponse(reservation) as unknown as NextResponse;
     }
 
+    const { reservationId } = reservation;
+
     const model = getModel();
     if (!model) {
-      await reconcileCost(reservation.reservationId, {
+      await reconcileCost(reservationId, {
         promptTokens: 0,
         completionTokens: 0,
       });
@@ -167,7 +171,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       maxRetries: 1,
       stopWhen: stepCountIs(3),
       onFinish: ({ usage }) => {
-        reconcileCost(reservation.reservationId, {
+        reconcileCost(reservationId, {
           promptTokens: usage?.inputTokens ?? 0,
           completionTokens: usage?.outputTokens ?? 0,
         }).catch((error) => {
@@ -188,7 +192,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
           error instanceof Error ? error : new Error(getErrorMessage(error)),
           { route: "/api/chat", requestId: context.requestId, ...details },
         );
-        reconcileCost(reservation.reservationId, {
+        reconcileCost(reservationId, {
           promptTokens: 0,
           completionTokens: 0,
         }).catch(() => { /* best effort */ });
@@ -197,6 +201,15 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
 
     return result.toUIMessageStreamResponse() as unknown as NextResponse;
   } catch (error) {
+    // Refund the reservation — streamText or toUIMessageStreamResponse threw
+    // before any tokens were consumed (or the stream never started).
+    if (reservation?.allowed) {
+      reconcileCost(reservation.reservationId, {
+        promptTokens: 0,
+        completionTokens: 0,
+      }).catch(() => { /* best effort */ });
+    }
+
     const message = getErrorMessage(error);
     const isQuotaError =
       message.includes("quota") ||
