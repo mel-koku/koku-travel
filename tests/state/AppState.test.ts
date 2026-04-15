@@ -4,6 +4,7 @@ import { AppStateProvider, useAppState } from "@/state/AppState";
 import { createMockSupabaseClient } from "../utils/mocks";
 import { createClient } from "@/lib/supabase/client";
 import type { MockSupabaseClient } from "../utils/mocks";
+import type { StoredTrip } from "@/services/trip";
 
 // Mock dependencies
 vi.mock("@/lib/supabase/client", () => ({
@@ -331,6 +332,226 @@ describe("AppState", () => {
     });
   });
 
+  describe("sync race mitigation", () => {
+    it("local rename survives refreshFromSupabase with stale server data", async () => {
+      // Mock sync services so we can control what the server returns
+      const syncModule = await import("@/services/sync");
+      const fetchTripsSpy = vi.spyOn(syncModule, "fetchTrips");
+      const fetchSavedSpy = vi.spyOn(syncModule, "fetchSaved");
+      const fetchBookmarksSpy = vi.spyOn(syncModule, "fetchGuideBookmarks");
+      const fetchPrefsSpy = vi.spyOn(syncModule, "fetchPreferences");
+      vi.spyOn(syncModule, "syncTripSave").mockResolvedValue({ success: true, data: {} as StoredTrip });
+
+      // Set up authenticated user so refreshFromSupabase actually fetches
+      const mockSupabase = createMockSupabaseClient();
+      const mockUser = { id: "user-1", email: "test@example.com", user_metadata: { full_name: "Test User" } };
+      mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+      vi.mocked(createClient).mockReturnValue(toBrowserClient(mockSupabase));
+
+      // Start with no server trips on initial mount
+      fetchSavedSpy.mockResolvedValue({ success: true, data: [] });
+      fetchBookmarksSpy.mockResolvedValue({ success: true, data: [] });
+      fetchPrefsSpy.mockResolvedValue({ success: true, data: null });
+      fetchTripsSpy.mockResolvedValue({ success: true, data: [] });
+
+      const { result } = renderHook(() => useAppState(), {
+        wrapper: AppStateProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.user.email).toBe("test@example.com");
+      });
+
+      // Create and rename a trip locally
+      const builderData = { dates: {}, regions: [], cities: [], interests: [] };
+      let tripId: string;
+      act(() => {
+        tripId = result.current.createTrip({
+          name: "Original Name",
+          itinerary: { days: [] },
+          builderData,
+        });
+      });
+
+      act(() => {
+        result.current.renameTrip(tripId!, "Renamed Locally");
+      });
+
+      expect(result.current.getTripById(tripId!)?.name).toBe("Renamed Locally");
+
+      // Now simulate a server refresh returning STALE data (old name, old timestamp)
+      const staleServerTrip: StoredTrip = {
+        id: tripId!,
+        name: "Original Name",
+        createdAt: new Date(Date.now() - 60000).toISOString(),
+        updatedAt: new Date(Date.now() - 60000).toISOString(), // 1 minute ago
+        itinerary: { days: [] },
+        builderData,
+        unlockedAt: null,
+        unlockTier: null,
+        stripeSessionId: null,
+        unlockAmountCents: null,
+        freeRefinementsUsed: 0,
+      };
+      fetchTripsSpy.mockResolvedValue({ success: true, data: [staleServerTrip] });
+
+      // Trigger a refresh (simulates tab focus, auth state change, etc.)
+      await act(async () => {
+        await result.current.refreshFromSupabase();
+      });
+
+      // The local rename must survive -- stale server data must NOT overwrite it
+      expect(result.current.getTripById(tripId!)?.name).toBe("Renamed Locally");
+
+      // Cleanup spies
+      fetchTripsSpy.mockRestore();
+      fetchSavedSpy.mockRestore();
+      fetchBookmarksSpy.mockRestore();
+      fetchPrefsSpy.mockRestore();
+    });
+
+    it("server data wins when no local edit is pending", async () => {
+      const syncModule = await import("@/services/sync");
+      const fetchTripsSpy = vi.spyOn(syncModule, "fetchTrips");
+      const fetchSavedSpy = vi.spyOn(syncModule, "fetchSaved");
+      const fetchBookmarksSpy = vi.spyOn(syncModule, "fetchGuideBookmarks");
+      const fetchPrefsSpy = vi.spyOn(syncModule, "fetchPreferences");
+      vi.spyOn(syncModule, "syncTripSave").mockResolvedValue({ success: true, data: {} as StoredTrip });
+
+      const mockSupabase = createMockSupabaseClient();
+      const mockUser = { id: "user-2", email: "test2@example.com", user_metadata: { full_name: "Test" } };
+      mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+      vi.mocked(createClient).mockReturnValue(toBrowserClient(mockSupabase));
+
+      fetchSavedSpy.mockResolvedValue({ success: true, data: [] });
+      fetchBookmarksSpy.mockResolvedValue({ success: true, data: [] });
+      fetchPrefsSpy.mockResolvedValue({ success: true, data: null });
+      fetchTripsSpy.mockResolvedValue({ success: true, data: [] });
+
+      const { result } = renderHook(() => useAppState(), {
+        wrapper: AppStateProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.user.email).toBe("test2@example.com");
+      });
+
+      const builderData = { dates: {}, regions: [], cities: [], interests: [] };
+      let tripId: string;
+      act(() => {
+        tripId = result.current.createTrip({
+          name: "Local Name",
+          itinerary: { days: [] },
+          builderData,
+        });
+      });
+
+      // Server returns a NEWER version of the same trip (no pending local edit guard)
+      // The trip was just created (no rename/update that sets localTripUpdatedAt beyond
+      // what createTrip sets). createTrip does NOT set localTripUpdatedAt, so server wins.
+      const newerServerTrip: StoredTrip = {
+        id: tripId!,
+        name: "Server Renamed",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date(Date.now() + 60000).toISOString(), // Future timestamp
+        itinerary: { days: [{ activities: [] }] },
+        builderData,
+        unlockedAt: null,
+        unlockTier: null,
+        stripeSessionId: null,
+        unlockAmountCents: null,
+        freeRefinementsUsed: 0,
+      };
+      fetchTripsSpy.mockResolvedValue({ success: true, data: [newerServerTrip] });
+
+      await act(async () => {
+        await result.current.refreshFromSupabase();
+      });
+
+      // Server data should win since there was no pending local mutation
+      expect(result.current.getTripById(tripId!)?.name).toBe("Server Renamed");
+
+      fetchTripsSpy.mockRestore();
+      fetchSavedSpy.mockRestore();
+      fetchBookmarksSpy.mockRestore();
+      fetchPrefsSpy.mockRestore();
+    });
+
+    it("deleteTrip cleans up localTripUpdatedAt (no orphaned timestamps)", async () => {
+      const { result } = renderHook(() => useAppState(), {
+        wrapper: AppStateProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
+      });
+
+      const builderData = { dates: {}, regions: [], cities: [], interests: [] };
+      let tripId: string;
+      act(() => {
+        tripId = result.current.createTrip({
+          name: "Doomed Trip",
+          itinerary: { days: [] },
+          builderData,
+        });
+      });
+
+      // Rename sets localTripUpdatedAt
+      act(() => {
+        result.current.renameTrip(tripId!, "Still Doomed");
+      });
+
+      // Delete should remove the trip AND clean up the timestamp
+      act(() => {
+        result.current.deleteTrip(tripId!);
+      });
+
+      expect(result.current.getTripById(tripId!)).toBeUndefined();
+    });
+
+    it("localTripUpdatedAt is excluded from localStorage persistence", async () => {
+      vi.useFakeTimers();
+      localStorage.clear();
+
+      const { result } = renderHook(() => useAppState(), {
+        wrapper: AppStateProvider,
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const builderData = { dates: {}, regions: [], cities: [], interests: [] };
+      let tripId: string;
+      act(() => {
+        tripId = result.current.createTrip({
+          name: "Test Trip",
+          itinerary: { days: [] },
+          builderData,
+        });
+      });
+
+      // Rename sets localTripUpdatedAt
+      act(() => {
+        result.current.renameTrip(tripId!, "Renamed");
+      });
+
+      await act(async () => {
+        vi.advanceTimersByTime(500);
+        await vi.runAllTimersAsync();
+      });
+
+      const stored = localStorage.getItem("yuku_app_state_v1");
+      expect(stored).toBeTruthy();
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        expect(parsed).not.toHaveProperty("localTripUpdatedAt");
+      }
+
+      vi.useRealTimers();
+    });
+  });
+
   describe("selective state persistence", () => {
     it("should only persist user, saved, guideBookmarks, and trips", async () => {
       vi.useFakeTimers();
@@ -367,6 +588,7 @@ describe("AppState", () => {
         expect(parsed).toHaveProperty("trips");
         expect(parsed).not.toHaveProperty("isLoadingRefresh");
         expect(parsed).not.toHaveProperty("loadingBookmarks");
+        expect(parsed).not.toHaveProperty("localTripUpdatedAt");
       }
 
       vi.useRealTimers();

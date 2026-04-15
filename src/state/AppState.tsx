@@ -161,7 +161,10 @@ const Ctx = createContext<AppStateShape>(defaultState);
 type InternalState = Pick<
   AppStateShape,
   "user" | "saved" | "guideBookmarks" | "userPreferences" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "cityAccommodations" | "editHistory" | "currentHistoryIndex"
->;
+> & {
+  /** Epoch ms of most recent local mutation per trip. Internal bookkeeping, not persisted. */
+  localTripUpdatedAt: Record<string, number>;
+};
 
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
   if (!user) {
@@ -199,6 +202,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     cityAccommodations: {},
     editHistory: {},
     currentHistoryIndex: {},
+    localTripUpdatedAt: {},
   });
 
   // Ref to track pending trip sync timeouts by trip ID
@@ -240,6 +244,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           cityAccommodations: parsed.cityAccommodations ?? {},
           editHistory: parsed.editHistory ?? {},
           currentHistoryIndex: parsed.currentHistoryIndex ?? {},
+          localTripUpdatedAt: {},
         };
       } else {
         nextState = {
@@ -254,6 +259,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           cityAccommodations: {},
           editHistory: {},
           currentHistoryIndex: {},
+          localTripUpdatedAt: {},
         };
       }
 
@@ -323,9 +329,27 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       setState((s) => {
+        // Filter out server trips that are stale compared to pending local edits.
+        // A trip has a local timestamp when it was mutated but the debounced sync
+        // has not yet completed. If the server copy is older, keep the local version.
+        let serverTrips = tripsResult.success && tripsResult.data ? tripsResult.data : null;
+        if (serverTrips) {
+          serverTrips = serverTrips.filter((serverTrip) => {
+            const localTs = s.localTripUpdatedAt[serverTrip.id];
+            if (localTs) {
+              const serverTs = serverTrip.updatedAt ? new Date(serverTrip.updatedAt).getTime() : 0;
+              if (localTs > serverTs) {
+                // Local edit is newer than server data; skip this server trip
+                return false;
+              }
+            }
+            return true;
+          });
+        }
+
         // Merge local and remote trips, resolving conflicts by timestamp
-        const mergedTrips = tripsResult.success && tripsResult.data
-          ? mergeTrips(s.trips, tripsResult.data)
+        const mergedTrips = serverTrips
+          ? mergeTrips(s.trips, serverTrips)
           : s.trips;
 
         // Merge server saved list with in-flight optimistic changes
@@ -527,7 +551,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           const trip = tripsRef.current.find((t) => t.id === tripId);
           if (trip) {
             syncTripSave(supabase, trip).then((result) => {
-              if (!result.success) {
+              if (result.success) {
+                // Clear local timestamp after successful sync
+                setState((prev) => {
+                  const { [tripId]: _, ...rest } = prev.localTripUpdatedAt;
+                  return { ...prev, localTripUpdatedAt: rest };
+                });
+              } else {
                 logger.warn("Trip sync failed after debounce", { tripId, error: result.error });
               }
             });
@@ -538,7 +568,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         tripSyncTimeouts.current.set(tripId, timeout);
       }
 
-      return { ...s, trips: nextTrips };
+      return { ...s, trips: nextTrips, localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() } };
     });
   }, [supabase]);
 
@@ -547,15 +577,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const nextTrips = renameTripOp(s.trips, tripId, name);
       if (!nextTrips) return s;
 
-      // Sync to Supabase
+      // Sync to Supabase with cleanup on success
       if (supabase) {
         const trip = nextTrips.find((t) => t.id === tripId);
         if (trip) {
-          void syncTripSave(supabase, trip);
+          syncTripSave(supabase, trip).then((result) => {
+            if (result.success) {
+              setState((prev) => {
+                const { [tripId]: _, ...rest } = prev.localTripUpdatedAt;
+                return { ...prev, localTripUpdatedAt: rest };
+              });
+            }
+          });
         }
       }
 
-      return { ...s, trips: nextTrips };
+      return { ...s, trips: nextTrips, localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() } };
     });
   }, [supabase]);
 
@@ -576,7 +613,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         void syncTripDelete(supabase, tripId);
       }
 
-      return { ...s, trips: nextTrips };
+      // Remove orphaned timestamp entry since the trip no longer exists
+      const { [tripId]: _, ...restTimestamps } = s.localTripUpdatedAt;
+      return { ...s, trips: nextTrips, localTripUpdatedAt: restTimestamps };
     });
   }, [supabase]);
 
@@ -774,6 +813,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       cityAccommodations: {},
       editHistory: {},
       currentHistoryIndex: {},
+      localTripUpdatedAt: {},
     };
     setState(next);
     if (typeof window !== "undefined") {
