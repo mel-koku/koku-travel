@@ -281,40 +281,56 @@ export const POST = withApiHandler(
         });
       }
 
-      // Check refinement limits for free users
+      // Reserve a refinement slot atomically. Free users cap at MAX_FREE_REFINEMENTS;
+      // unlocked trips cap at MAX_PAID_REFINEMENTS to prevent abuse. Eliminates the
+      // read-check-then-increment race that previously let concurrent requests both
+      // pass the cap gate. Decrement on LLM failure or no-op stub below.
       const fullAccessStub = await isFullAccessEnabled();
+      let reservedSlot = false;
+      let isUnlockedTrip = false;
+
       if (!fullAccessStub && user) {
         const serviceClientStub = getServiceRoleClient();
         const { data: tripRowStub } = await serviceClientStub
           .from("trips")
-          .select("unlocked_at, free_refinements_used")
+          .select("unlocked_at")
           .eq("id", trip.id)
           .eq("user_id", user.id)
           .single();
 
-        if (tripRowStub && !tripRowStub.unlocked_at) {
-          const used = tripRowStub.free_refinements_used ?? 0;
-          if (used >= MAX_FREE_REFINEMENTS) {
-            return NextResponse.json({
-              refinedDay: null,
-              updatedTrip: null,
-              message: "Unlock your full trip to keep refining.",
-              requiresUnlock: true,
-            });
-          }
+        isUnlockedTrip = !!tripRowStub?.unlocked_at;
+        const cap = isUnlockedTrip ? MAX_PAID_REFINEMENTS : MAX_FREE_REFINEMENTS;
+
+        const { data: newCount, error: reserveError } = await serviceClientStub.rpc(
+          "increment_free_refinements_if_under_cap",
+          { p_trip_id: trip.id, p_user_id: user.id, p_max: cap },
+        );
+
+        if (reserveError) {
+          logger.error(
+            "Failed to reserve refinement slot",
+            reserveError instanceof Error
+              ? reserveError
+              : new Error(JSON.stringify(reserveError)),
+            { tripId: trip.id, userId: user.id },
+          );
+          return NextResponse.json(
+            { error: "Internal error reserving refinement" },
+            { status: 500 },
+          );
         }
 
-        // Hard cap for unlocked trips to prevent abuse
-        if (tripRowStub && tripRowStub.unlocked_at) {
-          const used = tripRowStub.free_refinements_used ?? 0;
-          if (used >= MAX_PAID_REFINEMENTS) {
-            return NextResponse.json({
-              refinedDay: null,
-              updatedTrip: null,
-              message: "You've reached the refinement limit for this trip.",
-            });
-          }
+        if (newCount === null || newCount === undefined) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: isUnlockedTrip
+              ? "You've reached the refinement limit for this trip."
+              : "Unlock your full trip to keep refining.",
+            requiresUnlock: !isUnlockedTrip,
+          });
         }
+        reservedSlot = true;
       }
 
       // Check Redis cache for identical refinement request
@@ -336,12 +352,25 @@ export const POST = withApiHandler(
         }
       }
 
-      // Perform actual refinement using refineDay function
-      const refinedDay = await refineDay({
-        trip,
-        dayIndex: targetDayIndex,
-        type: refinementType,
-      });
+      // Perform actual refinement using refineDay function. Release the reserved
+      // slot if it throws so the user isn't billed for a failed LLM call.
+      let refinedDay: TripDay;
+      try {
+        refinedDay = await refineDay({
+          trip,
+          dayIndex: targetDayIndex,
+          type: refinementType,
+        });
+      } catch (err) {
+        if (reservedSlot && user) {
+          const serviceClientStub = getServiceRoleClient();
+          await serviceClientStub.rpc("decrement_free_refinements", {
+            p_trip_id: trip.id,
+            p_user_id: user.id,
+          });
+        }
+        throw err;
+      }
 
       // Cache the refined day
       if (redis) {
@@ -359,20 +388,15 @@ export const POST = withApiHandler(
         updatedAt: new Date().toISOString(),
       };
 
-      // Increment free refinement counter for non-unlocked trips (only on real changes, not no-ops)
+      // Release the reservation if refineDay returned a no-op stub (e.g. nothing
+      // to refine). Real refinements keep the slot consumed.
       const isNoOpStub = !!refinedDay.message;
-      if (!fullAccessStub && user && !isNoOpStub) {
+      if (reservedSlot && isNoOpStub && user) {
         const serviceClientStub = getServiceRoleClient();
-        const { data: tripRowForIncrement } = await serviceClientStub
-          .from("trips")
-          .select("unlocked_at")
-          .eq("id", trip.id)
-          .eq("user_id", user.id)
-          .single();
-
-        if (tripRowForIncrement && !tripRowForIncrement.unlocked_at) {
-          await serviceClientStub.rpc("increment_free_refinements", { p_trip_id: trip.id, p_user_id: user.id });
-        }
+        await serviceClientStub.rpc("decrement_free_refinements", {
+          p_trip_id: trip.id,
+          p_user_id: user.id,
+        });
       }
 
       return NextResponse.json(
