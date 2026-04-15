@@ -37,22 +37,37 @@ const PlacesIntro = dynamic(
 
 const FilterPanel = dynamic(
   () => import("./FilterPanel").then((m) => ({ default: m.FilterPanel })),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="h-12 animate-pulse rounded-lg bg-surface" /> }
 );
 
 const PlacesMapLayout = dynamic(
   () => import("./PlacesMapLayout").then((m) => ({ default: m.PlacesMapLayout })),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="h-[50vh] animate-pulse rounded-lg bg-surface" /> }
 );
 
 const LocationExpanded = dynamic(
   () => import("./LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="h-96 animate-pulse rounded-lg bg-surface" /> }
 );
 
 const LocationEditorialGrid = dynamic(
   () => import("./LocationEditorialGrid").then((m) => ({ default: m.LocationEditorialGrid })),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-lg bg-surface animate-pulse">
+            <div className="aspect-[4/3]" />
+            <div className="p-3.5 space-y-2">
+              <div className="h-4 w-3/4 rounded bg-border" />
+              <div className="h-3 w-1/2 rounded bg-border" />
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+  }
 );
 
 type PlacesShellProps = {

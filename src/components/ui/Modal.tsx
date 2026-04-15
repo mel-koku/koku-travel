@@ -68,9 +68,14 @@ export function Modal(props: ModalProps) {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    // Set inert on background content so screen readers ignore it
+    const mainEl = document.getElementById("main-content");
+    if (mainEl) mainEl.setAttribute("inert", "");
+
     return () => {
       window.cancelAnimationFrame(raf);
       document.body.style.overflow = originalOverflow;
+      if (mainEl) mainEl.removeAttribute("inert");
       previouslyFocusedElement.current?.focus({ preventScroll: true });
       previouslyFocusedElement.current = null;
     };
