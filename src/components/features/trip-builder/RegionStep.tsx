@@ -65,6 +65,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
   const [hoveredRegion, setHoveredRegion] = useState<KnownRegionId | null>(null);
   const [expandedRegion, setExpandedRegion] = useState<KnownRegionId | null>(null);
+  const [autoSelectMessage, setAutoSelectMessage] = useState<string | null>(null);
   const hasUserHovered = useRef(false);
 
   // Debounced hover: cancel any pending clear, set immediately
@@ -210,6 +211,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         cityDays: optimized.length === (prev.cities?.length ?? 0) ? prev.cityDays : undefined,
       }));
       hasAutoSelected.current = true;
+      setAutoSelectMessage("Regions suggested based on your travel style");
     }
     // data.exitPoint / data.sameAsEntry are read as snapshots for optimization;
     // including them would re-run auto-selection when the user picks an exit
@@ -359,6 +361,9 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
   return (
     <div className="relative min-h-[calc(100dvh-5rem)] bg-background">
+      <div aria-live="polite" className="sr-only">
+        {autoSelectMessage}
+      </div>
       {/* Layer 0: Map canvas — fixed to viewport so it never scrolls */}
       <div className="fixed inset-0 z-0">
         <RegionMapCanvas

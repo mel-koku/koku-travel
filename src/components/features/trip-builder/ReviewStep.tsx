@@ -456,6 +456,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           {/* Duration Warning */}
           {durationWarning && (
             <div
+              role="alert"
               className={cn(
                 "flex items-start gap-3 rounded-lg border px-4 py-3",
                 durationWarning.severity === "warning"
