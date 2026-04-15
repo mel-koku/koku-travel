@@ -140,6 +140,7 @@ const GLOBAL_DEADLINE_MS = 18_000;
 export async function* runBriefingBatch(
   itinerary: Itinerary,
   builderData: TripBuilderData,
+  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
 ): AsyncGenerator<BriefingBatchOutcome, void, void> {
   const days = itinerary.days ?? [];
   if (days.length === 0) return;
@@ -159,6 +160,7 @@ export async function* runBriefingBatch(
           buildBriefingDaySchema(),
           PER_CALL_TIMEOUT_MS,
           batchController.signal,
+          onUsage,
         ).then(
           (result): BriefingBatchOutcome => ({
             kind: "day",
@@ -209,6 +211,7 @@ export async function* runBriefingBatch(
 export async function generateDailyBriefings(
   itinerary: Itinerary,
   builderData: TripBuilderData,
+  opts?: { onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void },
 ): Promise<GeneratedBriefings | null> {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
@@ -224,7 +227,7 @@ export async function generateDailyBriefings(
 
   const startTime = Date.now();
 
-  for await (const outcome of runBriefingBatch(itinerary, builderData)) {
+  for await (const outcome of runBriefingBatch(itinerary, builderData, opts?.onUsage)) {
     switch (outcome.kind) {
       case "day": {
         const briefing = outcome.result.briefing?.trim();

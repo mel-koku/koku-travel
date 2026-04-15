@@ -89,9 +89,13 @@ export function AskYukuChat({ onClose, context = "default", tripData }: AskYukuC
             )}
             {error && (
               <div className="rounded-lg bg-error/10 px-4 py-2.5 text-sm text-error">
-                {error.message?.includes("quota") ||
-                error.message?.includes("503") ||
-                error.message?.includes("429")
+                {error.message?.includes("daily_cost_limit")
+                  ? "You\u2019ve reached your daily Ask Yuku limit. Come back tomorrow!"
+                  : error.message?.includes("global_cost_limit")
+                  ? "Ask Yuku is busy right now. Try again in an hour."
+                  : error.message?.includes("quota") ||
+                    error.message?.includes("503") ||
+                    error.message?.includes("429")
                   ? "Yuku hit a limit. Give it a minute and try again."
                   : "Couldn\u2019t get a response. Try sending that again."}
               </div>

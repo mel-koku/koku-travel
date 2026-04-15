@@ -10,8 +10,12 @@ import { generateDailyBriefings } from "@/lib/server/dailyBriefingGenerator";
 import { extractTripIntent } from "@/lib/server/intentExtractor";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
+import { reserveCost, reconcileCost, costLimitResponse } from "@/lib/api/costLimit";
+import { estimateInputTokens } from "@/lib/api/tokenEstimate";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+
+const GENERATION_MODEL_ID = "gemini-2.5-flash";
 
 export const maxDuration = 60;
 
@@ -53,14 +57,59 @@ export const POST = withApiHandler(
     const itinerary = trip.itinerary as Itinerary;
     const builderData = trip.builder_data as TripBuilderData;
 
+    // Cost reservation: estimate input as serialised trip JSON, cap output per call.
+    // guide prose = N days + 1 header; briefings = N days. Conservative: 2*N+1 calls.
+    const days = (itinerary.days ?? []).length;
+    const numCalls = 2 * days + 1;
+    const inputText = JSON.stringify({ itinerary, builderData });
+    const inputTokensPerCall = estimateInputTokens(inputText);
+    const inputTokens = inputTokensPerCall * numCalls;
+    const maxOutputTokens = 512 * numCalls; // per-call cap × number of calls
+
+    const costKey = user.id;
+    const reservation = await reserveCost({
+      key: costKey,
+      model: GENERATION_MODEL_ID,
+      inputTokens,
+      maxOutputTokens,
+    });
+    if (!reservation.allowed) {
+      logger.warn("complete-generation blocked by cost limit", {
+        scope: reservation.scope,
+        usedCents: reservation.usedCents,
+        limitCents: reservation.limitCents,
+        requestId: context.requestId,
+      });
+      return costLimitResponse(reservation) as unknown as NextResponse;
+    }
+
+    // Accumulate real token counts across all Vertex calls.
+    let totalPromptTokens = 0;
+    let totalCompletionTokens = 0;
+    const onUsage = (u: { promptTokens: number; completionTokens: number }): void => {
+      totalPromptTokens += u.promptTokens;
+      totalCompletionTokens += u.completionTokens;
+    };
+
     // Run intent extraction first (needed by guide prose)
     const intentResult = await extractTripIntent(builderData).catch(() => null);
 
     // Run the two Vertex passes in parallel but surface failures instead of masking.
     const [guideProseResult, briefingsResult] = await Promise.allSettled([
-      generateGuideProse(itinerary, builderData, intentResult ?? undefined),
-      generateDailyBriefings(itinerary, builderData),
+      generateGuideProse(itinerary, builderData, intentResult ?? undefined, { onUsage }),
+      generateDailyBriefings(itinerary, builderData, { onUsage }),
     ]);
+
+    // Reconcile real cost (fires async, best-effort).
+    reconcileCost(reservation.reservationId, {
+      promptTokens: totalPromptTokens,
+      completionTokens: totalCompletionTokens,
+    }).catch((err) => {
+      logger.warn("complete-generation reconcileCost failed", {
+        requestId: context.requestId,
+        error: String(err),
+      });
+    });
 
     if (guideProseResult.status === "rejected" || briefingsResult.status === "rejected") {
       const failureReason =

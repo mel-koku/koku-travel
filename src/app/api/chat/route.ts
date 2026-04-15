@@ -9,7 +9,11 @@ import { badRequest, serviceUnavailable, internalError } from "@/lib/api/errors"
 import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
 import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
+import { reserveCost, reconcileCost, costLimitResponse } from "@/lib/api/costLimit";
+import { estimateInputTokens } from "@/lib/api/tokenEstimate";
 import { logger } from "@/lib/logger";
+
+const CHAT_MODEL_ID = "gemini-2.5-flash";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
@@ -49,7 +53,7 @@ export const chatRequestSchema = z.object({
   tripContext: z.string().max(10240).optional(),
 });
 
-export const POST = withApiHandler(async (request: NextRequest, { context }) => {
+export const POST = withApiHandler(async (request: NextRequest, { context, user }) => {
   // Feature flag check
   if (!env.isChatEnabled) {
     return serviceUnavailable("Chat is currently disabled", {
@@ -83,6 +87,8 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
   if (!parsed.success) {
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid request body");
   }
+
+  let reservation: Awaited<ReturnType<typeof reserveCost>> | undefined;
 
   try {
     const { messages, context: bodyContext, tripContext } = parsed.data;
@@ -120,8 +126,38 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod passthrough preserves full UIMessage shape; cast needed for SDK compatibility
     const modelMessages = await convertToModelMessages(recentMessages as any);
 
+    // Cost reservation: over-estimate input tokens, cap output at maxOutputTokens.
+    const costKey = user?.id ?? context.ip ?? "unknown";
+    const inputText: string[] = [systemPrompt];
+    for (const msg of recentMessages) {
+      const c = (msg as { content?: unknown }).content;
+      if (typeof c === "string") inputText.push(c);
+    }
+    const inputTokens = estimateInputTokens(inputText);
+    reservation = await reserveCost({
+      key: costKey,
+      model: CHAT_MODEL_ID,
+      inputTokens,
+      maxOutputTokens: 2048,
+    });
+    if (!reservation.allowed) {
+      logger.warn("Chat blocked by cost limit", {
+        scope: reservation.scope,
+        usedCents: reservation.usedCents,
+        limitCents: reservation.limitCents,
+        requestId: context.requestId,
+      });
+      return costLimitResponse(reservation) as unknown as NextResponse;
+    }
+
+    const { reservationId } = reservation;
+
     const model = getModel();
     if (!model) {
+      await reconcileCost(reservationId, {
+        promptTokens: 0,
+        completionTokens: 0,
+      });
       return serviceUnavailable("AI chat is not available");
     }
 
@@ -134,6 +170,17 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
       maxOutputTokens: 2048,
       maxRetries: 1,
       stopWhen: stepCountIs(3),
+      onFinish: ({ usage }) => {
+        reconcileCost(reservationId, {
+          promptTokens: usage?.inputTokens ?? 0,
+          completionTokens: usage?.outputTokens ?? 0,
+        }).catch((error) => {
+          logger.warn("Chat reconcileCost failed", {
+            requestId: context.requestId,
+            error: getErrorMessage(error),
+          });
+        });
+      },
       // Stream errors don't bubble to the outer try/catch because
       // toUIMessageStreamResponse() has already returned a 200 by the time
       // Vertex rejects mid-stream. Log them here so regressions surface in
@@ -145,11 +192,24 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
           error instanceof Error ? error : new Error(getErrorMessage(error)),
           { route: "/api/chat", requestId: context.requestId, ...details },
         );
+        reconcileCost(reservationId, {
+          promptTokens: 0,
+          completionTokens: 0,
+        }).catch(() => { /* best effort */ });
       },
     });
 
     return result.toUIMessageStreamResponse() as unknown as NextResponse;
   } catch (error) {
+    // Refund the reservation — streamText or toUIMessageStreamResponse threw
+    // before any tokens were consumed (or the stream never started).
+    if (reservation?.allowed) {
+      reconcileCost(reservation.reservationId, {
+        promptTokens: 0,
+        completionTokens: 0,
+      }).catch(() => { /* best effort */ });
+    }
+
     const message = getErrorMessage(error);
     const isQuotaError =
       message.includes("quota") ||

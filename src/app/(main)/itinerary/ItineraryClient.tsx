@@ -57,6 +57,7 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
   const [showCeremony, setShowCeremony] = useState(false);
   const [generationPromise, setGenerationPromise] = useState<Promise<unknown> | null>(null);
   const [generationRetryable, setGenerationRetryable] = useState(false);
+  const [generationCostLimited, setGenerationCostLimited] = useState(false);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -110,6 +111,10 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
     });
     if (!genRes.ok) {
       const body = await genRes.json().catch(() => ({}));
+      if (genRes.status === 429) {
+        setGenerationCostLimited(true);
+        return null;
+      }
       if (genRes.status === 502 && body?.retryable) {
         setGenerationRetryable(true);
         return null;
@@ -394,6 +399,7 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
             }}
             generationPromise={generationPromise}
             retryable={generationRetryable}
+            costLimited={generationCostLimited}
             onRetry={handleRetryGeneration}
           />
         )}

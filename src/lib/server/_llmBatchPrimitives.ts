@@ -147,6 +147,7 @@ export async function callVertex<T>(
   schema: z.ZodType<T>,
   timeoutMs: number,
   batchSignal?: AbortSignal,
+  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
 ): Promise<T> {
   const perCallTimeout = AbortSignal.timeout(timeoutMs);
   const combined = batchSignal
@@ -161,6 +162,12 @@ export async function callVertex<T>(
       prompt,
       abortSignal: combined,
     });
+    if (onUsage) {
+      onUsage({
+        promptTokens: result.usage?.inputTokens ?? 0,
+        completionTokens: result.usage?.outputTokens ?? 0,
+      });
+    }
     return result.object as T;
   } catch (err) {
     // Orphaned by batch deadline -- the outcome is already captured by the

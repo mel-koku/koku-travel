@@ -106,6 +106,9 @@ vi.mock("next/server", async () => {
   };
 });
 
+// Stub server-only so modules guarded with `import "server-only"` are testable.
+vi.mock("server-only", () => ({}));
+
 // Mock logger to prevent stderr output in tests
 vi.mock("@/lib/logger", () => ({
   logger: {
