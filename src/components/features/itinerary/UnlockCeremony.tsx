@@ -11,7 +11,9 @@ type UnlockCeremonyProps = {
   cities: string[];
   topActivityName?: string;
   onComplete: () => void;
-  generationPromise: Promise<unknown>;
+  generationPromise: Promise<unknown> | null;
+  retryable?: boolean;
+  onRetry?: () => void;
 };
 
 const CEREMONY_STEPS = [
@@ -27,13 +29,29 @@ export function UnlockCeremony({
   topActivityName,
   onComplete,
   generationPromise,
+  retryable,
+  onRetry,
 }: UnlockCeremonyProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [generationDone, setGenerationDone] = useState(false);
   const [minTimePassed, setMinTimePassed] = useState(false);
 
   useEffect(() => {
-    generationPromise.then(() => setGenerationDone(true)).catch(() => setGenerationDone(true));
+    if (!generationPromise) {
+      setGenerationDone(false);
+      return;
+    }
+    let cancelled = false;
+    generationPromise
+      .then(() => {
+        if (!cancelled) setGenerationDone(true);
+      })
+      .catch(() => {
+        if (!cancelled) setGenerationDone(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [generationPromise]);
 
   useEffect(() => {
@@ -49,11 +67,11 @@ export function UnlockCeremony({
   }, []);
 
   useEffect(() => {
-    if (generationDone && minTimePassed) {
+    if (generationDone && minTimePassed && !retryable) {
       const exitTimer = setTimeout(onComplete, 500);
       return () => clearTimeout(exitTimer);
     }
-  }, [generationDone, minTimePassed, onComplete]);
+  }, [generationDone, minTimePassed, onComplete, retryable]);
 
   const stepText = CEREMONY_STEPS[stepIndex]?.(cities, topActivityName) ?? "Finishing up";
 
@@ -94,6 +112,21 @@ export function UnlockCeremony({
           transition={{ duration: generationDone ? 0.5 : UNLOCK_CEREMONY_MIN_MS / 1000, ease: "linear" }}
         />
       </div>
+
+      {retryable && onRetry && (
+        <div className="mt-8 text-center">
+          <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
+            Your trip is unlocked. We&apos;re still assembling your written guide.
+          </p>
+          <button
+            type="button"
+            className="mt-4 btn-yuku"
+            onClick={onRetry}
+          >
+            Retry
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 }

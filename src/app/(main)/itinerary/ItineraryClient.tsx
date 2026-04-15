@@ -54,6 +54,7 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
   const [showCeremony, setShowCeremony] = useState(false);
   const [generationPromise, setGenerationPromise] = useState<Promise<unknown> | null>(null);
+  const [generationRetryable, setGenerationRetryable] = useState(false);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -90,34 +91,47 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
     ? trips.find((trip) => trip.id === selectedTripId)
     : null;
 
+  const runGeneration = useCallback(async () => {
+    if (!selectedTrip) return null;
+    setGenerationRetryable(false);
+    const sessionId = searchParams.get("session_id");
+    const verifyRes = await fetch(
+      `/api/billing/verify?session_id=${sessionId}&trip_id=${selectedTrip.id}`
+    );
+    const verifyData = await verifyRes.json();
+    if (!verifyData.unlocked) return null;
+
+    const genRes = await fetch("/api/billing/complete-generation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tripId: selectedTrip.id }),
+    });
+    if (!genRes.ok) {
+      const body = await genRes.json().catch(() => ({}));
+      if (genRes.status === 502 && body?.retryable) {
+        setGenerationRetryable(true);
+        return null;
+      }
+      throw new Error(`complete-generation failed: ${genRes.status}`);
+    }
+    return genRes.json();
+  }, [selectedTrip, searchParams]);
+
   // Detect return from Stripe checkout (?unlocked=1&session_id=...)
   useEffect(() => {
     const unlocked = searchParams.get("unlocked");
     const sessionId = searchParams.get("session_id");
 
     if (unlocked === "1" && sessionId && selectedTrip && !selectedTrip.unlockedAt) {
-      const promise = (async () => {
-        // 1. Verify payment
-        const verifyRes = await fetch(
-          `/api/billing/verify?session_id=${sessionId}&trip_id=${selectedTrip.id}`
-        );
-        const verifyData = await verifyRes.json();
-        if (!verifyData.unlocked) return;
-
-        // 2. Run deferred Gemini passes
-        const genRes = await fetch("/api/billing/complete-generation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tripId: selectedTrip.id }),
-        });
-        return genRes.json();
-      })();
-
-      setGenerationPromise(promise);
+      setGenerationPromise(runGeneration());
       setShowCeremony(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-run when selectedTrip finishes loading from async state
   }, [selectedTrip?.id, selectedTrip?.unlockedAt]);
+
+  const handleRetryGeneration = useCallback(() => {
+    setGenerationPromise(runGeneration());
+  }, [runGeneration]);
 
   // Unlock button handler (passed down to UnlockCard via ItineraryShell)
   const handleStartUnlock = useCallback(async () => {
@@ -376,6 +390,8 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
               window.history.replaceState(null, "", `/itinerary?trip=${selectedTrip.id}`);
             }}
             generationPromise={generationPromise}
+            retryable={generationRetryable}
+            onRetry={handleRetryGeneration}
           />
         )}
       </AnimatePresence>

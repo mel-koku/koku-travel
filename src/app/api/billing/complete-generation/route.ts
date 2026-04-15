@@ -56,11 +56,35 @@ export const POST = withApiHandler(
     // Run intent extraction first (needed by guide prose)
     const intentResult = await extractTripIntent(builderData).catch(() => null);
 
-    // Run deferred Gemini passes in parallel
-    const [guideProse, dailyBriefings] = await Promise.all([
-      generateGuideProse(itinerary, builderData, intentResult ?? undefined).catch(() => null),
-      generateDailyBriefings(itinerary, builderData).catch(() => null),
+    // Run the two Vertex passes in parallel but surface failures instead of masking.
+    const [guideProseResult, briefingsResult] = await Promise.allSettled([
+      generateGuideProse(itinerary, builderData, intentResult ?? undefined),
+      generateDailyBriefings(itinerary, builderData),
     ]);
+
+    if (guideProseResult.status === "rejected" || briefingsResult.status === "rejected") {
+      const failureReason =
+        guideProseResult.status === "rejected"
+          ? guideProseResult.reason
+          : (briefingsResult as PromiseRejectedResult).reason;
+      logger.error(
+        "Deferred generation failed",
+        failureReason instanceof Error ? failureReason : new Error(String(failureReason)),
+        {
+          tripId,
+          guideProseFailed: guideProseResult.status === "rejected",
+          briefingsFailed: briefingsResult.status === "rejected",
+          requestId: context.requestId,
+        },
+      );
+      return NextResponse.json(
+        { error: "Generation failed", retryable: true },
+        { status: 502 },
+      );
+    }
+
+    const guideProse = guideProseResult.value;
+    const dailyBriefings = briefingsResult.value;
 
     const dayIntros = guideProse
       ? Object.fromEntries(guideProse.days.map((d) => [d.dayId, d.intro]))
