@@ -1,5 +1,6 @@
 import "server-only";
 import { randomUUID } from "crypto";
+import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
@@ -352,4 +353,28 @@ export async function checkCostBudget(userKey: string): Promise<BudgetStatus> {
       resetAt: endOfUtcHour(now),
     },
   };
+}
+
+type DenialResult = Extract<ReserveResult, { allowed: false }>;
+
+export function costLimitResponse(denial: DenialResult): NextResponse {
+  const retryAfterSec = Math.max(
+    1,
+    Math.ceil((new Date(denial.resetAt).getTime() - Date.now()) / 1000),
+  );
+  const body = {
+    error: denial.scope === "user" ? "daily_cost_limit" : "global_cost_limit",
+    scope: denial.scope,
+    usedCents: denial.usedCents,
+    limitCents: denial.limitCents,
+    resetAt: denial.resetAt,
+  };
+  return NextResponse.json(body, {
+    status: 429,
+    headers: {
+      "Retry-After": String(retryAfterSec),
+      "X-Cost-Remaining": String(Math.max(0, denial.limitCents - denial.usedCents)),
+      "X-Cost-Reset": denial.resetAt,
+    },
+  });
 }

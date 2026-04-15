@@ -248,3 +248,43 @@ describe("reconcileCost", () => {
     expect(redis.store.size).toBe(0);
   });
 });
+
+describe("costLimitResponse", () => {
+  it("serializes a user-scope 429 with body and headers", async () => {
+    const { costLimitResponse } = await import("@/lib/api/costLimit");
+    const response = costLimitResponse({
+      allowed: false,
+      scope: "user",
+      usedCents: 199,
+      limitCents: 200,
+      resetAt: "2099-04-16T00:00:00.000Z",
+    });
+
+    expect(response.status).toBe(429);
+    const body = await response.json();
+    expect(body).toEqual({
+      error: "daily_cost_limit",
+      scope: "user",
+      usedCents: 199,
+      limitCents: 200,
+      resetAt: "2099-04-16T00:00:00.000Z",
+    });
+    expect(response.headers.get("Retry-After")).toBeTruthy();
+    expect(response.headers.get("X-Cost-Remaining")).toBe("1");
+    expect(response.headers.get("X-Cost-Reset")).toBe("2099-04-16T00:00:00.000Z");
+  });
+
+  it("uses global_cost_limit code for global scope", async () => {
+    const { costLimitResponse } = await import("@/lib/api/costLimit");
+    const response = costLimitResponse({
+      allowed: false,
+      scope: "global",
+      usedCents: 4999,
+      limitCents: 5000,
+      resetAt: "2099-04-15T18:00:00.000Z",
+    });
+    const body = await response.json();
+    expect(body.error).toBe("global_cost_limit");
+    expect(body.scope).toBe("global");
+  });
+});
