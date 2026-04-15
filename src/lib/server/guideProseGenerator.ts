@@ -331,6 +331,7 @@ export async function* runGuideProseBatch(
   itinerary: Itinerary,
   builderData: TripBuilderData,
   intentResult: IntentExtractionResult | undefined,
+  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
 ): AsyncGenerator<BatchOutcome, void, void> {
   const days = itinerary.days ?? [];
   if (days.length === 0) return;
@@ -358,6 +359,7 @@ export async function* runGuideProseBatch(
       buildHeaderSchema(),
       PER_CALL_TIMEOUT_MS,
       batchController.signal,
+      onUsage,
     ).then(
       (result): BatchOutcome => ({ kind: "header", result }),
       (error): BatchOutcome => ({ kind: "header-failed", error }),
@@ -397,6 +399,7 @@ export async function* runGuideProseBatch(
         buildDaySchema(),
         PER_CALL_TIMEOUT_MS,
         batchController.signal,
+        onUsage,
       ).then(
         (result): BatchOutcome => ({
           kind: "day",
@@ -476,6 +479,7 @@ export async function generateGuideProse(
   itinerary: Itinerary,
   builderData: TripBuilderData,
   intentResult?: IntentExtractionResult,
+  opts?: { onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void },
 ): Promise<GeneratedGuide | null> {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;
@@ -500,7 +504,7 @@ export async function generateGuideProse(
   // draining, without mutating the GeneratedDayGuide type.
   const dayEntries: Array<{ dayIndex: number; day: typeof shell.days[number] }> = [];
 
-  for await (const outcome of runGuideProseBatch(itinerary, builderData, intentResult)) {
+  for await (const outcome of runGuideProseBatch(itinerary, builderData, intentResult, opts?.onUsage)) {
     switch (outcome.kind) {
       case "header":
         shell.tripOverview = outcome.result.tripOverview;
