@@ -3,6 +3,21 @@ import type { Metadata } from "next";
 import { ItineraryClient } from "./ItineraryClient";
 import { getPagesContent } from "@/lib/sanity/contentService";
 import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
+import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
+
+async function getLaunchSlots(): Promise<number | null> {
+  try {
+    const supabase = getServiceRoleClient();
+    const { data } = await supabase
+      .from("launch_pricing")
+      .select("remaining_slots")
+      .eq("id", "default")
+      .single();
+    return data?.remaining_slots ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Your Itinerary | Yuku Japan",
@@ -23,7 +38,18 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ItineraryPage() {
-  const content = await getPagesContent();
+  const [content, launchSlotsRemaining] = await Promise.all([
+    getPagesContent(),
+    getLaunchSlots(),
+  ]);
 
-  return <ItineraryClient content={content ?? undefined} />;
+  const launchPricing = (launchSlotsRemaining ?? 0) > 0;
+
+  return (
+    <ItineraryClient
+      content={content ?? undefined}
+      launchPricing={launchPricing}
+      launchSlotsRemaining={launchSlotsRemaining ?? undefined}
+    />
+  );
 }

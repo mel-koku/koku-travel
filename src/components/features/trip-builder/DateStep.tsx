@@ -140,7 +140,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
           </motion.h2>
 
           <p className="mt-2 text-sm text-stone">
-            {sanityConfig?.dateStepDescription ?? "Season shapes the trip. Cherry blossoms, fall color, rainy season. Up to 14 days."}
+            {sanityConfig?.dateStepDescription ?? "Season shapes the trip. Cherry blossoms, fall color, rainy season. Up to 21 days."}
           </p>
 
           <div className="mt-8 flex flex-col gap-6">

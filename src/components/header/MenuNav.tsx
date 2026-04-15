@@ -11,7 +11,8 @@ import { useAppState } from "@/state/AppState";
 const navItems = [
   { number: "01", label: "Places", href: "/places" },
   { number: "02", label: "Guides", href: "/guides" },
-  { number: "03", label: "Build My Trip", href: "/trip-builder" },
+  { number: "03", label: "Pricing", href: "/pricing" },
+  { number: "04", label: "Build My Trip", href: "/trip-builder" },
 ];
 
 type MenuNavProps = {

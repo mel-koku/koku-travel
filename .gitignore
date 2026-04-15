@@ -187,12 +187,13 @@ docs/
 tmp/
 
 # Scripts (migration/maintenance/DQ tools, not needed in production)
-scripts/
+/scripts/
 enrichment-targets.json
 
 # Ad-hoc query scripts (contain service role references)
 query_*.js
 check-enrichment.mjs
+check-seasonal-audit.mjs
 
 # Local working plans / scratch notes (not part of repo history)
 plans/

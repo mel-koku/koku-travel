@@ -15,6 +15,7 @@ export const tripBuilderConfig = defineType({
     { name: "reviewStep", title: "Review Step", options: { collapsible: true, collapsed: true } },
     { name: "generatingOverlay", title: "Generating Overlay", options: { collapsible: true, collapsed: true } },
     { name: "navigation", title: "Navigation Labels", options: { collapsible: true, collapsed: true } },
+    { name: "billing", title: "Billing / Free Access", options: { collapsible: true, collapsed: true } },
   ],
   fields: [
     // ── Vibes (Data) ────────────────────────────
@@ -499,6 +500,27 @@ export const tripBuilderConfig = defineType({
       type: "string",
       fieldset: "navigation",
       initialValue: "Start over? Everything you\u2019ve entered will be cleared.",
+    }),
+
+    // ── Billing / Free Access ───────────────────
+    defineField({
+      name: "freeAccessWindow",
+      fieldset: "billing",
+      title: "Free Access Window",
+      description: "When set, all trips are fully unlocked without payment. Use for promotions or launch periods.",
+      type: "object",
+      fields: [
+        defineField({
+          name: "startDate",
+          title: "Start Date",
+          type: "date",
+        }),
+        defineField({
+          name: "endDate",
+          title: "End Date",
+          type: "date",
+        }),
+      ],
     }),
   ],
   preview: {

@@ -16,9 +16,11 @@ type ShareRecord = {
 
 type ShareButtonProps = {
   tripId: string;
+  locked?: boolean;
+  onLockedClick?: () => void;
 };
 
-export function ShareButton({ tripId }: ShareButtonProps) {
+export function ShareButton({ tripId, locked, onLockedClick }: ShareButtonProps) {
   const [share, setShare] = useState<ShareRecord | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,6 +72,10 @@ export function ShareButton({ tripId }: ShareButtonProps) {
   }, [menuOpen]);
 
   const handleShare = useCallback(async () => {
+    if (locked && onLockedClick) {
+      onLockedClick();
+      return;
+    }
     if (!isAuthenticated) {
       showToast("Sign in to share your itinerary", { variant: "error" });
       return;
@@ -104,7 +110,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [tripId, share, showToast, isAuthenticated]);
+  }, [tripId, share, showToast, isAuthenticated, locked, onLockedClick]);
 
   const handleToggleShare = useCallback(async () => {
     if (!share) return;

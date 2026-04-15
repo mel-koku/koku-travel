@@ -11,10 +11,9 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { intentExtractionSchema } from "./llmSchemas";
 import { generateCacheKey, getRedisClient } from "@/lib/cache/itineraryCache";
 import { requiresLLMExtraction, extractIntentFromRules } from "./ruleBasedIntent";
@@ -153,13 +152,16 @@ Important:
 - Be conservative — only extract what's clearly implied
 - Empty arrays are fine if nothing applies`;
 
+  const model = getModel();
+  if (!model) return null;
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
+      model,
+      providerOptions: VERTEX_PROVIDER_OPTIONS,
       schema: intentExtractionSchema,
       prompt,
       abortSignal: controller.signal,
@@ -196,7 +198,6 @@ Important:
     clearTimeout(timeout);
     logger.warn("Intent extraction failed, proceeding without constraints", {
       error: getErrorMessage(error),
-      ...extractApiErrorDetails(error),
     });
     return null;
   }

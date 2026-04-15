@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 import { POST } from "@/app/api/itinerary/plan/route";
 import { createMockRequest } from "../utils/mocks";
 
+vi.mock("server-only", () => ({}));
+vi.mock("@/lib/billing/accessServer", () => ({
+  isFullAccessEnabled: vi.fn().mockResolvedValue(true),
+}));
+
 // Mock dependencies
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
@@ -272,6 +277,7 @@ describe("POST /api/itinerary/plan", () => {
         expect.anything(),
         customTripId,
         undefined,
+        expect.objectContaining({ deferProse: expect.any(Boolean) }),
       );
     });
 
@@ -288,6 +294,7 @@ describe("POST /api/itinerary/plan", () => {
         expect.anything(),
         expect.stringMatching(/^trip-\d+-[a-z0-9]+$/),
         undefined,
+        expect.objectContaining({ deferProse: expect.any(Boolean) }),
       );
     });
 

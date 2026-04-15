@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Cormorant, Plus_Jakarta_Sans } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { SharedProviders } from "@/components/SharedProviders";
 import "./trip/[id]/print.css";
 

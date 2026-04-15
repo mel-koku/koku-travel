@@ -53,6 +53,11 @@ import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
 import { useReplacementState } from "@/hooks/useReplacementState";
 import { useDayTripActions } from "@/hooks/useDayTripActions";
 import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
+import { UnlockCard } from "./UnlockCard";
+import { ContextualUnlockPrompt } from "./ContextualUnlockPrompt";
+import { isDayAccessible, getTripTier } from "@/lib/billing/access";
+
+type UnlockPromptContext = "locked_day" | "refinement" | "day_trip" | "share" | "pdf";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -94,6 +99,11 @@ type ItineraryShellProps = {
   onFilterChange?: (filter: Partial<RefinementFilters>) => void;
   isPreviewLoading?: boolean;
   dayTripSuggestions?: import("@/types/dayTrips").DayTripSuggestion[];
+  onUnlockClick?: () => void;
+  tripUnlocked?: boolean;
+  isGuest?: boolean;
+  launchPricing?: boolean;
+  launchSlotsRemaining?: number;
 };
 
 export const ItineraryShell = ({
@@ -122,6 +132,11 @@ export const ItineraryShell = ({
   onFilterChange,
   isPreviewLoading,
   dayTripSuggestions,
+  onUnlockClick,
+  tripUnlocked,
+  isGuest,
+  launchPricing,
+  launchSlotsRemaining,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
@@ -167,6 +182,18 @@ export const ItineraryShell = ({
   const currentTrip = useMemo(() => {
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
+
+  const fullAccessEnabled = process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
+  const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
+  const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
+  const requireUnlock = useCallback(
+    (ctx: UnlockPromptContext): boolean => {
+      if (!isTripLocked) return false;
+      setUnlockPromptCtx(ctx);
+      return true;
+    },
+    [isTripLocked],
+  );
 
   const {
     replacementActivityId,
@@ -643,8 +670,16 @@ export const ItineraryShell = ({
                   </div>
                   {!isReadOnly && tripId && !isUsingMock && (
                     <>
-                      <DownloadBookButton tripId={tripId} />
-                      <ShareButton tripId={tripId} />
+                      <DownloadBookButton
+                        tripId={tripId}
+                        locked={isTripLocked}
+                        onLockedClick={() => requireUnlock("pdf")}
+                      />
+                      <ShareButton
+                        tripId={tripId}
+                        locked={isTripLocked}
+                        onLockedClick={() => requireUnlock("share")}
+                      />
                     </>
                   )}
                 </div>
@@ -661,6 +696,10 @@ export const ItineraryShell = ({
                   cityIds={days.map((day) => day.cityId)}
                   tripStartDate={tripStartDate}
                   dayHealthLevels={dayHealthLevels}
+                  lockedDayIndices={isTripLocked
+                    ? new Set(days.map((_, i) => i).filter((i) => i > 0))
+                    : undefined}
+                  onLockedClick={() => requireUnlock("locked_day")}
                 />
                 {!isReadOnly && !isUsingMock && currentDay && (
                   <div className="flex items-center gap-2">
@@ -679,6 +718,7 @@ export const ItineraryShell = ({
                         onRefine={handleRefineDay}
                         currentStartTime={currentDay.bounds?.startTime ?? "09:00"}
                         onStartTimeChange={handleDayStartTimeChange}
+                        onRequireUnlock={() => requireUnlock("refinement")}
                       />
                     )}
                   </div>
@@ -703,7 +743,10 @@ export const ItineraryShell = ({
                   }}
                   tripBuilderData={tripBuilderData}
                   dayTripSuggestions={dayTripSuggestions}
-                  onAcceptDayTrip={handleAcceptDayTrip}
+                  onAcceptDayTrip={(suggestion, dayIndex) => {
+                    if (requireUnlock("day_trip")) return;
+                    handleAcceptDayTrip(suggestion, dayIndex);
+                  }}
                   isAcceptingDayTrip={isAcceptingDayTrip}
                   suggestions={suggestions}
                   dailyBriefings={dailyBriefings}
@@ -782,6 +825,7 @@ export const ItineraryShell = ({
 
             {/* Timeline */}
             {currentDay ? (
+              <>
               <ErrorBoundary>
                 <ItineraryTimeline
                   day={currentDay}
@@ -817,8 +861,24 @@ export const ItineraryShell = ({
                   onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
                   onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
                   onViewDetails={handleViewDetails}
+                  isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
+                  onUnlockClick={onUnlockClick}
                 />
               </ErrorBoundary>
+
+              {/* Unlock Card (shown after Day 1 when trip is not unlocked) */}
+              {safeSelectedDay === 0 && !(tripUnlocked ?? false) && !fullAccessEnabled && model.days.length > 1 && (
+                <UnlockCard
+                  tier={getTripTier(model.days.length)}
+                  cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                  totalDays={model.days.length}
+                  isGuest={isGuest}
+                  launchPricing={launchPricing}
+                  launchSlotsRemaining={launchSlotsRemaining}
+                  onUnlock={onUnlockClick ?? (() => {})}
+                />
+              )}
+              </>
             ) : (
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <svg className="h-8 w-8 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -925,6 +985,16 @@ export const ItineraryShell = ({
       })()}
     </section>
     <PrintFooter />
+    <ContextualUnlockPrompt
+      isOpen={unlockPromptCtx !== null}
+      context={unlockPromptCtx ?? "locked_day"}
+      tier={getTripTier(model.days.length)}
+      onUnlock={() => {
+        setUnlockPromptCtx(null);
+        onUnlockClick?.();
+      }}
+      onClose={() => setUnlockPromptCtx(null)}
+    />
     </ActivityRatingsProvider>
   );
 };

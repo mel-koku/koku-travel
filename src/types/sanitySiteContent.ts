@@ -178,6 +178,12 @@ export type TripBuilderConfig = {
   navStartPlanningLabel?: string;
   navGenerateLabel?: string;
   navStartOverConfirmation?: string;
+
+  // Billing / Free Access
+  freeAccessWindow?: {
+    startDate?: string;
+    endDate?: string;
+  };
 };
 
 export type PagesContent = {

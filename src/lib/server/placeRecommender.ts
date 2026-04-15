@@ -11,11 +11,10 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 
 /** Valid DB categories — constrains Gemini to only return real values */
 const VALID_CATEGORIES = [
@@ -213,13 +212,16 @@ First, determine the **commandType**:
 - If the query mentions a specific food type, include "restaurant" in categories and the food type in searchQuery
 - Empty arrays are fine for categories/tags if nothing specific applies`;
 
+  const model = getModel();
+  if (!model) return null;
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
     const result = await generateObject({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_GENERATE_OPTIONS,
+      model,
+      providerOptions: VERTEX_PROVIDER_OPTIONS,
       schema: placeIntentSchema,
       prompt,
       abortSignal: controller.signal,
@@ -242,7 +244,6 @@ First, determine the **commandType**:
     logger.warn("Place intent extraction failed, falling back to text search", {
       error: getErrorMessage(error),
       query,
-      ...extractApiErrorDetails(error),
     });
     return null;
   }

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { MotionConfig } from "framer-motion";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";

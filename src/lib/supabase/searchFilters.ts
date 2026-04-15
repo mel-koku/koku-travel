@@ -1,6 +1,16 @@
 import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "./search";
 
 /**
+ * Returns true if the query should fall through to semantic search.
+ * Heuristic: 3+ word queries with no structured keyword intent.
+ */
+export function shouldTrySemanticSearch(query: string, hasStructuredIntent: boolean): boolean {
+  if (hasStructuredIntent) return false;
+  const wordCount = query.trim().split(/\s+/).length;
+  return wordCount >= 3;
+}
+
+/**
  * Applies text search filtering to a Supabase query.
  *
  * Uses full-text search (FTS) for queries >= 3 chars (supports stemming),

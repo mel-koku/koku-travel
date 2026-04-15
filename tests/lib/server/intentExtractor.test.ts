@@ -15,8 +15,9 @@ vi.mock("server-only", () => ({}));
 vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }));
-vi.mock("@ai-sdk/google-vertex", () => ({
-  createVertex: vi.fn().mockReturnValue(vi.fn().mockReturnValue("mock-model")),
+vi.mock("@/lib/server/llmProvider", () => ({
+  getModel: vi.fn().mockReturnValue("mock-model"),
+  VERTEX_PROVIDER_OPTIONS: { google: { streamFunctionCallArguments: false } },
 }));
 vi.mock("@/lib/logger", () => ({
   logger: { info: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -43,7 +44,7 @@ describe("extractTripIntent", () => {
 
   describe("graceful degradation", () => {
     it("returns null when API key is missing", async () => {
-      delete process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+      delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
       const result = await extractTripIntent(builderWithNotes());
       expect(result).toBeNull();
     });

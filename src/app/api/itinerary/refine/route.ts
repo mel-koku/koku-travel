@@ -18,6 +18,9 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { escapePostgrestValue } from "@/lib/supabase/sanitize";
+import { MAX_FREE_REFINEMENTS, MAX_PAID_REFINEMENTS } from "@/lib/billing/access";
+import { isFullAccessEnabled } from "@/lib/billing/accessServer";
+import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
 export const maxDuration = 60;
 
@@ -207,7 +210,7 @@ const mapTripDayToItineraryDay = (
  * @throws Returns 500 for server errors
  */
 export const POST = withApiHandler(
-  async (request, { context }) => {
+  async (request, { context, user }) => {
     // Validate request body with size limit (2MB for trip data)
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
     // Using strip() to silently drop unknown fields for security
@@ -289,6 +292,58 @@ export const POST = withApiHandler(
         });
       }
 
+      // Reserve a refinement slot atomically. Free users cap at MAX_FREE_REFINEMENTS;
+      // unlocked trips cap at MAX_PAID_REFINEMENTS to prevent abuse. Eliminates the
+      // read-check-then-increment race that previously let concurrent requests both
+      // pass the cap gate. Decrement on LLM failure or no-op stub below.
+      const fullAccessStub = await isFullAccessEnabled();
+      let reservedSlot = false;
+      let isUnlockedTrip = false;
+
+      if (!fullAccessStub && user) {
+        const serviceClientStub = getServiceRoleClient();
+        const { data: tripRowStub } = await serviceClientStub
+          .from("trips")
+          .select("unlocked_at")
+          .eq("id", trip.id)
+          .eq("user_id", user.id)
+          .single();
+
+        isUnlockedTrip = !!tripRowStub?.unlocked_at;
+        const cap = isUnlockedTrip ? MAX_PAID_REFINEMENTS : MAX_FREE_REFINEMENTS;
+
+        const { data: newCount, error: reserveError } = await serviceClientStub.rpc(
+          "increment_free_refinements_if_under_cap",
+          { p_trip_id: trip.id, p_user_id: user.id, p_max: cap },
+        );
+
+        if (reserveError) {
+          logger.error(
+            "Failed to reserve refinement slot",
+            reserveError instanceof Error
+              ? reserveError
+              : new Error(JSON.stringify(reserveError)),
+            { tripId: trip.id, userId: user.id },
+          );
+          return NextResponse.json(
+            { error: "Internal error reserving refinement" },
+            { status: 500 },
+          );
+        }
+
+        if (newCount === null || newCount === undefined) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: isUnlockedTrip
+              ? "You've reached the refinement limit for this trip."
+              : "Unlock your full trip to keep refining.",
+            requiresUnlock: !isUnlockedTrip,
+          });
+        }
+        reservedSlot = true;
+      }
+
       // Check Redis cache for identical refinement request
       const dayActivityIds = (trip.days[targetDayIndex]?.activities ?? []).map(a => a.locationId ?? a.id);
       const cacheKey = buildRefineCacheKey(dayActivityIds, refinementType, trip.days[targetDayIndex]?.cityId);
@@ -308,12 +363,25 @@ export const POST = withApiHandler(
         }
       }
 
-      // Perform actual refinement using refineDay function
-      const refinedDay = await refineDay({
-        trip,
-        dayIndex: targetDayIndex,
-        type: refinementType,
-      });
+      // Perform actual refinement using refineDay function. Release the reserved
+      // slot if it throws so the user isn't billed for a failed LLM call.
+      let refinedDay: TripDay;
+      try {
+        refinedDay = await refineDay({
+          trip,
+          dayIndex: targetDayIndex,
+          type: refinementType,
+        });
+      } catch (err) {
+        if (reservedSlot && user) {
+          const serviceClientStub = getServiceRoleClient();
+          await serviceClientStub.rpc("decrement_free_refinements", {
+            p_trip_id: trip.id,
+            p_user_id: user.id,
+          });
+        }
+        throw err;
+      }
 
       // Cache the refined day
       if (redis) {
@@ -330,6 +398,17 @@ export const POST = withApiHandler(
         days: updatedDays,
         updatedAt: new Date().toISOString(),
       };
+
+      // Release the reservation if refineDay returned a no-op stub (e.g. nothing
+      // to refine). Real refinements keep the slot consumed.
+      const isNoOpStub = !!refinedDay.message;
+      if (reservedSlot && isNoOpStub && user) {
+        const serviceClientStub = getServiceRoleClient();
+        await serviceClientStub.rpc("decrement_free_refinements", {
+          p_trip_id: trip.id,
+          p_user_id: user.id,
+        });
+      }
 
       return NextResponse.json(
         {
@@ -373,6 +452,42 @@ export const POST = withApiHandler(
       );
     }
 
+    // Check refinement limits for free users
+    const fullAccess = await isFullAccessEnabled();
+    if (!fullAccess && user) {
+      const serviceClient = getServiceRoleClient();
+      const { data: tripRow } = await serviceClient
+        .from("trips")
+        .select("unlocked_at, free_refinements_used")
+        .eq("id", tripId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (tripRow && !tripRow.unlocked_at) {
+        const used = tripRow.free_refinements_used ?? 0;
+        if (used >= MAX_FREE_REFINEMENTS) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: "Unlock your full trip to keep refining.",
+            requiresUnlock: true,
+          });
+        }
+      }
+
+      // Hard cap for unlocked trips to prevent abuse
+      if (tripRow && tripRow.unlocked_at) {
+        const used = tripRow.free_refinements_used ?? 0;
+        if (used >= MAX_PAID_REFINEMENTS) {
+          return NextResponse.json({
+            refinedDay: null,
+            updatedTrip: null,
+            message: "You've reached the refinement limit for this trip.",
+          });
+        }
+      }
+    }
+
     // Determine cities to filter by for optimized database queries
     const selectedCities = builderData.cities && builderData.cities.length > 0 ? builderData.cities : undefined;
 
@@ -403,6 +518,8 @@ export const POST = withApiHandler(
       originalIds.length === refinedIds.length &&
       originalIds.every((id, i) => id === refinedIds[i]);
 
+    const isNoOp = !!(refinedDay.message || unchanged);
+
     const responseBody: RefinementResponse = {
       refinedDay: mapTripDayToItineraryDay(refinedDay, originalItineraryDay),
       updatedTrip,
@@ -412,6 +529,21 @@ export const POST = withApiHandler(
           ? { message: "This day is already optimized for that adjustment." }
           : {}),
     };
+
+    // Increment free refinement counter for non-unlocked trips
+    if (!fullAccess && user && !isNoOp) {
+      const serviceClient = getServiceRoleClient();
+      const { data: tripRow } = await serviceClient
+        .from("trips")
+        .select("unlocked_at")
+        .eq("id", tripId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (tripRow && !tripRow.unlocked_at) {
+        await serviceClient.rpc("increment_free_refinements", { p_trip_id: tripId, p_user_id: user.id });
+      }
+    }
 
     return NextResponse.json(responseBody);
   },
