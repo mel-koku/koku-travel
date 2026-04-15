@@ -20,6 +20,7 @@ export type TripPlanData = {
     style?: TripStyle;
     entryAirport?: string;
   };
+  unknownCities: string[];
   cityNames: string[];
   vibeNames: string[];
 };

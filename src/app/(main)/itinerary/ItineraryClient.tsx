@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
@@ -12,12 +13,14 @@ import { ItinerarySkeleton } from "@/components/features/itinerary/ItinerarySkel
 import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
+import { logger } from "@/lib/logger";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
 import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
 import { useDayTripSuggestions } from "@/hooks/useDayTripSuggestions";
+import { UnlockCeremony } from "@/components/features/itinerary/UnlockCeremony";
 
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
@@ -25,6 +28,8 @@ import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ItineraryClientProps = {
   content?: PagesContent;
+  launchPricing?: boolean;
+  launchSlotsRemaining?: number;
 };
 
 /** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
@@ -43,12 +48,15 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-function ItineraryPageContent({ content }: { content?: PagesContent }) {
+function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: { content?: PagesContent; launchPricing?: boolean; launchSlotsRemaining?: number }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
-  const { trips, updateTripItinerary } = useAppState();
+  const { trips, updateTripItinerary, user, refreshFromSupabase } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
+  const [showCeremony, setShowCeremony] = useState(false);
+  const [generationPromise, setGenerationPromise] = useState<Promise<unknown> | null>(null);
+  const [generationRetryable, setGenerationRetryable] = useState(false);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -85,6 +93,93 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     ? trips.find((trip) => trip.id === selectedTripId)
     : null;
 
+  const runGeneration = useCallback(async () => {
+    if (!selectedTrip) return null;
+    setGenerationRetryable(false);
+    const sessionId = searchParams.get("session_id");
+    const verifyRes = await fetch(
+      `/api/billing/verify?session_id=${sessionId}&trip_id=${selectedTrip.id}`
+    );
+    const verifyData = await verifyRes.json();
+    if (!verifyData.unlocked) return null;
+
+    const genRes = await fetch("/api/billing/complete-generation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tripId: selectedTrip.id }),
+    });
+    if (!genRes.ok) {
+      const body = await genRes.json().catch(() => ({}));
+      if (genRes.status === 502 && body?.retryable) {
+        setGenerationRetryable(true);
+        return null;
+      }
+      throw new Error(`complete-generation failed: ${genRes.status}`);
+    }
+    return genRes.json();
+  }, [selectedTrip, searchParams]);
+
+  // Detect return from Stripe checkout (?unlocked=1&session_id=...)
+  useEffect(() => {
+    const unlocked = searchParams.get("unlocked");
+    const sessionId = searchParams.get("session_id");
+
+    if (unlocked === "1" && sessionId && selectedTrip && !selectedTrip.unlockedAt) {
+      setGenerationPromise(runGeneration());
+      setShowCeremony(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-run when selectedTrip finishes loading from async state
+  }, [selectedTrip?.id, selectedTrip?.unlockedAt]);
+
+  const handleRetryGeneration = useCallback(() => {
+    setGenerationPromise(runGeneration());
+  }, [runGeneration]);
+
+  // Unlock button handler (passed down to UnlockCard via ItineraryShell)
+  const handleStartUnlock = useCallback(async () => {
+    if (!selectedTrip) return;
+
+    // Redirect guests to sign in first, then return here.
+    // Guest ID gets rotated to a UUID on first trip creation, so use email presence instead.
+    if (!user.email) {
+      const returnUrl = `/itinerary?trip=${encodeURIComponent(selectedTrip.id)}`;
+      window.location.href = `/signin?next=${encodeURIComponent(returnUrl)}&intent=unlock`;
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tripId: selectedTrip.id,
+          tripLengthDays: selectedTrip.itinerary.days.length,
+          cities: [...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))],
+          tripDates: (() => {
+            const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            const start = selectedTrip.builderData?.dates?.start;
+            const end = selectedTrip.builderData?.dates?.end;
+            if (start && end) return `${fmt(start)} - ${fmt(end)}`;
+            if (start) return fmt(start);
+            return "";
+          })(),
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        logger.error("Checkout API error", null, { status: res.status, error: errorData?.error });
+        return;
+      }
+
+      const data = await res.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (err) {
+      logger.error("Checkout network error", err);
+    }
+  }, [selectedTrip, user.id]);
 
   const activeItinerary: Itinerary | null = selectedTrip
     ? selectedTrip.itinerary
@@ -277,17 +372,40 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           onFilterChange={smartPromptActions.setRefinementFilter}
           isPreviewLoading={smartPromptActions.isLoading}
           dayTripSuggestions={dayTripSuggestions.suggestions}
+          onUnlockClick={handleStartUnlock}
+          tripUnlocked={!!selectedTrip?.unlockedAt}
+          isGuest={!user.email}
+          launchPricing={launchPricing}
+          launchSlotsRemaining={launchSlotsRemaining}
         />
       </ErrorBoundary>
 
+      <AnimatePresence>
+        {showCeremony && generationPromise && selectedTrip && (
+          <UnlockCeremony
+            cities={[...new Set(selectedTrip.itinerary.days.map((d) => d.cityId).filter(Boolean))] as string[]}
+            onComplete={async () => {
+              // Pull fresh trip state (with unlocked_at) from Supabase so the
+              // UI reflects the unlock without a full page reload.
+              await refreshFromSupabase();
+              setShowCeremony(false);
+              // Clean up the ?unlocked=1&session_id=... query params
+              window.history.replaceState(null, "", `/itinerary?trip=${selectedTrip.id}`);
+            }}
+            generationPromise={generationPromise}
+            retryable={generationRetryable}
+            onRetry={handleRetryGeneration}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-export function ItineraryClient({ content }: ItineraryClientProps) {
+export function ItineraryClient({ content, launchPricing, launchSlotsRemaining }: ItineraryClientProps) {
   return (
     <Suspense fallback={<ItinerarySkeleton />}>
-      <ItineraryPageContent content={content} />
+      <ItineraryPageContent content={content} launchPricing={launchPricing} launchSlotsRemaining={launchSlotsRemaining} />
     </Suspense>
   );
 }

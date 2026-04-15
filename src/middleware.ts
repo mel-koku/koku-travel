@@ -35,6 +35,7 @@ const PUBLIC_API_ROUTES = [
   "/api/bookings/pricing",
   "/api/day-trips",
   "/api/csp-report",
+  "/api/billing/stripe-webhook",
 ];
 
 /**

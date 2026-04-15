@@ -45,6 +45,10 @@ type DaySelectorProps = {
   variant?: "default" | "dark";
   /** Per-day health levels for indicator dots (optional) */
   dayHealthLevels?: DayHealthLevel[];
+  /** Indices of days that are locked (paywalled) */
+  lockedDayIndices?: Set<number>;
+  /** Called when a locked day is clicked (overrides onChange for those indices) */
+  onLockedClick?: (index: number) => void;
 };
 
 /**
@@ -86,6 +90,8 @@ export const DaySelector = ({
   tripStartDate,
   autoScrollToToday = true,
   dayHealthLevels,
+  lockedDayIndices,
+  onLockedClick,
 }: DaySelectorProps) => {
   const hasAutoScrolled = useRef(false);
   const [open, setOpen] = useState(false);
@@ -151,10 +157,15 @@ export const DaySelector = ({
 
   const handleSelect = useCallback(
     (idx: number) => {
+      if (lockedDayIndices?.has(idx) && onLockedClick) {
+        onLockedClick(idx);
+        setOpen(false);
+        return;
+      }
       onChange(idx);
       setOpen(false);
     },
-    [onChange]
+    [onChange, lockedDayIndices, onLockedClick]
   );
 
   // Keyboard navigation
@@ -263,6 +274,11 @@ export const DaySelector = ({
                       <span className={cn("ml-1 text-[10px] font-semibold", isActive ? "text-brand-primary/70" : "text-sage")}>
                         (Today)
                       </span>
+                    )}
+                    {lockedDayIndices?.has(index) && (
+                      <svg className="ml-1 inline h-3 w-3 text-foreground-secondary" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1a4 4 0 0 0-4 4v2H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1V5a4 4 0 0 0-4-4zm2 6H6V5a2 2 0 1 1 4 0v2z" />
+                      </svg>
                     )}
                   </span>
                   {healthLevel && healthLevel !== "good" && (

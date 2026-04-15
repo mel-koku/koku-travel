@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { vertex, VERTEX_CHAT_OPTIONS } from "@/lib/server/vertexProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS } from "@/lib/server/llmProvider";
 import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
@@ -103,9 +103,14 @@ export const POST = withApiHandler(async (request: NextRequest, { context }) => 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod passthrough preserves full UIMessage shape; cast needed for SDK compatibility
     const modelMessages = await convertToModelMessages(recentMessages as any);
 
+    const model = getModel();
+    if (!model) {
+      return serviceUnavailable("AI chat is not available");
+    }
+
     const result = streamText({
-      model: vertex("gemini-2.5-flash"),
-      providerOptions: VERTEX_CHAT_OPTIONS,
+      model,
+      providerOptions: VERTEX_PROVIDER_OPTIONS,
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,

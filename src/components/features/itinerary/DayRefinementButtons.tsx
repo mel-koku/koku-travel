@@ -16,6 +16,8 @@ type DayRefinementButtonsProps = {
   currentStartTime?: string;
   /** Callback to change the day start time */
   onStartTimeChange?: (time: string) => void;
+  /** Called when refine API returns requiresUnlock (free limit hit, non-Pass) */
+  onRequireUnlock?: () => void;
 };
 
 const REFINEMENT_OPTIONS: Array<{
@@ -78,6 +80,7 @@ export function DayRefinementButtons({
   onRefine,
   currentStartTime = "09:00",
   onStartTimeChange,
+  onRequireUnlock,
 }: DayRefinementButtonsProps) {
   const [isRefining, setIsRefining] = useState(false);
   const [refinementError, setRefinementError] = useState<string | null>(null);
@@ -125,7 +128,10 @@ export function DayRefinementButtons({
       }
 
       const data = await response.json();
-      if (data.message) {
+      if (data.requiresUnlock && onRequireUnlock) {
+        setOpen(false);
+        onRequireUnlock();
+      } else if (data.message) {
         setRefinementError(data.message);
       } else if (data.refinedDay) {
         onRefine(data.refinedDay);
@@ -136,7 +142,7 @@ export function DayRefinementButtons({
     } finally {
       setIsRefining(false);
     }
-  }, [builderData, itinerary, tripId, dayIndex, onRefine]);
+  }, [builderData, itinerary, tripId, dayIndex, onRefine, onRequireUnlock]);
 
   return (
     <div ref={ref} className="relative inline-block">

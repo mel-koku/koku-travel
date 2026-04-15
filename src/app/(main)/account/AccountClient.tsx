@@ -15,6 +15,7 @@ import { env } from "@/lib/env";
 import { debounce } from "@/lib/utils";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { typography } from "@/lib/typography-system";
+import { TravelPreferencesSection } from "@/components/features/account/TravelPreferencesSection";
 
 type AccountClientProps = {
   content?: PagesContent;
@@ -180,6 +181,7 @@ export function AccountClient({ content }: AccountClientProps) {
                     onClick={async () => {
                       try {
                         await supabase.auth.signOut();
+                        clearAllLocalData();
                       } catch {
                         // Sign-out failure is non-critical — session will expire naturally
                       }
@@ -226,6 +228,22 @@ export function AccountClient({ content }: AccountClientProps) {
               )}
             </div>
           </ScrollReveal>
+
+          {signedIn && (
+            <ScrollReveal delay={0.1} distance={20}>
+              <div className="mt-8 rounded-lg border border-border bg-surface p-6 shadow-[var(--shadow-sm)] space-y-2">
+                <h2 className={typography({ intent: "editorial-h3" })}>
+                  Travel Preferences
+                </h2>
+                <p className="text-sm text-foreground-secondary">
+                  These pre-fill the trip builder so you don&apos;t have to set them each time.
+                </p>
+                <div className="pt-4">
+                  <TravelPreferencesSection disabled={isLoadingProfile || isLoadingRefresh} />
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
     </div>

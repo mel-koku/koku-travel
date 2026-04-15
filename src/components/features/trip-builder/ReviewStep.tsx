@@ -13,6 +13,7 @@ import {
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
+import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -186,6 +187,10 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     [data.duration, data.regions, data.cities],
   );
 
+  const totalDays = data.duration ?? data.cities?.length ?? 1;
+  const tier = getTripTier(totalDays);
+  const price = getTierPriceDollars(tier);
+
   // Navigation handlers (flat steps: 1=dates, 2=entry, 3=vibes, 4=regions)
   const handleEditDates = useCallback(() => onGoToStep?.(1), [onGoToStep]);
   const handleEditEntryPoint = useCallback(() => onGoToStep?.(2), [onGoToStep]);
@@ -205,6 +210,11 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         >
           {headline}
         </motion.h2>
+        {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS !== "true" && (
+          <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-center")}>
+            Your first day is free. Unlock your full itinerary for ${price} after it&apos;s ready.
+          </p>
+        )}
       </div>
 
       {/* Two-column layout */}

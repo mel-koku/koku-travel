@@ -18,6 +18,12 @@ export type StoredTrip = {
   guideProse?: GeneratedGuide;
   dailyBriefings?: GeneratedBriefings;
   culturalBriefing?: CulturalBriefing;
+  // Trip Pass fields
+  unlockedAt?: string | null;
+  unlockTier?: "short" | "standard" | "long" | null;
+  stripeSessionId?: string | null;
+  unlockAmountCents?: number | null;
+  freeRefinementsUsed?: number;
 };
 
 export type CreateTripInput = {

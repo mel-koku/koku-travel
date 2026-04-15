@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/server/itineraryEngine";
+import { isFullAccessEnabled } from "@/lib/billing/accessServer";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
@@ -115,6 +116,9 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       builderData.travelerProfile = buildTravelerProfile(builderData);
     }
 
+    // Check if full access is enabled (free window or env override)
+    const fullAccess = await isFullAccessEnabled();
+
     // Generate trip (returns both domain model and raw itinerary)
     // Include savedIds if provided (user's saved locations from Places page)
     // 55s timeout — under Vercel's 60s limit. Pipeline is:
@@ -124,7 +128,9 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
     const timeoutSentinel = Symbol("timeout");
     const startMs = Date.now();
     const generationResult = await Promise.race([
-      generateTripFromBuilderData(builderData, finalTripId, savedIds),
+      generateTripFromBuilderData(builderData, finalTripId, savedIds, {
+        deferProse: !fullAccess,
+      }),
       new Promise<typeof timeoutSentinel>((resolve) =>
         setTimeout(() => resolve(timeoutSentinel), GENERATION_TIMEOUT_MS),
       ),

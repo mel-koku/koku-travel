@@ -7,6 +7,7 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 
 /** Hash a share token for safe logging (no partial token leakage). */
 function hashToken(token: string): string {
@@ -59,7 +60,7 @@ export async function GET(
       // Fetch trip data (service role bypasses RLS)
       const { data: trip, error: tripError } = await supabase
         .from("trips")
-        .select("name, itinerary, builder_data, created_at, updated_at")
+        .select("name, itinerary, builder_data, created_at, updated_at, unlocked_at")
         .eq("id", share.trip_id)
         .is("deleted_at", null)
         .maybeSingle();
@@ -97,6 +98,33 @@ export async function GET(
           });
         });
 
+      // For free (non-unlocked) trips, strip detailed activity content from Days 2+
+      const isUnlocked = !!trip.unlocked_at;
+      let sharedItinerary: Itinerary = trip.itinerary as Itinerary;
+      if (
+        !isUnlocked &&
+        sharedItinerary?.days &&
+        sharedItinerary.days.length > 1
+      ) {
+        sharedItinerary = {
+          ...sharedItinerary,
+          days: sharedItinerary.days.map((day: ItineraryDay, i: number) => {
+            if (i === 0) return day;
+            // Keep day structure but strip detailed activity content
+            const stripped: ItineraryActivity[] = day.activities
+              .filter((a: ItineraryActivity): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+              .map((a): Extract<ItineraryActivity, { kind: "place" }> => ({
+                kind: "place",
+                id: a.id,
+                title: a.title,
+                timeOfDay: a.timeOfDay,
+                // Strip: schedule, travel segments, operating window, recommendation reason
+              }));
+            return { ...day, activities: stripped };
+          }),
+        };
+      }
+
       // Sanitize builderData: strip sensitive personal fields
       const sanitizedBuilderData = trip.builder_data
         ? {
@@ -114,7 +142,7 @@ export async function GET(
       const response = NextResponse.json({
         trip: {
           name: trip.name,
-          itinerary: trip.itinerary,
+          itinerary: sharedItinerary,
           builderData: sanitizedBuilderData,
           createdAt: trip.created_at,
           updatedAt: trip.updated_at,

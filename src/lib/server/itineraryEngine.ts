@@ -259,10 +259,16 @@ export function raceWithTimeout<T>(
  * @param tripId - Unique identifier for the trip
  * @param savedIds - Optional array of saved location IDs to include in generation
  */
+type GenerationOptions = {
+  /** When true, only return prose/briefings for Day 1. Days 2-N deferred to unlock. */
+  deferProse?: boolean;
+};
+
 export async function generateTripFromBuilderData(
   builderData: TripBuilderData,
   tripId: string,
   savedIds?: string[],
+  options?: GenerationOptions,
 ): Promise<GeneratedTripResult> {
   const t0 = Date.now();
 
@@ -589,6 +595,14 @@ export async function generateTripFromBuilderData(
   // LLM output (the assembly step uses `guideProse?.culturalBriefingIntro`
   // with optional chaining), so running it in parallel reclaims ~3s off the
   // sequential budget. All four fall back gracefully on failure.
+  // When deferring prose (free users), skip Passes 3 & 4 entirely to save cost.
+  // Only run them for Day 1 by filtering the itinerary input.
+  // At unlock time, the complete-generation endpoint re-runs them for all days.
+  const day1Only = options?.deferProse && optimizedItinerary.days.length > 1;
+  const proseItinerary = day1Only
+    ? { ...optimizedItinerary, days: optimizedItinerary.days.slice(0, 1) }
+    : optimizedItinerary;
+
   const [plannedItinerary, guideProse, dailyBriefings, pillars] = await Promise.all([
     timeStage(
       "planItinerary",
@@ -599,11 +613,11 @@ export async function generateTripFromBuilderData(
     ),
     timeStage(
       "generateGuideProse",
-      generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
+      generateGuideProse(proseItinerary, builderData, intentResult ?? undefined).catch(() => null),
     ),
     timeStage(
       "generateDailyBriefings",
-      generateDailyBriefings(optimizedItinerary, builderData).catch(() => null),
+      generateDailyBriefings(proseItinerary, builderData).catch(() => null),
     ),
     timeStage(
       "getCulturalPillars",
@@ -611,9 +625,13 @@ export async function generateTripFromBuilderData(
     ),
   ]);
 
+  const effectiveGuideProse = guideProse;
+  const effectiveDailyBriefings = dailyBriefings;
+
   // Assemble cultural briefing from Sanity pillars + trip categories.
   // Pillars are already fetched in the parallel block above, so this is a
   // pure synchronous transform — no I/O.
+  // culturalBriefingIntro is trip-level, so use full guideProse (not filtered)
   let culturalBriefing: CulturalBriefing | undefined;
   if (pillars && pillars.length > 0) {
     try {
@@ -638,7 +656,7 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Extract day intros from guide prose when present. When guideProse is
+  // Extract day intros from effective guide prose when present. When guideProse is
   // null (aborted or rejected), do NOT fall through to generateDayIntros —
   // that path runs another full Vertex call against the same slow provider
   // that just failed, with no effective timeout, and it compounded the wait
@@ -646,8 +664,8 @@ export async function generateTripFromBuilderData(
   // Downstream guideBuilder already has a three-tier fallback:
   //   guideProse.intro → dayIntros → DAY_INTRO_TEMPLATES
   // so undefined here just drops to the template layer.
-  const dayIntros = guideProse
-    ? Object.fromEntries(guideProse.days.map(d => [d.dayId, d.intro]))
+  const dayIntros = effectiveGuideProse
+    ? Object.fromEntries(effectiveGuideProse.days.map(d => [d.dayId, d.intro]))
     : undefined;
 
   // Day refinement: holistic quality pass — can swap, reorder, or flag activities.
@@ -697,8 +715,8 @@ export async function generateTripFromBuilderData(
     trip,
     itinerary,
     dayIntros: dayIntros ?? undefined,
-    guideProse: guideProse ?? undefined,
-    dailyBriefings: dailyBriefings ?? undefined,
+    guideProse: effectiveGuideProse ?? undefined,
+    dailyBriefings: effectiveDailyBriefings ?? undefined,
     culturalBriefing,
   };
 }

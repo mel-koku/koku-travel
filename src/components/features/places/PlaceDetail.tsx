@@ -24,6 +24,7 @@ import {
   SubExperiencesSection,
   RelationshipsSection,
 } from "./HierarchySections";
+import { SimilarPlaces } from "./SimilarPlaces";
 
 const staggerContainer = {
   hidden: {},
@@ -760,6 +761,9 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </div>
         </section>
       )}
+
+      {/* Similar Places */}
+      <SimilarPlaces locationId={location.id} />
 
       {/* Back to all places */}
       <div className="py-12 sm:py-16 text-center">

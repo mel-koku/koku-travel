@@ -262,7 +262,8 @@ export function isSeasonalLocationRelevant(
   isSeasonal: boolean | undefined | null,
   availability: LocationAvailability[] | undefined | null,
   tripStart: string | undefined,
-  tripEnd: string | undefined
+  tripEnd: string | undefined,
+  validMonths?: number[] | null,
 ): boolean {
   // Non-seasonal locations are always relevant
   if (!isSeasonal) return true;
@@ -271,8 +272,23 @@ export function isSeasonalLocationRelevant(
   // (we can't determine if they're relevant)
   if (!tripStart || !tripEnd) return false;
 
-  // If no availability data, exclude (we can't determine relevance)
-  if (!availability || availability.length === 0) return false;
+  // If no availability rules, fall back to valid_months check
+  if (!availability || availability.length === 0) {
+    if (validMonths && validMonths.length > 0) {
+      const startMonth = new Date(tripStart).getMonth() + 1;
+      const endMonth = new Date(tripEnd).getMonth() + 1;
+      // Check if any trip month falls within valid_months
+      if (startMonth === endMonth) {
+        return validMonths.includes(startMonth);
+      }
+      // Multi-month trip: check each month in range
+      for (let m = startMonth; m <= endMonth; m++) {
+        if (validMonths.includes(m)) return true;
+      }
+      return false;
+    }
+    return false;
+  }
 
   // Check each availability rule
   for (const rule of availability) {
@@ -353,6 +369,7 @@ export function filterByTripDates<
   T extends {
     isSeasonal?: boolean | null;
     availability?: LocationAvailability[] | null;
+    validMonths?: number[] | null;
   }
 >(locations: T[], tripStart: string | undefined, tripEnd: string | undefined): T[] {
   return locations.filter((location) =>
@@ -360,7 +377,8 @@ export function filterByTripDates<
       location.isSeasonal,
       location.availability,
       tripStart,
-      tripEnd
+      tripEnd,
+      location.validMonths,
     )
   );
 }

@@ -97,3 +97,69 @@ export async function sendInquiryConfirmation(
     );
   }
 }
+
+type ContactEmailData = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  attachment?: {
+    filename: string;
+    content: Buffer;
+    contentType: string;
+  };
+};
+
+/**
+ * Send contact form notification to the team.
+ * Gracefully degrades if RESEND_API_KEY is not set.
+ */
+export async function sendContactNotification(
+  data: ContactEmailData
+): Promise<void> {
+  const apiKey = env.resendApiKey;
+  if (!apiKey) {
+    logger.warn(
+      "RESEND_API_KEY not set — skipping contact notification email"
+    );
+    return;
+  }
+
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
+
+    const attachments = data.attachment
+      ? [
+          {
+            filename: data.attachment.filename,
+            content: data.attachment.content,
+            contentType: data.attachment.contentType,
+          },
+        ]
+      : undefined;
+
+    await resend.emails.send({
+      from: "Yuku Japan <noreply@yukujapan.com>",
+      to: "hello@yukujapan.com",
+      replyTo: data.email,
+      subject: `[Contact] ${data.subject}`,
+      text: [
+        `New contact form submission.`,
+        ``,
+        `Name: ${data.name}`,
+        `Email: ${data.email}`,
+        `Subject: ${data.subject}`,
+        ``,
+        `Message:`,
+        data.message,
+      ].join("\n"),
+      attachments,
+    });
+  } catch (err) {
+    logger.error(
+      "Failed to send contact notification email",
+      err instanceof Error ? err : new Error(String(err))
+    );
+  }
+}

@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 import { POST } from "@/app/api/itinerary/refine/route";
 import { createMockRequest } from "../utils/mocks";
 
+vi.mock("server-only", () => ({}));
+vi.mock("@/lib/billing/accessServer", () => ({
+  isFullAccessEnabled: vi.fn().mockResolvedValue(true),
+}));
+
 // Mock dependencies
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
