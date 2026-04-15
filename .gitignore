@@ -187,7 +187,7 @@ docs/
 tmp/
 
 # Scripts (migration/maintenance/DQ tools, not needed in production)
-scripts/
+/scripts/
 enrichment-targets.json
 
 # Ad-hoc query scripts (contain service role references)
