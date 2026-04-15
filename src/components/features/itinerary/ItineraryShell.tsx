@@ -530,9 +530,9 @@ export const ItineraryShell = ({
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <PrintHeader tripName={tripName} dateRange={printDateRange} cities={printCities} />
-    <section className="mx-auto min-h-[calc(100dvh-var(--header-h))] max-w-screen-2xl lg:h-[calc(100dvh-var(--header-h))] lg:overflow-hidden">
+    <section className="mx-auto min-h-[calc(100dvh-var(--header-h))] max-w-screen-2xl md:h-[calc(100dvh-var(--header-h))] md:overflow-hidden">
       {/* ── Mobile peek map strip (< lg) ── */}
-      <div className="relative lg:hidden">
+      <div className="relative md:hidden">
         <motion.div
           animate={{ height: viewMode === "discover" ? "50dvh" : mapExpanded ? "100dvh" : "30dvh" }}
           transition={{
@@ -605,12 +605,12 @@ export const ItineraryShell = ({
         </motion.div>
       </div>
 
-      <div className="flex flex-col lg:h-full lg:flex-row lg:gap-4 lg:p-4">
+      <div className="flex flex-col md:h-full md:flex-row md:gap-4 md:p-4">
         {/* Left: Cards Panel (60%) */}
-        <div className="flex flex-col lg:w-3/5 lg:min-h-0 lg:overflow-y-auto" data-lenis-prevent>
+        <div className="flex flex-col md:w-1/2 lg:w-3/5 md:min-h-0 md:overflow-y-auto" data-lenis-prevent>
           {/* Header bar */}
           <div
-            className={`border-b border-border bg-background px-4 pb-2.5 lg:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
+            className={`border-b border-border bg-background px-4 pb-2.5 md:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
             style={{
               paddingTop: headerCollapsed ? "0.375rem" : "0.75rem",
               transition: "padding-top 0.25s ease",
@@ -730,7 +730,7 @@ export const ItineraryShell = ({
           {/* Trip Confidence Dashboard */}
           <AnimatePresence>
             {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
                 <TripConfidenceDashboard
                   itinerary={model}
                   conflicts={conflictsResult.conflicts}
@@ -783,13 +783,13 @@ export const ItineraryShell = ({
 
           {/* Before You Land (Culture) Tab */}
           {viewMode === "culture" && culturalBriefing && (
-            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 lg:flex-none lg:overflow-visible" data-lenis-prevent>
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
               <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
           )}
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] lg:flex-none lg:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
             {/* Compact notification strips */}
             {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
               <div className="mb-3 space-y-1">
@@ -918,8 +918,8 @@ export const ItineraryShell = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (40%) */}
-        <div className="hidden lg:block lg:w-2/5">
-          <div className="h-full lg:rounded-lg lg:overflow-hidden lg:border lg:border-border">
+        <div className="hidden md:block md:w-1/2 lg:w-2/5">
+          <div className="h-full md:rounded-lg md:overflow-hidden md:border md:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (
                 <DiscoverMap

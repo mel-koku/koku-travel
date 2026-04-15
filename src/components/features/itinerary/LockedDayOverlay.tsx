@@ -17,6 +17,7 @@ export function LockedDayOverlay({ onUnlockClick }: LockedDayOverlayProps) {
       <div className="pointer-events-auto absolute inset-0 z-20 flex items-center justify-center">
         <button
           onClick={onUnlockClick}
+          aria-label="Unlock full itinerary for this day"
           className="rounded-lg bg-surface px-6 py-3 shadow-[var(--shadow-elevated)] transition-shadow hover:shadow-[var(--shadow-glow)]"
         >
           <p className={cn(typography({ intent: "utility-label" }), "text-brand-primary")}>
