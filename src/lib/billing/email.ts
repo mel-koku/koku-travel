@@ -1,6 +1,5 @@
 import "server-only";
 import { Resend } from "resend";
-import { logger } from "@/lib/logger";
 
 const FROM_ADDRESS = "Yuku Japan <trips@yukujapan.com>";
 const REPLY_TO = "hello@yukujapan.com";
@@ -99,8 +98,7 @@ function renderText(params: UnlockEmailParams, cityList: string): string {
 export async function sendUnlockConfirmationEmail(params: UnlockEmailParams) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    logger.warn("RESEND_API_KEY not set, skipping confirmation email");
-    return;
+    throw new Error("RESEND_API_KEY not set");
   }
 
   const resend = new Resend(apiKey);
@@ -108,19 +106,18 @@ export async function sendUnlockConfirmationEmail(params: UnlockEmailParams) {
     .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
     .join(", ");
 
-  try {
-    await resend.emails.send({
-      from: FROM_ADDRESS,
-      replyTo: REPLY_TO,
-      to: params.to,
-      subject: "Your Japan trip is confirmed",
-      html: renderHtml(params, cityList),
-      text: renderText(params, cityList),
-    });
-  } catch (err) {
-    logger.error(
-      "Failed to send unlock confirmation email",
-      err instanceof Error ? err : new Error(String(err)),
+  const result = await resend.emails.send({
+    from: FROM_ADDRESS,
+    replyTo: REPLY_TO,
+    to: params.to,
+    subject: "Your Japan trip is confirmed",
+    html: renderHtml(params, cityList),
+    text: renderText(params, cityList),
+  });
+
+  if (result.error) {
+    throw new Error(
+      `Resend rejected email: ${result.error.name} — ${result.error.message}`,
     );
   }
 }
