@@ -39,55 +39,35 @@ export async function POST(request: NextRequest) {
         break;
       }
 
-      // Idempotency: insert event.id; if it already exists, this delivery is a retry.
-      const { data: insertedEvent, error: insertError } = await supabase
-        .from("billing_webhook_events")
-        .insert({ event_id: event.id, event_type: event.type })
-        .select("event_id")
-        .maybeSingle();
+      // Atomic: idempotency check + trip unlock + customer upsert + launch slot
+      // decrement all happen in a single DB transaction via RPC.
+      const { data: wasProcessed, error: rpcError } = await supabase.rpc(
+        "process_webhook_event",
+        {
+          p_event_id: event.id,
+          p_event_type: event.type,
+          p_trip_id: tripId,
+          p_user_id: userId,
+          p_tier: tier,
+          p_stripe_session_id: session.id,
+          p_amount_cents: session.amount_total ?? 0,
+          p_customer_id: session.customer ? String(session.customer) : null,
+          p_launch_pricing: session.metadata?.launchPricing === "true",
+        },
+      );
 
-      if (insertError) {
-        if (insertError.code === "23505") {
-          logger.info("Webhook event already processed, skipping", { eventId: event.id });
-          break;
-        }
+      if (rpcError) {
         logger.error(
-          "Failed to record webhook event",
-          insertError instanceof Error ? insertError : new Error(JSON.stringify(insertError)),
-          { eventId: event.id },
+          "process_webhook_event RPC failed",
+          rpcError instanceof Error ? rpcError : new Error(JSON.stringify(rpcError)),
+          { eventId: event.id, tripId },
         );
         return NextResponse.json({ error: "Internal error" }, { status: 500 });
       }
-      if (!insertedEvent) {
+
+      if (!wasProcessed) {
         logger.info("Webhook event already processed, skipping", { eventId: event.id });
         break;
-      }
-
-      await supabase
-        .from("trips")
-        .update({
-          unlocked_at: new Date().toISOString(),
-          unlock_tier: tier,
-          stripe_session_id: session.id,
-          unlock_amount_cents: session.amount_total,
-        })
-        .eq("id", tripId)
-        .eq("user_id", userId);
-
-      if (session.customer) {
-        await supabase
-          .from("user_preferences")
-          .upsert(
-            {
-              user_id: userId,
-              stripe_customer_id: String(session.customer),
-            },
-            { onConflict: "user_id" },
-          );
-      }
-
-      if (session.metadata?.launchPricing === "true") {
-        await supabase.rpc("decrement_launch_slots", { p_stripe_session_id: session.id });
       }
 
       logger.info("Trip unlocked via webhook", { tripId, userId, tier });
