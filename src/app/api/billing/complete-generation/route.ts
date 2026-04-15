@@ -1,8 +1,10 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { badRequest, notFound, forbidden } from "@/lib/api/errors";
+import { validateRequestBody } from "@/lib/api/schemas";
 import { generateGuideProse } from "@/lib/server/guideProseGenerator";
 import { generateDailyBriefings } from "@/lib/server/dailyBriefingGenerator";
 import { extractTripIntent } from "@/lib/server/intentExtractor";
@@ -13,17 +15,24 @@ import type { TripBuilderData } from "@/types/trip";
 
 export const maxDuration = 60;
 
+const completeGenerationSchema = z.object({
+  tripId: z.string().uuid(),
+});
+
 export const POST = withApiHandler(
   async (request: NextRequest, { context, user }) => {
     if (!user) {
       return forbidden("Authentication required", { requestId: context.requestId });
     }
 
-    const body = await request.json();
-    const tripId = body.tripId;
-    if (!tripId) {
-      return badRequest("Missing tripId", { requestId: context.requestId });
+    const validation = await validateRequestBody(request, completeGenerationSchema);
+    if (!validation.success) {
+      return badRequest("Invalid request", {
+        errors: validation.error.issues,
+        requestId: context.requestId,
+      });
     }
+    const { tripId } = validation.data;
 
     const supabase = getServiceRoleClient();
     const { data: trip } = await supabase

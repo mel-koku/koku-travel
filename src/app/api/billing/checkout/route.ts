@@ -12,10 +12,10 @@ import { validateRequestBody } from "@/lib/api/schemas";
 export const maxDuration = 60;
 
 const checkoutSchema = z.object({
-  tripId: z.string().min(1),
-  tripLengthDays: z.number().int().min(1),
-  cities: z.array(z.string()).min(1),
-  tripDates: z.string().min(1),
+  tripId: z.string().uuid(),
+  tripLengthDays: z.number().int().min(1).max(30),
+  cities: z.array(z.string().min(1).max(80)).min(1).max(20),
+  tripDates: z.string().min(1).max(200),
 });
 
 export const POST = withApiHandler(
