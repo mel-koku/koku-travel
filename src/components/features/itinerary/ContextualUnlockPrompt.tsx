@@ -7,15 +7,24 @@ import { easeEditorial, durationBase } from "@/lib/motion";
 import { getTierPriceDollars } from "@/lib/billing/access";
 import type { UnlockTier } from "@/lib/billing/types";
 
+export type UnlockPromptContext =
+  | "locked_day"
+  | "refinement"
+  | "day_trip"
+  | "share"
+  | "pdf"
+  | "overview"
+  | "near_me";
+
 type ContextualUnlockPromptProps = {
   isOpen: boolean;
   onClose: () => void;
   onUnlock: () => void;
   tier: UnlockTier;
-  context: "locked_day" | "refinement" | "day_trip" | "share" | "pdf";
+  context: UnlockPromptContext;
 };
 
-const CONTEXT_COPY: Record<ContextualUnlockPromptProps["context"], { heading: string; body: string }> = {
+const CONTEXT_COPY: Record<UnlockPromptContext, { heading: string; body: string }> = {
   locked_day: {
     heading: "Your trip has more to show you",
     body: "Unlock to see every day, with routes, transit, and tips.",
@@ -30,11 +39,19 @@ const CONTEXT_COPY: Record<ContextualUnlockPromptProps["context"], { heading: st
   },
   share: {
     heading: "Share your full journey",
-    body: "Free shares include Day 1 only. Unlock to share every day.",
+    body: "Unlock your trip to share it with anyone.",
   },
   pdf: {
     heading: "Take it with you",
     body: "Unlock your trip to export the full itinerary as a PDF.",
+  },
+  overview: {
+    heading: "See the whole picture",
+    body: "Unlock to view trip health, day trips, and your full itinerary summary.",
+  },
+  near_me: {
+    heading: "For when you're on the ground",
+    body: "Unlock to find places near your location as you move through Japan.",
   },
 };
 
