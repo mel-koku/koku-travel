@@ -54,17 +54,14 @@ import { useReplacementState } from "@/hooks/useReplacementState";
 import { useDayTripActions } from "@/hooks/useDayTripActions";
 import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
 import { UnlockCard } from "./UnlockCard";
-import { ContextualUnlockPrompt } from "./ContextualUnlockPrompt";
+import { ContextualUnlockPrompt, type UnlockPromptContext } from "./ContextualUnlockPrompt";
+import { buildItineraryTabs, resolveTabClick, type ItineraryViewMode } from "./itineraryTabs";
 import { isDayAccessible, getTripTier } from "@/lib/billing/access";
-
-type UnlockPromptContext = "locked_day" | "refinement" | "day_trip" | "share" | "pdf";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
   { ssr: false },
 );
-
-type ItineraryViewMode = "timeline" | "dashboard" | "discover" | "culture";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -527,6 +524,13 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
+  const tabs = buildItineraryTabs({
+    isTripLocked,
+    isReadOnly: Boolean(isReadOnly),
+    isUsingMock,
+    hasCulturalBriefing: Boolean(culturalBriefing),
+  });
+
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <PrintHeader tripName={tripName} dateRange={printDateRange} cities={printCities} />
@@ -643,28 +647,47 @@ export const ItineraryShell = ({
                 </div>
                 <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
                   <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
-                    {(
-                      [
-                        { key: "timeline", label: "Timeline" },
-                        { key: "dashboard", label: "Overview" },
-                        ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
-                        ...(culturalBriefing ? [{ key: "culture" as const, label: "Before You Land" }] : []),
-                      ] as { key: ItineraryViewMode; label: string }[]
-                    ).map((tab) => (
-                        <button
-                          key={tab.key}
-                          type="button"
-                          onClick={() => setViewMode(tab.key)}
-                          className={`inline-flex min-h-11 items-center rounded-md px-3 py-2 text-xs font-medium transition-colors ${
-                            viewMode === tab.key
-                              ? "bg-brand-primary text-white"
-                              : "text-stone hover:text-foreground"
-                          }`}
-                        >
-                          {tab.label}
-                          {tab.key === "culture" && !cultureTabSeen && (
-                            <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
-                          )}
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => {
+                          const decision = resolveTabClick(tab);
+                          if (decision.action === "unlock") {
+                            requireUnlock(decision.context);
+                          } else {
+                            setViewMode(decision.key);
+                          }
+                        }}
+                        aria-label={tab.locked ? `${tab.label} (locked, requires Trip Pass)` : undefined}
+                        className={`inline-flex min-h-11 items-center rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                          viewMode === tab.key
+                            ? "bg-brand-primary text-white"
+                            : "text-stone hover:text-foreground"
+                        }`}
+                      >
+                        {tab.locked && (
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            className="mr-1 opacity-70"
+                            aria-hidden
+                          >
+                            <path
+                              d="M4 7V5a4 4 0 118 0v2M3.5 7h9a1 1 0 011 1v5.5a1 1 0 01-1 1h-9a1 1 0 01-1-1V8a1 1 0 011-1z"
+                              stroke="currentColor"
+                              strokeWidth="1.3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        {tab.label}
+                        {tab.key === "culture" && !cultureTabSeen && (
+                          <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
+                        )}
                       </button>
                     ))}
                   </div>
