@@ -3,7 +3,6 @@ import {
   useContext,
   useMemo,
   useReducer,
-  useRef,
   type ReactNode,
 } from "react";
 import { sliceRegistry } from "../sync/syncRegistry";
@@ -23,6 +22,7 @@ export type SavedActions = {
   isSaved: (id: string) => boolean;
   toggleGuideBookmark: (id: string) => void;
   isGuideBookmarked: (id: string) => boolean;
+  setLoadingBookmark: (id: string, loading: boolean) => void;
   reset: () => void;
   hydrate: (patch: Partial<SavedState>) => void;
 };
@@ -67,6 +67,7 @@ sliceRegistry.register<SavedState>({
 type Action =
   | { type: "TOGGLE_SAVE"; id: string }
   | { type: "TOGGLE_GUIDE_BOOKMARK"; id: string }
+  | { type: "SET_LOADING_BOOKMARK"; id: string; loading: boolean }
   | { type: "RESET" }
   | { type: "HYDRATE"; patch: Partial<SavedState> };
 
@@ -89,6 +90,12 @@ function reducer(state: SavedState, action: Action): SavedState {
           ? state.guideBookmarks.filter((id) => id !== action.id)
           : [...state.guideBookmarks, action.id],
       };
+    }
+    case "SET_LOADING_BOOKMARK": {
+      const next = new Set(state.loadingBookmarks);
+      if (action.loading) next.add(action.id);
+      else next.delete(action.id);
+      return { ...state, loadingBookmarks: next };
     }
     case "RESET":
       return { ...DEFAULT_STATE, loadingBookmarks: new Set() };
@@ -123,9 +130,6 @@ const SavedContext = createContext<SavedContextValue | null>(null);
 export function SavedProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
 
-  // Internal ref for guarding against Supabase refresh overwrites
-  const pendingSavesRef = useRef<Map<string, "add" | "remove">>(new Map());
-
   // Derived sets for O(1) lookup
   const savedSet = useMemo(() => new Set(state.saved), [state.saved]);
   const bookmarkSet = useMemo(
@@ -136,8 +140,6 @@ export function SavedProvider({ children }: { children: ReactNode }) {
   const actions = useMemo<SavedActions>(
     () => ({
       toggleSave: (id: string) => {
-        const isCurrentlySaved = savedSet.has(id);
-        pendingSavesRef.current.set(id, isCurrentlySaved ? "remove" : "add");
         dispatch({ type: "TOGGLE_SAVE", id });
       },
       isSaved: (id: string) => savedSet.has(id),
@@ -145,6 +147,9 @@ export function SavedProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "TOGGLE_GUIDE_BOOKMARK", id });
       },
       isGuideBookmarked: (id: string) => bookmarkSet.has(id),
+      setLoadingBookmark: (id: string, loading: boolean) => {
+        dispatch({ type: "SET_LOADING_BOOKMARK", id, loading });
+      },
       reset: () => dispatch({ type: "RESET" }),
       hydrate: (patch: Partial<SavedState>) =>
         dispatch({ type: "HYDRATE", patch }),

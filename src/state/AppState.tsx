@@ -34,6 +34,7 @@ import {
   performRedo,
   canUndo as canUndoCheck,
   canRedo as canRedoCheck,
+  sanitizeTrips,
 } from "@/services/trip";
 import {
   replaceActivity as replaceActivityOp,
@@ -220,9 +221,6 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
     tripsRef.current = trips.state.trips;
   }, [trips.state.trips]);
 
-  // Ref for latest trips used by edit history debounced sync
-  const latestTripsRef = useRef<StoredTrip[]>([]);
-
 
 
   // Ref to track loading bookmarks set for guard
@@ -261,7 +259,7 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
 
         // Hydrate trips
         trips.actions.hydrate({
-          trips: Array.isArray(parsed.trips) ? parsed.trips : [],
+          trips: sanitizeTrips(parsed.trips),
           dayEntryPoints: parsed.dayEntryPoints ?? {},
           cityAccommodations: parsed.cityAccommodations ?? {},
         });
@@ -656,14 +654,22 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
     (id: string) => {
       if (loadingBookmarksRef.current.has(id)) return;
 
-      saved.actions.toggleGuideBookmark(id);
-
-      if (!supabase) return;
-
       const existed = saved.state.guideBookmarks.includes(id);
+
+      // Optimistic toggle + mark loading
+      saved.actions.toggleGuideBookmark(id);
+      saved.actions.setLoadingBookmark(id, true);
+
+      if (!supabase) {
+        saved.actions.setLoadingBookmark(id, false);
+        return;
+      }
 
       void (async () => {
         const result = await syncBookmarkToggle(supabase, id, existed);
+
+        saved.actions.setLoadingBookmark(id, false);
+
         if (result.shouldRevert) {
           saved.actions.toggleGuideBookmark(id);
         }
@@ -706,9 +712,6 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
         newHistoryState.editHistory[tripId] ?? [],
         newHistoryState.currentHistoryIndex[tripId] ?? -1,
       );
-
-      // Update ref for debounced sync
-      latestTripsRef.current = tripsRef.current;
 
       // Schedule debounced sync
       scheduleTripSync(tripId);
