@@ -823,7 +823,10 @@ export const ItineraryShell = ({
                   <DayTripBanner
                     suggestions={dayTripSuggestions}
                     tripId={tripId}
-                    onViewDashboard={() => setViewMode("dashboard")}
+                    onViewDashboard={() => {
+                      if (requireUnlock("overview")) return;
+                      setViewMode("dashboard");
+                    }}
                   />
                 )}
               </div>
