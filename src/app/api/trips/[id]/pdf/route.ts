@@ -78,7 +78,7 @@ export async function POST(
           );
         }
 
-        await page.evaluateHandle(() => document.fonts.ready);
+        await page.evaluate(() => document.fonts.ready);
 
         const pdf = await page.pdf({
           preferCSSPageSize: true,
