@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useToast } from "@/context/ToastContext";
 
 type DownloadBookButtonProps = {
   tripId: string;
@@ -8,29 +9,104 @@ type DownloadBookButtonProps = {
   onLockedClick?: () => void;
 };
 
+type DownloadState = "idle" | "generating" | "fallback";
+
+const CLIENT_TIMEOUT_MS = 20_000;
+
 /**
- * Opens the print route for a trip in a new tab. The print route
- * renders the trip as an A5 editorial book and offers a "Download PDF"
- * button that triggers the browser's native print-to-PDF dialog.
- *
- * Phase 1 uses browser print. Phase 2 will replace this with a server-
- * side Playwright API that returns a PDF stream directly.
+ * Primary path: POST /api/trips/[id]/pdf, receive blob, trigger download.
+ * Fallback (on any error, timeout, or offline): open /print/trip/[id] in a
+ * new tab so the user can use the browser's native print dialog.
  */
 export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBookButtonProps) {
-  const [isOpening, setIsOpening] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [state, setState] = useState<DownloadState>("idle");
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isUnmountedRef = useRef(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      isUnmountedRef.current = true;
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      abortControllerRef.current?.abort();
+    };
   }, []);
 
-  const handleClick = useCallback(() => {
-    window.open(`/print/trip/${tripId}`, "_blank", "noopener,noreferrer");
-    setIsOpening(true);
-    timerRef.current = setTimeout(() => setIsOpening(false), 2000);
-  }, [tripId]);
+  const fallbackToPrintTab = useCallback(
+    (message: string) => {
+      if (isUnmountedRef.current) return;
+      setState("fallback");
+      showToast(message, { variant: "info", duration: 4000 });
+      window.open(`/print/trip/${tripId}`, "_blank", "noopener,noreferrer");
+      resetTimerRef.current = setTimeout(() => {
+        if (!isUnmountedRef.current) setState("idle");
+      }, 1500);
+    },
+    [tripId, showToast],
+  );
 
-  const className = "inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas";
+  const handleClick = useCallback(async () => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      fallbackToPrintTab("You're offline — opening print view instead");
+      return;
+    }
+
+    setState("generating");
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
+
+    try {
+      const res = await fetch(`/api/trips/${tripId}/pdf`, {
+        method: "POST",
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        throw new Error(`http ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      if (isUnmountedRef.current) return;
+
+      const objectUrl = URL.createObjectURL(blob);
+      try {
+        const filenameMatch = res.headers
+          .get("Content-Disposition")
+          ?.match(/filename="([^"]+)"/);
+        const filename = filenameMatch?.[1] ?? `yuku-trip-${tripId}.pdf`;
+
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+
+      setState("idle");
+      showToast("Your book is downloading", { variant: "success", duration: 3000 });
+    } catch (err) {
+      if (isUnmountedRef.current) return;
+      const aborted = err instanceof Error && err.name === "AbortError";
+      fallbackToPrintTab(
+        aborted
+          ? "Taking longer than expected — opening print view instead"
+          : "Couldn't generate PDF — opening print view instead",
+      );
+    } finally {
+      clearTimeout(timeoutId);
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
+    }
+  }, [tripId, fallbackToPrintTab, showToast]);
+
+  const className =
+    "inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-3 text-[11px] font-medium text-foreground transition-colors hover:bg-canvas disabled:opacity-60";
 
   if (locked && onLockedClick) {
     return (
@@ -40,9 +116,19 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
     );
   }
 
+  const label =
+    state === "generating" ? "Generating…" : state === "fallback" ? "Opening…" : "Book";
+
   return (
-    <button type="button" onClick={handleClick} disabled={isOpening} className={className} title="Open as printable book">
-      {isOpening ? "Opening\u2026" : "Book"}
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={state !== "idle"}
+      className={className}
+      title="Download as PDF"
+      aria-busy={state === "generating"}
+    >
+      {label}
     </button>
   );
 }
