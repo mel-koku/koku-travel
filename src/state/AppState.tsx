@@ -4,7 +4,7 @@ import type { Itinerary, ItineraryActivity, ItineraryEdit } from "@/types/itiner
 import type { CityAccommodation, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadSaved } from "@/lib/savedStorage";
-import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
+import { APP_STATE_STORAGE_KEY } from "@/lib/constants";
 import {
   SAVED_STORAGE_KEY,
   TRIP_BUILDER_STORAGE_KEY,
@@ -20,7 +20,6 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { logger } from "@/lib/logger";
 
@@ -28,15 +27,20 @@ import { logger } from "@/lib/logger";
 import {
   type StoredTrip,
   type CreateTripInput,
-  createTripRecord,
-  updateTripItinerary as updateTripItineraryOp,
-  renameTrip as renameTripOp,
-  deleteTrip as deleteTripOp,
-  restoreTrip as restoreTripOp,
-  getTripById as getTripByIdOp,
-  sanitizeTrips,
+  type EditHistoryState,
+  createEditHistoryEntry,
+  addEditToHistory,
+  performUndo,
+  performRedo,
+  canUndo as canUndoCheck,
+  canRedo as canRedoCheck,
 } from "@/services/trip";
-import { useEditHistory, type EditHistoryInternalState } from "./useEditHistory";
+import {
+  replaceActivity as replaceActivityOp,
+  deleteActivity as deleteActivityOp,
+  reorderActivities as reorderActivitiesOp,
+  addActivity as addActivityOp,
+} from "@/services/trip";
 import {
   syncSavedToggle,
   syncBookmarkToggle,
@@ -52,15 +56,16 @@ import {
 import type { UserPreferences } from "@/types/userPreferences";
 import { DEFAULT_USER_PREFERENCES } from "@/types/userPreferences";
 import { USER_TRAVEL_PREFS_STORAGE_KEY } from "@/lib/constants/storage";
+import { STABLE_DEFAULT_USER_ID } from "@/lib/constants";
+
+// Slice providers
+import { SavedProvider, useSaved } from "./slices/SavedSlice";
+import { PreferencesProvider, usePreferences, type UserProfile } from "./slices/PreferencesSlice";
+import { TripsProvider, useTrips } from "./slices/TripsSlice";
+import { EditHistoryProvider, useEditHistorySlice } from "./slices/EditHistorySlice";
 
 // Re-export types for consumers
-export type { StoredTrip, CreateTripInput };
-
-export type UserProfile = {
-  id: string;
-  displayName: string;
-  email?: string;
-};
+export type { StoredTrip, CreateTripInput, UserProfile };
 
 export type AppStateShape = {
   user: UserProfile;
@@ -158,13 +163,9 @@ const defaultState: AppStateShape = {
 
 const Ctx = createContext<AppStateShape>(defaultState);
 
-type InternalState = Pick<
-  AppStateShape,
-  "user" | "saved" | "guideBookmarks" | "userPreferences" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "cityAccommodations" | "editHistory" | "currentHistoryIndex"
-> & {
-  /** Epoch ms of most recent local mutation per trip. Internal bookkeeping, not persisted. */
-  localTripUpdatedAt: Record<string, number>;
-};
+// ---------------------------------------------------------------------------
+// buildProfileFromSupabase - preserved helper
+// ---------------------------------------------------------------------------
 
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
   if (!user) {
@@ -188,22 +189,17 @@ const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): Us
 // Debounce delay for trip sync (2 seconds)
 const TRIP_SYNC_DEBOUNCE_MS = 2000;
 
-export function AppStateProvider({ children }: { children: React.ReactNode }) {
+// ---------------------------------------------------------------------------
+// SyncOrchestrator - runs inside all four providers
+// ---------------------------------------------------------------------------
+
+function SyncOrchestrator({ children }: { children: React.ReactNode }) {
+  const saved = useSaved();
+  const prefs = usePreferences();
+  const trips = useTrips();
+  const history = useEditHistorySlice();
+
   const supabase = useMemo(() => createClient(), []);
-  const [state, setState] = useState<InternalState>({
-    user: defaultState.user,
-    saved: [],
-    guideBookmarks: [],
-    userPreferences: DEFAULT_USER_PREFERENCES,
-    trips: [],
-    isLoadingRefresh: false,
-    loadingBookmarks: new Set(),
-    dayEntryPoints: {},
-    cityAccommodations: {},
-    editHistory: {},
-    currentHistoryIndex: {},
-    localTripUpdatedAt: {},
-  });
 
   // Ref to track pending trip sync timeouts by trip ID
   const tripSyncTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -215,64 +211,71 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const isRefreshingRef = useRef(false);
   const pendingRefreshRef = useRef(false);
 
-  // Track in-flight save operations so refreshFromSupabase doesn't overwrite optimistic state
-  // Maps location ID → 'add' | 'remove' for pending sync operations
+  // Track in-flight save operations
   const pendingSavesRef = useRef<Map<string, "add" | "remove">>(new Map());
 
-  // Load from localStorage on mount
+  // Ref tracking current trips for debounced sync callbacks
+  const tripsRef = useRef(trips.state.trips);
+  useEffect(() => {
+    tripsRef.current = trips.state.trips;
+  }, [trips.state.trips]);
+
+  // Ref for latest trips used by edit history debounced sync
+  const latestTripsRef = useRef<StoredTrip[]>([]);
+
+
+
+  // Ref to track loading bookmarks set for guard
+  const loadingBookmarksRef = useRef(saved.state.loadingBookmarks);
+  useEffect(() => { loadingBookmarksRef.current = saved.state.loadingBookmarks; }, [saved.state.loadingBookmarks]);
+
+  // -----------------------------------------------------------------------
+  // Load from localStorage on mount (legacy migration)
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
       const legacySaved = loadSaved();
 
-      let nextState: InternalState;
       if (raw) {
         const parsed = JSON.parse(raw);
+
+        // Hydrate preferences
         const user = parsed.user ?? defaultState.user;
         const userId = user.id === STABLE_DEFAULT_USER_ID ? newId() : user.id;
-        nextState = {
+        prefs.actions.hydrate({
           user: { ...user, id: userId },
-          // Support both old "favorites" key and new "saved" key in persisted state
-          saved: parsed.saved ?? parsed.favorites ?? [],
-          guideBookmarks: parsed.guideBookmarks ?? [],
           userPreferences: parsed.userPreferences ?? DEFAULT_USER_PREFERENCES,
-          trips: sanitizeTrips(parsed.trips),
-          isLoadingRefresh: false,
-          loadingBookmarks: new Set(),
+        });
+
+        // Hydrate saved
+        let savedList = parsed.saved ?? parsed.favorites ?? [];
+        if (legacySaved.length > 0) {
+          savedList = Array.from(new Set([...savedList, ...legacySaved]));
+        }
+        saved.actions.hydrate({
+          saved: savedList,
+          guideBookmarks: parsed.guideBookmarks ?? [],
+        });
+
+        // Hydrate trips
+        trips.actions.hydrate({
+          trips: Array.isArray(parsed.trips) ? parsed.trips : [],
           dayEntryPoints: parsed.dayEntryPoints ?? {},
           cityAccommodations: parsed.cityAccommodations ?? {},
+        });
+
+        // Hydrate edit history
+        history.actions.hydrate({
           editHistory: parsed.editHistory ?? {},
           currentHistoryIndex: parsed.currentHistoryIndex ?? {},
-          localTripUpdatedAt: {},
-        };
+        });
       } else {
-        nextState = {
-          user: { ...defaultState.user, id: newId() },
-          saved: [],
-          guideBookmarks: [],
-          userPreferences: DEFAULT_USER_PREFERENCES,
-          trips: [],
-          isLoadingRefresh: false,
-          loadingBookmarks: new Set(),
-          dayEntryPoints: {},
-          cityAccommodations: {},
-          editHistory: {},
-          currentHistoryIndex: {},
-          localTripUpdatedAt: {},
-        };
-      }
-
-      if (legacySaved.length > 0) {
-        const mergedSaved = Array.from(new Set([...nextState.saved, ...legacySaved]));
-        nextState = { ...nextState, saved: mergedSaved };
-      }
-
-      setState(nextState);
-      try {
-        localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(nextState));
-      } catch (e) {
-        logger.warn("Failed to persist state to localStorage", { error: e instanceof Error ? e.message : String(e) });
+        prefs.actions.hydrate({ user: { ...defaultState.user, id: newId() } });
+        if (legacySaved.length > 0) {
+          saved.actions.hydrate({ saved: legacySaved });
+        }
       }
 
       if (legacySaved.length > 0) {
@@ -281,169 +284,50 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore malformed data
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Refresh from Supabase
-  const refreshFromSupabase = useCallback(async () => {
-    if (!supabase) return;
-    if (isRefreshingRef.current) {
-      pendingRefreshRef.current = true;
-      return;
-    }
-    isRefreshingRef.current = true;
-
-    setState((s) => ({ ...s, isLoadingRefresh: true }));
-
-    try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-      if (authError) {
-        // "Auth session missing!" is the normal guest-user path — no session
-        // exists, not an error. Only log when it's something else (expired
-        // token, network failure, malformed JWT, etc.).
-        const isMissingSession =
-          authError.name === "AuthSessionMissingError" ||
-          /auth session missing/i.test(authError.message ?? "");
-        if (!isMissingSession) {
-          logger.warn("Failed to read auth session", { error: authError });
-        }
-      }
-
-      if (!user) {
-        setState((current) => ({
-          ...current,
-          user: {
-            id: current.user.id || newId(),
-            displayName: current.user.displayName || "Guest",
-          },
-          isLoadingRefresh: false,
-        }));
-        return;
-      }
-
-      const [savedResult, bookmarksResult, tripsResult, prefsResult] = await Promise.all([
-        fetchSaved(supabase, user.id),
-        fetchGuideBookmarks(supabase, user.id),
-        fetchTrips(supabase, user.id),
-        fetchPreferences(supabase, user.id),
-      ]);
-
-      setState((s) => {
-        // Filter out server trips that are stale compared to pending local edits.
-        // A trip has a local timestamp when it was mutated but the debounced sync
-        // has not yet completed. If the server copy is older, keep the local version.
-        let serverTrips = tripsResult.success && tripsResult.data ? tripsResult.data : null;
-        if (serverTrips) {
-          serverTrips = serverTrips.filter((serverTrip) => {
-            const localTs = s.localTripUpdatedAt[serverTrip.id];
-            if (localTs) {
-              const serverTs = serverTrip.updatedAt ? new Date(serverTrip.updatedAt).getTime() : 0;
-              if (localTs > serverTs) {
-                // Local edit is newer than server data; skip this server trip
-                return false;
-              }
-            }
-            return true;
-          });
-        }
-
-        // Merge local and remote trips, resolving conflicts by timestamp
-        const mergedTrips = serverTrips
-          ? mergeTrips(s.trips, serverTrips)
-          : s.trips;
-
-        // Merge server saved list with in-flight optimistic changes
-        let mergedSaved = savedResult.success ? (savedResult.data ?? []) : s.saved;
-        if (savedResult.success && pendingSavesRef.current.size > 0) {
-          const savedSet = new Set(mergedSaved);
-          pendingSavesRef.current.forEach((action, id) => {
-            if (action === "add") savedSet.add(id);
-            else savedSet.delete(id);
-          });
-          mergedSaved = Array.from(savedSet);
-        }
-
-        return {
-          ...s,
-          user: buildProfileFromSupabase(user, s.user),
-          saved: mergedSaved,
-          guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
-          userPreferences: prefsResult.success && prefsResult.data ? prefsResult.data : s.userPreferences,
-          trips: mergedTrips,
-          isLoadingRefresh: false,
-        };
-      });
-    } catch (error) {
-      logger.error("refreshFromSupabase failed", error);
-      setState((s) => ({ ...s, isLoadingRefresh: false }));
-    } finally {
-      isRefreshingRef.current = false;
-      if (pendingRefreshRef.current) {
-        pendingRefreshRef.current = false;
-        refreshFromSupabase();
-      }
-    }
-  }, [supabase]);
-
-  // Auth state listener
-  useEffect(() => {
-    if (!supabase) return;
-
-    refreshFromSupabase();
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event: string | null, session: Session | null) => {
-        if (!session?.user) {
-          setState((current) => ({
-            ...current,
-            user: {
-              id: current.user.id || newId(),
-              displayName: current.user.displayName || "Guest",
-            },
-          }));
-          return;
-        }
-        refreshFromSupabase();
-      },
-    );
-
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [refreshFromSupabase, supabase]);
-
-  // Debounced save to localStorage
+  // -----------------------------------------------------------------------
+  // Debounced localStorage persistence
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const timeoutId = setTimeout(() => {
       const persistedState = {
-        user: state.user,
-        saved: state.saved,
-        guideBookmarks: state.guideBookmarks,
-        userPreferences: state.userPreferences,
-        trips: state.trips,
-        dayEntryPoints: state.dayEntryPoints,
-        cityAccommodations: state.cityAccommodations,
-        editHistory: state.editHistory,
-        currentHistoryIndex: state.currentHistoryIndex,
+        user: prefs.state.user,
+        saved: saved.state.saved,
+        guideBookmarks: saved.state.guideBookmarks,
+        userPreferences: prefs.state.userPreferences,
+        trips: trips.state.trips,
+        dayEntryPoints: trips.state.dayEntryPoints,
+        cityAccommodations: trips.state.cityAccommodations,
+        editHistory: history.state.editHistory,
+        currentHistoryIndex: history.state.currentHistoryIndex,
       };
       try {
         localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(persistedState));
       } catch (e) {
         logger.warn("Failed to persist state to localStorage (debounced)", { error: e instanceof Error ? e.message : String(e) });
       }
-    }, APP_STATE_DEBOUNCE_MS);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [state.user, state.saved, state.guideBookmarks, state.userPreferences, state.trips, state.dayEntryPoints, state.cityAccommodations, state.editHistory, state.currentHistoryIndex]);
+  }, [
+    prefs.state.user,
+    saved.state.saved,
+    saved.state.guideBookmarks,
+    prefs.state.userPreferences,
+    trips.state.trips,
+    trips.state.dayEntryPoints,
+    trips.state.cityAccommodations,
+    history.state.editHistory,
+    history.state.currentHistoryIndex,
+  ]);
 
-  // Ref tracking current trips so beforeunload/visibilitychange can flush without stale closures
-  const tripsRef = useRef(state.trips);
-  useEffect(() => {
-    tripsRef.current = state.trips;
-  }, [state.trips]);
-
-  // Flush pending trip syncs on tab close / background to prevent data loss from 2s debounce
+  // -----------------------------------------------------------------------
+  // Flush pending trip syncs on tab close / background
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (typeof window === "undefined" || !supabase) return;
 
@@ -490,117 +374,223 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // User actions
-  const setUser = useCallback(
-    (patch: Partial<UserProfile>) =>
-      setState((s) => ({ ...s, user: { ...s.user, ...patch } })),
-    [],
-  );
+  // -----------------------------------------------------------------------
+  // refreshFromSupabase
+  // -----------------------------------------------------------------------
+  const refreshFromSupabase = useCallback(async () => {
+    if (!supabase) return;
+    if (isRefreshingRef.current) {
+      pendingRefreshRef.current = true;
+      return;
+    }
+    isRefreshingRef.current = true;
 
-  // User preferences actions
+    trips.actions.setIsLoadingRefresh(true);
+
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError) {
+        const isMissingSession =
+          authError.name === "AuthSessionMissingError" ||
+          /auth session missing/i.test(authError.message ?? "");
+        if (!isMissingSession) {
+          logger.warn("Failed to read auth session", { error: authError });
+        }
+      }
+
+      if (!user) {
+        trips.actions.setIsLoadingRefresh(false);
+        return;
+      }
+
+      const [savedResult, bookmarksResult, tripsResult, prefsResult] = await Promise.all([
+        fetchSaved(supabase, user.id),
+        fetchGuideBookmarks(supabase, user.id),
+        fetchTrips(supabase, user.id),
+        fetchPreferences(supabase, user.id),
+      ]);
+
+      // Filter out server trips that are stale compared to pending local edits
+      let serverTrips = tripsResult.success && tripsResult.data ? tripsResult.data : null;
+      if (serverTrips) {
+        const localTs = trips.state.localTripUpdatedAt;
+        serverTrips = serverTrips.filter((serverTrip) => {
+          const localTimestamp = localTs[serverTrip.id];
+          if (localTimestamp) {
+            const serverTs = serverTrip.updatedAt ? new Date(serverTrip.updatedAt).getTime() : 0;
+            if (localTimestamp > serverTs) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      const mergedTrips = serverTrips
+        ? mergeTrips(trips.state.trips, serverTrips)
+        : trips.state.trips;
+
+      // Merge server saved list with in-flight optimistic changes
+      let mergedSaved = savedResult.success ? (savedResult.data ?? []) : saved.state.saved;
+      if (savedResult.success && pendingSavesRef.current.size > 0) {
+        const savedSet = new Set(mergedSaved);
+        pendingSavesRef.current.forEach((action, id) => {
+          if (action === "add") savedSet.add(id);
+          else savedSet.delete(id);
+        });
+        mergedSaved = Array.from(savedSet);
+      }
+
+      // Hydrate each slice
+      prefs.actions.hydrate({
+        user: buildProfileFromSupabase(user, prefs.state.user),
+        ...(prefsResult.success && prefsResult.data ? { userPreferences: prefsResult.data } : {}),
+      });
+
+      saved.actions.hydrate({
+        saved: mergedSaved,
+        ...(bookmarksResult.success ? { guideBookmarks: bookmarksResult.data ?? saved.state.guideBookmarks } : {}),
+      });
+
+      trips.actions.hydrate({
+        trips: mergedTrips,
+        isLoadingRefresh: false,
+      });
+    } catch (error) {
+      logger.error("refreshFromSupabase failed", error);
+      trips.actions.setIsLoadingRefresh(false);
+    } finally {
+      isRefreshingRef.current = false;
+      if (pendingRefreshRef.current) {
+        pendingRefreshRef.current = false;
+        refreshFromSupabase();
+      }
+    }
+  }, [supabase, prefs, saved, trips]);
+
+  // -----------------------------------------------------------------------
+  // Auth state listener
+  // -----------------------------------------------------------------------
+  useEffect(() => {
+    if (!supabase) return;
+
+    refreshFromSupabase();
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event: string | null, session: Session | null) => {
+        if (!session?.user) {
+          return;
+        }
+        refreshFromSupabase();
+      },
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase]);
+
+  // -----------------------------------------------------------------------
+  // Composed actions - user preferences with Supabase sync
+  // -----------------------------------------------------------------------
   const setUserPreferences = useCallback(
     (patch: Partial<UserPreferences>) => {
-      setState((s) => {
-        const next = { ...s.userPreferences, ...patch };
+      prefs.actions.setUserPreferences(patch);
 
-        if (supabase) {
-          if (prefsSyncTimeout.current) clearTimeout(prefsSyncTimeout.current);
-          prefsSyncTimeout.current = setTimeout(() => {
-            void syncPreferencesSave(supabase, next);
-            prefsSyncTimeout.current = null;
-          }, 2000);
-        }
-
-        return { ...s, userPreferences: next };
-      });
+      if (supabase) {
+        if (prefsSyncTimeout.current) clearTimeout(prefsSyncTimeout.current);
+        prefsSyncTimeout.current = setTimeout(() => {
+          // Read latest from prefs state
+          const next = { ...prefs.state.userPreferences, ...patch };
+          void syncPreferencesSave(supabase, next);
+          prefsSyncTimeout.current = null;
+        }, 2000);
+      }
     },
-    [supabase],
+    [supabase, prefs],
   );
 
-  // Trip actions
+  // -----------------------------------------------------------------------
+  // Composed actions - trips with Supabase sync
+  // -----------------------------------------------------------------------
   const createTrip = useCallback(
     (input: CreateTripInput) => {
-      const record = createTripRecord(input);
-      setState((s) => ({ ...s, trips: [...s.trips, record] }));
+      const id = trips.actions.createTrip(input);
 
       // Sync to Supabase
       if (supabase) {
-        void syncTripSave(supabase, record);
+        // getTripById will reflect the new trip after dispatch
+        // We need to get the trip record. Since createTrip in the slice returns the ID,
+        // we reconstruct the trip from the input.
+        // Actually, createTrip in TripsSlice calls createTripRecord internally and returns the ID.
+        // We need to sync the actual record. Let's get it after the next render...
+        // For immediate sync, schedule a microtask to read the latest trips
+        queueMicrotask(() => {
+          const trip = tripsRef.current.find((t) => t.id === id);
+          if (trip) {
+            void syncTripSave(supabase, trip);
+          }
+        });
       }
 
-      return record.id;
+      return id;
+    },
+    [supabase, trips.actions],
+  );
+
+  const scheduleTripSync = useCallback(
+    (tripId: string) => {
+      if (!supabase) return;
+
+      const existingTimeout = tripSyncTimeouts.current.get(tripId);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+      }
+
+      const timeout = setTimeout(() => {
+        const trip = tripsRef.current.find((t) => t.id === tripId);
+        if (trip) {
+          syncTripSave(supabase, trip).then((result) => {
+            if (!result.success) {
+              logger.warn("Trip sync failed after debounce", { tripId, error: result.error });
+            }
+          });
+        }
+        tripSyncTimeouts.current.delete(tripId);
+      }, TRIP_SYNC_DEBOUNCE_MS);
+
+      tripSyncTimeouts.current.set(tripId, timeout);
     },
     [supabase],
   );
 
-  const updateTripItinerary = useCallback((tripId: string, itinerary: Itinerary) => {
-    setState((s) => {
-      const nextTrips = updateTripItineraryOp(s.trips, tripId, itinerary);
-      if (!nextTrips) return s;
+  const updateTripItinerary = useCallback(
+    (tripId: string, itinerary: Itinerary) => {
+      trips.actions.updateTripItinerary(tripId, itinerary);
+      scheduleTripSync(tripId);
+    },
+    [trips.actions, scheduleTripSync],
+  );
 
-      // Schedule debounced sync
+  const renameTrip = useCallback(
+    (tripId: string, name: string) => {
+      trips.actions.renameTrip(tripId, name);
+
       if (supabase) {
-        // Clear any existing timeout for this trip
-        const existingTimeout = tripSyncTimeouts.current.get(tripId);
-        if (existingTimeout) {
-          clearTimeout(existingTimeout);
-        }
-
-        // Schedule new sync after debounce delay
-        const timeout = setTimeout(() => {
+        queueMicrotask(() => {
           const trip = tripsRef.current.find((t) => t.id === tripId);
           if (trip) {
-            syncTripSave(supabase, trip).then((result) => {
-              if (result.success) {
-                // Clear local timestamp after successful sync
-                setState((prev) => {
-                  const { [tripId]: _, ...rest } = prev.localTripUpdatedAt;
-                  return { ...prev, localTripUpdatedAt: rest };
-                });
-              } else {
-                logger.warn("Trip sync failed after debounce", { tripId, error: result.error });
-              }
-            });
+            void syncTripSave(supabase, trip);
           }
-          tripSyncTimeouts.current.delete(tripId);
-        }, TRIP_SYNC_DEBOUNCE_MS);
-
-        tripSyncTimeouts.current.set(tripId, timeout);
+        });
       }
+    },
+    [supabase, trips.actions],
+  );
 
-      return { ...s, trips: nextTrips, localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() } };
-    });
-  }, [supabase]);
-
-  const renameTrip = useCallback((tripId: string, name: string) => {
-    setState((s) => {
-      const nextTrips = renameTripOp(s.trips, tripId, name);
-      if (!nextTrips) return s;
-
-      // Sync to Supabase with cleanup on success
-      if (supabase) {
-        const trip = nextTrips.find((t) => t.id === tripId);
-        if (trip) {
-          syncTripSave(supabase, trip).then((result) => {
-            if (result.success) {
-              setState((prev) => {
-                const { [tripId]: _, ...rest } = prev.localTripUpdatedAt;
-                return { ...prev, localTripUpdatedAt: rest };
-              });
-            }
-          });
-        }
-      }
-
-      return { ...s, trips: nextTrips, localTripUpdatedAt: { ...s.localTripUpdatedAt, [tripId]: Date.now() } };
-    });
-  }, [supabase]);
-
-  const deleteTrip = useCallback((tripId: string) => {
-    setState((s) => {
-      const nextTrips = deleteTripOp(s.trips, tripId);
-      if (!nextTrips) return s;
-
+  const deleteTrip = useCallback(
+    (tripId: string) => {
       // Clear any pending sync timeout for this trip
       const existingTimeout = tripSyncTimeouts.current.get(tripId);
       if (existingTimeout) {
@@ -608,48 +598,41 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         tripSyncTimeouts.current.delete(tripId);
       }
 
-      // Sync deletion to Supabase
+      trips.actions.deleteTrip(tripId);
+      history.actions.pruneForTrip(tripId);
+
       if (supabase) {
         void syncTripDelete(supabase, tripId);
       }
+    },
+    [supabase, trips.actions, history.actions],
+  );
 
-      // Remove orphaned timestamp entry since the trip no longer exists
-      const { [tripId]: _, ...restTimestamps } = s.localTripUpdatedAt;
-      return { ...s, trips: nextTrips, localTripUpdatedAt: restTimestamps };
-    });
-  }, [supabase]);
+  const restoreTrip = useCallback(
+    (trip: StoredTrip) => {
+      trips.actions.restoreTrip(trip);
 
-  const restoreTrip = useCallback((trip: StoredTrip) => {
-    setState((s) => {
-      const nextTrips = restoreTripOp(s.trips, trip);
-      if (!nextTrips) return s;
-
-      // Sync to Supabase (re-save with current timestamp)
       if (supabase) {
-        const restoredTrip = nextTrips.find((t) => t.id === trip.id);
-        if (restoredTrip) {
-          void syncTripSave(supabase, restoredTrip);
-        }
+        queueMicrotask(() => {
+          const restoredTrip = tripsRef.current.find((t) => t.id === trip.id);
+          if (restoredTrip) {
+            void syncTripSave(supabase, restoredTrip);
+          }
+        });
       }
+    },
+    [supabase, trips.actions],
+  );
 
-      return { ...s, trips: nextTrips };
-    });
-  }, [supabase]);
-
-  // Saved places actions
+  // -----------------------------------------------------------------------
+  // Composed actions - saved with Supabase sync
+  // -----------------------------------------------------------------------
   const toggleSave = useCallback(
     (id: string) => {
-      // Prevent double-toggle race: skip if sync is already in progress for this item
       if (pendingSavesRef.current.has(id)) return;
 
-      // Read current state before setState to avoid concurrent-mode staleness
-      const existed = state.saved.includes(id);
-      setState((s) => {
-        const set = new Set(s.saved);
-        if (set.has(id)) set.delete(id);
-        else set.add(id);
-        return { ...s, saved: Array.from(set) };
-      });
+      const existed = saved.state.saved.includes(id);
+      saved.actions.toggleSave(id);
 
       if (supabase) {
         pendingSavesRef.current.set(id, existed ? "remove" : "add");
@@ -657,11 +640,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           try {
             const result = await syncSavedToggle(supabase, id, existed);
             if (!result.success) {
-              setState((s) => {
-                const set = new Set(s.saved);
-                if (existed) set.add(id); else set.delete(id);
-                return { ...s, saved: Array.from(set) };
-              });
+              // Revert
+              saved.actions.toggleSave(id);
             }
           } finally {
             pendingSavesRef.current.delete(id);
@@ -669,158 +649,228 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         })();
       }
     },
-    [supabase, state.saved],
+    [supabase, saved],
   );
-
-  // Guide bookmark actions
-  const loadingBookmarksRef = useRef(state.loadingBookmarks);
-  useEffect(() => { loadingBookmarksRef.current = state.loadingBookmarks; }, [state.loadingBookmarks]);
 
   const toggleGuideBookmark = useCallback(
     (id: string) => {
-      // Prevent double-toggle race: skip if sync is already in progress for this bookmark
       if (loadingBookmarksRef.current.has(id)) return;
 
-      let existed = false;
-      setState((s) => {
-        const set = new Set(s.guideBookmarks);
-        existed = set.has(id);
-        if (existed) {
-          set.delete(id);
-        } else {
-          set.add(id);
-        }
-        const loadingSet = new Set(s.loadingBookmarks);
-        loadingSet.add(id);
-        return { ...s, guideBookmarks: Array.from(set), loadingBookmarks: loadingSet };
-      });
+      saved.actions.toggleGuideBookmark(id);
 
-      if (!supabase) {
-        setState((s) => {
-          const loadingSet = new Set(s.loadingBookmarks);
-          loadingSet.delete(id);
-          return { ...s, loadingBookmarks: loadingSet };
-        });
-        return;
-      }
+      if (!supabase) return;
+
+      const existed = saved.state.guideBookmarks.includes(id);
 
       void (async () => {
         const result = await syncBookmarkToggle(supabase, id, existed);
-
-        setState((s) => {
-          const loadingSet = new Set(s.loadingBookmarks);
-          loadingSet.delete(id);
-
-          if (result.shouldRevert) {
-            const set = new Set(s.guideBookmarks);
-            if (existed) {
-              set.add(id);
-            } else {
-              set.delete(id);
-            }
-            return { ...s, guideBookmarks: Array.from(set), loadingBookmarks: loadingSet };
-          }
-
-          return { ...s, loadingBookmarks: loadingSet };
-        });
+        if (result.shouldRevert) {
+          saved.actions.toggleGuideBookmark(id);
+        }
       })();
     },
-    [supabase],
+    [supabase, saved],
   );
 
-  // Day entry point actions
-  const setDayEntryPoint = useCallback(
-    (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => {
-      const key = `${tripId}-${dayId}`;
-      setState((s) => {
-        const current = s.dayEntryPoints[key] ?? {};
-        const updated: DayEntryPoint = {
-          ...current,
-          [type === "start" ? "startPoint" : "endPoint"]: entryPoint,
-        };
-        return {
-          ...s,
-          dayEntryPoints: { ...s.dayEntryPoints, [key]: updated },
-        };
-      });
+  // -----------------------------------------------------------------------
+  // Composed actions - activity mutations with history tracking
+  // -----------------------------------------------------------------------
+  const updateItineraryWithHistory = useCallback(
+    (
+      tripId: string,
+      dayId: string,
+      editType: ItineraryEdit["type"],
+      updater: (itinerary: Itinerary) => Itinerary,
+      metadata?: Record<string, unknown>,
+    ) => {
+      const trip = trips.actions.getTripById(tripId);
+      if (!trip) return;
+
+      const previousItinerary = trip.itinerary;
+      const nextItinerary = updater(previousItinerary);
+
+      const edit = createEditHistoryEntry(tripId, dayId, editType, previousItinerary, nextItinerary, metadata);
+
+      const historyState: EditHistoryState = {
+        editHistory: history.state.editHistory,
+        currentHistoryIndex: history.state.currentHistoryIndex,
+      };
+      const newHistoryState = addEditToHistory(historyState, tripId, edit);
+
+      // Update trip itinerary
+      trips.actions.updateTripItinerary(tripId, nextItinerary);
+
+      // Update edit history
+      history.actions.setHistoryAndIndex(
+        tripId,
+        newHistoryState.editHistory[tripId] ?? [],
+        newHistoryState.currentHistoryIndex[tripId] ?? -1,
+      );
+
+      // Update ref for debounced sync
+      latestTripsRef.current = tripsRef.current;
+
+      // Schedule debounced sync
+      scheduleTripSync(tripId);
     },
-    [],
+    [trips.actions, history, scheduleTripSync],
   );
 
-  // City accommodation actions
-  const setCityAccommodation = useCallback(
-    (tripId: string, cityId: string, accommodation: CityAccommodation | undefined) => {
-      const key = `${tripId}-${cityId}`;
-      setState((s) => {
-        if (!accommodation) {
-          const { [key]: _, ...rest } = s.cityAccommodations;
-          return { ...s, cityAccommodations: rest };
-        }
-        return {
-          ...s,
-          cityAccommodations: { ...s.cityAccommodations, [key]: accommodation },
-        };
-      });
+  const replaceActivity = useCallback(
+    (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "replaceActivity",
+        (itinerary) => replaceActivityOp(itinerary, dayId, activityId, newActivity),
+        { activityId, newActivityId: newActivity.id },
+      );
     },
-    [],
+    [updateItineraryWithHistory],
   );
 
-  // Edit history actions (extracted into useEditHistory hook)
-  // setState is compatible because InternalState ⊇ EditHistoryInternalState
-  // and the hook's updater spreads unchanged fields through.
-  const editHistoryActions = useEditHistory({
-    setState: setState as unknown as (updater: (s: EditHistoryInternalState) => EditHistoryInternalState) => void,
-    supabase,
-    tripSyncTimeouts,
-    syncTripSave,
-    tripSyncDebounceMs: TRIP_SYNC_DEBOUNCE_MS,
-  });
+  const deleteActivity = useCallback(
+    (tripId: string, dayId: string, activityId: string) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "deleteActivity",
+        (itinerary) => deleteActivityOp(itinerary, dayId, activityId),
+        { activityId },
+      );
+    },
+    [updateItineraryWithHistory],
+  );
 
-  const {
-    replaceActivity, deleteActivity, reorderActivities, addActivity, updateDayActivities,
-    undo, redo, canUndoCheck: canUndoFn, canRedoCheck: canRedoFn,
-  } = editHistoryActions;
+  const reorderActivities = useCallback(
+    (tripId: string, dayId: string, activityIds: string[]) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "reorderActivities",
+        (itinerary) => reorderActivitiesOp(itinerary, dayId, activityIds),
+        { activityIds },
+      );
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const addActivity = useCallback(
+    (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "addActivity",
+        (itinerary) => addActivityOp(itinerary, dayId, activity, position),
+        { activityId: activity.id, position },
+      );
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const updateDayActivities = useCallback(
+    (tripId: string, dayId: string, updater: (itinerary: Itinerary) => Itinerary, metadata?: Record<string, unknown>) => {
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "swapDayTrip",
+        updater,
+        metadata,
+      );
+    },
+    [updateItineraryWithHistory],
+  );
+
+  // -----------------------------------------------------------------------
+  // Composed actions - undo/redo
+  // -----------------------------------------------------------------------
+  const undo = useCallback(
+    (tripId: string) => {
+      const historyState: EditHistoryState = {
+        editHistory: history.state.editHistory,
+        currentHistoryIndex: history.state.currentHistoryIndex,
+      };
+      const result = performUndo(trips.state.trips, historyState, tripId);
+      if (!result) return;
+
+      // Update both slices
+      const updatedTrip = result.trips.find((t) => t.id === tripId);
+      if (updatedTrip) {
+        trips.actions.updateTripItinerary(tripId, updatedTrip.itinerary);
+      }
+      history.actions.setHistoryAndIndex(
+        tripId,
+        result.historyState.editHistory[tripId] ?? [],
+        result.historyState.currentHistoryIndex[tripId] ?? -1,
+      );
+    },
+    [trips, history],
+  );
+
+  const redo = useCallback(
+    (tripId: string) => {
+      const historyState: EditHistoryState = {
+        editHistory: history.state.editHistory,
+        currentHistoryIndex: history.state.currentHistoryIndex,
+      };
+      const result = performRedo(trips.state.trips, historyState, tripId);
+      if (!result) return;
+
+      const updatedTrip = result.trips.find((t) => t.id === tripId);
+      if (updatedTrip) {
+        trips.actions.updateTripItinerary(tripId, updatedTrip.itinerary);
+      }
+      history.actions.setHistoryAndIndex(
+        tripId,
+        result.historyState.editHistory[tripId] ?? [],
+        result.historyState.currentHistoryIndex[tripId] ?? -1,
+      );
+    },
+    [trips, history],
+  );
 
   const canUndo = useCallback(
     (tripId: string) => {
-      return canUndoFn({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
+      return canUndoCheck(
+        { editHistory: history.state.editHistory, currentHistoryIndex: history.state.currentHistoryIndex },
+        tripId,
+      );
     },
-    [state.currentHistoryIndex, state.editHistory, canUndoFn],
+    [history.state.editHistory, history.state.currentHistoryIndex],
   );
 
   const canRedo = useCallback(
     (tripId: string) => {
-      return canRedoFn({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
+      return canRedoCheck(
+        { editHistory: history.state.editHistory, currentHistoryIndex: history.state.currentHistoryIndex },
+        tripId,
+      );
     },
-    [state.editHistory, state.currentHistoryIndex, canRedoFn],
+    [history.state.editHistory, history.state.currentHistoryIndex],
   );
 
-  // Clear all local data
+  // -----------------------------------------------------------------------
+  // clearAllLocalData
+  // -----------------------------------------------------------------------
   const clearAllLocalData = useCallback(() => {
-    // Flush any pending trip sync timeouts to prevent stale writes after clear
+    // Flush any pending trip sync timeouts
     tripSyncTimeouts.current.forEach((timeout) => clearTimeout(timeout));
     tripSyncTimeouts.current.clear();
 
-    const next: InternalState = {
-      user: { id: newId(), displayName: "Guest" },
-      saved: [],
-      guideBookmarks: [],
-      userPreferences: DEFAULT_USER_PREFERENCES,
-      trips: [],
-      isLoadingRefresh: false,
-      loadingBookmarks: new Set(),
-      dayEntryPoints: {},
-      cityAccommodations: {},
-      editHistory: {},
-      currentHistoryIndex: {},
-      localTripUpdatedAt: {},
-    };
-    setState(next);
+    // Reset all four slices
+    saved.actions.reset();
+    prefs.actions.reset();
+    trips.actions.reset();
+    history.actions.reset();
+
+    // Give prefs a fresh guest ID
+    prefs.actions.hydrate({ user: { id: newId(), displayName: "Guest" } });
+
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
+        localStorage.removeItem(APP_STATE_STORAGE_KEY);
       } catch (e) {
-        logger.warn("Failed to persist cleared state to localStorage", { error: e instanceof Error ? e.message : String(e) });
+        logger.warn("Failed to clear localStorage", { error: e instanceof Error ? e.message : String(e) });
       }
       localStorage.removeItem(SAVED_STORAGE_KEY);
       localStorage.removeItem(USER_PREFERENCES_STORAGE_KEY);
@@ -828,49 +878,77 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
       localStorage.removeItem(TRIP_STEP_STORAGE_KEY);
       localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
-      // Notify other contexts (e.g. TripBuilderContext) that local data was wiped
       window.dispatchEvent(new CustomEvent("yuku:local-data-cleared"));
     }
-  }, []);
+  }, [saved.actions, prefs.actions, trips.actions, history.actions]);
 
-  // Build API
+  // -----------------------------------------------------------------------
+  // Build the composed API
+  // -----------------------------------------------------------------------
   const api = useMemo<AppStateShape>(
     () => {
-      const savedSet = new Set(state.saved);
-      const bookmarkSet = new Set(state.guideBookmarks);
-
       return {
-        ...state,
-        setUser,
+        // State from slices
+        user: prefs.state.user,
+        saved: saved.state.saved,
+        guideBookmarks: saved.state.guideBookmarks,
+        loadingBookmarks: saved.state.loadingBookmarks,
+        userPreferences: prefs.state.userPreferences,
+        trips: trips.state.trips,
+        isLoadingRefresh: trips.state.isLoadingRefresh,
+        dayEntryPoints: trips.state.dayEntryPoints,
+        cityAccommodations: trips.state.cityAccommodations,
+        editHistory: history.state.editHistory,
+        currentHistoryIndex: history.state.currentHistoryIndex,
+
+        // Preferences actions
+        setUser: prefs.actions.setUser,
         setUserPreferences,
+
+        // Saved actions (composed with sync)
         toggleSave,
-        isSaved: (id: string) => savedSet.has(id),
+        isSaved: saved.actions.isSaved,
         toggleGuideBookmark,
-        isGuideBookmarked: (id: string) => bookmarkSet.has(id),
+        isGuideBookmarked: saved.actions.isGuideBookmarked,
+
+        // Trip actions (composed with sync)
         createTrip,
         updateTripItinerary,
         renameTrip,
         deleteTrip,
         restoreTrip,
-        getTripById: (tripId: string) => getTripByIdOp(state.trips, tripId),
-        setDayEntryPoint,
-        setCityAccommodation,
+        getTripById: trips.actions.getTripById,
+
+        // Day entry / accommodation actions
+        setDayEntryPoint: trips.actions.setDayEntryPoint,
+        setCityAccommodation: trips.actions.setCityAccommodation,
+
+        // Activity mutation actions (composed with history)
         replaceActivity,
         deleteActivity,
         reorderActivities,
         addActivity,
         updateDayActivities,
+
+        // Undo/redo (composed across trips + history)
         undo,
         redo,
         canUndo,
         canRedo,
+
+        // Top-level actions
         clearAllLocalData,
         refreshFromSupabase,
       };
     },
     [
-      state,
-      setUser,
+      prefs.state,
+      saved.state,
+      trips.state,
+      history.state,
+      prefs.actions,
+      saved.actions,
+      trips.actions,
       setUserPreferences,
       toggleSave,
       toggleGuideBookmark,
@@ -879,8 +957,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       renameTrip,
       deleteTrip,
       restoreTrip,
-      setDayEntryPoint,
-      setCityAccommodation,
       replaceActivity,
       deleteActivity,
       reorderActivities,
@@ -896,6 +972,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
+}
+
+// ---------------------------------------------------------------------------
+// AppStateProvider - composes four slice providers + sync orchestrator
+// ---------------------------------------------------------------------------
+
+export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <SavedProvider>
+      <PreferencesProvider>
+        <TripsProvider>
+          <EditHistoryProvider>
+            <SyncOrchestrator>{children}</SyncOrchestrator>
+          </EditHistoryProvider>
+        </TripsProvider>
+      </PreferencesProvider>
+    </SavedProvider>
+  );
 }
 
 export function useAppState() {
