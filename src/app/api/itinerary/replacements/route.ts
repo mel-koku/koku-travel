@@ -48,6 +48,15 @@ export const POST = withApiHandler(
       dayActivities: Parameters<typeof findReplacementCandidates>[3];
     };
 
+    // Short-circuit for custom activities (our scoring is catalog-based)
+    const activityWithCustom = activity as { kind: string; isCustom?: boolean };
+    if (activity.kind === "place" && activityWithCustom.isCustom) {
+      return NextResponse.json(
+        { data: { candidates: [], originalActivity: activity } },
+        { status: 200 },
+      );
+    }
+
     // Find replacement candidates
     const result = await findReplacementCandidates(
       activity,
