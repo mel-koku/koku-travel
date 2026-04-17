@@ -16,7 +16,7 @@ export const NEIGHBORHOOD_NARRATIVE_TEMPLATES: NeighborhoodNarrativeTemplate[] =
     id: "nn-kyoto-higashiyama-2",
     key: "kyoto:higashiyama",
     content:
-      "You're in Higashiyama now, where old Kyoto is still the main character. Wooden machiya line the narrow streets and the sound of temple bells drifts between buildings. Everything here rewards patience and wandering.",
+      "You're in Higashiyama now, where old Kyoto is still the main character. Wooden machiya line the narrow streets and the sound of temple bells drifts between buildings. Everything here rewards patience and a slow pace.",
   },
   {
     id: "nn-kyoto-arashiyama-1",
@@ -224,13 +224,13 @@ export const NEIGHBORHOOD_NARRATIVE_TEMPLATES: NeighborhoodNarrativeTemplate[] =
     id: "nn-tokyo-any-1",
     key: "tokyo:any",
     content:
-      "You're settling into this part of Tokyo. The next stops are walkable from here, so put the transit app away and explore on foot. That's when this city reveals its best details.",
+      "You're settling into this part of Tokyo. The next stops are walkable from here, so put the transit app away and see it on foot. That's when this city shows its best details.",
   },
   {
     id: "nn-osaka-any-1",
     key: "osaka:any",
     content:
-      "This stretch of Osaka is best explored on foot. The activities ahead cluster close together, and the streets between them are half the experience.",
+      "This stretch of Osaka is best seen on foot. The activities ahead cluster close together, and the streets between them are half the experience.",
   },
 
   // ── Generic fallbacks ──────────────────────────────────────────────

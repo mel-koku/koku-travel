@@ -60,7 +60,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-8",
     key: "food:culture:tokyo",
     content:
-      "With a full stomach, you're ready to explore a different side of Tokyo. The next stop trades flavors for something a little more timeless.",
+      "With a full stomach, you're ready to see a different side of Tokyo. The next stop trades flavors for something a little more timeless.",
   },
   {
     id: "tr-9",
@@ -134,7 +134,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-19",
     key: "culture:shopping:osaka",
     content:
-      "From sightseeing to retail therapy, Osaka style. Think bustling arcades, quirky finds, and energy that never quits.",
+      "From sightseeing to retail therapy, Osaka style. Think packed arcades, quirky finds, and energy that never quits.",
   },
   {
     id: "tr-20",
@@ -292,7 +292,7 @@ export const TRANSITION_TEMPLATES: TransitionTemplate[] = [
     id: "tr-41",
     key: "food:food:any",
     content:
-      "Another food stop? Absolutely. Japan rewards the adventurous eater, and you've got room for one more. Trust me.",
+      "Another food stop? Say yes. Japan rewards the adventurous eater, and you've got room for one more. Trust me.",
   },
 
   // ─── culture → culture ───────────────────────────────────────────

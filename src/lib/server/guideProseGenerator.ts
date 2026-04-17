@@ -607,6 +607,8 @@ const DENY_LIST_PATTERNS = [
   /\byou'll love\b/i, /\bexplore\b/i, /\bdiscover\b/i, /\bwander\b/i,
   /\bauthentic\b/i, /\bgem\b/i, /\bstunning\b/i, /\bbreathtaking\b/i,
   /\bjourney\b/i, /\bnestled\b/i, /\bbest-kept secret\b/i, /\btapestry\b/i,
+  /\btraditional\b/i, /\bhub\b/i, /\babsolutely\b/i, /\btruly\b/i,
+  /\breally\b/i,
 ];
 
 export function scanForDenyListViolations(guide: GeneratedGuide): string[] {

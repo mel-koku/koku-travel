@@ -6,7 +6,7 @@ export const DAY_SUMMARY_TEMPLATES: DaySummaryTemplate[] = [
     id: "ds-1",
     key: "kyoto:cultural",
     content:
-      "What a day of discovery. Kyoto has a way of making centuries feel close. Every temple garden, every shrine path tells a story. If you still have energy, an evening stroll through Gion might reward you with the sight of a geiko heading to work.",
+      "What a day. Kyoto has a way of making centuries feel close. Every temple garden, every shrine path tells a story. If you still have energy, an evening stroll through Gion might reward you with the sight of a geiko heading to work.",
     icon: "🌙",
   },
   {
@@ -147,7 +147,7 @@ export const DAY_SUMMARY_TEMPLATES: DaySummaryTemplate[] = [
     id: "ds-20",
     key: "kobe:nature",
     content:
-      "Mountains behind you, the sea in front. Kobe's natural setting is stunning. Whether you hiked Rokko or strolled the waterfront, the views today were something special. Rest those legs.",
+      "Mountains behind you, the sea in front. Kobe's natural setting is hard to beat. Whether you hiked Rokko or strolled the waterfront, the views today were something special. Rest those legs.",
     icon: "🏔️",
   },
 
@@ -170,7 +170,7 @@ export const DAY_SUMMARY_TEMPLATES: DaySummaryTemplate[] = [
     id: "ds-23",
     key: "fukuoka:mixed",
     content:
-      "Fukuoka has the energy of a big city with the friendliness of a small town. Between the shrines, the shopping, and the incredible food, it probably won you over today. Sleep well. Tomorrow has more in store.",
+      "Fukuoka has the energy of a big city with the friendliness of a small town. Between the shrines, the shopping, and the exceptional food, it probably won you over today. Sleep well. Tomorrow has more in store.",
     icon: "🌅",
   },
 
@@ -367,7 +367,7 @@ export const DAY_SUMMARY_TEMPLATES: DaySummaryTemplate[] = [
     id: "ds-48",
     key: "generic:any",
     content:
-      "What a day. Japan has a way of surprising you, no matter how many times you visit. Whatever you saw, tasted, or discovered today, it was worth it. Rest up. Tomorrow is waiting.",
+      "What a day. Japan has a way of surprising you, no matter how many times you visit. Whatever you saw, tasted, or stumbled into today, it was worth it. Rest up. Tomorrow is waiting.",
     icon: "💫",
   },
 ];
