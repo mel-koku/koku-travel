@@ -325,3 +325,19 @@ describe("planItineraryDay with addressless custom stops", () => {
     expect(c.travelFromPrevious?.skippedOverCustom).toBe(true);
   });
 });
+
+describe("planItineraryDay idempotency with custom stops", () => {
+  it("produces identical output when run twice on same input", async () => {
+    mockRequestRoute.mockResolvedValue(buildRoute("transit", 1500));
+
+    const input = makeItineraryWithAddresslessCustom();
+    // Add a manualStartTime to exercise pinning
+    (input.days[0].activities[2] as Extract<ItineraryActivity, { kind: "place" }>).manualStartTime =
+      "14:30";
+
+    const first = await planItinerary(input);
+    const second = await planItinerary(input);
+
+    expect(JSON.stringify(second)).toBe(JSON.stringify(first));
+  });
+});
