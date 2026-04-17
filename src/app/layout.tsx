@@ -17,13 +17,13 @@ const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com").r
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Yuku Japan - Discover Japan with Local Experts",
+  title: "Yuku Japan | Routed Japan Itineraries, Day by Day",
   description:
-    "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    "Your Japan trip, planned day by day. Routed itineraries with real transit times, sourced from Japan\u2019s official tourism boards.",
   openGraph: {
-    title: "Yuku Japan - Discover Japan with Local Experts",
+    title: "Yuku Japan | Routed Japan Itineraries, Day by Day",
     description:
-      "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+      "Your Japan trip, planned day by day. Routed itineraries with real transit times, sourced from Japan\u2019s official tourism boards.",
     url: BASE_URL,
     siteName: "Yuku Japan",
     type: "website",
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yuku Japan - Discover Japan with Local Experts",
+    title: "Yuku Japan | Routed Japan Itineraries, Day by Day",
     description:
-      "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+      "Your Japan trip, planned day by day. Routed itineraries with real transit times, sourced from Japan\u2019s official tourism boards.",
     images: ["/images/fallback.jpg"],
   },
   robots: {
