@@ -7,6 +7,7 @@ import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { PlaceActivityRow } from "./PlaceActivityRow";
 import { NoteActivityRow } from "./NoteActivityRow";
+import { CustomActivityCard } from "./CustomActivityCard";
 
 type ActivityRowProps = {
   activity: ItineraryActivity;
@@ -36,10 +37,21 @@ type ActivityRowProps = {
   onViewDetails?: (location: Location) => void;
   tripStartDate?: string;
   dayIndex?: number;
+  /** Called when the user taps Edit on a custom activity card */
+  onEditCustom?: (activity: Extract<ItineraryActivity, { kind: "place" }>) => void;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
   (props, ref) => {
+    if (props.activity.kind === "place" && props.activity.isCustom) {
+      return (
+        <CustomActivityCard
+          activity={props.activity}
+          onEdit={() => props.onEditCustom?.(props.activity as Extract<ItineraryActivity, { kind: "place" }>)}
+          onDelete={props.onDelete}
+        />
+      );
+    }
     if (props.activity.kind === "note") {
       return <NoteActivityRow ref={ref} {...props} activity={props.activity} isReadOnly={props.isReadOnly} activeDragId={props.activeDragId} />;
     }
