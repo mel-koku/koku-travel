@@ -92,7 +92,13 @@ export function createMockSupabaseClient(): MockSupabaseClient {
  * Mock Google Places API response
  */
 export function createMockPhotoStreamResponse(): Response {
-  return new Response(new Blob(["mock-image-data"], { type: "image/jpeg" }), {
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode("mock-image-data"));
+      controller.close();
+    },
+  });
+  return new Response(stream, {
     status: 200,
     headers: {
       "Content-Type": "image/jpeg",
