@@ -32,6 +32,29 @@ import {
 } from "@/lib/analytics/customLocations";
 import type { useDayAvailability } from "@/hooks/useDayAvailability";
 
+function countFieldsChanged(
+  before: Extract<ItineraryActivity, { kind: "place" }>,
+  after: Extract<ItineraryActivity, { kind: "place" }>,
+): number {
+  const fields: Array<keyof Extract<ItineraryActivity, { kind: "place" }>> = [
+    "title", "address", "durationMin", "manualStartTime",
+    "phone", "website", "notes", "confirmationNumber",
+  ];
+  let count = 0;
+  for (const k of fields) {
+    if ((before[k] ?? null) !== (after[k] ?? null)) count++;
+  }
+  // tags[0] comparison (category)
+  if ((before.tags?.[0] ?? null) !== (after.tags?.[0] ?? null)) count++;
+  // costEstimate shallow compare
+  const beforeCost = before.costEstimate ? `${before.costEstimate.amount}-${before.costEstimate.currency}` : null;
+  const afterCost = after.costEstimate ? `${after.costEstimate.amount}-${after.costEstimate.currency}` : null;
+  if (beforeCost !== afterCost) count++;
+  // coordinates presence (addressless → addressed is a meaningful change)
+  if (Boolean(before.coordinates) !== Boolean(after.coordinates)) count++;
+  return count;
+}
+
 type TravelSegmentWrapperProps = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
   previousActivity: Extract<ItineraryActivity, { kind: "place" }>;
@@ -470,7 +493,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
             }
             trackCustomLocationEdited({
               addressSource: meta.addressSource === "none" ? "as-is" : meta.addressSource,
-              fieldsChanged: 0,
+              fieldsChanged: countFieldsChanged(editing.activity, updated),
             });
             setEditing(null);
           }}
