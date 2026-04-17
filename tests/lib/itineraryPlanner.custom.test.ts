@@ -326,6 +326,152 @@ describe("planItineraryDay with addressless custom stops", () => {
   });
 });
 
+describe("planItineraryDay honors manualStartTime", () => {
+  it("pushes arrival to the pinned time even when cursor is earlier", async () => {
+    // act-a: 30 min duration, starts at 09:00 → departs ~09:30
+    // act-b: has coords + manualStartTime "14:30" → mock 20 min travel from act-a
+    // Planner would naturally arrive at ~09:50 (09:30 + 10 buffer + 20 travel)
+    // but pinned time is 14:30 → arrivalTime must be "14:30"
+    mockRequestRoute.mockResolvedValue(buildRoute("walk", 1200, 500)); // 20 min travel, 500m
+
+    const itinerary: Itinerary = {
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Mon",
+          weekday: "monday",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "act-a",
+              title: "Tokyo Station",
+              timeOfDay: "morning",
+              durationMin: 30,
+              locationId: "loc-a",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+            {
+              kind: "place",
+              id: "act-b-pinned",
+              title: "Lunch Reservation",
+              timeOfDay: "afternoon",
+              durationMin: 60,
+              isCustom: true,
+              coordinates: { lat: 35.695, lng: 139.770 },
+              manualStartTime: "14:30",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+          ],
+          bounds: { startTime: "09:00", endTime: "21:00" },
+        },
+      ],
+      timezone: "Asia/Tokyo",
+    };
+
+    const planned = await planItinerary(itinerary);
+    const day = planned.days[0];
+    const [, actB] = day.activities as Extract<ItineraryActivity, { kind: "place" }>[];
+
+    expect(actB.schedule?.arrivalTime).toBe("14:30");
+  });
+
+  it("does NOT pull cursor backward when cursor is already past the pinned time", async () => {
+    // act-a: very long 360 min duration starting at 09:00 → departs 15:00
+    // act-b: coords + manualStartTime "12:00" (earlier than cursor)
+    // cursor after travel should remain past 12:00; arrival should NOT be 12:00
+    mockRequestRoute.mockResolvedValue(buildRoute("walk", 600, 400)); // 10 min travel
+
+    const itinerary: Itinerary = {
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Mon",
+          weekday: "monday",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "act-a",
+              title: "Tokyo Station",
+              timeOfDay: "morning",
+              durationMin: 360,
+              locationId: "loc-a",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+            {
+              kind: "place",
+              id: "act-b-past",
+              title: "Early Restaurant",
+              timeOfDay: "afternoon",
+              durationMin: 60,
+              isCustom: true,
+              coordinates: { lat: 35.695, lng: 139.770 },
+              manualStartTime: "12:00",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+          ],
+          bounds: { startTime: "09:00", endTime: "21:00" },
+        },
+      ],
+      timezone: "Asia/Tokyo",
+    };
+
+    const planned = await planItinerary(itinerary);
+    const day = planned.days[0];
+    const [, actB] = day.activities as Extract<ItineraryActivity, { kind: "place" }>[];
+
+    // Cursor is past 12:00 (act-a ends at 15:00 + 10 min buffer + 10 min travel = ~15:20)
+    // So arrival should NOT be "12:00"
+    expect(actB.schedule?.arrivalTime).not.toBe("12:00");
+    // Arrival should be well after 12:00
+    const [hh] = (actB.schedule?.arrivalTime ?? "00:00").split(":").map(Number);
+    expect(hh).toBeGreaterThanOrEqual(15);
+  });
+
+  it("honors manualStartTime on addressless custom stops too", async () => {
+    // act-b is addressless-custom with manualStartTime "13:00"
+    // cursor at act-b start would be 09:00 + 30 (act-a) + 10 buffer = 09:40
+    // pinned time 13:00 > 09:40, so arrivalTime must be "13:00"
+    mockRequestRoute.mockResolvedValue(buildRoute("walk", 1200, 500));
+
+    const itinerary: Itinerary = {
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Mon",
+          weekday: "monday",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "act-a",
+              title: "Tokyo Station",
+              timeOfDay: "morning",
+              durationMin: 30,
+              locationId: "loc-a",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+            {
+              kind: "place",
+              id: "act-b-addressless",
+              title: "Grandma's House",
+              timeOfDay: "afternoon",
+              durationMin: 60,
+              isCustom: true,
+              // no coordinates, no locationId → addressless
+              manualStartTime: "13:00",
+            } as Extract<ItineraryActivity, { kind: "place" }>,
+          ],
+          bounds: { startTime: "09:00", endTime: "21:00" },
+        },
+      ],
+      timezone: "Asia/Tokyo",
+    };
+
+    const planned = await planItinerary(itinerary);
+    const day = planned.days[0];
+    const [, actB] = day.activities as Extract<ItineraryActivity, { kind: "place" }>[];
+
+    expect(actB.schedule?.arrivalTime).toBe("13:00");
+  });
+});
+
 describe("planItineraryDay idempotency with custom stops", () => {
   it("produces identical output when run twice on same input", async () => {
     mockRequestRoute.mockResolvedValue(buildRoute("transit", 1500));

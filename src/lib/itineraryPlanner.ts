@@ -666,6 +666,17 @@ async function planItineraryDay(
     // --- Addressless custom stop: advance cursor only, no routing or operating-window ---
     if (isAddresslessCustom(activity)) {
       const visitDuration = activity.durationMin ?? options.defaultVisitMinutes;
+      // Honor user-pinned start time for reservations
+      if (activity.manualStartTime) {
+        const parts = activity.manualStartTime.split(":").map(Number);
+        const hh = parts[0];
+        const mm = parts[1];
+        if (hh !== undefined && mm !== undefined && !Number.isNaN(hh) && !Number.isNaN(mm)) {
+          const pinnedMinutes = hh * 60 + mm;
+          // Only advance cursor; never pull it backward
+          cursorMinutes = Math.max(cursorMinutes, pinnedMinutes);
+        }
+      }
       const plannerActivity: ItineraryActivity = {
         ...activity,
         durationMin: visitDuration,
@@ -807,6 +818,18 @@ async function planItineraryDay(
       lastPlaceIndex = plannedActivities.length - 1;
       lastCoordinateIndex = plannedActivities.length - 1;
       continue;
+    }
+
+    // Honor user-pinned start time for reservations
+    if (activity.manualStartTime) {
+      const parts = activity.manualStartTime.split(":").map(Number);
+      const hh = parts[0];
+      const mm = parts[1];
+      if (hh !== undefined && mm !== undefined && !Number.isNaN(hh) && !Number.isNaN(mm)) {
+        const pinnedMinutes = hh * 60 + mm;
+        // Only advance cursor; never pull it backward
+        cursorMinutes = Math.max(cursorMinutes, pinnedMinutes);
+      }
     }
 
     // Hours source: custom activity with captured hours → use those; catalog activity → use Location hours;
