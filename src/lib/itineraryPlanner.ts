@@ -694,7 +694,15 @@ async function planItineraryDay(
     const estimatedArrival = cursorMinutes + estimatedTravelMin;
 
     if (!activity.isAnchor) {
-      const preCheckPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
+      // Hours source: custom activity with captured hours → use those; catalog activity → use Location hours;
+      // custom activity with no captured hours → undefined (skip operating-window evaluation).
+      const hoursSource =
+        activity.isCustom && activity.customOperatingHours
+          ? activity.customOperatingHours
+          : activity.isCustom
+            ? undefined
+            : meta.location?.operatingHours;
+      const preCheckPeriod = getOperatingPeriodForDay(hoursSource, day.weekday);
       const preCheck = evaluateOperatingWindow(preCheckPeriod, estimatedArrival, meta.visitDuration);
 
       if (preCheck.status === "closed") {
@@ -801,8 +809,30 @@ async function planItineraryDay(
       continue;
     }
 
-    const operatingPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
-    const evaluation = evaluateOperatingWindow(operatingPeriod, cursorMinutes, meta.visitDuration);
+    // Hours source: custom activity with captured hours → use those; catalog activity → use Location hours;
+    // custom activity with no captured hours → undefined (skip operating-window evaluation).
+    const finalHoursSource =
+      activity.isCustom && activity.customOperatingHours
+        ? activity.customOperatingHours
+        : activity.isCustom
+          ? undefined
+          : meta.location?.operatingHours;
+    const operatingPeriod = getOperatingPeriodForDay(finalHoursSource, day.weekday);
+
+    // For custom activities with no captured hours, skip operating-window evaluation entirely
+    // and treat arrival as always valid (status "scheduled", no window adjustment).
+    const evaluation =
+      activity.isCustom && !activity.customOperatingHours
+        ? {
+            adjustedArrival: cursorMinutes,
+            adjustedDeparture: cursorMinutes + meta.visitDuration,
+            effectiveVisitMinutes: meta.visitDuration,
+            arrivalBuffer: undefined,
+            departureBuffer: undefined,
+            status: "scheduled" as const,
+            window: undefined,
+          }
+        : evaluateOperatingWindow(operatingPeriod, cursorMinutes, meta.visitDuration);
 
     plannerActivity.durationMin = meta.visitDuration;
 
@@ -816,7 +846,7 @@ async function planItineraryDay(
         ? {
             opensAt: evaluation.window.opensAt,
             closesAt: evaluation.window.closesAt,
-            note: meta.location?.operatingHours?.notes,
+            note: finalHoursSource?.notes,
             status: evaluation.window.status,
           }
         : undefined,
@@ -827,7 +857,7 @@ async function planItineraryDay(
         opensAt: evaluation.window.opensAt,
         closesAt: evaluation.window.closesAt,
         status: evaluation.window.status,
-        note: meta.location?.operatingHours?.notes,
+        note: finalHoursSource?.notes,
       };
     }
 

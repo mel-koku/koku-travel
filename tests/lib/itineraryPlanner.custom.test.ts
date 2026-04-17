@@ -125,6 +125,162 @@ function makeItineraryWithAddresslessCustom(): Itinerary {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Task 3 helpers
+// ---------------------------------------------------------------------------
+
+function makeItineraryWithCoordsCustomNoHours(): Itinerary {
+  const activities: ItineraryActivity[] = [
+    {
+      kind: "place",
+      id: "act-a",
+      title: "Tokyo Station",
+      timeOfDay: "morning",
+      durationMin: 30,
+      locationId: "loc-a",
+    },
+    {
+      kind: "place",
+      id: "act-custom-coords",
+      title: "My Favourite Spot",
+      timeOfDay: "afternoon",
+      durationMin: 60,
+      isCustom: true,
+      // Has coordinates — NOT addressless
+      coordinates: { lat: 35.69, lng: 139.70 },
+      // No customOperatingHours
+    },
+    {
+      kind: "place",
+      id: "act-c",
+      title: "Ueno Park",
+      timeOfDay: "afternoon",
+      durationMin: 90,
+      locationId: "loc-c",
+    },
+  ];
+  return {
+    days: [
+      {
+        id: "day-1",
+        dateLabel: "Mon",
+        weekday: "monday",
+        cityId: "tokyo",
+        activities,
+        bounds: { startTime: "09:00", endTime: "21:00" },
+      },
+    ],
+    timezone: "Asia/Tokyo",
+  };
+}
+
+function makeItineraryWithCoordsCustomAndHours(): Itinerary {
+  const activities: ItineraryActivity[] = [
+    {
+      kind: "place",
+      id: "act-a",
+      title: "Tokyo Station",
+      timeOfDay: "morning",
+      durationMin: 30,
+      locationId: "loc-a",
+    },
+    {
+      kind: "place",
+      id: "act-custom-hours",
+      title: "My Favourite Cafe",
+      timeOfDay: "morning",
+      durationMin: 60,
+      isCustom: true,
+      coordinates: { lat: 35.69, lng: 139.70 },
+      customOperatingHours: {
+        timezone: "Asia/Tokyo",
+        periods: [{ day: "monday", open: "10:00", close: "12:00" }],
+      },
+    },
+    {
+      kind: "place",
+      id: "act-c",
+      title: "Ueno Park",
+      timeOfDay: "afternoon",
+      durationMin: 90,
+      locationId: "loc-c",
+    },
+  ];
+  return {
+    days: [
+      {
+        id: "day-1",
+        dateLabel: "Mon",
+        weekday: "monday",
+        cityId: "tokyo",
+        activities,
+        bounds: { startTime: "09:00", endTime: "21:00" },
+      },
+    ],
+    timezone: "Asia/Tokyo",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Task 3 tests
+// ---------------------------------------------------------------------------
+
+describe("planItineraryDay with custom stops that have coordinates but NO customOperatingHours", () => {
+  it("routes normally and produces schedule.status === 'scheduled' with no operatingWindow", async () => {
+    mockRequestRoute.mockResolvedValue(buildRoute("transit", 1500));
+
+    const planned = await planItinerary(makeItineraryWithCoordsCustomNoHours());
+
+    const day = planned.days[0];
+    const [a, custom, c] = day.activities as Extract<ItineraryActivity, { kind: "place" }>[];
+
+    // Custom stop with coords routes normally — it must have travel segments
+    expect(custom.travelFromPrevious).toBeDefined();
+
+    // No operatingWindow because there are no customOperatingHours
+    expect(custom.operatingWindow).toBeUndefined();
+
+    // schedule must be "scheduled" (not "out-of-hours" or "tentative")
+    expect(custom.schedule?.status).toBe("scheduled");
+
+    // Subsequent stop (c) also routes normally
+    expect(c.travelFromPrevious).toBeDefined();
+
+    // Silence unused-var lint
+    expect(a.id).toBe("act-a");
+  });
+});
+
+describe("planItineraryDay with custom stops that have coordinates AND customOperatingHours", () => {
+  it("evaluates operating window using customOperatingHours periods", async () => {
+    mockRequestRoute.mockResolvedValue(buildRoute("transit", 1500));
+
+    const planned = await planItinerary(makeItineraryWithCoordsCustomAndHours());
+
+    const day = planned.days[0];
+    const [a, custom] = day.activities as Extract<ItineraryActivity, { kind: "place" }>[];
+
+    // Operating window should be populated from customOperatingHours
+    expect(custom.operatingWindow).toBeDefined();
+    expect(custom.operatingWindow?.opensAt).toBe("10:00");
+    expect(custom.operatingWindow?.closesAt).toBe("12:00");
+
+    // schedule.operatingWindow should also reflect the custom hours
+    expect(custom.schedule?.operatingWindow?.opensAt).toBe("10:00");
+    expect(custom.schedule?.operatingWindow?.closesAt).toBe("12:00");
+
+    // Travel routing still happens (has coordinates)
+    expect(custom.travelFromPrevious).toBeDefined();
+
+    // Silence unused-var lint
+    expect(a.id).toBe("act-a");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Task 2 tests (unchanged)
+// ---------------------------------------------------------------------------
+
 describe("planItineraryDay with addressless custom stops", () => {
   it("skips routing for addressless custom stops and routes next stop from previous coordinate stop", async () => {
     // 25 minutes = 1500 seconds
