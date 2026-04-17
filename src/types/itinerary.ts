@@ -119,6 +119,8 @@ export type ItineraryTravelSegment = {
   lastTrainWarning?: boolean;
   /** True if departure falls within morning (7:30–9:30) or evening (17:30–19:00) rush hour */
   rushHourWarning?: boolean;
+  /** True when this segment's origin is a "last known location" because intermediate stops had no address. */
+  skippedOverCustom?: boolean;
 };
 
 export type ItineraryCityTransition = {
@@ -204,6 +206,27 @@ export type ItineraryActivity =
       manualStartTime?: string;
       /** Fixed activity (airport arrival/departure). Cannot be deleted, replaced, or reordered. */
       isAnchor?: boolean;
+      /**
+       * True when this activity was authored by the user (not from the catalog).
+       * Custom activities may have no `coordinates` and no `locationId`.
+       * Enrichment fields (phone, website, costEstimate, confirmationNumber)
+       * are only populated on custom activities.
+       */
+      isCustom?: boolean;
+      /** User-entered phone number for tap-to-call (custom activities only). */
+      phone?: string;
+      /** User-entered website or reservation URL (custom activities only). */
+      website?: string;
+      /** User-entered cost estimate (custom activities only). */
+      costEstimate?: { amount: number; currency: string };
+      /** Reserved for v2 photo upload (custom activities only). Not populated in v1. */
+      photoUrl?: string;
+      /** User-entered confirmation number for reservations (custom activities only). */
+      confirmationNumber?: string;
+      /** Opening hours captured from address resolution (custom activities with coordinates). */
+      customOperatingHours?: import("./location").LocationOperatingHours;
+      /** Street/formatted address for custom activities (mirrors Location.address). */
+      address?: string;
     }
   | {
       kind: "note";

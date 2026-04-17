@@ -30,5 +30,13 @@ export const featureFlags = {
   get cheapMode(): boolean {
     return process.env.CHEAP_MODE === "true";
   },
+
+  /**
+   * Gates the user-authored "custom location" feature in the itinerary.
+   * Enabled by default in dev; gate by setting ENABLE_CUSTOM_ACTIVITIES=false.
+   */
+  get isCustomActivitiesEnabled(): boolean {
+    return process.env.ENABLE_CUSTOM_ACTIVITIES !== "false";
+  },
 } as const;
 

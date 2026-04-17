@@ -29,6 +29,8 @@ type SortableActivityProps = {
   onViewDetails?: (location: Location) => void;
   tripStartDate?: string;
   dayIndex?: number;
+  /** Called when the user taps Edit on a custom activity card */
+  onEditCustom?: (activity: Extract<ItineraryActivity, { kind: "place" }>) => void;
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -51,6 +53,7 @@ export const SortableActivity = memo(function SortableActivity({
   onViewDetails,
   tripStartDate,
   dayIndex,
+  onEditCustom,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -137,6 +140,7 @@ export const SortableActivity = memo(function SortableActivity({
           onViewDetails={onViewDetails}
           tripStartDate={tripStartDate}
           dayIndex={dayIndex}
+          onEditCustom={onEditCustom}
         />
       )}
     </li>
