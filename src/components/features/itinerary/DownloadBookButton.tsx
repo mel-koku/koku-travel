@@ -88,7 +88,7 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
       }
 
       setState("idle");
-      showToast("Your book is downloading", { variant: "success", duration: 3000 });
+      showToast("Your trip PDF is downloading", { variant: "success", duration: 3000 });
     } catch (err) {
       if (isUnmountedRef.current) return;
       const aborted = err instanceof Error && err.name === "AbortError";
@@ -111,13 +111,13 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
   if (locked && onLockedClick) {
     return (
       <button type="button" onClick={onLockedClick} className={className} title="Unlock to download">
-        Book
+        PDF
       </button>
     );
   }
 
   const label =
-    state === "generating" ? "Generating…" : state === "fallback" ? "Opening…" : "Book";
+    state === "generating" ? "Generating…" : state === "fallback" ? "Opening…" : "PDF";
 
   return (
     <button

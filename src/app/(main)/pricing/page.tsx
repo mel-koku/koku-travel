@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-const tiers: { tier: UnlockTier; label: string; days: string }[] = [
-  { tier: "short", label: "Short Trip", days: "1\u20137 days" },
-  { tier: "standard", label: "Standard Trip", days: "8\u201314 days" },
-  { tier: "long", label: "Extended Trip", days: "15\u201321 days" },
+const tiers: { tier: UnlockTier; label: string; days: string; bestFor: string }[] = [
+  { tier: "short", label: "Short Trip", days: "1\u20137 days", bestFor: "Weekends and first visits" },
+  { tier: "standard", label: "Standard Trip", days: "8\u201314 days", bestFor: "Classic Tokyo, Kyoto, Osaka routes" },
+  { tier: "long", label: "Extended Trip", days: "15\u201321 days", bestFor: "Grand tours and deeper dives" },
 ];
 
 const features = [
@@ -132,6 +132,14 @@ export default async function PricingPage() {
                     )}
                   >
                     ${TIER_PRICES[t.tier] / 100}
+                  </p>
+                  <p
+                    className={cn(
+                      typography({ intent: "utility-meta" }),
+                      "mt-3 text-foreground-secondary",
+                    )}
+                  >
+                    {t.bestFor}
                   </p>
                 </div>
               </ScrollReveal>

@@ -33,14 +33,15 @@ function UserMenu({
   supabase: SupabaseClient;
   router: AppRouterInstance;
 }) {
-  const { clearAllLocalData } = useAppState();
+  const { clearAllLocalData, trips } = useAppState();
+  const hasLocalTrip = !isSignedIn && trips.length > 0;
 
   const handleClearData = () => {
-    const confirmed = window.confirm(
-      "Start fresh?\n\n" +
-        "This removes all trips, saved places, and preferences from this device.\n\n" +
-        "Your account data stays safe in the cloud."
-    );
+    const body = isSignedIn
+      ? "This removes all trips, saved places, and preferences from this device. Your account data stays safe in the cloud."
+      : "This removes all trips, saved places, and preferences from this device. You haven\u2019t signed in, so there\u2019s no cloud backup.";
+
+    const confirmed = window.confirm(`Start fresh?\n\n${body}`);
 
     if (confirmed) {
       clearAllLocalData();
@@ -76,6 +77,15 @@ function UserMenu({
         },
       ]
     : [
+        ...(hasLocalTrip
+          ? [
+              {
+                id: "your-trip",
+                label: "Your Trip",
+                onSelect: () => router.push("/dashboard"),
+              },
+            ]
+          : []),
         {
           id: "dashboard",
           label: "Dashboard",
@@ -94,24 +104,7 @@ function UserMenu({
         {
           id: "cleardata",
           label: (
-            <span className="flex items-center justify-between gap-2">
-              <span>Clear local data</span>
-              <svg
-                className="h-[1em] w-[1em] flex-shrink-0 text-warning"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                />
-              </svg>
-            </span>
+            <span className="text-foreground-secondary">Clear local data</span>
           ),
           onSelect: handleClearData,
         },

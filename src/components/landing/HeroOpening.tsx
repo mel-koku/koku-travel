@@ -26,16 +26,17 @@ type HeroOpeningProps = {
 };
 
 const FALLBACK_IMAGE = "/images/fallback.jpg";
-const FALLBACK_ALT = "Quiet alley in Japan at dusk";
+const FALLBACK_ALT = "A scene from Japan";
 
 export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
   const headline =
-    content?.heroHeadline ?? "Travel Japan like the people who live here";
+    content?.heroHeadline ?? "Your Japan trip, planned day by day.";
   const description = (
     content?.heroDescription ??
-    "Days planned around how you actually travel. {locationCount}+ places we'd stake our name on."
+    "Tell us your dates and vibe. We build a routed itinerary with real transit times across {locationCount}+ places in all 47 prefectures."
   ).replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
+  const freePreviewNote = "Day 1 is free. See your trip before you decide.";
 
   // Sanity image with hotspot support
   const heroImage = content?.heroImage;
@@ -109,6 +110,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
               >
                 {primaryCta}
               </a>
+              <p className="mt-4 text-xs text-white/70">{freePreviewNote}</p>
             </div>
           </div>
           </div>
@@ -211,6 +213,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             >
               {primaryCta}
             </a>
+            <p className="mt-4 text-xs text-white/70">{freePreviewNote}</p>
           </motion.div>
         </div>
         </div>

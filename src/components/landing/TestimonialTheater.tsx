@@ -36,7 +36,7 @@ function FeatureShowcase({ content }: { content?: LandingPageContent }) {
         <div className="absolute inset-0 bg-charcoal/70" />
 
         <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28 text-center">
-          <p className="eyebrow-editorial text-brand-primary">What you get</p>
+          <p className="eyebrow-editorial text-brand-primary">What ships in every Pass</p>
           <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
             Every day, routed and timed
           </h2>

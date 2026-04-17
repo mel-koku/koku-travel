@@ -7,14 +7,14 @@ import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
 
 const QA_ITEMS = [
-  { q: "Best ramen near Shinjuku station?", a: "Fuunji, 3-minute walk from the south exit. Get the tsukemen." },
-  { q: "Day trip from Osaka worth taking?", a: "Nara. 45 minutes by train, deer park, Todai-ji." },
-  { q: "Cherry blossoms in Hokkaido?", a: "Early to mid-May. About a month after Tokyo peaks." },
-  { q: "IC card or buy tickets?", a: "IC card. Works on trains, buses, and convenience stores." },
-  { q: "How much cash should I carry?", a: "Keep 5,000-10,000 yen for small shops. Most places take cards." },
-  { q: "Is the JR Pass worth it?", a: "Prices went up in 2023. Run the numbers for your specific route. Often still worth it for longer trips across multiple cities." },
-  { q: "Best onsen near Tokyo?", a: "Hakone. 90 minutes by Romancecar. Book a ryokan with a private bath." },
-  { q: "Can I adjust the pace mid-trip?", a: "Yes. Tap any day and tell us it's too busy or too light. We rebalance." },
+  { q: "Is my schedule too packed?", a: "Your Tuesday has four stops and two train transfers. Tight but doable. Want me to loosen it?" },
+  { q: "What if it rains tomorrow?", a: "Shift the garden walk to Friday. Swap in the craft museum nearby. Same area, indoor." },
+  { q: "How do I get between these places?", a: "Ginza Line to Omotesando, then a 6-minute walk. Platform 2 toward Shibuya." },
+  { q: "Any etiquette tips for today's stops?", a: "The temple asks for silence past the gate. Shoes off at the tatami room." },
+  { q: "Suggest a quick coffee break.", a: "Glitch Coffee is a 4-minute detour from your 2pm stop. Pour-over, no laptops." },
+  { q: "Can I swap this day trip?", a: "Kamakura fits your pace better than Nikko. Shorter train, similar vibe. Want me to swap it?" },
+  { q: "What should I eat for lunch here?", a: "The shotengai two blocks east has a tonkatsu shop regulars swear by. Closed Tuesdays." },
+  { q: "Can I adjust the pace mid-trip?", a: "Yes. Tap any day and tell me it's too busy or too light. I rebalance." },
 ];
 
 // Hand-placed positions for desktop scattered layout
@@ -112,7 +112,7 @@ export function AskYukuPreview() {
         >
           <p className="eyebrow-mono">Ask Yuku</p>
           <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl")}>
-            Questions? We know Japan. Ask anything.
+            Travel questions, answered in the context of your trip.
           </h2>
         </motion.div>
 

@@ -26,8 +26,8 @@ const FALLBACK = {
     "Yuku (\u884C\u304F) means \u201Cto go\u201D in Japanese. We built this trip planner because going to Japan should feel as good as being there.",
   storyHeading: "Why Yuku exists",
   storyParagraphs: [
-    "Japan rewards the traveler who goes deeper. The tonkatsu shop three blocks from the station. The mountain shrine that empties out by mid-afternoon. The neighborhood onsen where regulars nod hello.",
-    "These moments take planning, not luck. Yuku handles the logistics: local knowledge, smart routing, and cultural context built into every trip so you show up knowing when to bow, where to stay quiet, and how to move through a neighborhood without adding to the crowd.",
+    "Japan rewards the traveler who goes deeper. A tonkatsu shop three blocks from the station. A mountain shrine that empties out by mid-afternoon. The quiet prefecture most itineraries skip.",
+    "These moments take planning, not luck. Yuku pulls from Japan\u2019s official tourism boards and DMOs, then does the hard part: routing your days, timing the trains, and handing you cultural context so you show up knowing when to bow, where to stay quiet, and how to move through a neighborhood without adding to the crowd.",
   ],
   storyImageUrl: "/placeholders/about-story.svg",
   photoBreakUrl: "/placeholders/about-photo-break.svg",
@@ -40,9 +40,9 @@ const FALLBACK = {
       imageUrl: "/placeholders/about-value-1.svg",
     },
     {
-      title: "Local knowledge first.",
+      title: "Official sources, curated with care.",
       description:
-        "Every location in Yuku is sourced and vetted with care. We don\u2019t scrape lists. We talk to people who live there.",
+        "Every location is drawn from Japan\u2019s tourism boards and DMOs, not scraped from someone else\u2019s list. We layer our own editorial picks on top.",
       imageUrl: "/placeholders/about-value-2.svg",
     },
     {
@@ -56,21 +56,16 @@ const FALLBACK = {
   teamHeading: "Who\u2019s behind Yuku",
   teamMembers: [
     {
-      name: "Daniel Cho",
-      role: "Founder",
-      bio: "California-raised, Japan-obsessed. Spent years planning trips for friends before realizing the spreadsheet deserved to be a product.",
-    },
-    {
       name: "Meljun Picardal",
-      role: "Co-Founder",
-      bio: "Developer and Kyoto native. Grew up watching tourists walk past the best parts of his city and decided to do something about it.",
+      role: "Founder",
+      bio: "Solo founder building Yuku for travelers who want more than a guidebook. Years of planning trips for friends turned into a product worth shipping.",
       github: "https://github.com/mel-koku",
       linkedin: "https://www.linkedin.com/in/meljunpicardal/",
     },
   ],
   ctaHeading: "Plan your next trip",
   ctaDescription:
-    "Tell us where you want to go and how you like to travel. Yuku handles the rest.",
+    "Tell us where you want to go and how you like to travel. Day 1 is free. See your trip before you decide.",
   ctaButtonText: "Build My Trip",
 } as const;
 

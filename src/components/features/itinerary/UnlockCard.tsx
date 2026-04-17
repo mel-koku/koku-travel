@@ -17,6 +17,14 @@ type UnlockCardProps = {
   onUnlock: () => void;
 };
 
+function titleCaseCity(name: string): string {
+  return name
+    .split(/[\s\-']/g)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
 export function UnlockCard({
   tier,
   cities,
@@ -27,9 +35,9 @@ export function UnlockCard({
   onUnlock,
 }: UnlockCardProps) {
   const price = getTierPriceDollars(tier);
-  const cityList = cities
-    .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
-    .join(", ");
+  const cityList = cities.map(titleCaseCity).join(", ");
+  const remainingDays = Math.max(0, totalDays - 1);
+  const hasMoreDays = remainingDays > 0;
 
   return (
     <motion.div
@@ -41,15 +49,17 @@ export function UnlockCard({
       <p className="eyebrow-editorial mb-3">Your journey continues</p>
 
       <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-4")}>
-        Continue to {cityList}
+        {hasMoreDays ? `Continue to ${cityList}` : "Unlock your full trip"}
       </h3>
 
       <p className={cn(typography({ intent: "utility-body-muted" }), "mb-2")}>
-        {totalDays - 1} more days of routes, transit, tips, and daily briefings.
+        {hasMoreDays
+          ? `${remainingDays} more days of routes, transit, tips, and daily briefings.`
+          : "Save your trip, refine it anytime, and share it with a link."}
       </p>
 
       <p className={cn(typography({ intent: "utility-meta" }), "mb-6 text-foreground-secondary")}>
-        We plan each trip from scratch. The Pass covers the cost.
+        One Pass. Every day unlocked. Unlimited refinements until your trip feels right.
       </p>
 
       {launchPricing && launchSlotsRemaining != null && launchSlotsRemaining > 0 && (

@@ -10,6 +10,7 @@ const defaultNavColumns = [
     links: [
       { label: "Places", href: "/places" },
       { label: "Guides", href: "/guides" },
+      { label: "Pricing", href: "/pricing" },
     ],
   },
   {
@@ -25,7 +26,6 @@ const defaultNavColumns = [
     links: [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "Pricing", href: "/pricing" },
       { label: "Privacy", href: "/privacy" },
     ],
   },
@@ -44,7 +44,7 @@ type FooterProps = {
 
 export default function Footer({ settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
-  const brandDescription = settings?.brandDescription ?? "Curated by people who know Japan from the inside.";
+  const brandDescription = settings?.brandDescription ?? "Places sourced from Japan\u2019s official tourism boards. Trips planned the way you travel.";
   const navColumns = defaultNavColumns;
   const socialLinks = settings?.socialLinks?.length
     ? settings.socialLinks.map((s) => ({ label: s.label, href: s.url }))

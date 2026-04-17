@@ -8,11 +8,15 @@ vi.mock("@ai-sdk/google", () => ({
   }),
 }));
 
-vi.mock("@ai-sdk/google-vertex", () => ({
-  vertex: Object.assign(vi.fn(() => "mock-vertex-model"), {
+vi.mock("@ai-sdk/google-vertex", () => {
+  const providerMock = Object.assign(vi.fn(() => "mock-vertex-model"), {
     textEmbeddingModel: vi.fn(() => "mock-vertex-embedding-model"),
-  }),
-}));
+  });
+  return {
+    vertex: providerMock,
+    createVertex: vi.fn(() => providerMock),
+  };
+});
 
 describe("llmProvider", () => {
   const originalEnv = process.env;
