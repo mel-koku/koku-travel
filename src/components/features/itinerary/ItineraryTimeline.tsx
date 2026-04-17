@@ -534,6 +534,7 @@ export const ItineraryTimeline = ({
     (
       activity: Extract<ItineraryActivity, { kind: "place" }>,
       index: number,
+      _meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
     ) => {
       if (isReadOnly) return;
       setModel((current) => addActivity(current, day.id, activity, index));
@@ -545,6 +546,7 @@ export const ItineraryTimeline = ({
     (
       original: Extract<ItineraryActivity, { kind: "place" }>,
       updated: Extract<ItineraryActivity, { kind: "place" }>,
+      _meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
     ) => {
       if (isReadOnly) return;
       setModel((current) => replaceActivity(current, day.id, original.id, updated));
@@ -678,8 +680,8 @@ export const ItineraryTimeline = ({
             onDelete={handleDelete}
             onUpdate={handleUpdate}
             onReplace={onReplace}
-            onAddAtIndex={(activity, index) => handleAddAtIndex(activity, index)}
-            onEditActivity={(original, updated) => handleEditActivity(original, updated)}
+            onAddAtIndex={handleAddAtIndex}
+            onEditActivity={handleEditActivity}
             conflictsResult={conflictsResult}
             guide={guide}
             isReadOnly={isReadOnly}
