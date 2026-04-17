@@ -98,7 +98,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-12",
     key: "temple:kyoto",
     content:
-      "Many of Kyoto's temples charge a small admission fee and hand you a 'goshuin-cho' stamp if you ask. These calligraphed temple seals are hand-brushed by monks and make a beautiful, authentic souvenir. Bring a stamp book (sold at the first temple you visit) and collect them as you go.",
+      "Many of Kyoto's temples charge a small admission fee and hand you a 'goshuin-cho' stamp if you ask. These calligraphed temple seals are hand-brushed by monks and make a beautiful, personal souvenir. Bring a stamp book (sold at the first temple you visit) and collect them as you go.",
     icon: "📜",
     pillar: "kegare",
   },
@@ -114,7 +114,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-14",
     key: "temple:nara",
     content:
-      "Todai-ji's Great Buddha Hall is the world's largest wooden building, yet the current structure is actually 30% smaller than the original from 752 AD. The hole in one of the pillars is said to be the same size as the Buddha's nostril. Squeezing through is believed to grant enlightenment in your next life.",
+      "Todai-ji's Great Buddha Hall is one of the world's largest ancient wooden structures, yet the current building is about 30% smaller than the original completed in 752 AD. The hole in one of the pillars is said to be the same size as the Buddha's nostril. Squeezing through is believed to grant enlightenment in your next life.",
     icon: "🛕",
     pillar: "kegare",
   },
@@ -141,7 +141,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-17",
     key: "onsen:any",
     content:
-      "An outdoor bath (rotenburo) in winter is one of Japan's great pleasures. The contrast of freezing air on your face and 42-degree water on your body is unforgettable. Ease in slowly. Sudden immersion can spike your blood pressure. And stay hydrated; the heat draws out more water than you realize.",
+      "An outdoor bath (rotenburo) in winter is one of Japan's great pleasures. The contrast of freezing air on your face and 42-degree water on your body is hard to describe. Ease in slowly. Sudden immersion can spike your blood pressure. And stay hydrated; the heat draws out more water than you realize.",
     icon: "🏔️",
     pillar: "kegare",
   },
@@ -157,7 +157,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-19",
     key: "onsen:kobe",
     content:
-      "Arima Onsen, tucked into the mountains above Kobe, is one of Japan's oldest hot springs, documented since the 600s. Its signature 'kinsen' (gold water) is iron-rich and rust-colored, while 'ginsen' (silver water) is clear and carbonated. Locals swear alternating between them is the secret to good health.",
+      "Arima Onsen, tucked into the mountains above Kobe, is one of Japan's oldest hot springs, documented since the 600s. Its signature 'kinsen' (gold water) is iron-rich and rust-colored, while 'ginsen' (silver water) is clear and carbonated. Alternating between the two is the traditional way to bathe here.",
     icon: "♨️",
     pillar: "kegare",
   },

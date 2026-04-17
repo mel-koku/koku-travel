@@ -36,7 +36,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-5",
     key: "kyoto:market:any:any",
     content:
-      "Get ready for some of the best street food in Japan. Kyoto's markets are a feast for every sense. Pickled vegetables, fresh mochi, roasted tea, and so much more to discover.",
+      "Kyoto's markets hold some of the best street food in Japan. Pickled vegetables, fresh mochi, roasted tea, and plenty of small stalls worth a second look.",
     icon: "🍡",
   },
   {
@@ -114,7 +114,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-15",
     key: "tokyo:street:any:any",
     content:
-      "Today is all about wandering. Tokyo's neighborhoods each have their own personality. You can cross a single street and feel like you've entered a completely different city.",
+      "Today is about walking without an agenda. Tokyo's neighborhoods each have their own personality. You can cross a single street and feel like you've entered a completely different city.",
     icon: "🚶",
   },
   {
@@ -153,7 +153,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-20",
     key: "nara:temple:any:any",
     content:
-      "Nara was Japan's very first capital, and you can feel that ancient weight in every temple you visit. Plus, the friendly deer wandering the grounds make it feel like a storybook.",
+      "Nara was Japan's first permanent capital, and you can feel that ancient weight in every temple you visit. The friendly deer roaming the grounds only add to the storybook feel.",
     icon: "🦌",
   },
   {
@@ -178,14 +178,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-23",
     key: "kobe:restaurant:any:any",
     content:
-      "Kobe is synonymous with incredible beef, but the food scene here goes way beyond that. Chinatown dim sum, harbor-side cafes, and some of the best bread bakeries in all of Japan.",
+      "Kobe is synonymous with its beef, but the food scene here goes well beyond that. Chinatown dim sum, harbor-side cafes, and some of the best bread bakeries in all of Japan.",
     icon: "🥩",
   },
   {
     id: "di-24",
     key: "kobe:viewpoint:any:any",
     content:
-      "Kobe is beautifully wedged between mountains and the sea. From the right vantage point, you can see the entire harbor twinkling below. Especially stunning as the sun goes down.",
+      "Kobe sits neatly between mountains and the sea. From the right vantage point, you can see the entire harbor twinkling below. Particularly good as the sun goes down.",
     icon: "🌅",
   },
   {
@@ -274,7 +274,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-35",
     key: "hiroshima:any:any:any",
     content:
-      "Hiroshima is a city that looks forward while honoring the past. Between the moving memorials, the vibrant food scene, and easy access to the island shrine of Miyajima, today will be unforgettable.",
+      "Hiroshima is a city that looks forward while honoring the past. Between the moving memorials, the lively food scene, and easy access to the island shrine of Miyajima, today covers a lot of ground.",
     icon: "🌊",
   },
 
@@ -292,7 +292,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-37",
     key: "sapporo:park:summer:any",
     content:
-      "While the rest of Japan swelters in summer humidity, Sapporo stays refreshingly cool. The parks are lush and green, the beer gardens are bustling, and the vibe is pure bliss.",
+      "While the rest of Japan swelters in summer humidity, Sapporo stays cool. The parks are lush and green, the beer gardens are full, and the whole city feels a little lighter.",
     icon: "🌻",
   },
   {
@@ -310,7 +310,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-39",
     key: "nagasaki:landmark:any:any",
     content:
-      "Nagasaki has one of the most fascinating histories in Japan. Centuries of trade with the Dutch, Portuguese, and Chinese left a cultural tapestry you won't find anywhere else in the country.",
+      "Nagasaki has one of the most unusual histories in Japan. Centuries of trade with the Dutch, Portuguese, and Chinese left a cultural layering you won't find anywhere else in the country.",
     icon: "🏛️",
   },
   {
@@ -353,7 +353,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-44",
     key: "yokohama:street:any:any",
     content:
-      "Yokohama's waterfront has a breezy, open feel that's a welcome change from the density of central Tokyo. The Chinatown here is the largest in Japan and absolutely worth exploring.",
+      "Yokohama's waterfront has a breezy, open feel that's a welcome change from the density of central Tokyo. The Chinatown here is the largest in Japan and well worth a walk through.",
     icon: "🌊",
   },
   {
@@ -378,7 +378,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-47",
     key: "sendai:any:any:any",
     content:
-      "Known as the City of Trees, Sendai is the green, welcoming gateway to the Tohoku region. Zelkova-lined avenues, a vibrant shopping arcade, and a samurai legacy make for a great day.",
+      "Known as the City of Trees, Sendai is the green, welcoming gateway to the Tohoku region. Zelkova-lined avenues, a lively shopping arcade, and a samurai legacy make for a full day.",
     icon: "🌲",
   },
 
@@ -389,14 +389,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-48",
     key: "matsuyama:onsen:any:any",
     content:
-      "Dogo Onsen in Matsuyama is one of the oldest hot springs in Japan, over 3,000 years old. The ornate bathhouse is said to have inspired the one in Spirited Away. Pure magic.",
+      "Dogo Onsen in Matsuyama is one of the oldest hot springs in Japan, with written references going back over 1,000 years. The ornate wooden bathhouse is often rumored to have inspired the one in Spirited Away, though Studio Ghibli has never confirmed it. Either way, it's a remarkable place.",
     icon: "♨️",
   },
   {
     id: "di-49",
     key: "matsuyama:any:any:any",
     content:
-      "Matsuyama is Shikoku's largest city but keeps a laid-back, small-town charm. A hilltop castle, literary history, and the legendary Dogo Onsen make it quietly unforgettable.",
+      "Matsuyama is Shikoku's largest city but keeps a laid-back, small-town charm. A hilltop castle, literary history, and the legendary Dogo Onsen make it quietly memorable.",
     icon: "🏰",
   },
 
@@ -439,7 +439,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-54",
     key: "naha:any:any:any",
     content:
-      "Naha blends Ryukyu Kingdom heritage with a lively, tropical energy. Shuri Castle, island cuisine, and the bustling Kokusai Street give you a taste of Okinawa's unique identity.",
+      "Naha blends Ryukyu Kingdom heritage with a lively, tropical energy. Shuri Castle, island cuisine, and the busy length of Kokusai Street give you a taste of Okinawa's distinct identity.",
     icon: "🌺",
   },
 
@@ -478,7 +478,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-59",
     key: "generic:museum:any:any",
     content:
-      "A museum day is a great change of pace. Japan's museums are beautifully curated, often architecturally stunning, and almost always quieter than you'd expect. Take your time wandering.",
+      "A museum day is a good change of pace. Japan's museums are carefully curated, often architecturally striking, and almost always quieter than you'd expect. Take your time.",
     icon: "🎨",
   },
   {
@@ -548,14 +548,14 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-69",
     key: "generic:mall:any:any",
     content:
-      "Shopping in Japan is its own adventure. Department store basements (depachika) alone are worth the visit for their stunning food halls. Don't forget to check the tax-free counters.",
+      "Shopping in Japan is its own kind of outing. Department store basements (depachika) alone are worth the visit for their beautifully laid-out food halls. Don't forget to check the tax-free counters.",
     icon: "🛍️",
   },
   {
     id: "di-70",
     key: "generic:street:any:any",
     content:
-      "Some of the best discoveries in Japan happen when you're just walking. Duck into a side alley, follow an interesting sign, peek into a small shop. This is how memories are made.",
+      "Some of the best finds in Japan happen when you're just walking. Duck into a side alley, follow an interesting sign, peek into a small shop. This is how memories are made.",
     icon: "🚶",
   },
   {
@@ -580,7 +580,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-73",
     key: "generic:any:summer:any",
     content:
-      "Summer in Japan means festivals, fireworks, and shaved ice (kakigori) on every corner. It's warm and humid, so pace yourself, stay hydrated, and embrace the vibrant energy.",
+      "Summer in Japan means festivals, fireworks, and shaved ice (kakigori) on every corner. It's warm and humid, so pace yourself, stay hydrated, and lean into the season's energy.",
     icon: "🎆",
   },
   {

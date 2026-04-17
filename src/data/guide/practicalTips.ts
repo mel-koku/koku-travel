@@ -59,7 +59,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     id: "pt-8",
     key: "station-navigation",
     content:
-      "Most major stations have coin lockers near the ticket gates. Perfect for stashing your bags while you explore. Sizes range from 300 to 700 yen. If the lockers are full, look for a baggage storage counter or use a luggage forwarding service.",
+      "Most major stations have coin lockers near the ticket gates. Perfect for stashing your bags while you're out. Sizes range from 300 to 700 yen. If the lockers are full, look for a baggage storage counter or use a luggage forwarding service.",
     icon: "🔐",
   },
   {
@@ -264,7 +264,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     id: "pt-33",
     key: "escalator",
     content:
-      "Stand on the left side of escalators in Tokyo and most of Japan. In Osaka and Kyoto, stand on the right. Follow what locals ahead of you are doing if unsure. The walking side is always kept clear for people in a hurry.",
+      "Stand on the left side of escalators in Tokyo, Kyoto, and most of Japan. Osaka is the notable exception, where people stand on the right. Follow what people ahead of you are doing if unsure. The walking side is always kept clear for those in a hurry.",
     icon: "🚶",
     pillar: "wa",
   },
@@ -288,7 +288,7 @@ export const PRACTICAL_TIP_TEMPLATES: PracticalTipTemplate[] = [
     id: "pt-36",
     key: "jr-pass",
     content:
-      "Regional passes can be better value than the nationwide JR Pass. The Kansai Area Pass covers Kyoto-Osaka-Nara-Kobe. The Hokkaido Pass is essential for Sapporo-Hakodate routes. Check Jorudan or Hyperdia to compare.",
+      "Regional passes can be better value than the nationwide JR Pass. The Kansai Area Pass covers Kyoto-Osaka-Nara-Kobe. The Hokkaido Pass is essential for Sapporo-Hakodate routes. Check Jorudan or Navitime to compare routes.",
     icon: "🎫",
   },
 

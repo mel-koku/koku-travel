@@ -23,7 +23,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-2",
     key: "kyoto+osaka:fall",
     content:
-      "Kyoto in autumn is a painter's dream, and pairing it with Osaka means you get fiery red maples by day and sizzling street food by night. Two cities, two completely different vibes, one incredible trip.",
+      "Kyoto in autumn is a painter's dream, and pairing it with Osaka means you get fiery red maples by day and sizzling street food by night. Two cities, two completely different vibes, one exceptional trip.",
     icon: "🍁",
   },
   {
@@ -62,7 +62,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-7",
     key: "kyoto+nara+osaka:fall",
     content:
-      "Autumn across the Kansai region is something special. Kyoto's maple-lined paths, Nara's golden park canopy, and Osaka's cozy street food scene all come together into one unforgettable journey through fall colors and flavors.",
+      "Autumn across the Kansai region is something special. Kyoto's maple-lined paths, Nara's golden park canopy, and Osaka's cozy street food scene come together into a single run of fall colors and flavors that's hard to match.",
     icon: "🍁",
   },
   {
@@ -110,7 +110,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-13",
     key: "hiroshima+kyoto+osaka:any",
     content:
-      "This route takes you from Osaka's street food energy through Kyoto's refined beauty to Hiroshima's powerful history and rebirth. It's a journey that covers Japan's past, present, and the resilience that connects them.",
+      "This route takes you from Osaka's street food energy through Kyoto's refined beauty to Hiroshima's powerful history and rebirth. A single route that covers Japan's past, present, and the resilience that connects them.",
     icon: "🕊️",
   },
 
@@ -174,7 +174,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-21",
     key: "osaka:any",
     content:
-      "Osaka doesn't hold back, and neither should you. This city is all about flavor. Incredible street food, a nightlife scene that pulses with energy, and locals who are famously warm and funny. Come hungry, leave happy.",
+      "Osaka doesn't hold back, and neither should you. This city is all about flavor. Exceptional street food, a nightlife scene that pulses with energy, and locals who are famously warm and funny. Come hungry, leave happy.",
     icon: "🐙",
   },
 
@@ -192,7 +192,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-23",
     key: "kanazawa:any",
     content:
-      "Kanazawa is one of Japan's best-preserved castle towns. Stunning gardens, traditional tea districts, and a thriving crafts scene. It has the beauty of Kyoto with a fraction of the crowds.",
+      "Kanazawa is one of Japan's best-preserved castle towns. Immaculate gardens, historic tea districts, and a thriving crafts scene. It has the beauty of Kyoto with a fraction of the crowds.",
     icon: "🏯",
   },
 
@@ -201,7 +201,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-24",
     key: "hiroshima:any",
     content:
-      "Hiroshima is a city of profound history and remarkable resilience. Beyond its powerful Peace Memorial, you'll find a vibrant, forward-looking city with incredible okonomiyaki, easy access to Miyajima Island, and some of the friendliest people in Japan.",
+      "Hiroshima is a city of profound history and remarkable resilience. Beyond its powerful Peace Memorial, you'll find a lively, forward-looking city with exceptional okonomiyaki, easy access to Miyajima Island, and some of the friendliest people in Japan.",
     icon: "🕊️",
   },
 
@@ -217,7 +217,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-26",
     key: "sapporo:any",
     content:
-      "Sapporo brings a completely different flavor to Japan. Wide boulevards, craft beer culture, the freshest seafood you'll ever taste, and Hokkaido's stunning natural landscape right at the doorstep. This is Japan's wild north.",
+      "Sapporo brings a completely different flavor to Japan. Wide boulevards, craft beer culture, the freshest seafood you'll ever taste, and Hokkaido's dramatic natural landscape right at the doorstep. This is Japan's wild north.",
     icon: "🍺",
   },
 
