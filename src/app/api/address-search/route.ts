@@ -3,6 +3,7 @@ import { mapboxSuggest, mapboxRetrieve } from "@/lib/addressSearch/mapbox";
 import { googleSearch, googleRetrieve } from "@/lib/addressSearch/google";
 import { checkAndIncrement } from "@/lib/addressSearch/rateLimit";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 const DAILY_CAP = 100;
 
@@ -25,9 +26,14 @@ export async function POST(req: Request) {
 
   // Only count suggest requests; retrieve is paired with a prior suggest session
   if (body.action === "suggest") {
-    const limit = await checkAndIncrement(supabase, userId, DAILY_CAP);
-    if (!limit.allowed) {
-      return NextResponse.json({ error: "rate limit exceeded" }, { status: 429 });
+    try {
+      const limit = await checkAndIncrement(supabase, userId, DAILY_CAP);
+      if (!limit.allowed) {
+        return NextResponse.json({ error: "rate limit exceeded" }, { status: 429 });
+      }
+    } catch (err) {
+      // Fail-open: allow the request but log the infra issue
+      logger.error("[address-search] rate limit check failed, allowing", { error: err });
     }
   }
 
