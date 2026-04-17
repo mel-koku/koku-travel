@@ -308,6 +308,16 @@ export function TravelSegment({
         </div>
       </div>
 
+      {/* Footnote when segment skips over custom stops */}
+      {segment.skippedOverCustom && (
+        <div
+          className="mt-1 px-3 text-[11px] text-stone"
+          title="Calculated from the last known location"
+        >
+          ⓘ Estimated travel time
+        </div>
+      )}
+
       {/* Expanded transit steps */}
       {isExpanded && hasTransitSteps && (
         <div className="mt-2 mx-4 cursor-default rounded-lg border border-sage/20 bg-background/70 px-4 py-2">
