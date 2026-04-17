@@ -119,6 +119,8 @@ export type ItineraryTravelSegment = {
   lastTrainWarning?: boolean;
   /** True if departure falls within morning (7:30–9:30) or evening (17:30–19:00) rush hour */
   rushHourWarning?: boolean;
+  /** True when this segment's origin is a "last known location" because intermediate stops had no address. */
+  skippedOverCustom?: boolean;
 };
 
 export type ItineraryCityTransition = {

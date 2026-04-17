@@ -58,6 +58,16 @@ export function formatTime(totalMinutes: number): string {
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
+/**
+ * Returns true when an activity is a user-authored custom stop with no resolvable address.
+ * These activities should advance the cursor by durationMin but skip routing and operating-window evaluation.
+ */
+function isAddresslessCustom(
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+): boolean {
+  return activity.isCustom === true && !activity.coordinates && !activity.locationId;
+}
+
 function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>, location: Location | null): Coordinates {
   // First check if activity has embedded coordinates (entry points, external places)
   if (activity.coordinates) {
@@ -464,6 +474,8 @@ async function planItineraryDay(
     destination: { lat: number; lng: number };
     activityId: string;
     explicitMode: ItineraryTravelMode | null;
+    /** True when one or more preceding activities were addressless-custom (so origin is "last known location") */
+    skippedOverCustom?: boolean;
   }> = [];
   // If the first place activity is an anchor (airport), it IS the start point —
   // don't route from startPoint to anchor (would be hotel→airport, wrong direction)
@@ -472,10 +484,19 @@ async function planItineraryDay(
     firstPlace?.isAnchor ? null
     : startPoint ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
     : null;
+  // Tracks whether any addressless-custom activity was skipped since the last coordinate stop
+  let pendingSkippedOverCustom = false;
 
   for (const activity of placeActivities) {
     const meta = metaByActivityId.get(activity.id);
     const coordinates = meta?.coordinates ?? null;
+
+    // Addressless custom stops: skip routing entirely; don't advance prevCoords
+    if (isAddresslessCustom(activity)) {
+      pendingSkippedOverCustom = true;
+      continue;
+    }
+
     if (prevCoords && coordinates) {
       const hasExplicit =
         activity.travelFromPrevious?.mode && activity.travelFromPrevious.mode !== "walk";
@@ -484,8 +505,10 @@ async function planItineraryDay(
         destination: coordinates,
         activityId: activity.id,
         explicitMode: hasExplicit ? activity.travelFromPrevious?.mode ?? null : null,
+        skippedOverCustom: pendingSkippedOverCustom || undefined,
       });
     }
+    pendingSkippedOverCustom = false;
     // After arrival anchor with hotel set: route subsequent activities from hotel (not airport)
     // User goes airport → hotel (drop luggage) → first real activity
     if (activity.isAnchor && startPoint && activity.id.startsWith("anchor-arrival")) {
@@ -574,7 +597,7 @@ async function planItineraryDay(
   // Resolve final route for each pair
   const resolvedRouteByActivityId = new Map<
     string,
-    { route: Awaited<ReturnType<typeof requestRoute>>; travelMode: ItineraryTravelMode }
+    { route: Awaited<ReturnType<typeof requestRoute>>; travelMode: ItineraryTravelMode; skippedOverCustom?: boolean }
   >();
 
   for (let i = 0; i < routingPairs.length; i++) {
@@ -582,10 +605,13 @@ async function planItineraryDay(
     const phase1Result = phase1Results[i];
     if (!pair || !phase1Result) continue;
 
+    const skippedOverCustom = pair.skippedOverCustom;
+
     if (pair.explicitMode) {
       resolvedRouteByActivityId.set(pair.activityId, {
         route: phase1Result,
         travelMode: toItineraryMode(phase1Result.mode),
+        skippedOverCustom,
       });
     } else {
       const distanceKm = (phase1Result.distanceMeters ?? 0) / 1000;
@@ -595,11 +621,13 @@ async function planItineraryDay(
           resolvedRouteByActivityId.set(pair.activityId, {
             route: transitResult,
             travelMode: "train",
+            skippedOverCustom,
           });
         } else {
           resolvedRouteByActivityId.set(pair.activityId, {
             route: phase1Result,
             travelMode: "walk",
+            skippedOverCustom,
           });
           logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
         }
@@ -607,6 +635,7 @@ async function planItineraryDay(
         resolvedRouteByActivityId.set(pair.activityId, {
           route: phase1Result,
           travelMode: "walk",
+          skippedOverCustom,
         });
       }
     }
@@ -615,6 +644,10 @@ async function planItineraryDay(
   // --- Sequential assembly using pre-fetched routes (no more API calls) ---
   let cursorMinutes = startMinutes;
   let lastPlaceIndex: number | null = null;
+  // Tracks the index of the most recent place activity that has resolvable coordinates.
+  // Addressless custom stops do NOT update this — so the next coordinate stop can route
+  // from the last known location, skipping over custom stops.
+  let lastCoordinateIndex: number | null = null;
   const plannedActivities: ItineraryActivity[] = [];
 
   for (const activity of day.activities) {
@@ -629,6 +662,28 @@ async function planItineraryDay(
     }
 
     const meta = metaByActivityId.get(activity.id)!;
+
+    // --- Addressless custom stop: advance cursor only, no routing or operating-window ---
+    if (isAddresslessCustom(activity)) {
+      const visitDuration = activity.durationMin ?? options.defaultVisitMinutes;
+      const plannerActivity: ItineraryActivity = {
+        ...activity,
+        durationMin: visitDuration,
+        schedule: {
+          arrivalTime: formatTime(cursorMinutes),
+          departureTime: formatTime(cursorMinutes + visitDuration),
+          status: "scheduled",
+        },
+      };
+      // Advance cursor by duration only. The outer planner's transitionBuffer will be
+      // added as part of the next coordinate stop's travel computation (via the pre-fetched
+      // routing pairs which already account for the correct origin).
+      cursorMinutes += visitDuration + options.transitionBufferMinutes;
+      plannedActivities.push(plannerActivity);
+      lastPlaceIndex = plannedActivities.length - 1;
+      // Do NOT update lastCoordinateIndex — next coordinate stop routes from the last known location
+      continue;
+    }
 
     // Pre-check: estimate arrival after travel and verify location is open
     // Skip for anchor activities (airports) — they don't have DB operating hours
@@ -690,6 +745,11 @@ async function planItineraryDay(
         transitSteps,
       );
 
+      // Mark the segment when it originated from a "last known location" (skipped over custom)
+      if (resolved.skippedOverCustom) {
+        travelSegment.skippedOverCustom = true;
+      }
+
       // Check if evening transit departs after last train
       if (day.cityId && travelSegment.departureTime && cursorMinutes >= 1200) {
         const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
@@ -715,8 +775,11 @@ async function planItineraryDay(
         }
       }
 
-      if (lastPlaceIndex != null) {
-        const previousActivity = plannedActivities[lastPlaceIndex] as Extract<ItineraryActivity, { kind: "place" }>;
+      // For travelToNext: use lastCoordinateIndex when this segment skipped over custom stops,
+      // otherwise use lastPlaceIndex (the immediately preceding stop)
+      const prevForTravelToNext = resolved.skippedOverCustom ? lastCoordinateIndex : lastPlaceIndex;
+      if (prevForTravelToNext != null) {
+        const previousActivity = plannedActivities[prevForTravelToNext] as Extract<ItineraryActivity, { kind: "place" }>;
         previousActivity.travelToNext = travelSegment;
       }
 
@@ -734,6 +797,7 @@ async function planItineraryDay(
       }
       plannedActivities.push(plannerActivity);
       lastPlaceIndex = plannedActivities.length - 1;
+      lastCoordinateIndex = plannedActivities.length - 1;
       continue;
     }
 
@@ -774,6 +838,7 @@ async function planItineraryDay(
     plannedActivities.push(plannerActivity);
 
     lastPlaceIndex = plannedActivities.length - 1;
+    lastCoordinateIndex = plannedActivities.length - 1;
   }
 
   // Clamp final cursor to end of day
