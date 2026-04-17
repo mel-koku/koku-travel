@@ -5,43 +5,63 @@ vi.mock("server-only", () => ({}));
 // The schema is co-located in the route file but exported for testing
 import { chatRequestSchema } from "@/app/api/chat/route";
 
-describe("chatRequestSchema", () => {
-  const validMessage = { role: "user" as const, content: "Hello" };
+const textMessage = (text: string, role: "user" | "assistant" | "system" = "user") => ({
+  role,
+  parts: [{ type: "text", text }],
+});
 
-  it("rejects a message with content > 4000 characters", () => {
-    const longContent = "a".repeat(4001);
+describe("chatRequestSchema", () => {
+  it("rejects a message whose text parts sum to > 4000 characters", () => {
     const result = chatRequestSchema.safeParse({
-      messages: [{ role: "user", content: longContent }],
+      messages: [textMessage("a".repeat(4001))],
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      const contentIssue = result.error.issues.find(
-        (issue) =>
-          issue.path.includes("content") || issue.message.includes("4000"),
+      const contentIssue = result.error.issues.find((issue) =>
+        issue.message.includes("4000"),
       );
       expect(contentIssue).toBeDefined();
     }
   });
 
-  it("accepts a message with content exactly 4000 characters", () => {
-    const exactContent = "a".repeat(4000);
+  it("accepts a message whose text parts sum to exactly 4000 characters", () => {
     const result = chatRequestSchema.safeParse({
-      messages: [{ role: "user", content: exactContent }],
+      messages: [textMessage("a".repeat(4000))],
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts a message with content under 4000 characters", () => {
+  it("accepts a normal short user message", () => {
     const result = chatRequestSchema.safeParse({
-      messages: [validMessage],
+      messages: [textMessage("Hello")],
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts messages without a content field (passthrough)", () => {
-    // Some SDK messages may have tool_call_id etc. instead of content
+  it("rejects a user message with no parts array (production crash case)", () => {
+    // Regression: Sentry 7418908155 — convertToModelMessages crashes when
+    // message.parts is undefined. The schema must reject this at the boundary.
     const result = chatRequestSchema.safeParse({
-      messages: [{ role: "assistant" }],
+      messages: [{ role: "user", content: "Hello" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a user message with an empty parts array", () => {
+    const result = chatRequestSchema.safeParse({
+      messages: [{ role: "user", parts: [] }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts non-text parts (passthrough for tool/file parts)", () => {
+    const result = chatRequestSchema.safeParse({
+      messages: [
+        {
+          role: "assistant",
+          parts: [{ type: "tool-getWeather", state: "output-available", input: {}, output: {} }],
+        },
+      ],
     });
     expect(result.success).toBe(true);
   });
@@ -51,16 +71,15 @@ describe("chatRequestSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects when multiple messages exceed the limit", () => {
+  it("flags multiple over-length messages", () => {
     const result = chatRequestSchema.safeParse({
       messages: [
-        { role: "user", content: "a".repeat(4001) },
-        { role: "user", content: "b".repeat(5000) },
+        textMessage("a".repeat(4001)),
+        textMessage("b".repeat(5000)),
       ],
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      // Should flag both messages
       const contentIssues = result.error.issues.filter((issue) =>
         issue.message.includes("4000"),
       );

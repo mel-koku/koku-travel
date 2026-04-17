@@ -24,27 +24,37 @@ const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
 
 const CHAT_MESSAGE_MAX_LENGTH = 4000;
 
+const uiMessagePartSchema = z
+  .object({ type: z.string() })
+  .passthrough();
+
 export const chatRequestSchema = z.object({
   messages: z
     .array(
       z
         .object({
           role: z.enum(["user", "assistant", "system"]),
+          parts: z
+            .array(uiMessagePartSchema)
+            .min(1, "Message must contain at least one part"),
         })
         .passthrough(),
     )
     .min(1, "At least one message is required")
     .superRefine((messages, ctx) => {
       for (let i = 0; i < messages.length; i++) {
-        const msg = messages[i] as { content?: unknown };
-        if (typeof msg.content === "string" && msg.content.length > CHAT_MESSAGE_MAX_LENGTH) {
+        const parts = (messages[i] as { parts?: Array<{ type?: string; text?: unknown }> }).parts ?? [];
+        const textLen = parts.reduce((n, p) => {
+          return p.type === "text" && typeof p.text === "string" ? n + p.text.length : n;
+        }, 0);
+        if (textLen > CHAT_MESSAGE_MAX_LENGTH) {
           ctx.addIssue({
             code: z.ZodIssueCode.too_big,
             maximum: CHAT_MESSAGE_MAX_LENGTH,
             type: "string",
             inclusive: true,
             message: `Message content must be at most ${CHAT_MESSAGE_MAX_LENGTH} characters`,
-            path: [i, "content"],
+            path: [i, "parts"],
           });
         }
       }
@@ -130,8 +140,12 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
     const costKey = user?.id ?? context.ip ?? "unknown";
     const inputText: string[] = [systemPrompt];
     for (const msg of recentMessages) {
-      const c = (msg as { content?: unknown }).content;
-      if (typeof c === "string") inputText.push(c);
+      const parts = (msg as { parts?: Array<{ type?: string; text?: unknown }> }).parts ?? [];
+      for (const part of parts) {
+        if (part.type === "text" && typeof part.text === "string") {
+          inputText.push(part.text);
+        }
+      }
     }
     const inputTokens = estimateInputTokens(inputText);
     reservation = await reserveCost({
