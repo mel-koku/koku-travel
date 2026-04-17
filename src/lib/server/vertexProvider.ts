@@ -30,12 +30,22 @@ function getVertexProvider() {
   return cachedProvider;
 }
 
-export const vertex: ReturnType<typeof buildVertexProvider> = ((
-  ...args: Parameters<ReturnType<typeof buildVertexProvider>>
-) =>
-  getVertexProvider()(
-    ...args,
-  )) as unknown as ReturnType<typeof buildVertexProvider>;
+// Proxy so `vertex(...)`, `vertex.textEmbeddingModel(...)`, `vertex.languageModel(...)`
+// etc. all defer construction until first use. A bare wrapper function would strip
+// the attached methods (textEmbeddingModel, embeddingModel, image, tools, ...).
+export const vertex: ReturnType<typeof buildVertexProvider> = new Proxy(
+  function () {} as unknown as ReturnType<typeof buildVertexProvider>,
+  {
+    apply(_target, _thisArg, args: unknown[]) {
+      return (
+        getVertexProvider() as unknown as (...a: unknown[]) => unknown
+      )(...args);
+    },
+    get(_target, prop, receiver) {
+      return Reflect.get(getVertexProvider() as object, prop, receiver);
+    },
+  },
+);
 
 /**
  * Shared providerOptions for all non-chat Gemini calls.

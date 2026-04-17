@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { google } from "@ai-sdk/google";
-import { vertex } from "@ai-sdk/google-vertex";
+import { vertex } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import type { LanguageModelV3, EmbeddingModelV3 } from "@ai-sdk/provider";
 
