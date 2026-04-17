@@ -13,10 +13,12 @@ type Props = {
     activity: Extract<ItineraryActivity, { kind: "place" }>,
     meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
   ) => void;
+  /** Pre-fill the custom form for edit mode */
+  initial?: Partial<Extract<ItineraryActivity, { kind: "place" }>>;
 };
 
-export function AddActivitySheet({ open, onClose, dayActivities, onSubmit }: Props) {
-  const [tab, setTab] = useState<"catalog" | "custom">("catalog");
+export function AddActivitySheet({ open, onClose, dayActivities, onSubmit, initial }: Props) {
+  const [tab, setTab] = useState<"catalog" | "custom">(initial ? "custom" : "catalog");
   if (!open) return null;
 
   return (
@@ -59,6 +61,7 @@ export function AddActivitySheet({ open, onClose, dayActivities, onSubmit }: Pro
               onClose();
             }}
             onCancel={onClose}
+            initial={initial}
           />
         )}
       </div>

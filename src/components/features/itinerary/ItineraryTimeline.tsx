@@ -38,6 +38,7 @@ import { DayHeader } from "./DayHeader";
 import { AccommodationBookend } from "./AccommodationBookend";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
+import { addActivity, replaceActivity } from "@/services/trip/activityOperations";
 
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { logger } from "@/lib/logger";
@@ -529,6 +530,28 @@ export const ItineraryTimeline = ({
 
 
 
+  const handleAddAtIndex = useCallback(
+    (
+      activity: Extract<ItineraryActivity, { kind: "place" }>,
+      index: number,
+    ) => {
+      if (isReadOnly) return;
+      setModel((current) => addActivity(current, day.id, activity, index));
+    },
+    [day.id, setModel, isReadOnly],
+  );
+
+  const handleEditActivity = useCallback(
+    (
+      original: Extract<ItineraryActivity, { kind: "place" }>,
+      updated: Extract<ItineraryActivity, { kind: "place" }>,
+    ) => {
+      if (isReadOnly) return;
+      setModel((current) => replaceActivity(current, day.id, original.id, updated));
+    },
+    [day.id, setModel, isReadOnly],
+  );
+
   // ── Accommodation bookend travel estimates ──
   const bookendEstimates = useMemo(() => {
     const placeActivities = extendedActivities.filter(
@@ -655,6 +678,8 @@ export const ItineraryTimeline = ({
             onDelete={handleDelete}
             onUpdate={handleUpdate}
             onReplace={onReplace}
+            onAddAtIndex={(activity, index) => handleAddAtIndex(activity, index)}
+            onEditActivity={(original, updated) => handleEditActivity(original, updated)}
             conflictsResult={conflictsResult}
             guide={guide}
             isReadOnly={isReadOnly}
