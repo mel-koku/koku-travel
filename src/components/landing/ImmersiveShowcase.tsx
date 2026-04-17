@@ -10,9 +10,9 @@ const defaultActs = [
   {
     number: "01",
     eyebrow: "DISCOVER",
-    title: "Every place scored, not just starred",
+    title: "Every place scored for context, not stars",
     description:
-      "Weather, transit access, crowd levels, operating hours, seasonal timing. 19 factors per location. Not reviews. Context.",
+      "Transit access, operating hours, seasonal fit, crowds. Scored on what matters for your dates. Not reviews. Context.",
     image: "/images/fallback.jpg",
     alt: "Traditional Japanese alley",
   },

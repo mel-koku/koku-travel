@@ -47,7 +47,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.1, ease: [...easeReveal] as [number, number, number, number] }}
             className="mt-4 text-base text-white/80"
           >
-            {content?.finalCtaDescription ?? "Pick your dates. We\u2019ll handle the rest."}
+            {content?.finalCtaDescription ?? "Pick your dates. See Day 1 free before you decide."}
           </motion.p>
 
           <motion.div
@@ -63,6 +63,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
+            <p className="mt-4 text-xs text-white/60">Free to preview. $19 to unlock your full trip.</p>
           </motion.div>
         </div>
       </div>

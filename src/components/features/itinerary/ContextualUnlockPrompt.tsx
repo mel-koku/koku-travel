@@ -31,7 +31,7 @@ const CONTEXT_COPY: Record<UnlockPromptContext, { heading: string; body: string 
   },
   refinement: {
     heading: "Keep refining your trip",
-    body: "Your first day has more to show you. Unlock your full trip to keep refining.",
+    body: "Refinements run across every day. Unlock to keep iterating.",
   },
   day_trip: {
     heading: "Day trips await",
@@ -47,7 +47,7 @@ const CONTEXT_COPY: Record<UnlockPromptContext, { heading: string; body: string 
   },
   overview: {
     heading: "See the whole picture",
-    body: "Unlock to view trip health, day trips, and your full itinerary summary.",
+    body: "See the whole trip at once. Pacing, day trips, and a routed overview map.",
   },
   near_me: {
     heading: "For when you're on the ground",
