@@ -42,3 +42,4 @@ $$;
 
 revoke all on function public.increment_address_search_usage(uuid) from public;
 grant execute on function public.increment_address_search_usage(uuid) to service_role;
+grant execute on function public.increment_address_search_usage(uuid) to authenticated;
