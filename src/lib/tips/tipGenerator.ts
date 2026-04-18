@@ -1,8 +1,10 @@
 import type { Location, Weekday } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { WeatherForecast } from "@/types/weather";
+import type { CityId } from "@/types/trip";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
+import { CROWD_OVERRIDE_MAP, getActiveHolidays } from "@/data/crowdPatterns";
 
 /** Max important tips surfaced per activity */
 const MAX_IMPORTANT = 3;
@@ -53,6 +55,8 @@ export function generateActivityTips(
     weatherForecast?: WeatherForecast;
     allActivities?: ItineraryActivity[];
     dayIndex?: number;
+    cityId?: CityId;
+    activityDate?: Date;
   },
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
@@ -86,6 +90,18 @@ export function generateActivityTips(
   // Timing tips
   const timingTips = generateTimingTips(location, activity);
   tips.push(...timingTips);
+
+  // Last-train tips (evening nightlife activities in major cities)
+  if (options?.cityId) {
+    const lastTrainTips = generateLastTrainTips(location, activity, options.cityId);
+    tips.push(...lastTrainTips);
+  }
+
+  // Holiday-aware crowd tip (escalated for known-crowded places on busy dates)
+  if (options?.activityDate) {
+    const holidayCrowdTips = generateHolidayAwareCrowdTips(location, options.activityDate);
+    tips.push(...holidayCrowdTips);
+  }
 
   // Accessibility tips
   const accessibilityTips = generateAccessibilityTips(location);
@@ -127,6 +143,7 @@ export async function generateActivityTipsAsync(
     allActivities?: ItineraryActivity[];
     dayIndex?: number;
     activityDate?: Date;
+    cityId?: CityId;
   },
 ): Promise<ActivityTip[]> {
   // Get the base tips synchronously
@@ -208,8 +225,13 @@ function generateCrowdTips(
     }
   }
 
-  // High-rated locations are more popular
-  if (location.rating && location.rating >= 4.5) {
+  // High-rated locations are more popular. Skip the generic tip when the
+  // location has a curated peakWarning — that surface produces better,
+  // location-specific copy (via CROWD_OVERRIDES.peakWarning). Raised the
+  // threshold from 4.5 to 4.7 because nearly every curated location is 4.5+,
+  // so the old trigger was wallpaper.
+  const hasCrowdOverride = CROWD_OVERRIDE_MAP.has(location.id);
+  if (!hasCrowdOverride && location.rating && location.rating >= 4.7) {
     tips.push({
       type: "crowd",
       title: "Popular Destination",
@@ -384,6 +406,110 @@ function generateTimingTips(
   return tips;
 }
 
+const TRADITIONAL_DINING_CATEGORIES = new Set([
+  "kaiseki", "ryokan", "izakaya_traditional", "traditional",
+]);
+const TRADITIONAL_TAGS = new Set([
+  "traditional", "tatami", "kaiseki", "ryokan",
+]);
+
+/**
+ * A dining venue is traditional (likely shoe removal) if either its category
+ * signals it or its tags do. Keeps the signal narrow so the tip fires on the
+ * small fraction of venues where it's actually useful.
+ */
+function isTraditionalDining(
+  category: string,
+  locationTags: string[] | undefined,
+  activityTags: string[] | undefined,
+): boolean {
+  if (TRADITIONAL_DINING_CATEGORIES.has(category)) return true;
+  const allTags = [...(locationTags ?? []), ...(activityTags ?? [])];
+  return allTags.some((t) => TRADITIONAL_TAGS.has(t.toLowerCase()));
+}
+
+/**
+ * City-specific last-train guidance. Cutoff times reflect weekday averages
+ * for returning to major accommodation hubs — values simplified to round
+ * times since the tip is directional ("wrap up by ~midnight"), not a
+ * schedule lookup. Users who need exact last-train data should consult
+ * Google Maps at the venue.
+ */
+const LAST_TRAIN_BY_CITY: Record<string, { cutoff: string; hub: string }> = {
+  tokyo: { cutoff: "around 12:20 AM", hub: "Shinjuku" },
+  osaka: { cutoff: "around 11:55 PM", hub: "Umeda" },
+  kyoto: { cutoff: "around 11:30 PM", hub: "Kyoto Station" },
+  nagoya: { cutoff: "around 11:50 PM", hub: "Nagoya Station" },
+  fukuoka: { cutoff: "around 11:40 PM", hub: "Hakata Station" },
+  sapporo: { cutoff: "around 11:50 PM", hub: "Sapporo Station" },
+  yokohama: { cutoff: "around 12:15 AM", hub: "Yokohama Station" },
+};
+
+const NIGHTLIFE_CATEGORIES = new Set([
+  "bar", "izakaya", "nightlife", "entertainment", "club",
+]);
+
+/**
+ * Last-train tip — fires for evening nightlife activities in cities where we
+ * have known cutoff data. Practical advice matters here: missing the last
+ * train means a ¥5,000+ taxi or a capsule hotel.
+ */
+function generateLastTrainTips(
+  location: Location,
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  cityId: CityId,
+): ActivityTip[] {
+  if (activity.timeOfDay !== "evening") return [];
+
+  const category = location.category?.toLowerCase() ?? "";
+  const isNightlife = NIGHTLIFE_CATEGORIES.has(category) ||
+    location.tags?.some((t) => NIGHTLIFE_CATEGORIES.has(t.toLowerCase()));
+  if (!isNightlife) return [];
+
+  const data = LAST_TRAIN_BY_CITY[cityId.toLowerCase()];
+  if (!data) return [];
+
+  return [{
+    type: "timing",
+    title: "Last train",
+    message: `Last trains from ${data.hub} run ${data.cutoff}. Check Google Maps from the venue before your second drink — taxis after midnight run ¥5,000+, and capsule hotels are ¥3,000-4,000 if you miss it.`,
+    priority: 8,
+    icon: "🌙",
+  }];
+}
+
+/**
+ * Holiday-aware crowd tip. Escalates when the activity date falls in a
+ * significant-impact holiday (multiplier ≥ 1.5) AND the location is one we
+ * already flag with a crowd-override peakWarning. The combination is rare
+ * enough to deserve a loud, date-specific tip ("It's Golden Week at
+ * Fushimi Inari — expect 2+ hour queues"). For non-holiday dates or
+ * non-tracked locations, we defer to the regular crowd tip path.
+ */
+function generateHolidayAwareCrowdTips(
+  location: Location,
+  activityDate: Date,
+): ActivityTip[] {
+  const override = CROWD_OVERRIDE_MAP.get(location.id);
+  if (!override) return [];
+
+  const month = activityDate.getMonth() + 1;
+  const day = activityDate.getDate();
+  const year = activityDate.getFullYear();
+  const holidays = getActiveHolidays(month, day, month, day, year);
+  const significant = holidays.find((h) => h.crowdMultiplier >= 1.5);
+  if (!significant) return [];
+
+  return [{
+    type: "crowd",
+    title: `${significant.name} at ${override.name}`,
+    message: `${significant.name} typically multiplies crowds at popular sites by ${significant.crowdMultiplier}x. ${override.peakWarning ?? "Expect long queues and limited access."} Arrive at opening or consider swapping to a quieter day.`,
+    priority: 10,
+    icon: "⚠️",
+    isImportant: true,
+  }];
+}
+
 /**
  * Generate accessibility tips
  */
@@ -502,12 +628,15 @@ function generateGeneralTips(
       priority: 7,
       icon: "👟",
     });
-  } else if (category === "restaurant" || category === "cafe") {
+  } else if (isTraditionalDining(category, location.tags, activity.tags)) {
+    // Only fire for dining venues where tatami seating is genuinely likely.
+    // The previous blanket "restaurant || cafe" trigger fired on nearly every
+    // meal and trained users to ignore tips.
     tips.push({
       type: "general",
-      title: "Check for shoe removal",
-      message: "Some traditional restaurants with tatami seating require shoe removal. Look for a raised floor (genkan) or shoe shelves at the entrance.",
-      priority: 5,
+      title: "Shoe removal likely",
+      message: "Traditional dining venues often have tatami seating. Look for a raised genkan or shoe shelves at the entrance and slip off your shoes before stepping up.",
+      priority: 6,
       icon: "👟",
     });
   } else if (category === "market") {
@@ -664,16 +793,46 @@ function generateReservationTips(
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
   const category = location.category?.toLowerCase() ?? "";
+  const rating = location.rating ?? 0;
 
-  // High-end restaurants
-  const reservationCategories = ["fine_dining", "kaiseki", "omakase", "sushi"];
-  const needsReservation = reservationCategories.some((cat) => category.includes(cat));
+  // Tier 1: top-rated kaiseki/omakase/sushi venues — realistic lead time is
+  // 1-3 months. Saying "a few days" sets the wrong expectation for travelers
+  // who would otherwise not bother calling ahead.
+  const TIER1_CATEGORIES = ["kaiseki", "omakase"];
+  const isTier1 = TIER1_CATEGORIES.some((cat) => category.includes(cat)) ||
+    (category.includes("sushi") && rating >= 4.7);
 
-  if (needsReservation || (location.rating && location.rating >= 4.7 && (category === "restaurant" || activity.mealType === "dinner"))) {
+  // Tier 2: fine dining and other high-end categories where 2-4 weeks is
+  // usually enough.
+  const TIER2_CATEGORIES = ["fine_dining", "sushi"];
+  const isTier2 = TIER2_CATEGORIES.some((cat) => category.includes(cat));
+
+  // Tier 3: merely popular restaurant — a few days ahead is fine.
+  const isTier3 = rating >= 4.7 && (category === "restaurant" || activity.mealType === "dinner");
+
+  if (isTier1) {
     tips.push({
       type: "reservation",
-      title: "Reservation Recommended",
-      message: "Popular with tourists and locals alike. Book several days in advance if possible.",
+      title: "Reservation required",
+      message: "Top kaiseki and omakase venues typically book out 1-3 months ahead. If you're set on this one, call or email as soon as your dates are fixed — waitlist spots do open up.",
+      priority: 9,
+      icon: "📞",
+      isImportant: true,
+    });
+  } else if (isTier2) {
+    tips.push({
+      type: "reservation",
+      title: "Reservation recommended",
+      message: "For fine dining, 2-4 weeks ahead is usually enough. Concierge desks and OMAKASE.in can help if the restaurant's site is Japanese-only.",
+      priority: 9,
+      icon: "📞",
+      isImportant: true,
+    });
+  } else if (isTier3) {
+    tips.push({
+      type: "reservation",
+      title: "Reservation recommended",
+      message: "Popular with locals and travelers. A few days ahead is usually enough; walk-ins sometimes work on weekdays before 6 PM.",
       priority: 9,
       icon: "📞",
       isImportant: true,
@@ -681,7 +840,7 @@ function generateReservationTips(
   }
 
   // Popular attractions
-  if (location.rating && location.rating >= 4.5 && (category === "museum" || category === "attraction")) {
+  if (rating >= 4.5 && (category === "museum" || category === "attraction")) {
     tips.push({
       type: "reservation",
       title: "Consider Advance Tickets",

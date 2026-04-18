@@ -78,6 +78,196 @@ describe("generateActivityTips — rain-proof categories", () => {
   });
 });
 
+describe("generateActivityTips — last-train trigger (B1)", () => {
+  it("fires last-train tip for evening bar with city context", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "bar" }),
+      { cityId: "tokyo" },
+    );
+    const timingTip = tips.find((t) => t.title.toLowerCase().includes("last train"));
+    expect(timingTip).toBeDefined();
+    expect(timingTip?.message).toMatch(/Tokyo|Shinjuku|midnight|around 12/i);
+  });
+
+  it("fires last-train tip for evening izakaya", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "izakaya" }),
+      { cityId: "osaka" },
+    );
+    const timingTip = tips.find((t) => t.title.toLowerCase().includes("last train"));
+    expect(timingTip).toBeDefined();
+  });
+
+  it("does NOT fire last-train tip for afternoon bar (not evening)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "afternoon" }),
+      makeLocation({ category: "bar" }),
+      { cityId: "tokyo" },
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+
+  it("does NOT fire last-train tip for evening restaurant (not nightlife)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "restaurant" }),
+      { cityId: "tokyo" },
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+
+  it("does NOT fire last-train tip when no cityId provided", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "bar" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+});
+
+describe("generateActivityTips — reservation lead-time tiers (B2)", () => {
+  it("says 1-3 months ahead for omakase at top-rated venues", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "omakase", rating: 4.8 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res).toBeDefined();
+    expect(res?.message).toMatch(/1-3 months|months? ahead/i);
+  });
+
+  it("says 1-3 months ahead for kaiseki at top-rated venues", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "kaiseki", rating: 4.8 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res?.message).toMatch(/1-3 months|months? ahead/i);
+  });
+
+  it("says 2-4 weeks for fine dining (not top-rated)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "fine_dining", rating: 4.5 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res?.message).toMatch(/weeks? ahead|2-4 weeks/i);
+  });
+
+  it("keeps the generic copy for merely popular restaurants (4.7+)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "restaurant", rating: 4.7 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res).toBeDefined();
+    // Should NOT use the months-ahead copy for a generic 4.7 restaurant
+    expect(res?.message).not.toMatch(/months? ahead/i);
+  });
+});
+
+describe("generateActivityTips — holiday-aware crowd tip (C13)", () => {
+  it("upgrades crowd tip on Golden Week at a known-crowded location", () => {
+    // Golden Week is Apr 29 – May 5. Fushimi Inari has a peakWarning override.
+    const goldenWeekDay = new Date(2026, 4, 1); // May 1, 2026
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari", timeOfDay: "morning" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+      { activityDate: goldenWeekDay },
+    );
+    const crowdTip = tips.find((t) => t.title.toLowerCase().includes("holiday") || /golden week/i.test(t.message));
+    expect(crowdTip).toBeDefined();
+    expect(crowdTip?.isImportant).toBe(true);
+    expect(crowdTip?.message).toMatch(/Golden Week/i);
+  });
+
+  it("does NOT upgrade crowd tip on a non-holiday date", () => {
+    const regularDay = new Date(2026, 5, 15); // June 15, 2026 — no holiday
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari", timeOfDay: "morning" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+      { activityDate: regularDay },
+    );
+    expect(tips.find((t) => /Golden Week|Obon|New Year/i.test(t.message))).toBeUndefined();
+  });
+
+  it("does NOT upgrade for a location without a CROWD_OVERRIDES entry", () => {
+    const goldenWeekDay = new Date(2026, 4, 1);
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "some-random-loc", timeOfDay: "morning" }),
+      makeLocation({ id: "some-random-loc", category: "shrine", rating: 4.8 }),
+      { activityDate: goldenWeekDay },
+    );
+    // Regular crowd tip may fire, but not the escalated holiday+override one.
+    expect(tips.find((t) => t.isImportant && /Golden Week/i.test(t.message))).toBeUndefined();
+  });
+});
+
+describe("generateActivityTips — shoe-removal narrowing (A4)", () => {
+  it("does NOT fire shoe-removal tip on a regular restaurant", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "restaurant" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeUndefined();
+  });
+
+  it("does NOT fire shoe-removal tip on a cafe", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "cafe" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeUndefined();
+  });
+
+  it("fires shoe-removal tip for a kaiseki restaurant", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "kaiseki" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeDefined();
+  });
+
+  it("fires shoe-removal tip when tags include traditional", () => {
+    const tips = generateActivityTips(
+      makeActivity({ tags: ["traditional"] }),
+      makeLocation({ category: "restaurant", tags: ["traditional"] }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeDefined();
+  });
+});
+
+describe("generateActivityTips — Popular Destination noise reduction (A7)", () => {
+  it("does NOT fire generic 'Popular Destination' when location has a crowd override (peakWarning is better)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeUndefined();
+  });
+
+  it("does NOT fire 'Popular Destination' at the old 4.5 threshold — only 4.7+", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ id: "random-4-5", category: "museum", rating: 4.5 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeUndefined();
+  });
+
+  it("still fires 'Popular Destination' for 4.7+ without a crowd override", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ id: "random-4-8", category: "museum", rating: 4.8 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeDefined();
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips

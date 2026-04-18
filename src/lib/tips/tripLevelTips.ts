@@ -22,16 +22,24 @@ export function getTripLevelTips(
   const days = itinerary.days;
   if (days.length === 0) return tips;
 
-  const hasTransit = days.some((d) =>
-    d.activities.some(
-      (a) =>
-        a.kind === "place" &&
-        a.travelFromPrevious &&
-        ["train", "subway", "bus", "tram", "ferry", "transit"].includes(
-          a.travelFromPrevious.mode,
-        ),
-    ),
+  // Count transit legs, not any-transit. One-leg trips (e.g., a single bus
+  // ride in a walking-heavy Tokyo itinerary) don't justify the IC card tip
+  // at the top of Travel Essentials — it becomes noise. Require at least 3
+  // legs to signal that getting an IC card is actually worthwhile.
+  const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
+  const transitLegCount = days.reduce(
+    (count, d) =>
+      count +
+      d.activities.filter(
+        (a) =>
+          a.kind === "place" &&
+          a.travelFromPrevious &&
+          TRANSIT_MODES.has(a.travelFromPrevious.mode),
+      ).length,
+    0,
   );
+  const hasMeaningfulTransit = transitLegCount >= 3;
+  const hasAnyTransit = transitLegCount > 0;
   const hasTemplesOrShrines = days.some((d) =>
     d.activities.some((a) =>
       a.kind === "place" &&
@@ -39,8 +47,8 @@ export function getTripLevelTips(
     ),
   );
 
-  // IC Card
-  if (hasTransit) {
+  // IC Card — only once the traveler will use transit enough to justify it.
+  if (hasMeaningfulTransit) {
     tips.push({
       id: "trip-ic-card",
       title: "Get an IC Card",
@@ -50,8 +58,8 @@ export function getTripLevelTips(
     });
   }
 
-  // Escalator etiquette
-  if (hasTransit) {
+  // Escalator etiquette — relevant any time the traveler is in a station.
+  if (hasAnyTransit) {
     tips.push({
       id: "trip-escalator",
       title: "Escalator etiquette",
@@ -135,6 +143,16 @@ export function getTripLevelTips(
       icon: "\uD83D\uDCB4",
     });
   }
+
+  // Money in Japan — always fires. The three decisions every traveler faces:
+  // where to change money, which cards work, and the DCC gotcha.
+  tips.push({
+    id: "trip-money",
+    title: "Money in Japan",
+    summary:
+      "Skip the city exchange booths. 7-Eleven and Japan Post ATMs accept foreign cards and use the mid-market rate, usually better than any cash exchange. Airport counters are fine if you want some yen on arrival. Visa and Mastercard are widely accepted in cities (less so rural); Amex is spotty outside department stores. If a card terminal offers to charge in your home currency, always say JPY — \"pay in yen\" avoids a 3-5% dynamic conversion fee. And no tipping, anywhere.",
+    icon: "\uD83D\uDCB4",
+  });
 
   return tips;
 }
