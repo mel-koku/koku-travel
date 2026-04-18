@@ -1,0 +1,90 @@
+import type { CityId, KnownCityId } from "@/types/trip";
+import { isKnownCity } from "@/data/regions";
+
+export type CityCoordinates = { lat: number; lon: number };
+
+/**
+ * City-center approximations for all known Japanese city IDs.
+ * Source: Wikipedia / OSM city-hall coordinates, rounded to 4 dp (~10m).
+ * Used for earthquake-proximity gating — 150 km radius absorbs any
+ * reasonable definition of "city center."
+ */
+export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
+  // Kansai
+  kyoto:      { lat: 35.0116, lon: 135.7681 },
+  osaka:      { lat: 34.6937, lon: 135.5023 },
+  nara:       { lat: 34.6851, lon: 135.8048 },
+  kobe:       { lat: 34.6901, lon: 135.1956 },
+  otsu:       { lat: 35.0045, lon: 135.8686 },
+  himeji:     { lat: 34.8151, lon: 134.6854 },
+  wakayama:   { lat: 34.2261, lon: 135.1675 },
+  // Kanto
+  tokyo:       { lat: 35.6762, lon: 139.6503 },
+  yokohama:    { lat: 35.4437, lon: 139.6380 },
+  kamakura:    { lat: 35.3192, lon: 139.5467 },
+  nikko:       { lat: 36.7199, lon: 139.6982 },
+  hakone:      { lat: 35.2324, lon: 139.1069 },
+  kawaguchiko: { lat: 35.5171, lon: 138.7519 },
+  // Chubu
+  nagoya:    { lat: 35.1815, lon: 136.9066 },
+  kanazawa:  { lat: 36.5613, lon: 136.6562 },
+  takayama:  { lat: 36.1458, lon: 137.2524 },
+  nagano:    { lat: 36.6485, lon: 138.1811 },
+  niigata:   { lat: 37.9026, lon: 139.0232 },
+  ise:       { lat: 34.4875, lon: 136.7090 },
+  toyama:    { lat: 36.6959, lon: 137.2137 },
+  // Kyushu
+  fukuoka:    { lat: 33.5904, lon: 130.4017 },
+  nagasaki:   { lat: 32.7503, lon: 129.8777 },
+  kumamoto:   { lat: 32.7898, lon: 130.7417 },
+  kagoshima:  { lat: 31.5966, lon: 130.5571 },
+  oita:       { lat: 33.2382, lon: 131.6126 },
+  yakushima:  { lat: 30.3911, lon: 130.6578 },
+  miyazaki:   { lat: 31.9111, lon: 131.4239 },
+  kitakyushu: { lat: 33.8834, lon: 130.8750 },
+  // Hokkaido
+  sapporo:   { lat: 43.0618, lon: 141.3545 },
+  hakodate:  { lat: 41.7688, lon: 140.7288 },
+  asahikawa: { lat: 43.7706, lon: 142.3650 },
+  kushiro:   { lat: 42.9849, lon: 144.3814 },
+  abashiri:  { lat: 44.0209, lon: 144.2734 },
+  wakkanai:  { lat: 45.4155, lon: 141.6731 },
+  // Tohoku
+  sendai:        { lat: 38.2682, lon: 140.8694 },
+  morioka:       { lat: 39.7036, lon: 141.1527 },
+  aomori:        { lat: 40.8244, lon: 140.7400 },
+  akita:         { lat: 39.7186, lon: 140.1024 },
+  yamagata:      { lat: 38.2404, lon: 140.3636 },
+  aizuwakamatsu: { lat: 37.4945, lon: 139.9296 },
+  // Chugoku
+  hiroshima:    { lat: 34.3853, lon: 132.4553 },
+  okayama:      { lat: 34.6617, lon: 133.9352 },
+  matsue:       { lat: 35.4723, lon: 133.0505 },
+  tottori:      { lat: 35.5011, lon: 134.2351 },
+  shimonoseki:  { lat: 33.9578, lon: 130.9414 },
+  // Shikoku
+  matsuyama:  { lat: 33.8392, lon: 132.7657 },
+  takamatsu:  { lat: 34.3428, lon: 134.0466 },
+  tokushima:  { lat: 34.0703, lon: 134.5548 },
+  kochi:      { lat: 33.5597, lon: 133.5311 },
+  iyavalley:  { lat: 33.8827, lon: 133.8176 },
+  // Okinawa
+  naha:      { lat: 26.2124, lon: 127.6809 },
+  ishigaki:  { lat: 24.3448, lon: 124.1572 },
+  miyako:    { lat: 24.8054, lon: 125.2812 },
+  amami:     { lat: 28.3775, lon: 129.4936 },
+};
+
+/**
+ * Resolve lat/lon for a city. Returns null for dynamic/unknown cities —
+ * callers must treat absence as "cannot geo-filter against this city."
+ */
+export function resolveCityCoordinates(cityId: CityId): CityCoordinates | null {
+  // Normalize to lowercase to match getRegionForCity / getWeatherRegion; callers
+  // may pass mixed-case IDs (e.g. "Kyoto" vs "kyoto"). See src/data/regions.ts.
+  const normalized = cityId.toLowerCase();
+  if (isKnownCity(normalized)) {
+    return CITY_COORDINATES[normalized];
+  }
+  return null;
+}
