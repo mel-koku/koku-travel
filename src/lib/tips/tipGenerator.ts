@@ -594,7 +594,7 @@ function generateGeneralTips(
   const category = location.category?.toLowerCase() ?? "";
 
   // Duration tips
-  if (activity.durationMin && !shouldSuppressDurationTip(activity)) {
+  if (activity.durationMin && !shouldSuppressDurationTip(activity.durationMin)) {
     if (activity.durationMin < 60) {
       tips.push({
         type: "general",
