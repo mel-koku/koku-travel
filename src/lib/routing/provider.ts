@@ -57,8 +57,14 @@ function resolveProvider(mode?: string): ProviderConfig | null {
   return PROVIDERS.find((provider) => provider.isEnabled()) ?? null;
 }
 
-// Timeout wrapper for routing requests (5 seconds max)
-const ROUTING_TIMEOUT_MS = 5000;
+// Timeout wrapper for routing requests (8 seconds max).
+//
+// Tuning note: the underlying Mapbox/Google/NAVITIME clients use ~10s internal
+// timeouts. At 5s, the wrapper fired the heuristic fallback before the provider
+// could respond on normal but slow requests, leaving users with vibes-based
+// ETAs on perfectly working routes. 8s lets real routing answers arrive while
+// still bounding the worst case well under the 60s route maxDuration.
+const ROUTING_TIMEOUT_MS = 8000;
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: () => T): Promise<T> {
   let timeoutId: NodeJS.Timeout;

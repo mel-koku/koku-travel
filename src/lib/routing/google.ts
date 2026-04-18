@@ -4,6 +4,7 @@ import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep, TravelM
 import { toItineraryMode } from "./types";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { TIMEOUT_10_SECONDS } from "@/lib/constants";
+import { env } from "@/lib/env";
 
 type DirectionsValue = {
   value: number;
@@ -333,16 +334,17 @@ function buildLeg(
 }
 
 export async function fetchGoogleRoute(request: RoutingRequest): Promise<RoutingResult> {
-  // Dynamic import to avoid circular dependencies
-  const { env } = await import("@/lib/env");
+  // Directions API must NOT fall back to GOOGLE_PLACES_API_KEY. The Places
+  // key is typically restricted to Places/Geocoding APIs and, even when it
+  // isn't, using it here cross-charges the Places quota for Directions
+  // traffic, obscuring spend and risking quota exhaustion on unrelated
+  // surfaces (autocomplete, details). Require an explicit Directions key.
   const apiKey =
-    env.routingGoogleMapsApiKey ??
-    env.googleDirectionsApiKey ??
-    env.googlePlacesApiKey;
+    env.routingGoogleMapsApiKey ?? env.googleDirectionsApiKey;
 
   if (!apiKey) {
     throw new Error(
-      "No Google API key configured. Set ROUTING_GOOGLE_MAPS_API_KEY or GOOGLE_PLACES_API_KEY."
+      "No Google Directions key configured. Set ROUTING_GOOGLE_MAPS_API_KEY or GOOGLE_DIRECTIONS_API_KEY."
     );
   }
 
