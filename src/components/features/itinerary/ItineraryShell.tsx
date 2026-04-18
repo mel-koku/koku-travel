@@ -42,6 +42,7 @@ import { ShareButton } from "./ShareButton";
 import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
+import { PrepBanner } from "./PrepBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 import { PrintHeader } from "./PrintHeader";
@@ -813,6 +814,12 @@ export const ItineraryShell = ({
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
+            {/* Pre-trip prep checklist — auto-hides when trip is active */}
+            {currentTrip && (
+              <div className="mb-3">
+                <PrepBanner trip={currentTrip} />
+              </div>
+            )}
             {/* Compact notification strips */}
             {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
               <div className="mb-3 space-y-1">
