@@ -4,7 +4,7 @@ import type { WeatherForecast } from "@/types/weather";
 import type { CityId } from "@/types/trip";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
-import { CROWD_OVERRIDE_MAP, getHolidayMultiplier } from "@/data/crowdPatterns";
+import { CROWD_OVERRIDE_MAP, getActiveHolidays } from "@/data/crowdPatterns";
 
 /** Max important tips surfaced per activity */
 const MAX_IMPORTANT = 3;
@@ -95,6 +95,12 @@ export function generateActivityTips(
   if (options?.cityId) {
     const lastTrainTips = generateLastTrainTips(location, activity, options.cityId);
     tips.push(...lastTrainTips);
+  }
+
+  // Holiday-aware crowd tip (escalated for known-crowded places on busy dates)
+  if (options?.activityDate) {
+    const holidayCrowdTips = generateHolidayAwareCrowdTips(location, options.activityDate);
+    tips.push(...holidayCrowdTips);
   }
 
   // Accessibility tips
@@ -442,6 +448,38 @@ function generateLastTrainTips(
     message: `Last trains from ${data.hub} run ${data.cutoff}. Check Google Maps from the venue before your second drink — taxis after midnight run ¥5,000+, and capsule hotels are ¥3,000-4,000 if you miss it.`,
     priority: 8,
     icon: "🌙",
+  }];
+}
+
+/**
+ * Holiday-aware crowd tip. Escalates when the activity date falls in a
+ * significant-impact holiday (multiplier ≥ 1.5) AND the location is one we
+ * already flag with a crowd-override peakWarning. The combination is rare
+ * enough to deserve a loud, date-specific tip ("It's Golden Week at
+ * Fushimi Inari — expect 2+ hour queues"). For non-holiday dates or
+ * non-tracked locations, we defer to the regular crowd tip path.
+ */
+function generateHolidayAwareCrowdTips(
+  location: Location,
+  activityDate: Date,
+): ActivityTip[] {
+  const override = CROWD_OVERRIDE_MAP.get(location.id);
+  if (!override) return [];
+
+  const month = activityDate.getMonth() + 1;
+  const day = activityDate.getDate();
+  const year = activityDate.getFullYear();
+  const holidays = getActiveHolidays(month, day, month, day, year);
+  const significant = holidays.find((h) => h.crowdMultiplier >= 1.5);
+  if (!significant) return [];
+
+  return [{
+    type: "crowd",
+    title: `${significant.name} at ${override.name}`,
+    message: `${significant.name} typically multiplies crowds at popular sites by ${significant.crowdMultiplier}x. ${override.peakWarning ?? "Expect long queues and limited access."} Arrive at opening or consider swapping to a quieter day.`,
+    priority: 10,
+    icon: "⚠️",
+    isImportant: true,
   }];
 }
 

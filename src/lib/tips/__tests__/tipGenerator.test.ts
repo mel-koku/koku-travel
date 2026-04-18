@@ -168,6 +168,43 @@ describe("generateActivityTips — reservation lead-time tiers (B2)", () => {
   });
 });
 
+describe("generateActivityTips — holiday-aware crowd tip (C13)", () => {
+  it("upgrades crowd tip on Golden Week at a known-crowded location", () => {
+    // Golden Week is Apr 29 – May 5. Fushimi Inari has a peakWarning override.
+    const goldenWeekDay = new Date(2026, 4, 1); // May 1, 2026
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari", timeOfDay: "morning" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+      { activityDate: goldenWeekDay },
+    );
+    const crowdTip = tips.find((t) => t.title.toLowerCase().includes("holiday") || /golden week/i.test(t.message));
+    expect(crowdTip).toBeDefined();
+    expect(crowdTip?.isImportant).toBe(true);
+    expect(crowdTip?.message).toMatch(/Golden Week/i);
+  });
+
+  it("does NOT upgrade crowd tip on a non-holiday date", () => {
+    const regularDay = new Date(2026, 5, 15); // June 15, 2026 — no holiday
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari", timeOfDay: "morning" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+      { activityDate: regularDay },
+    );
+    expect(tips.find((t) => /Golden Week|Obon|New Year/i.test(t.message))).toBeUndefined();
+  });
+
+  it("does NOT upgrade for a location without a CROWD_OVERRIDES entry", () => {
+    const goldenWeekDay = new Date(2026, 4, 1);
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "some-random-loc", timeOfDay: "morning" }),
+      makeLocation({ id: "some-random-loc", category: "shrine", rating: 4.8 }),
+      { activityDate: goldenWeekDay },
+    );
+    // Regular crowd tip may fire, but not the escalated holiday+override one.
+    expect(tips.find((t) => t.isImportant && /Golden Week/i.test(t.message))).toBeUndefined();
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips
