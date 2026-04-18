@@ -106,6 +106,7 @@ export const CULTURAL_SUBCATEGORIES = new Set([
   "restaurant",
   "cafe",
   "bar",
+  "landmark",
 ]);
 
 // ── Composition helpers ─────────────────────────────────────────────

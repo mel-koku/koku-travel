@@ -66,6 +66,25 @@ describe("buildGuide prose merge", () => {
     expect(lllmTransition).toBeDefined();
   });
 
+  it("triggers a cultural moment for landmark activities", () => {
+    // Before landmark was added to CULTURAL_SUBCATEGORIES, existing templates
+    // like landmark:osaka (cm-33) and landmark:tokyo (cm-34) sat dormant.
+    // This guards the activation path.
+    const day: ItineraryDay = {
+      id: "day-1",
+      cityId: "osaka",
+      activities: [makeActivity("act-1", "Osaka Castle", ["landmark"])],
+    } as ItineraryDay;
+    const itinerary = makeItinerary([day]);
+
+    const guide = buildGuide(itinerary);
+    const cmSegment = guide.days[0]!.segments.find((s) => s.type === "cultural_moment");
+
+    expect(cmSegment).toBeDefined();
+    // The matcher should prefer landmark:osaka (cm-33) over landmark:any (cm-47).
+    expect(cmSegment?.content.toLowerCase()).toMatch(/osaka castle|toyotomi|hideyoshi/);
+  });
+
   it("preserves template segment order after merge", () => {
     const activities = [
       makeActivity("act-1", "Fushimi Inari", ["shrine"]),
