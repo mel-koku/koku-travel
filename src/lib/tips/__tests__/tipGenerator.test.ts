@@ -298,3 +298,137 @@ describe("generateActivityTips", () => {
     expect(tips.length).toBeLessThanOrEqual(5);
   });
 });
+
+describe("generateActivityTips — wind tier (C12)", () => {
+  const CLEAR_BASE: WeatherForecast = {
+    date: "2026-09-20",
+    condition: "clear",
+    temperature: { min: 20, max: 24 },
+  };
+
+  it("fires no wind tip when windSpeed is undefined (mock-weather mode)", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "viewpoint" }),
+      { weatherForecast: CLEAR_BASE },
+    );
+    const windTip = tips.find((t) =>
+      ["Breezy conditions", "Strong winds", "Gale-force winds"].includes(t.title),
+    );
+    expect(windTip).toBeUndefined();
+  });
+
+  it("fires breezy tip only for wind-sensitive categories at 7 m/s", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 8 };
+
+    const sensitiveTips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "viewpoint" }),
+      { weatherForecast: forecast },
+    );
+    expect(sensitiveTips.find((t) => t.title === "Breezy conditions")).toBeDefined();
+
+    const insensitiveTips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "museum" }),
+      { weatherForecast: forecast },
+    );
+    expect(insensitiveTips.find((t) => t.title === "Breezy conditions")).toBeUndefined();
+  });
+
+  it("fires strong winds at 12 m/s regardless of category, with activity-aware copy", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 13 };
+
+    const sensitive = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "viewpoint" }),
+      { weatherForecast: forecast },
+    );
+    const sensitiveTip = sensitive.find((t) => t.title === "Strong winds");
+    expect(sensitiveTip).toBeDefined();
+    expect(sensitiveTip?.message).toMatch(/cable cars|ropeways|ferry/i);
+
+    const generic = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "museum" }),
+      { weatherForecast: forecast },
+    );
+    const genericTip = generic.find((t) => t.title === "Strong winds");
+    expect(genericTip).toBeDefined();
+    expect(genericTip?.message).toMatch(/hats|camera straps|blustery/i);
+  });
+
+  it("fires gale-force tip with isImportant at 17 m/s", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 18 };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "museum" }),
+      { weatherForecast: forecast },
+    );
+    const galeTip = tips.find((t) => t.title === "Gale-force winds");
+    expect(galeTip).toBeDefined();
+    expect(galeTip?.isImportant).toBe(true);
+    expect(galeTip?.message).toMatch(/typhoon|August through October/i);
+  });
+
+  it("uses activity-aware gale copy for wind-sensitive locations", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 20 };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "tower" }),
+      { weatherForecast: forecast },
+    );
+    const galeTip = tips.find((t) => t.title === "Gale-force winds");
+    expect(galeTip?.message).toMatch(/suspend service|indoor backup/i);
+  });
+
+  it("treats ferry/cruise tags as wind-sensitive", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 8 };
+    const tips = generateActivityTips(
+      makeActivity({ tags: ["ferry"] }),
+      makeLocation({ category: "landmark" }),
+      { weatherForecast: forecast },
+    );
+    expect(tips.find((t) => t.title === "Breezy conditions")).toBeDefined();
+  });
+
+  it("does not fire breezy tip below threshold", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 6.5 };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "viewpoint" }),
+      { weatherForecast: forecast },
+    );
+    expect(tips.find((t) => t.title === "Breezy conditions")).toBeUndefined();
+  });
+
+  it("picks gale over strong at the boundary", () => {
+    const forecast: WeatherForecast = { ...CLEAR_BASE, windSpeed: 17 };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "viewpoint" }),
+      { weatherForecast: forecast },
+    );
+    expect(tips.find((t) => t.title === "Gale-force winds")).toBeDefined();
+    expect(tips.find((t) => t.title === "Strong winds")).toBeUndefined();
+  });
+
+  it("keeps both rain and gale tips on a rainy typhoon day (MAX_TOTAL interaction)", () => {
+    // Rain priority 9 + Gale priority 9, both isImportant. The cap at 3
+    // important tips should keep both: dropping either leaves a user without
+    // either the slippery-paths or the gale-force warning on a dangerous day.
+    const rainyGale: WeatherForecast = {
+      date: "2026-09-20",
+      condition: "rain",
+      temperature: { min: 20, max: 24 },
+      windSpeed: 20,
+    };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "park" }),
+      { weatherForecast: rainyGale },
+    );
+    expect(tips.find((t) => t.title === "Rain expected")).toBeDefined();
+    expect(tips.find((t) => t.title === "Gale-force winds")).toBeDefined();
+  });
+});
