@@ -179,11 +179,11 @@ export function getRegionForCity(cityId: CityId): RegionId | undefined {
 export type WeatherRegion = "tropical_south" | "temperate" | "subarctic_north";
 
 const TROPICAL_SOUTH_CITIES = new Set<string>([
-  "naha", "ishigaki", "miyakojima", "okinawa",
+  "naha", "ishigaki", "miyako", "amami",
 ]);
 
 const SUBARCTIC_NORTH_CITIES = new Set<string>([
-  "sapporo", "hakodate", "asahikawa", "otaru", "noboribetsu", "furano", "biei", "niseko",
+  "sapporo", "hakodate", "asahikawa", "kushiro", "abashiri", "wakkanai",
 ]);
 
 /**
