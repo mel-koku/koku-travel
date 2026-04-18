@@ -269,9 +269,15 @@ function generateWeatherTips(
 
   // Rain tips
   if (weatherForecast.condition === "rain" || weatherForecast.condition === "drizzle") {
-    const isIndoor = ["museum", "shopping", "restaurant", "bar"].includes(category);
-    
-    if (isIndoor) {
+    // Rain-proof: indoor or covered venues where rain doesn't change the experience.
+    // Distinct from "indoor": shrines/temples have indoor halls but are largely outdoor visits.
+    const RAIN_PROOF_CATEGORIES = new Set([
+      "museum", "shopping", "restaurant", "cafe", "bar",
+      "onsen", "wellness", "aquarium", "theater", "entertainment", "craft", "culture",
+    ]);
+    const isRainProof = RAIN_PROOF_CATEGORIES.has(category);
+
+    if (isRainProof) {
       tips.push({
         type: "weather",
         title: "Perfect for Rainy Day",
