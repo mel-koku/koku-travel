@@ -146,6 +146,9 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     nameJapanese: "name_japanese" in r ? (r.name_japanese as string | null) ?? undefined : undefined,
     nearestStation: "nearest_station" in r ? (r.nearest_station as string | null) ?? undefined : undefined,
     cashOnly: "cash_only" in r ? (r.cash_only as boolean | null) ?? undefined : undefined,
+    paymentTypes: "payment_types" in r
+      ? ((r.payment_types as Location["paymentTypes"] | null) ?? undefined)
+      : undefined,
     reservationInfo: "reservation_info" in r ? (r.reservation_info as Location["reservationInfo"]) ?? undefined : undefined,
     isFeatured: "is_featured" in r ? (r.is_featured as boolean | null) ?? undefined : undefined,
     isHiddenGem: "is_hidden_gem" in r ? (r.is_hidden_gem as boolean | null) ?? undefined : undefined,

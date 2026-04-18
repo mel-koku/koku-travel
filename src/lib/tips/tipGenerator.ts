@@ -758,7 +758,8 @@ function generatePaymentTips(
   const cashOnlyCategories = ["market", "street_food", "ramen", "izakaya", "shrine", "temple"];
   const isCashOnlyCategory = cashOnlyCategories.some((cat) => category.includes(cat));
 
-  // Infer cash preference from category (paymentTypes not yet in Location schema)
+  // Category-based fallback: used when `paymentTypes` is unset on a location.
+  // Once editorial seeding covers more venues, prefer derivePaymentPill(location).
   if (isCashOnlyCategory) {
     // Infer cash-only from category
     tips.push({
