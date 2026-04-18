@@ -11,9 +11,14 @@ import "server-only";
  */
 
 import { google } from "@ai-sdk/google";
-import { vertex } from "./vertexProvider";
+import { vertex, VERTEX_CHAT_OPTIONS } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import type { LanguageModelV3, EmbeddingModelV3 } from "@ai-sdk/provider";
+
+// Re-export so /api/chat (and any future streaming callers) can import chat-tuned
+// provider options from the same module as VERTEX_PROVIDER_OPTIONS. See
+// vertexProvider.ts for the thinkingBudget rationale.
+export { VERTEX_CHAT_OPTIONS };
 
 const MODEL_ID = "gemini-2.5-flash";
 

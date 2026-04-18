@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "@/lib/server/llmProvider";
+import { getModel, VERTEX_CHAT_OPTIONS } from "@/lib/server/llmProvider";
 import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
@@ -177,7 +177,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
 
     const result = streamText({
       model,
-      providerOptions: VERTEX_PROVIDER_OPTIONS,
+      providerOptions: VERTEX_CHAT_OPTIONS,
       system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,
