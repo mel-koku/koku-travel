@@ -58,6 +58,34 @@ describe("TripsSlice", () => {
     expect(result.current.actions).toBe(first);
   });
 
+  it("updates prepState on an existing trip and preserves other fields", () => {
+    const { result } = renderHook(() => useTrips(), { wrapper });
+    let id = "";
+    act(() => {
+      id = result.current.actions.createTrip({
+        name: "Tokyo trip",
+        itinerary: { days: [] } as never,
+        builderData: {} as never,
+      });
+    });
+    act(() => {
+      result.current.actions.updateTripPrepState(id, { "passport-validity": true });
+    });
+    const updated = result.current.state.trips[0]!;
+    expect(updated.id).toBe(id);
+    expect(updated.prepState).toEqual({ "passport-validity": true });
+    expect(updated.name).toBe("Tokyo trip");
+    expect(result.current.state.localTripUpdatedAt[id]).toBeGreaterThan(0);
+  });
+
+  it("updateTripPrepState is a no-op for unknown trip ids", () => {
+    const { result } = renderHook(() => useTrips(), { wrapper });
+    act(() => {
+      result.current.actions.updateTripPrepState("nonexistent", { x: true });
+    });
+    expect(result.current.state.trips).toHaveLength(0);
+  });
+
   it("resets to default state", () => {
     const { result } = renderHook(() => useTrips(), { wrapper });
     act(() => {

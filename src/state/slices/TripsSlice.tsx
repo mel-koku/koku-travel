@@ -19,6 +19,7 @@ import {
 } from "@/services/trip";
 import type { Itinerary } from "@/types/itinerary";
 import type { CityAccommodation, DayEntryPoint } from "@/types/trip";
+import type { PrepState } from "@/services/trip/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,6 +38,7 @@ export type TripsState = {
 export type TripsActions = {
   createTrip: (input: CreateTripInput) => string;
   updateTripItinerary: (tripId: string, itinerary: Itinerary) => void;
+  updateTripPrepState: (tripId: string, prepState: PrepState) => void;
   renameTrip: (tripId: string, name: string) => void;
   deleteTrip: (tripId: string) => void;
   restoreTrip: (trip: StoredTrip) => void;
@@ -113,6 +115,7 @@ sliceRegistry.register<TripsState>({
 type Action =
   | { type: "CREATE_TRIP"; trip: StoredTrip }
   | { type: "UPDATE_TRIP_ITINERARY"; tripId: string; itinerary: Itinerary }
+  | { type: "UPDATE_TRIP_PREP_STATE"; tripId: string; prepState: PrepState }
   | { type: "RENAME_TRIP"; tripId: string; name: string }
   | { type: "DELETE_TRIP"; tripId: string }
   | { type: "RESTORE_TRIP"; trip: StoredTrip }
@@ -147,6 +150,18 @@ function reducer(state: TripsState, action: Action): TripsState {
     case "UPDATE_TRIP_ITINERARY": {
       const next = updateTripItineraryOp(state.trips, action.tripId, action.itinerary);
       if (!next) return state;
+      return {
+        ...state,
+        trips: next,
+        localTripUpdatedAt: stampAt(state, action.tripId),
+      };
+    }
+    case "UPDATE_TRIP_PREP_STATE": {
+      const idx = state.trips.findIndex((t) => t.id === action.tripId);
+      if (idx === -1) return state;
+      const existing = state.trips[idx]!;
+      const next = [...state.trips];
+      next[idx] = { ...existing, prepState: action.prepState };
       return {
         ...state,
         trips: next,
@@ -248,6 +263,8 @@ export function TripsProvider({ children }: { children: ReactNode }) {
       },
       updateTripItinerary: (tripId: string, itinerary: Itinerary) =>
         dispatch({ type: "UPDATE_TRIP_ITINERARY", tripId, itinerary }),
+      updateTripPrepState: (tripId: string, prepState: PrepState) =>
+        dispatch({ type: "UPDATE_TRIP_PREP_STATE", tripId, prepState }),
       renameTrip: (tripId: string, name: string) =>
         dispatch({ type: "RENAME_TRIP", tripId, name }),
       deleteTrip: (tripId: string) =>
@@ -281,7 +298,6 @@ export function TripsProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "HYDRATE", patch }),
     }),
     // getTripById closes over state.trips intentionally; all other actions are dispatch-only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.trips],
   );
 

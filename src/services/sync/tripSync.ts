@@ -13,7 +13,7 @@ import type { StoredTrip } from "@/services/trip/types";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 
-const TRIP_SELECT_COLUMNS = "id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version, unlocked_at, unlock_tier, stripe_session_id, unlock_amount_cents, free_refinements_used" as const;
+const TRIP_SELECT_COLUMNS = "id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version, unlocked_at, unlock_tier, stripe_session_id, unlock_amount_cents, free_refinements_used, prep_state" as const;
 
 /**
  * Database row type for trips table
@@ -33,6 +33,7 @@ export type TripRow = {
   stripe_session_id: string | null;
   unlock_amount_cents: number | null;
   free_refinements_used: number | null;
+  prep_state?: Record<string, boolean> | null;
 };
 
 /**
@@ -51,6 +52,7 @@ function rowToStoredTrip(row: TripRow): StoredTrip {
     stripeSessionId: row.stripe_session_id ?? null,
     unlockAmountCents: row.unlock_amount_cents ?? null,
     freeRefinementsUsed: row.free_refinements_used ?? 0,
+    prepState: row.prep_state ?? undefined,
   };
 }
 
