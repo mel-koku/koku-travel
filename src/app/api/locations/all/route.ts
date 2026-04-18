@@ -144,6 +144,7 @@ export const GET = withApiHandler(
       nameJapanese: row.name_japanese ?? undefined,
       nearestStation: row.nearest_station ?? undefined,
       cashOnly: row.cash_only ?? undefined,
+      paymentTypes: (row.payment_types as Location["paymentTypes"]) ?? undefined,
       reservationInfo: row.reservation_info ?? undefined,
       operatingHours: normalizeOperatingHours(row.operating_hours),
       goodForChildren: row.good_for_children ?? undefined,
