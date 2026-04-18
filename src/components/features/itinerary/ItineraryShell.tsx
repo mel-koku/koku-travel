@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import type { EntryPoint, TripBuilderData } from "@/types/trip";
+import type { EntryPoint, KnownRegionId, TripBuilderData } from "@/types/trip";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
 import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
@@ -45,11 +45,12 @@ import { DayTripBanner } from "./DayTripBanner";
 import { GoshuinBanner } from "./GoshuinBanner";
 import { PrepBanner } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
+import { EarthquakeAlertSlot } from "./EarthquakeAlertSlot";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 import { PrintHeader } from "./PrintHeader";
 import { PrintFooter } from "./PrintFooter";
-import { REGIONS, getWeatherRegion } from "@/data/regions";
+import { REGIONS, getWeatherRegion, getRegionForCity } from "@/data/regions";
 import { shouldShowDisasterBanner } from "@/lib/trip/disasterOverlay";
 import { useItineraryDiscover } from "./hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanel } from "./ItineraryDiscoverPanel";
@@ -817,6 +818,17 @@ export const ItineraryShell = ({
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
+            {/* Live earthquake alert — top of safety-banner stack */}
+            {currentTrip && (() => {
+              const primaryCityId = currentTrip.builderData?.cities?.[0];
+              if (!primaryCityId) return null;
+              const tripRegion = getRegionForCity(primaryCityId);
+              if (!tripRegion || !REGIONS.some((r) => r.id === tripRegion)) return null;
+              return (
+                <EarthquakeAlertSlot tripId={currentTrip.id} region={tripRegion as KnownRegionId} />
+              );
+            })()}
+
             {/* Disaster/typhoon awareness banner — above prep checklist */}
             {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
