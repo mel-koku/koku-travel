@@ -129,3 +129,11 @@ function jsonAlert(alert: EarthquakeAlert | null): NextResponse {
   res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
   return res;
 }
+
+/**
+ * Test-only: reset the in-memory USGS feed cache between test cases.
+ * Production code never calls this.
+ */
+export function __resetFeedCacheForTests(): void {
+  feedCache = null;
+}
