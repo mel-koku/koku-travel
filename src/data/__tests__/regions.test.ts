@@ -45,4 +45,11 @@ describe("getWeatherRegion", () => {
   it("returns temperate as a safe default for unknown cities", () => {
     expect(getWeatherRegion("totally-not-a-city" as never)).toBe("temperate");
   });
+
+  it("normalizes case so mixed-case IDs still classify correctly", () => {
+    // Defensive: CityId is typed lowercase, but if anything passes title-case
+    // the classifier must not silently fall through to temperate.
+    expect(getWeatherRegion("Sapporo" as never)).toBe("subarctic_north");
+    expect(getWeatherRegion("NAHA" as never)).toBe("tropical_south");
+  });
 });

@@ -15,6 +15,10 @@ const PACING: PlanningWarning = {
   id: "p-1", type: "pacing", severity: "info",
   title: "Active Itinerary", message: "Manageable but limited downtime.", icon: "📍",
 };
+const DISTANCE: PlanningWarning = {
+  id: "d-1", type: "distance", severity: "warning",
+  title: "Long Distance Between Regions", message: "Hokkaido and Kyushu are 2,000km apart.", icon: "✈️",
+};
 
 describe("PlanningWarningsBanner", () => {
   it("renders nothing when no warnings", () => {
@@ -46,5 +50,12 @@ describe("PlanningWarningsBanner", () => {
   it("handles undefined warnings gracefully (legacy itineraries)", () => {
     const { container } = render(<PlanningWarningsBanner warnings={undefined} />);
     expect(container.firstChild).toBeNull();
+  });
+
+  it("includes distance warnings (Hokkaido + Kyushu needs a flight)", () => {
+    render(<PlanningWarningsBanner warnings={[DISTANCE]} />);
+    expect(screen.getByText(/Trip context/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button"));
+    expect(screen.getByText(/Long Distance Between Regions/)).toBeInTheDocument();
   });
 });

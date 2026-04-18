@@ -123,6 +123,12 @@ export function convertItineraryToTrip(
     };
   });
 
+  // NOTE: itinerary.planningWarnings is intentionally NOT propagated to Trip.
+  // Today the only consumer (TripConfidenceDashboard) reads warnings from the
+  // Itinerary directly, so the field doesn't need to live on Trip. If you add
+  // a Trip consumer that needs warnings, add `planningWarnings: itinerary.planningWarnings`
+  // here AND add an optional `planningWarnings?: PlanningWarning[]` field to
+  // the Trip type.
   return {
     id: tripId,
     travelerProfile,

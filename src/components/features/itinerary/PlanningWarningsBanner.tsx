@@ -3,6 +3,12 @@
 import { useState } from "react";
 import type { PlanningWarning, WarningType } from "@/lib/planning/tripWarnings";
 
+// Warning types worth re-surfacing AFTER the itinerary is generated.
+// `pacing` is excluded because the trip is already committed — no actionable
+// next step. Everything else here represents context the traveler will still
+// act on during the trip: weather, holidays, festivals, distance (e.g.
+// Hokkaido + Kyushu means a domestic flight), and the return-to-airport
+// buffer.
 const RELEVANT_POST_GENERATION: ReadonlySet<WarningType> = new Set([
   "holiday",
   "seasonal_rainy",
@@ -10,6 +16,7 @@ const RELEVANT_POST_GENERATION: ReadonlySet<WarningType> = new Set([
   "seasonal_autumn",
   "weather",
   "festival",
+  "distance",
   "return_to_airport",
 ]);
 

@@ -193,8 +193,12 @@ const SUBARCTIC_NORTH_CITIES = new Set<string>([
  * (cherry blossom timing, tsuyu rainy season, etc.).
  */
 export function getWeatherRegion(cityId: CityId): WeatherRegion {
-  if (TROPICAL_SOUTH_CITIES.has(cityId)) return "tropical_south";
-  if (SUBARCTIC_NORTH_CITIES.has(cityId)) return "subarctic_north";
+  // Match getRegionForCity: normalize to lowercase so callers passing
+  // mixed-case IDs (e.g. "Sapporo") don't silently fall through to temperate
+  // and get the wrong tsuyu/sakura warnings.
+  const normalized = cityId.toLowerCase();
+  if (TROPICAL_SOUTH_CITIES.has(normalized)) return "tropical_south";
+  if (SUBARCTIC_NORTH_CITIES.has(normalized)) return "subarctic_north";
   return "temperate";
 }
 
