@@ -12,6 +12,7 @@ import {
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
+import { FestivalNearMissCard } from "./FestivalNearMissCard";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 
@@ -470,6 +471,9 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
             </div>
           )}
+
+          {/* Festival near-miss card (C10) */}
+          <FestivalNearMissCard />
 
           {/* Budget & Notes */}
           <PreferenceCard
