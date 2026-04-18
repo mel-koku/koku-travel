@@ -144,5 +144,15 @@ export function getTripLevelTips(
     });
   }
 
+  // Money in Japan — always fires. The three decisions every traveler faces:
+  // where to change money, which cards work, and the DCC gotcha.
+  tips.push({
+    id: "trip-money",
+    title: "Money in Japan",
+    summary:
+      "Skip the city exchange booths. 7-Eleven and Japan Post ATMs accept foreign cards and use the mid-market rate, usually better than any cash exchange. Airport counters are fine if you want some yen on arrival. Visa and Mastercard are widely accepted in cities (less so rural); Amex is spotty outside department stores. If a card terminal offers to charge in your home currency, always say JPY — \"pay in yen\" avoids a 3-5% dynamic conversion fee. And no tipping, anywhere.",
+    icon: "\uD83D\uDCB4",
+  });
+
   return tips;
 }

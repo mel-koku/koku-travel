@@ -169,4 +169,19 @@ describe("getTripLevelTips", () => {
     const itinerary = createTestItinerary({ days: [] });
     expect(getTripLevelTips(itinerary)).toEqual([]);
   });
+
+  it("always includes the Money in Japan tip for non-empty itineraries", () => {
+    const itinerary = createTestItinerary({
+      days: [createTestItineraryDay()],
+    });
+    const tips = getTripLevelTips(itinerary);
+    const money = tips.find((t) => t.id === "trip-money");
+    expect(money).toBeDefined();
+    expect(money!.title).toBe("Money in Japan");
+    // Core money decisions surfaced: ATM-over-exchange, card brands, DCC.
+    expect(money!.summary).toMatch(/7-Eleven|Japan Post/);
+    expect(money!.summary).toMatch(/Visa|Mastercard/);
+    expect(money!.summary).toMatch(/JPY|dynamic conversion/i);
+    expect(money!.summary).toMatch(/no tipping/i);
+  });
 });
