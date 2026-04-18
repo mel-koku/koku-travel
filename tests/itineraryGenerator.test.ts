@@ -228,4 +228,43 @@ describe("generateItinerary", () => {
       expect(day.activities.length).toBeGreaterThanOrEqual(2);
     });
   });
+
+  describe("planningWarnings persistence", () => {
+    it("attaches planningWarnings to the returned Itinerary so the itinerary view can re-surface them", async () => {
+      // June in Tokyo overlaps tsuyu (rainy season) — the warning system
+      // should flag this, and the generator should surface it on the Itinerary.
+      const tripWithRainyOverlap: TripBuilderData = {
+        ...baseTrip,
+        duration: 3,
+        cities: ["tokyo"],
+        regions: ["kanto"],
+        dates: { start: "2026-06-15", end: "2026-06-17" },
+      };
+
+      const itinerary = await generateItinerary(tripWithRainyOverlap, { locations: MOCK_LOCATIONS });
+
+      expect(itinerary.planningWarnings).toBeDefined();
+      expect(Array.isArray(itinerary.planningWarnings)).toBe(true);
+      expect(itinerary.planningWarnings!.some((w) => w.type === "seasonal_rainy")).toBe(true);
+    });
+
+    it("still returns a valid Itinerary when no warnings are detected (empty array)", async () => {
+      // March in Tokyo shouldn't trigger any seasonal/festival/holiday/pacing warnings
+      // for a 3-day, 1-city trip.
+      const calmTrip: TripBuilderData = {
+        ...baseTrip,
+        duration: 3,
+        cities: ["tokyo"],
+        regions: ["kanto"],
+        dates: { start: "2026-03-10", end: "2026-03-12" },
+      };
+
+      const itinerary = await generateItinerary(calmTrip, { locations: MOCK_LOCATIONS });
+
+      // Field must always be set (either empty array or populated), never undefined —
+      // consumers should be able to `.length` without null-checking.
+      expect(itinerary.planningWarnings).toBeDefined();
+      expect(Array.isArray(itinerary.planningWarnings)).toBe(true);
+    });
+  });
 });

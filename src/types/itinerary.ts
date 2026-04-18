@@ -1,4 +1,5 @@
 import type { LocationTransitMode } from "./location";
+import type { PlanningWarning } from "@/lib/planning/tripWarnings";
 
 export type ActivityKind = "place" | "note";
 
@@ -299,6 +300,14 @@ export type Itinerary = {
     label: string;
     description: string;
   };
+  /**
+   * Planning warnings detected at trip-builder time. Persisted so the
+   * itinerary view can re-surface seasonal/holiday/festival context that
+   * the user saw once during builder. Undefined for legacy trips generated
+   * before this field existed; an empty array means "warnings were computed
+   * and none applied" (distinct from "never computed").
+   */
+  planningWarnings?: PlanningWarning[];
 };
 
 /**

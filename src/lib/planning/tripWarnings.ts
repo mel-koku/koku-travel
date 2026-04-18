@@ -12,6 +12,9 @@ import { calculateDistance } from "@/lib/utils/geoUtils";
 import { getFestivalsForTrip } from "@/data/festivalCalendar";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { travelTimeFromEntryPoint, getNearestCityToEntryPoint } from "@/lib/travelTime";
+import { getActiveHolidays } from "@/data/crowdPatterns";
+import { getWeatherRegion, type WeatherRegion } from "@/data/regions";
+import { getSeasonalPeriod, type SeasonName } from "@/data/seasonalPeriods";
 
 /**
  * Warning severity levels
@@ -47,87 +50,15 @@ export type PlanningWarning = {
 };
 
 /**
- * Japanese holiday periods that affect travel
+ * Warning-specific copy for holidays. Dates and applicable-year gating live in
+ * the canonical HOLIDAY_PERIODS in crowdPatterns.ts; this map only enriches
+ * the user-facing description when shown as a planning warning.
  */
-const HOLIDAY_PERIODS = [
-  {
-    name: "New Year",
-    startMonth: 12,
-    startDay: 28,
-    endMonth: 1,
-    endDay: 4,
-    description: "Many businesses close, but shrines are especially vibrant for hatsumode (first shrine visit).",
-  },
-  {
-    name: "Golden Week",
-    startMonth: 4,
-    startDay: 29,
-    endMonth: 5,
-    endDay: 5,
-    description: "Expect larger crowds and higher prices at popular destinations. Book accommodations early.",
-  },
-  {
-    name: "Obon",
-    startMonth: 8,
-    startDay: 13,
-    endMonth: 8,
-    endDay: 16,
-    description: "Major travel period for Japanese families. Expect crowded trains and popular attractions.",
-  },
-  {
-    name: "Silver Week",
-    startMonth: 9,
-    startDay: 19,
-    endMonth: 9,
-    endDay: 23,
-    description: "A popular domestic travel period. Some destinations may be busier than usual.",
-  },
-];
-
-/**
- * Seasonal periods with special considerations
- */
-const SEASONAL_PERIODS = {
-  rainy: {
-    startMonth: 6,
-    startDay: 1,
-    endMonth: 7,
-    endDay: 20,
-    title: "Rainy Season (Tsuyu)",
-    message: "You're traveling during rainy season. We'll prioritize indoor activities and suggest backup options for outdoor plans.",
-  },
-  cherryBlossom: {
-    startMonth: 3,
-    startDay: 20,
-    endMonth: 4,
-    endDay: 15,
-    title: "Cherry Blossom Season",
-    message: "Perfect timing for cherry blossoms (sakura)! We'll include the best hanami spots in your itinerary.",
-  },
-  autumnLeaves: {
-    startMonth: 10,
-    startDay: 15,
-    endMonth: 11,
-    endDay: 30,
-    title: "Autumn Leaves Season",
-    message: "Great timing for autumn colors (koyo)! We'll suggest gardens and temples famous for fall foliage.",
-  },
-  summer: {
-    startMonth: 7,
-    startDay: 21,
-    endMonth: 8,
-    endDay: 31,
-    title: "Summer Heat",
-    message: "Japanese summers can be hot and humid. We'll balance outdoor activities with air-conditioned spots and suggest early morning visits.",
-  },
-  winter: {
-    startMonth: 12,
-    startDay: 15,
-    endMonth: 2,
-    endDay: 28,
-    title: "Winter Season",
-    message: "Great time for onsen (hot springs) and winter illuminations! Some mountain areas may have limited access due to snow.",
-  },
+const HOLIDAY_WARNING_COPY: Record<string, string> = {
+  "new-year": "Many businesses close, but shrines are especially vibrant for hatsumode (first shrine visit).",
+  "golden-week": "Expect larger crowds and higher prices at popular destinations. Book accommodations early.",
+  obon: "Major travel period for Japanese families. Expect crowded trains and popular attractions.",
+  "silver-week": "A popular domestic travel period. Some destinations may be busier than usual.",
 };
 
 // calculateDistance imported from @/lib/utils/geoUtils
@@ -138,6 +69,19 @@ const SEASONAL_PERIODS = {
 function getRegionCoordinates(regionId: RegionId): { lat: number; lng: number } | undefined {
   const region = REGION_DESCRIPTIONS.find((r) => r.id === regionId);
   return region?.coordinates;
+}
+
+/**
+ * Derive the trip's primary climate region. If the trip spans multiple weather
+ * regions, prefer the most specific non-temperate one — a Tokyo+Okinawa trip
+ * should still get tropical_south warnings because Okinawa days need them.
+ */
+function getTripWeatherRegion(data: TripBuilderData): WeatherRegion {
+  const cities = data.cities ?? [];
+  const weatherRegions = new Set(cities.map((c) => getWeatherRegion(c)));
+  if (weatherRegions.has("tropical_south")) return "tropical_south";
+  if (weatherRegions.has("subarctic_north")) return "subarctic_north";
+  return "temperate";
 }
 
 /**
@@ -271,152 +215,73 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
  * Detect holiday period overlaps
  */
 function detectHolidayWarnings(data: TripBuilderData): PlanningWarning[] {
-  const warnings: PlanningWarning[] = [];
-
-  if (!data.dates.start || !data.dates.end) return warnings;
+  if (!data.dates.start || !data.dates.end) return [];
 
   const startDate = parseLocalDate(data.dates.start)!;
   const endDate = parseLocalDate(data.dates.end)!;
 
-  for (const holiday of HOLIDAY_PERIODS) {
-    if (
-      tripOverlapsPeriod(
-        startDate,
-        endDate,
-        holiday.startMonth,
-        holiday.startDay,
-        holiday.endMonth,
-        holiday.endDay
-      )
-    ) {
-      warnings.push({
-        id: `holiday-${holiday.name.toLowerCase().replace(/\s+/g, "-")}`,
-        type: "holiday",
-        severity: "warning",
-        title: `${holiday.name} Travel Period`,
-        message: holiday.description,
-        icon: "🎌",
-      });
-    }
-  }
+  const holidays = getActiveHolidays(
+    startDate.getMonth() + 1,
+    startDate.getDate(),
+    endDate.getMonth() + 1,
+    endDate.getDate(),
+    startDate.getFullYear(),
+  );
 
-  return warnings;
+  return holidays.map((holiday) => ({
+    id: `holiday-${holiday.id}`,
+    type: "holiday" as const,
+    severity: "warning" as const,
+    title: `${holiday.name} Travel Period`,
+    message: HOLIDAY_WARNING_COPY[holiday.id] ?? holiday.description,
+    icon: "🎌",
+  }));
 }
 
 /**
  * Detect seasonal considerations
  */
 function detectSeasonalWarnings(data: TripBuilderData): PlanningWarning[] {
-  const warnings: PlanningWarning[] = [];
-
-  if (!data.dates.start || !data.dates.end) return warnings;
+  if (!data.dates.start || !data.dates.end) return [];
 
   const startDate = parseLocalDate(data.dates.start)!;
   const endDate = parseLocalDate(data.dates.end)!;
+  const weatherRegion = getTripWeatherRegion(data);
 
-  // Check rainy season
-  if (
-    tripOverlapsPeriod(
-      startDate,
-      endDate,
-      SEASONAL_PERIODS.rainy.startMonth,
-      SEASONAL_PERIODS.rainy.startDay,
-      SEASONAL_PERIODS.rainy.endMonth,
-      SEASONAL_PERIODS.rainy.endDay
-    )
-  ) {
-    warnings.push({
-      id: "seasonal-rainy",
-      type: "seasonal_rainy",
-      severity: "info",
-      title: SEASONAL_PERIODS.rainy.title,
-      message: SEASONAL_PERIODS.rainy.message,
-      icon: "🌧️",
-    });
-  }
+  const seasonsToCheck: Array<{
+    season: SeasonName;
+    id: string;
+    type: PlanningWarning["type"];
+    severity: PlanningWarning["severity"];
+    icon: string;
+  }> = [
+    { season: "rainy", id: "seasonal-rainy", type: "seasonal_rainy", severity: "info", icon: "🌧️" },
+    { season: "cherryBlossom", id: "seasonal-cherry-blossom", type: "seasonal_cherry_blossom", severity: "info", icon: "🌸" },
+    { season: "autumnLeaves", id: "seasonal-autumn", type: "seasonal_autumn", severity: "info", icon: "🍁" },
+    { season: "summer", id: "seasonal-summer", type: "weather", severity: "info", icon: "☀️" },
+    { season: "winter", id: "seasonal-winter", type: "weather", severity: "info", icon: "❄️" },
+  ];
 
-  // Check cherry blossom season (positive!)
-  if (
-    tripOverlapsPeriod(
-      startDate,
-      endDate,
-      SEASONAL_PERIODS.cherryBlossom.startMonth,
-      SEASONAL_PERIODS.cherryBlossom.startDay,
-      SEASONAL_PERIODS.cherryBlossom.endMonth,
-      SEASONAL_PERIODS.cherryBlossom.endDay
-    )
-  ) {
-    warnings.push({
-      id: "seasonal-cherry-blossom",
-      type: "seasonal_cherry_blossom",
-      severity: "info",
-      title: SEASONAL_PERIODS.cherryBlossom.title,
-      message: SEASONAL_PERIODS.cherryBlossom.message,
-      icon: "🌸",
-    });
-  }
+  const warnings: PlanningWarning[] = [];
 
-  // Check autumn leaves season (positive!)
-  if (
-    tripOverlapsPeriod(
-      startDate,
-      endDate,
-      SEASONAL_PERIODS.autumnLeaves.startMonth,
-      SEASONAL_PERIODS.autumnLeaves.startDay,
-      SEASONAL_PERIODS.autumnLeaves.endMonth,
-      SEASONAL_PERIODS.autumnLeaves.endDay
-    )
-  ) {
-    warnings.push({
-      id: "seasonal-autumn",
-      type: "seasonal_autumn",
-      severity: "info",
-      title: SEASONAL_PERIODS.autumnLeaves.title,
-      message: SEASONAL_PERIODS.autumnLeaves.message,
-      icon: "🍁",
-    });
-  }
-
-  // Check summer heat
-  if (
-    tripOverlapsPeriod(
-      startDate,
-      endDate,
-      SEASONAL_PERIODS.summer.startMonth,
-      SEASONAL_PERIODS.summer.startDay,
-      SEASONAL_PERIODS.summer.endMonth,
-      SEASONAL_PERIODS.summer.endDay
-    )
-  ) {
-    warnings.push({
-      id: "seasonal-summer",
-      type: "weather",
-      severity: "info",
-      title: SEASONAL_PERIODS.summer.title,
-      message: SEASONAL_PERIODS.summer.message,
-      icon: "☀️",
-    });
-  }
-
-  // Check winter
-  if (
-    tripOverlapsPeriod(
-      startDate,
-      endDate,
-      SEASONAL_PERIODS.winter.startMonth,
-      SEASONAL_PERIODS.winter.startDay,
-      SEASONAL_PERIODS.winter.endMonth,
-      SEASONAL_PERIODS.winter.endDay
-    )
-  ) {
-    warnings.push({
-      id: "seasonal-winter",
-      type: "weather",
-      severity: "info",
-      title: SEASONAL_PERIODS.winter.title,
-      message: SEASONAL_PERIODS.winter.message,
-      icon: "❄️",
-    });
+  for (const { season, id, type, severity, icon } of seasonsToCheck) {
+    const period = getSeasonalPeriod(season, weatherRegion);
+    if (!period) continue;
+    if (
+      tripOverlapsPeriod(
+        startDate, endDate,
+        period.startMonth, period.startDay, period.endMonth, period.endDay,
+      )
+    ) {
+      warnings.push({
+        id,
+        type,
+        severity,
+        title: period.title,
+        message: period.message,
+        icon,
+      });
+    }
   }
 
   return warnings;

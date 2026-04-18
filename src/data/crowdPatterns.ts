@@ -30,6 +30,10 @@ export interface HolidayPeriod {
   endDay: number;
   crowdMultiplier: number; // 1.0 = normal, 2.0 = double
   description: string;
+  // When set, the period only fires in these years. Use for holidays whose
+  // existence (not just dates) depends on the calendar — e.g. Silver Week
+  // only happens when Sep 23 Autumnal Equinox falls on a Wednesday.
+  applicableYears?: readonly number[];
 }
 
 // ---------------------------------------------------------------------------
@@ -172,7 +176,7 @@ export const HOLIDAY_PERIODS: HolidayPeriod[] = [
     name: "Obon Festival",
     nameJa: "お盆",
     startMonth: 8,
-    startDay: 11,
+    startDay: 13,
     endMonth: 8,
     endDay: 16,
     crowdMultiplier: 1.7,
@@ -188,6 +192,11 @@ export const HOLIDAY_PERIODS: HolidayPeriod[] = [
     endDay: 23,
     crowdMultiplier: 1.5,
     description: "Autumn holiday cluster. Popular season for domestic travel.",
+    // Silver Week forms only when Sep 23 (Autumnal Equinox Day) falls on a
+    // Wednesday, bridging Respect for the Aged Day (3rd Mon) into a 5-day run.
+    // Confirmed years; extend as Japan's National Astronomical Observatory
+    // formally announces future equinox dates (typically two years ahead).
+    applicableYears: [2009, 2015, 2026, 2032, 2037, 2043],
   },
   {
     id: "spring-school",
@@ -227,6 +236,7 @@ export function getCrowdLevel(
     locationId?: string;
     month?: number;
     day?: number;
+    year?: number;
     isWeekend?: boolean;
   }
 ): number {
@@ -245,7 +255,7 @@ export function getCrowdLevel(
 
   // Holiday multiplier
   if (options?.month && options?.day) {
-    const multiplier = getHolidayMultiplier(options.month, options.day);
+    const multiplier = getHolidayMultiplier(options.month, options.day, options.year);
     if (multiplier > 1) {
       level = Math.min(5, Math.round(level * multiplier));
     }
@@ -263,9 +273,13 @@ export function getCrowdWarning(locationId: string): string | undefined {
 
 /**
  * Check if a date falls in a holiday period. Returns the multiplier or 1.0.
+ * Pass `year` to honor `applicableYears` gating (e.g. Silver Week).
  */
-export function getHolidayMultiplier(month: number, day: number): number {
+export function getHolidayMultiplier(month: number, day: number, year?: number): number {
   for (const holiday of HOLIDAY_PERIODS) {
+    if (year !== undefined && holiday.applicableYears && !holiday.applicableYears.includes(year)) {
+      continue;
+    }
     if (isInPeriod(month, day, holiday.startMonth, holiday.startDay, holiday.endMonth, holiday.endDay)) {
       return holiday.crowdMultiplier;
     }
@@ -275,17 +289,24 @@ export function getHolidayMultiplier(month: number, day: number): number {
 
 /**
  * Get active holidays for a trip date range.
+ * Pass `year` to honor `applicableYears` gating (e.g. Silver Week).
  */
 export function getActiveHolidays(
   startMonth: number,
   startDay: number,
   endMonth: number,
-  endDay: number
+  endDay: number,
+  year?: number,
 ): HolidayPeriod[] {
-  return HOLIDAY_PERIODS.filter((h) => periodsOverlap(
-    startMonth, startDay, endMonth, endDay,
-    h.startMonth, h.startDay, h.endMonth, h.endDay
-  ));
+  return HOLIDAY_PERIODS.filter((h) => {
+    if (year !== undefined && h.applicableYears && !h.applicableYears.includes(year)) {
+      return false;
+    }
+    return periodsOverlap(
+      startMonth, startDay, endMonth, endDay,
+      h.startMonth, h.startDay, h.endMonth, h.endDay,
+    );
+  });
 }
 
 // Internal helpers

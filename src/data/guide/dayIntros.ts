@@ -274,7 +274,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-35",
     key: "hiroshima:any:any:any",
     content:
-      "Hiroshima is a city that looks forward while honoring the past. Between the moving memorials, the lively food scene, and easy access to the island shrine of Miyajima, today covers a lot of ground.",
+      "Hiroshima is a city that looks forward while honoring the past. The Peace Memorial sits a short tram ride from a dense food scene built around okonomiyaki, and Miyajima's torii is a 40-minute trip from the center.",
     icon: "🌊",
   },
 
@@ -396,7 +396,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
     id: "di-49",
     key: "matsuyama:any:any:any",
     content:
-      "Matsuyama is Shikoku's largest city but keeps a laid-back, small-town charm. A hilltop castle, literary history, and the legendary Dogo Onsen make it quietly memorable.",
+      "Matsuyama is Shikoku's largest city but moves at a small-town pace. A hilltop castle, literary history tied to Soseki, and Dogo Onsen, one of Japan's oldest bathhouses, all sit within a few tram stops of each other.",
     icon: "🏰",
   },
 

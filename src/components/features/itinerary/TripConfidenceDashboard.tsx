@@ -27,6 +27,7 @@ import { DayTips } from "./DayTips";
 import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
 import { getTripLevelTips, type TripLevelTip } from "@/lib/tips/tripLevelTips";
 import { RailPassSection } from "./RailPassSection";
+import { PlanningWarningsBanner } from "./PlanningWarningsBanner";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -194,6 +195,8 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
 
       {/* Rail Pass Calculator */}
       <RailPassSection itinerary={itinerary} tripStartDate={tripStartDate} />
+
+      <PlanningWarningsBanner warnings={itinerary.planningWarnings} />
 
       {/* Travel Essentials — trip-level tips shown once */}
       {tripLevelTips.length > 0 && (
