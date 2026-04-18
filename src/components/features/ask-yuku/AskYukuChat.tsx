@@ -4,8 +4,30 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { AskYukuMessage } from "./AskYukuMessage";
-import { AskYukuSuggestions, type AskYukuContext } from "./AskYukuSuggestions";
+import { AskYukuSuggestions, type AskYukuContext, type TripPhase } from "./AskYukuSuggestions";
 import { AskYukuInput } from "./AskYukuInput";
+
+type TripData = {
+  dates?: {
+    start?: string;
+  };
+};
+
+function getTripPhase(tripData: string | undefined): TripPhase {
+  if (!tripData) return "any";
+  try {
+    const trip = JSON.parse(tripData) as TripData;
+    if (!trip.dates?.start) return "any";
+    const startDate = new Date(trip.dates.start);
+    const now = new Date();
+    // If trip starts in the future, it's in planning phase
+    if (startDate > now) return "planning";
+    // Otherwise it's active
+    return "active";
+  } catch {
+    return "any";
+  }
+}
 
 type AskYukuChatProps = {
   onClose?: () => void;
@@ -58,6 +80,7 @@ export function AskYukuChat({ onClose, context = "default", tripData }: AskYukuC
   }, [input, isLoading, sendMessage]);
 
   const hasMessages = messages.length > 0;
+  const tripPhase = useMemo(() => getTripPhase(tripData), [tripData]);
 
   return (
     <div className="flex min-h-0 h-full flex-col">
@@ -70,7 +93,7 @@ export function AskYukuChat({ onClose, context = "default", tripData }: AskYukuC
         data-lenis-prevent
       >
         {!hasMessages ? (
-          <AskYukuSuggestions onSelect={handleSuggestion} context={context} />
+          <AskYukuSuggestions onSelect={handleSuggestion} context={context} tripPhase={tripPhase} />
         ) : (
           <div className="flex flex-col gap-3">
             {messages.map((message) => (

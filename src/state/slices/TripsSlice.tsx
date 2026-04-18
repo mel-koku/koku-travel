@@ -19,7 +19,7 @@ import {
 } from "@/services/trip";
 import type { Itinerary } from "@/types/itinerary";
 import type { CityAccommodation, DayEntryPoint } from "@/types/trip";
-import type { PrepState } from "@/services/trip/types";
+import type { PrepState, PlanningWarnings } from "@/services/trip/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,6 +39,7 @@ export type TripsActions = {
   createTrip: (input: CreateTripInput) => string;
   updateTripItinerary: (tripId: string, itinerary: Itinerary) => void;
   updateTripPrepState: (tripId: string, prepState: PrepState) => void;
+  updateTripPlanningWarnings: (tripId: string, planningWarnings: PlanningWarnings) => void;
   renameTrip: (tripId: string, name: string) => void;
   deleteTrip: (tripId: string) => void;
   restoreTrip: (trip: StoredTrip) => void;
@@ -116,6 +117,7 @@ type Action =
   | { type: "CREATE_TRIP"; trip: StoredTrip }
   | { type: "UPDATE_TRIP_ITINERARY"; tripId: string; itinerary: Itinerary }
   | { type: "UPDATE_TRIP_PREP_STATE"; tripId: string; prepState: PrepState }
+  | { type: "UPDATE_TRIP_PLANNING_WARNINGS"; tripId: string; planningWarnings: PlanningWarnings }
   | { type: "RENAME_TRIP"; tripId: string; name: string }
   | { type: "DELETE_TRIP"; tripId: string }
   | { type: "RESTORE_TRIP"; trip: StoredTrip }
@@ -162,6 +164,18 @@ function reducer(state: TripsState, action: Action): TripsState {
       const existing = state.trips[idx]!;
       const next = [...state.trips];
       next[idx] = { ...existing, prepState: action.prepState };
+      return {
+        ...state,
+        trips: next,
+        localTripUpdatedAt: stampAt(state, action.tripId),
+      };
+    }
+    case "UPDATE_TRIP_PLANNING_WARNINGS": {
+      const idx = state.trips.findIndex((t) => t.id === action.tripId);
+      if (idx === -1) return state;
+      const existing = state.trips[idx]!;
+      const next = [...state.trips];
+      next[idx] = { ...existing, planningWarnings: action.planningWarnings };
       return {
         ...state,
         trips: next,
@@ -265,6 +279,8 @@ export function TripsProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "UPDATE_TRIP_ITINERARY", tripId, itinerary }),
       updateTripPrepState: (tripId: string, prepState: PrepState) =>
         dispatch({ type: "UPDATE_TRIP_PREP_STATE", tripId, prepState }),
+      updateTripPlanningWarnings: (tripId: string, planningWarnings: PlanningWarnings) =>
+        dispatch({ type: "UPDATE_TRIP_PLANNING_WARNINGS", tripId, planningWarnings }),
       renameTrip: (tripId: string, name: string) =>
         dispatch({ type: "RENAME_TRIP", tripId, name }),
       deleteTrip: (tripId: string) =>

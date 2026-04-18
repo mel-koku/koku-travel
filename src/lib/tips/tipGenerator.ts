@@ -5,6 +5,8 @@ import type { CityId } from "@/types/trip";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { CROWD_OVERRIDE_MAP, getActiveHolidays } from "@/data/crowdPatterns";
+import { shouldSuppressDurationTip } from "./durationGating";
+import { shouldShow5YenCoinTip } from "./coinTipTracking";
 
 /** Max important tips surfaced per activity */
 const MAX_IMPORTANT = 3;
@@ -57,6 +59,7 @@ export function generateActivityTips(
     dayIndex?: number;
     cityId?: CityId;
     activityDate?: Date;
+    planningWarnings?: Record<string, unknown>;
   },
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
@@ -70,7 +73,7 @@ export function generateActivityTips(
   tips.push(...reservationTips);
 
   // Payment tips
-  const paymentTips = generatePaymentTips(location, activity);
+  const paymentTips = generatePaymentTips(location, activity, options?.planningWarnings);
   tips.push(...paymentTips);
 
   // Crowd avoidance tips
@@ -591,7 +594,7 @@ function generateGeneralTips(
   const category = location.category?.toLowerCase() ?? "";
 
   // Duration tips
-  if (activity.durationMin) {
+  if (activity.durationMin && !shouldSuppressDurationTip(activity)) {
     if (activity.durationMin < 60) {
       tips.push({
         type: "general",
@@ -750,6 +753,7 @@ function generateTravelTips(
 function generatePaymentTips(
   location: Location,
   _activity: Extract<ItineraryActivity, { kind: "place" }>,
+  planningWarnings?: Record<string, unknown>,
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
   const category = location.category?.toLowerCase() ?? "";
@@ -772,7 +776,7 @@ function generatePaymentTips(
   }
 
   // Temple/shrine donation tip
-  if (category === "shrine" || category === "temple") {
+  if ((category === "shrine" || category === "temple") && shouldShow5YenCoinTip(planningWarnings)) {
     tips.push({
       type: "payment",
       title: "Small Change",

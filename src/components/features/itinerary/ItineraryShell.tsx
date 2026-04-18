@@ -42,6 +42,7 @@ import { ShareButton } from "./ShareButton";
 import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
+import { GoshuinBanner } from "./GoshuinBanner";
 import { PrepBanner } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
@@ -825,6 +826,19 @@ export const ItineraryShell = ({
                   <DisasterBanner trip={currentTrip} region={tripRegion} />
                 </div>
               );
+            })()}
+
+            {/* Goshuin banner — for shrine/temple trips */}
+            {currentTrip && (() => {
+              const hasShrineOrTemple = model.days.some((day) =>
+                day.activities.some((activity) => activity.kind === "place" && (activity.placeType === "shrine" || activity.placeType === "temple"))
+              );
+              const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
+              return hasShrineOrTemple && isUpcoming ? (
+                <div className="mb-3">
+                  <GoshuinBanner trip={currentTrip} />
+                </div>
+              ) : null;
             })()}
 
             {/* Pre-trip prep checklist — auto-hides when trip is active */}

@@ -234,7 +234,7 @@ export function useDayTipsCore(
         id: "pro-city-transition",
         title: "Send luggage ahead",
         summary:
-          "Traveling to a new city today. Consider sending bags via takkyubin (luggage forwarding) from any convenience store or hotel.",
+          "Traveling to a new city today. Consider takkyubin (luggage forwarding): A service that delivers your suitcase from a hotel or station to your next accommodation for 2,000–3,000 yen. Order at any convenience store or hotel front desk the day before.",
         icon: "\uD83E\uDDF3",
       });
     }
