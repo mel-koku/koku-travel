@@ -26,7 +26,7 @@ export const PracticalBadges = memo(function PracticalBadges({
   location,
   showOpenStatus = true,
   variant = "default",
-  max = 3,
+  max = 4,
   showStation = true,
 }: PracticalBadgesProps) {
   const openLabel = useMemo(() => {
@@ -148,6 +148,7 @@ function LeafIcon() {
   return (
     <svg
       className="h-2.5 w-2.5 shrink-0"
+      aria-hidden="true"
       viewBox="0 0 16 16"
       fill="none"
       stroke="currentColor"
