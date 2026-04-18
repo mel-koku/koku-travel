@@ -27,6 +27,7 @@ export function tripOverlapsTyphoonSeason(trip: StoredTrip): boolean {
 
   // Get the primary destination region
   const primaryCityId = cities[0];
+  if (!primaryCityId) return false;
   const region = getWeatherRegion(primaryCityId);
 
   // Peak typhoon season (Aug 15 – Oct 15, any region)

@@ -831,7 +831,11 @@ export const ItineraryShell = ({
             {/* Goshuin banner — for shrine/temple trips */}
             {currentTrip && (() => {
               const hasShrineOrTemple = model.days.some((day) =>
-                day.activities.some((activity) => activity.kind === "place" && (activity.placeType === "shrine" || activity.placeType === "temple"))
+                day.activities.some((activity) => {
+                  if (activity.kind !== "place") return false;
+                  const tags = (activity.tags as string[]) ?? [];
+                  return tags.some((tag) => tag === "shrine" || tag === "temple");
+                })
               );
               const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
               return hasShrineOrTemple && isUpcoming ? (
