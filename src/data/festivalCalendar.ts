@@ -189,3 +189,88 @@ function isInRange(d: number, start: number, end: number): boolean {
   if (start <= end) return d >= start && d <= end;
   return d >= start || d <= end;
 }
+
+// ---------------------------------------------------------------------------
+// Near-miss detection (C10)
+// ---------------------------------------------------------------------------
+
+export type NearMissDirection = "forward" | "backward";
+
+export interface FestivalNearMiss {
+  festival: Festival;
+  direction: NearMissDirection;
+  /**
+   * Positive integer.
+   * - forward: days between trip end and festival start
+   * - backward: days between festival end and trip start
+   */
+  gapDays: number;
+}
+
+interface NearMissOptions {
+  forwardWindow?: number;
+  backwardWindow?: number;
+}
+
+const NEAR_MISS_REF_YEAR = 2025;
+
+function mdToDayOfYear(month: number, day: number): number {
+  const date = new Date(NEAR_MISS_REF_YEAR, month - 1, day);
+  const start = new Date(NEAR_MISS_REF_YEAR, 0, 1);
+  return Math.round((date.getTime() - start.getTime()) / 86_400_000) + 1;
+}
+
+function daysFromTo(m1: number, d1: number, m2: number, d2: number): number {
+  const a = mdToDayOfYear(m1, d1);
+  const b = mdToDayOfYear(m2, d2);
+  let delta = b - a;
+  if (delta < 0) delta += 365;
+  return delta;
+}
+
+export function getFestivalNearMisses(
+  startMonth: number,
+  startDay: number,
+  endMonth: number,
+  endDay: number,
+  cities: readonly string[],
+  options: NearMissOptions = {},
+): FestivalNearMiss[] {
+  if (cities.length === 0) return [];
+
+  const forwardWindow = options.forwardWindow ?? 3;
+  const backwardWindow = options.backwardWindow ?? 2;
+
+  const results: FestivalNearMiss[] = [];
+
+  for (const f of FESTIVALS) {
+    if (f.crowdImpact < 4) continue;
+    if (!cities.includes(f.city)) continue;
+
+    const overlaps = periodsOverlap(
+      startMonth, startDay, endMonth, endDay,
+      f.startMonth, f.startDay, f.endMonth, f.endDay,
+    );
+    if (overlaps) continue;
+
+    const forwardGap = daysFromTo(endMonth, endDay, f.startMonth, f.startDay);
+    const backwardGap = daysFromTo(f.endMonth, f.endDay, startMonth, startDay);
+
+    if (forwardGap > 0 && forwardGap <= forwardWindow) {
+      results.push({ festival: f, direction: "forward", gapDays: forwardGap });
+    } else if (backwardGap > 0 && backwardGap <= backwardWindow) {
+      results.push({ festival: f, direction: "backward", gapDays: backwardGap });
+    }
+  }
+
+  results.sort((a, b) => {
+    if (b.festival.crowdImpact !== a.festival.crowdImpact) {
+      return b.festival.crowdImpact - a.festival.crowdImpact;
+    }
+    if (a.gapDays !== b.gapDays) return a.gapDays - b.gapDays;
+    if (a.direction !== b.direction) return a.direction === "forward" ? -1 : 1;
+    return a.festival.id.localeCompare(b.festival.id);
+  });
+
+  return results;
+}
