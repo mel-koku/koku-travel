@@ -2,6 +2,7 @@ import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep } from "
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 import { formatLocalDateISO } from "@/lib/utils/dateUtils";
+import { env } from "@/lib/env";
 
 // -- NAVITIME Route(totalnavi) response types --
 
@@ -297,7 +298,6 @@ function resolveStartTime(departureTime?: string, _timezone?: string): string {
 }
 
 export async function fetchNavitimeRoute(request: RoutingRequest): Promise<RoutingResult> {
-  const { env } = await import("@/lib/env");
   const apiKey = env.navitimeRapidApiKey;
 
   if (!apiKey) {
