@@ -93,7 +93,7 @@ const PERIODS: Record<SeasonName, Partial<Record<WeatherRegion, SeasonalPeriod>>
     subarctic_north: {
       startMonth: 11, startDay: 25, endMonth: 3, endDay: 31,
       title: "Hokkaido Winter",
-      message: "Heavy snow, world-class powder skiing, and the Sapporo Snow Festival in early February. Pack serious winter gear.",
+      message: "Heavy snow, deep powder for skiing in Niseko and Furano, and the Sapporo Snow Festival in early February. Pack serious winter gear.",
     },
     tropical_south: {
       startMonth: 12, startDay: 15, endMonth: 2, endDay: 28,
