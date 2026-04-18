@@ -73,3 +73,90 @@ describe("PracticalBadges: payment pill", () => {
     expect(visible).toHaveLength(3);
   });
 });
+
+describe("PracticalBadges: dietary pills", () => {
+  it("renders no dietary pill when dietaryFlags is absent and servesVegetarianFood is absent", () => {
+    render(
+      <PracticalBadges
+        location={loc({ cashOnly: true })}
+        showOpenStatus={false}
+      />,
+    );
+    expect(screen.queryByText(/Vegetarian|Vegan|Halal|Gluten-free/)).not.toBeInTheDocument();
+    expect(screen.getByText("Cash only")).toBeInTheDocument();
+  });
+
+  it("renders a single Vegan friendly pill when dietaryFlags=['vegan']", () => {
+    render(
+      <PracticalBadges
+        location={loc({ dietaryFlags: ["vegan"] })}
+        showOpenStatus={false}
+      />,
+    );
+    expect(screen.getByText("Vegan friendly")).toBeInTheDocument();
+  });
+
+  it("renders two dietary pills in priority order (Halal before Vegan friendly)", () => {
+    render(
+      <PracticalBadges
+        location={loc({ dietaryFlags: ["vegan", "halal"] })}
+        showOpenStatus={false}
+        max={5}
+      />,
+    );
+    const halal = screen.getByText("Halal");
+    const vegan = screen.getByText("Vegan friendly");
+    expect(halal).toBeInTheDocument();
+    expect(vegan).toBeInTheDocument();
+    // Priority: halal appears before vegan in DOM order.
+    expect(
+      halal.compareDocumentPosition(vegan) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("caps at 2 dietary pills when all four flags are set", () => {
+    render(
+      <PracticalBadges
+        location={loc({
+          dietaryFlags: ["halal", "vegan", "gluten_free", "vegetarian"],
+        })}
+        showOpenStatus={false}
+        max={5}
+      />,
+    );
+    expect(screen.getByText("Halal")).toBeInTheDocument();
+    expect(screen.getByText("Vegan friendly")).toBeInTheDocument();
+    expect(screen.queryByText("Gluten-free")).not.toBeInTheDocument();
+    expect(screen.queryByText("Vegetarian friendly")).not.toBeInTheDocument();
+  });
+
+  it("does not render a dietary pill on non-food categories (category gate)", () => {
+    render(
+      <PracticalBadges
+        location={loc({ category: "landmark", dietaryFlags: ["vegan"] })}
+        showOpenStatus={false}
+      />,
+    );
+    expect(screen.queryByText("Vegan friendly")).not.toBeInTheDocument();
+  });
+
+  it("kitchen-sink: payment + 2 dietary + price + station all coexist when max is high enough", () => {
+    render(
+      <PracticalBadges
+        location={loc({
+          cashOnly: true,
+          dietaryFlags: ["vegan", "gluten_free"],
+          priceLevel: 2,
+          nearestStation: "Shibuya",
+        })}
+        showOpenStatus={false}
+        max={10}
+      />,
+    );
+    expect(screen.getByText("Cash only")).toBeInTheDocument();
+    expect(screen.getByText("Vegan friendly")).toBeInTheDocument();
+    expect(screen.getByText("Gluten-free")).toBeInTheDocument();
+    expect(screen.getByText("¥¥")).toBeInTheDocument();
+    expect(screen.getByText("Shibuya")).toBeInTheDocument();
+  });
+});
