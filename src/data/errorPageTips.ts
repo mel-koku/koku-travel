@@ -17,5 +17,5 @@ export const ERROR_PAGE_TIPS = [
  */
 export function getRandomErrorPageTip(): string {
   const index = Math.floor(Math.random() * ERROR_PAGE_TIPS.length);
-  return ERROR_PAGE_TIPS[index] || ERROR_PAGE_TIPS[0];
+  return ERROR_PAGE_TIPS[index] ?? ERROR_PAGE_TIPS[0]!;
 }

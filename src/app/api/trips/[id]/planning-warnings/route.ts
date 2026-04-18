@@ -15,10 +15,10 @@ const planningWarningsPatchSchema = z
     goshuinShown: z.boolean().optional(),
     coinTipShown: z.boolean().optional(),
   })
+  .strip()
   .refine((obj) => Object.keys(obj).length > 0, {
     message: "At least one warning field must be provided",
-  })
-  .strip();
+  });
 
 /**
  * PATCH /api/trips/[id]/planning-warnings
