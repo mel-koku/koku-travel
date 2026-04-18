@@ -27,6 +27,7 @@ const defaultNavColumns = [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "Privacy", href: "/privacy" },
+      { label: "Commerce Disclosure", href: "/commerce-disclosure" },
     ],
   },
 ];

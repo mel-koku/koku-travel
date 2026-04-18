@@ -558,6 +558,25 @@ export const aboutPageQuery = groq`
   }
 `;
 
+/** Commerce disclosure singleton */
+export const commerceDisclosureQuery = groq`
+  *[_type == "commerceDisclosure"][0] {
+    businessName,
+    representative,
+    address,
+    email,
+    phone,
+    businessType,
+    serviceDescription,
+    pricingDescription,
+    paymentMethods,
+    paymentTiming,
+    deliveryDescription,
+    cancellationPolicy,
+    cancellationContact
+  }
+`;
+
 /** Cultural pillars for Before You Land briefing */
 export const culturalPillarsQuery = groq`
   *[_type == "culturalPillar"] | order(sortOrder asc) {
