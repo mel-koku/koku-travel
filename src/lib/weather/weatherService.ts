@@ -100,18 +100,21 @@ export async function fetchWeatherForecast(
       condition: WeatherCondition;
       precipitation: number;
       humidity: number;
+      wind: number;
     }>>();
 
     for (const item of data.list || []) {
       const date = new Date(item.dt * 1000);
       const dateKey = formatLocalDateISO(date);
-      
+
       if (!dateKey) continue;
 
       const condition = mapWeatherCondition(item.weather[0]?.id ?? 800);
       const temp = item.main.temp;
       const precipitation = item.rain?.["3h"] ?? item.snow?.["3h"] ?? 0;
       const humidity = item.main.humidity ?? 0;
+      // OWM returns wind.speed in m/s (units=metric). Some slots omit wind entirely.
+      const wind = typeof item.wind?.speed === "number" ? item.wind.speed : 0;
 
       if (!forecastsByDate.has(dateKey)) {
         forecastsByDate.set(dateKey, []);
@@ -121,6 +124,7 @@ export async function fetchWeatherForecast(
         condition,
         precipitation,
         humidity,
+        wind,
       });
     }
 
@@ -140,6 +144,8 @@ export async function fetchWeatherForecast(
 
       const totalPrecipitation = dayForecasts.reduce((sum, f) => sum + f.precipitation, 0);
       const avgHumidity = dayForecasts.reduce((sum, f) => sum + f.humidity, 0) / dayForecasts.length;
+      // Daily max wind, not avg: sustained gusts matter more for tip triggers.
+      const maxWind = Math.max(...dayForecasts.map((f) => f.wind));
       
       // Get description from condition
       const conditionDescriptions: Record<string, string> = {
@@ -167,6 +173,7 @@ export async function fetchWeatherForecast(
           amount: totalPrecipitation > 0 ? Math.round(totalPrecipitation * 10) / 10 : undefined,
         },
         humidity: Math.round(avgHumidity),
+        windSpeed: maxWind > 0 ? Math.round(maxWind * 10) / 10 : undefined,
         description,
       });
     }

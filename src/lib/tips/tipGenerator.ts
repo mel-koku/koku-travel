@@ -286,7 +286,7 @@ function generatePhotoTips(
  */
 function generateWeatherTips(
   location: Location,
-  _activity: Extract<ItineraryActivity, { kind: "place" }>,
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
   weatherForecast: WeatherForecast,
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
@@ -342,6 +342,60 @@ function generateWeatherTips(
         priority: 8,
         icon: "🌡️",
         isImportant: avgTemp > 35,
+      });
+    }
+  }
+
+  // Wind tips: fire only when OWM actually returned wind data. windSpeed stays
+  // undefined in mock-weather mode to keep mock/prod parity for tip suppression.
+  // Thresholds track JMA / Beaufort: 7 m/s breezy (F4-F5), 12 m/s strong (F6-F7,
+  // JMA strong-wind advisory territory), 17 m/s gale / tropical-storm (F8+).
+  if (typeof weatherForecast.windSpeed === "number") {
+    const wind = weatherForecast.windSpeed;
+    // Categories and tag tokens where wind changes the experience: exposed
+    // viewpoints/towers/mountains/beaches, plus rare ferry/boat/cruise tags.
+    const WIND_SENSITIVE_CATEGORIES = new Set([
+      "viewpoint", "tower", "mountain", "beach",
+    ]);
+    const WIND_SENSITIVE_TAGS = new Set([
+      "ferry", "boat", "cruise", "cable-car", "ropeway", "cycling",
+    ]);
+    const tags = [
+      ...(location.tags ?? []),
+      ...(activity.tags ?? []),
+    ].map((t) => t.toLowerCase());
+    const isWindSensitive =
+      WIND_SENSITIVE_CATEGORIES.has(category) ||
+      tags.some((t) => WIND_SENSITIVE_TAGS.has(t));
+
+    if (wind >= 17) {
+      tips.push({
+        type: "weather",
+        title: "Gale-force winds",
+        message: isWindSensitive
+          ? "Gale-force winds forecast (17+ m/s). Ferries, ropeways, and cable cars often suspend service at this threshold. Check operator status before heading out, and have an indoor backup planned."
+          : "Gale-force winds forecast (17+ m/s). Secure loose items, hold umbrellas tightly, and expect train-platform and bridge-crossing delays. Stay alert to typhoon advisories if you're traveling August through October.",
+        priority: 9,
+        icon: "🌬️",
+        isImportant: true,
+      });
+    } else if (wind >= 12) {
+      tips.push({
+        type: "weather",
+        title: "Strong winds",
+        message: isWindSensitive
+          ? "Strong winds forecast (12+ m/s). Cable cars and ropeways sometimes pause in these conditions, and ferry sailings can be bumpy. Check operator updates in the morning."
+          : "Strong winds forecast (12+ m/s). Hold hats and camera straps on exposed viewpoints, and expect bridges and high platforms to feel blustery.",
+        priority: 7,
+        icon: "💨",
+      });
+    } else if (wind >= 7 && isWindSensitive) {
+      tips.push({
+        type: "weather",
+        title: "Breezy conditions",
+        message: "Breezy today (7+ m/s). Not a safety issue, but expect a bumpier ferry, a swaying ropeway cabin, or wind-in-the-face on open viewpoints. Dress for a bit of chill.",
+        priority: 5,
+        icon: "🍃",
       });
     }
   }
