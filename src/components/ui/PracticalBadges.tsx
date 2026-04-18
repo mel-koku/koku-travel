@@ -3,6 +3,7 @@
 import { memo, useMemo } from "react";
 import type { Location } from "@/types/location";
 import { getOpenStatus, formatOpenStatus } from "@/lib/availability/isOpenNow";
+import { derivePaymentPill } from "@/lib/payments/paymentPill";
 
 type PracticalBadgesProps = {
   location: Location;
@@ -40,13 +41,14 @@ export const PracticalBadges = memo(function PracticalBadges({
 
   const badges: { key: string; icon: React.ReactNode; label: string; tone: "neutral" | "warning" | "success" | "error" }[] = [];
 
-  // Cash only
-  if (location.cashOnly) {
+  // Payment acceptance (supersedes the legacy cashOnly-only branch).
+  const paymentPill = derivePaymentPill(location);
+  if (paymentPill) {
     badges.push({
-      key: "cash",
-      icon: <CashIcon />,
-      label: "Cash only",
-      tone: "warning",
+      key: "payment",
+      icon: paymentPill.label === "Cash only" ? <CashIcon /> : <CardIcon />,
+      label: paymentPill.label,
+      tone: paymentPill.tone,
     });
   }
 
@@ -129,6 +131,15 @@ function CashIcon() {
     <svg className="h-2.5 w-2.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
       <circle cx="8" cy="8" r="6.5" />
       <path d="M8 4v8M6 5.5h3a1.5 1.5 0 010 3H6.5a1.5 1.5 0 000 3H10" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CardIcon() {
+  return (
+    <svg className="h-2.5 w-2.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
+      <rect x="2" y="4" width="12" height="8" rx="1.5" />
+      <path d="M2 7h12" strokeLinecap="round" />
     </svg>
   );
 }
