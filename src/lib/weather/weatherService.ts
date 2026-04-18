@@ -145,7 +145,9 @@ export async function fetchWeatherForecast(
       const totalPrecipitation = dayForecasts.reduce((sum, f) => sum + f.precipitation, 0);
       const avgHumidity = dayForecasts.reduce((sum, f) => sum + f.humidity, 0) / dayForecasts.length;
       // Daily max wind, not avg: sustained gusts matter more for tip triggers.
-      const maxWind = Math.max(...dayForecasts.map((f) => f.wind));
+      // reduce() rather than Math.max(...spread) so a future refactor that
+      // passes an empty array won't silently return -Infinity.
+      const maxWind = dayForecasts.reduce((m, f) => Math.max(m, f.wind), 0);
       
       // Get description from condition
       const conditionDescriptions: Record<string, string> = {

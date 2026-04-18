@@ -281,6 +281,17 @@ function generatePhotoTips(
   return tips;
 }
 
+// Wind-sensitive categories where wind changes the visit experience on exposed
+// ground (gusty viewpoints, rattling observation decks, exposed coastlines).
+const WIND_SENSITIVE_CATEGORIES = new Set([
+  "viewpoint", "tower", "mountain", "beach",
+]);
+// Wind-sensitive activity tokens more often carried on tags than category:
+// ferry/cable-car/ropeway ops pause first in strong winds; cycling is dangerous.
+const WIND_SENSITIVE_TAGS = new Set([
+  "ferry", "boat", "cruise", "cable-car", "ropeway", "cycling",
+]);
+
 /**
  * Generate weather tips
  */
@@ -352,14 +363,6 @@ function generateWeatherTips(
   // JMA strong-wind advisory territory), 17 m/s gale / tropical-storm (F8+).
   if (typeof weatherForecast.windSpeed === "number") {
     const wind = weatherForecast.windSpeed;
-    // Categories and tag tokens where wind changes the experience: exposed
-    // viewpoints/towers/mountains/beaches, plus rare ferry/boat/cruise tags.
-    const WIND_SENSITIVE_CATEGORIES = new Set([
-      "viewpoint", "tower", "mountain", "beach",
-    ]);
-    const WIND_SENSITIVE_TAGS = new Set([
-      "ferry", "boat", "cruise", "cable-car", "ropeway", "cycling",
-    ]);
     const tags = [
       ...(location.tags ?? []),
       ...(activity.tags ?? []),

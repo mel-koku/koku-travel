@@ -412,4 +412,23 @@ describe("generateActivityTips — wind tier (C12)", () => {
     expect(tips.find((t) => t.title === "Gale-force winds")).toBeDefined();
     expect(tips.find((t) => t.title === "Strong winds")).toBeUndefined();
   });
+
+  it("keeps both rain and gale tips on a rainy typhoon day (MAX_TOTAL interaction)", () => {
+    // Rain priority 9 + Gale priority 9, both isImportant. The cap at 3
+    // important tips should keep both: dropping either leaves a user without
+    // either the slippery-paths or the gale-force warning on a dangerous day.
+    const rainyGale: WeatherForecast = {
+      date: "2026-09-20",
+      condition: "rain",
+      temperature: { min: 20, max: 24 },
+      windSpeed: 20,
+    };
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "park" }),
+      { weatherForecast: rainyGale },
+    );
+    expect(tips.find((t) => t.title === "Rain expected")).toBeDefined();
+    expect(tips.find((t) => t.title === "Gale-force winds")).toBeDefined();
+  });
 });
