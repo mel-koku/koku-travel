@@ -34,6 +34,7 @@ import {
 import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
 import { fetchRelationshipLookup, reorderByTransitLine } from "@/lib/itinerary/relationshipBonus";
 import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
+import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 
 // Import from generation sub-modules
 import {
@@ -917,6 +918,12 @@ export async function generateItinerary(
     });
   }
 
-  return { days };
+  // Compute planning warnings at generation time so the itinerary view can
+  // re-surface seasonal/holiday/festival context that the user saw in the
+  // builder. Persisted on the Itinerary rather than re-derived later to
+  // keep the view layer decoupled from TripBuilderData.
+  const planningWarnings = detectPlanningWarnings(data);
+
+  return { days, planningWarnings };
 }
 
