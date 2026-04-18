@@ -93,3 +93,93 @@ describe("filterRelevantQuake — trip-date pre-gate", () => {
     expect(alert?.nearestCity).toBe("Tokyo");
   });
 });
+
+describe("filterRelevantQuake — per-quake gates", () => {
+  const now = new Date("2026-04-19T12:00:00Z");
+  const activeTrip = makeTrip("2026-04-15", "2026-04-25");
+
+  it("M4.9 is rejected (magnitude)", () => {
+    const q = makeQuake({ mag: 4.9, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], activeTrip, now)).toBeNull();
+  });
+
+  it("M5.0 at 10 km today is accepted", () => {
+    const q = makeQuake({ mag: 5.0, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], activeTrip, now)).not.toBeNull();
+  });
+
+  it("quake at 151 km is rejected (distance)", () => {
+    const q = makeQuake({ mag: 5.0, time: now.getTime() - 60 * 60_000, lat: 35.6762, lon: 141.6503 });
+    expect(filterRelevantQuake([q], activeTrip, now)).toBeNull();
+  });
+
+  it("quake 49h old is rejected (age)", () => {
+    const q = makeQuake({ mag: 5.0, time: now.getTime() - 49 * 60 * 60_000 });
+    expect(filterRelevantQuake([q], activeTrip, now)).toBeNull();
+  });
+
+  it("M5.5 with trip starting 8 days out → null (7-day window for <M6)", () => {
+    const trip = makeTrip("2026-04-27", "2026-05-01");
+    const q = makeQuake({ mag: 5.5, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], trip, now)).toBeNull();
+  });
+
+  it("M5.5 with trip starting 7 days out → alert", () => {
+    const trip = makeTrip("2026-04-26", "2026-05-01");
+    const q = makeQuake({ mag: 5.5, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], trip, now)).not.toBeNull();
+  });
+
+  it("M6.0 with trip starting 14 days out → alert (14-day window for >=M6)", () => {
+    const trip = makeTrip("2026-05-03", "2026-05-10");
+    const q = makeQuake({ mag: 6.0, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], trip, now)).not.toBeNull();
+  });
+
+  it("M6.0 with trip starting 15 days out → null (outside 14-day window)", () => {
+    const trip = makeTrip("2026-05-04", "2026-05-10");
+    const q = makeQuake({ mag: 6.0, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], trip, now)).toBeNull();
+  });
+
+  it("two passing quakes — most recent wins", () => {
+    const older = makeQuake({ id: "older", mag: 5.0, time: now.getTime() - 3 * 60 * 60_000 });
+    const newer = makeQuake({ id: "newer", mag: 5.0, time: now.getTime() - 1 * 60 * 60_000 });
+    const alert = filterRelevantQuake([older, newer], activeTrip, now);
+    expect(alert?.id).toBe("newer");
+  });
+
+  it("two passing quakes at same time — larger mag wins", () => {
+    const t = now.getTime() - 60 * 60_000;
+    const smaller = makeQuake({ id: "smaller", mag: 5.0, time: t });
+    const bigger = makeQuake({ id: "bigger", mag: 5.8, time: t });
+    const alert = filterRelevantQuake([smaller, bigger], activeTrip, now);
+    expect(alert?.id).toBe("bigger");
+  });
+
+  it("three-city trip — quake near only one → nearestCity is that one", () => {
+    const nara = { id: "nara" as const, name: "Nara", lat: 34.6851, lon: 135.8048 };
+    const osaka = { id: "osaka" as const, name: "Osaka", lat: 34.6937, lon: 135.5023 };
+    const trip: TripContext = {
+      cities: [tokyo, nara, osaka],
+      startDate: new Date("2026-04-15"),
+      endDate: new Date("2026-04-25"),
+    };
+    const q = makeQuake({ mag: 5.2, time: now.getTime() - 60 * 60_000, lat: 34.6851, lon: 135.8048 });
+    const alert = filterRelevantQuake([q], trip, now);
+    expect(alert?.nearestCity).toBe("Nara");
+  });
+
+  it("malformed quake (missing mag) is skipped; valid quake still surfaces", () => {
+    const malformed = { id: "bad", properties: { time: now.getTime() }, geometry: { type: "Point", coordinates: [139.65, 35.67, 10] } };
+    const good = makeQuake({ mag: 5.1, time: now.getTime() - 60 * 60_000 });
+    const alert = filterRelevantQuake([malformed, good], activeTrip, now);
+    expect(alert?.id).toBe("usgs-1");
+  });
+
+  it("trip with zero cities → null", () => {
+    const trip: TripContext = { cities: [], startDate: new Date("2026-04-15"), endDate: new Date("2026-04-25") };
+    const q = makeQuake({ mag: 5.0, time: now.getTime() - 60 * 60_000 });
+    expect(filterRelevantQuake([q], trip, now)).toBeNull();
+  });
+});

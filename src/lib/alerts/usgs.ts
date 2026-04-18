@@ -93,6 +93,7 @@ const HIGH_MAGNITUDE_THRESHOLD = 6.0;
 function tripPassesPreGate(trip: TripContext, now: Date): boolean {
   if (now > trip.endDate) return false;
   if (now >= trip.startDate && now <= trip.endDate) return true; // active
+  // Widest possible window across magnitude tiers — per-quake gate narrows for M<6.
   const daysUntilStart = Math.ceil((trip.startDate.getTime() - now.getTime()) / MS_PER_DAY);
   return daysUntilStart <= MAX_TRIP_START_DAYS_M6_PLUS;
 }
