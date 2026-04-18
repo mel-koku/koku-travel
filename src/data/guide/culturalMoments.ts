@@ -439,4 +439,161 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
       "Bowing depth matters. A casual 15-degree nod works for 'thanks' and 'excuse me.' A 30-degree bow is standard polite greeting. You'll rarely need a full 45-degree bow (deep apology or very formal greeting). Don't overthink it. Any effort at bowing is appreciated and none is expected of tourists, but it always gets a warm response.",
     icon: "🙇",
   },
+
+  // ─── Nara regional quirks ──────────────────────────────────────────────────
+
+  {
+    id: "cm-53",
+    key: "shrine:nara",
+    content:
+      "Nara's sika deer roam freely around Kasuga-taisha and Nara Park, treated as messengers of the kami since the 8th century. Feed them only shika-senbei (the official crackers sold by licensed vendors); other food can make them sick. Bow to a deer and many will bow back, a learned behavior that's become part of the park's charm.",
+    icon: "🦌",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-54",
+    key: "temple:nara",
+    content:
+      "If you're visiting Nara's temples in late spring or autumn, the deer may look patchy or scruffy. They're molting, not sick. Tourism boards ask visitors to avoid petting them during this window (roughly April-May and September) since it stresses the animals. Watching from a polite distance is the local norm.",
+    icon: "🦌",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-55",
+    key: "restaurant:nara",
+    content:
+      "Nara's regional specialty is kakinoha-zushi: pressed sushi wrapped in persimmon leaves. The leaves preserve the fish naturally, a technique developed before refrigeration reached the inland city. You'll find it at train stations and in department store basements. Eat it at room temperature as intended; refrigeration dulls the flavor.",
+    icon: "🍣",
+    pillar: "omotenashi",
+  },
+
+  // ─── Kyushu regional quirks ────────────────────────────────────────────────
+
+  {
+    id: "cm-56",
+    key: "onsen:kyushu",
+    content:
+      "Kyushu sits on some of Japan's most active geothermal land, so onsen variety here is exceptional. Some rural ryokan, especially in Oita and Kumamoto, still maintain stricter tattoo policies than urban onsen. If you have visible ink, phoning ahead is the norm. Many places offer private baths (kashikiri-buro) as a workaround.",
+    icon: "♨️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-57",
+    key: "onsen:kagoshima",
+    content:
+      "Ibusuki, on Kagoshima's southern tip, is famous for sunamushi: buried in naturally heated volcanic sand up to your neck. You wear a yukata, lie down, and attendants shovel warm sand over you for about 15 minutes. It's a distinct experience from regular onsen, and the Kagoshima tourism board lists it as the city's signature wellness ritual.",
+    icon: "🏖️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-58",
+    key: "restaurant:nagasaki",
+    content:
+      "Nagasaki's cuisine carries centuries of Portuguese, Dutch, and Chinese influence, unusual for Japan's historically closed borders. Castella sponge cake came from 16th-century Portuguese traders; champon noodles trace to Chinese students in the 1890s. You can taste the city's history in a single meal, which is part of what UNESCO recognized when it listed the region's heritage sites.",
+    icon: "🍜",
+    pillar: "omotenashi",
+  },
+  {
+    id: "cm-59",
+    key: "restaurant:kumamoto",
+    content:
+      "Basashi (thinly sliced raw horse) is a Kumamoto staple, typically served with grated ginger, garlic, and soy sauce. The tradition dates to the 16th century and the meat here is considered the country's best. If it's on the menu, it's considered the regional equivalent of sashimi elsewhere. Temperature matters: always served chilled, never room temperature.",
+    icon: "🍽️",
+    pillar: "omotenashi",
+  },
+  {
+    id: "cm-60",
+    key: "bar:kyushu",
+    content:
+      "Shochu is Kyushu's signature distilled spirit, and the region produces about 90% of Japan's supply. Kagoshima favors imo (sweet potato) shochu; Oita leans toward mugi (barley). The local way is oyuwari: cut with hot water in a 6:4 ratio, stirred gently, never shaken. Bartenders will pour for you unless you ask otherwise.",
+    icon: "🍶",
+    pillar: "omotenashi",
+  },
+
+  // ─── Hokkaido regional quirks ──────────────────────────────────────────────
+
+  {
+    id: "cm-61",
+    key: "restaurant:hokkaido",
+    content:
+      "Hokkaido's salmon run peaks September through November, when fish return to rivers to spawn. Tourism boards ask visitors to stay on designated paths and avoid wading in posted catch-and-release zones. The fresh-caught ikura (salmon roe) that appears on local menus during this window is a seasonal highlight worth timing your meal around.",
+    icon: "🐟",
+    pillar: "omotenashi",
+  },
+  {
+    id: "cm-62",
+    key: "onsen:hokkaido",
+    content:
+      "Hokkaido's winter rotenburo are among Japan's most dramatic: steaming water, snowbanks at the edge, and sometimes snowfall landing on your head mid-soak. The contrast is the point. Ease in slowly since the temperature shock is sharper than on Honshu, and hydrate before and after. Most ryokan keep water stations near the changing rooms.",
+    icon: "❄️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-63",
+    key: "museum:hokkaido",
+    content:
+      "Hokkaido's Ainu heritage is living culture, not a historical footnote. The Upopoy National Ainu Museum in Shiraoi and smaller sites across the island present Ainu language, craft, and spirituality as ongoing traditions. Official Japan tourism boards highlight that photography of performances usually requires explicit consent, posted at each venue.",
+    icon: "🏛️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-64",
+    key: "garden:hokkaido",
+    content:
+      "Hokkaido's parks and trails outside cities are genuine bear country. Local authorities post signage at trailheads during active months (roughly April-November), and bear bells are sold at most visitor centers. The posted rules are there because encounters are real, not theoretical. Staying on marked paths is the standard local practice.",
+    icon: "🔔",
+    pillar: "ma",
+  },
+
+  // ─── Okinawa regional quirks ───────────────────────────────────────────────
+
+  {
+    id: "cm-65",
+    key: "shrine:okinawa",
+    content:
+      "Okinawa's sacred sites often take the form of utaki: sacred groves rather than built shrines, reflecting Ryukyu religion distinct from Honshu's Shinto. Many utaki are women-only spaces by tradition, and some are closed to outside visitors entirely. Official signage marks which are open; where it's silent, the local convention is not to enter.",
+    icon: "🌿",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-66",
+    key: "any:okinawa",
+    content:
+      "Okinawa's coral reefs are ecologically fragile and reef-safe sunscreen is strongly encouraged by prefectural tourism boards. Oxybenzone and octinoxate, common in mainland brands, bleach coral. Most hotels and dive shops in Naha, Ishigaki, and Miyako stock reef-safe alternatives. It's a small switch that keeps the snorkeling spots snorkel-worthy.",
+    icon: "🐠",
+  },
+  {
+    id: "cm-67",
+    key: "restaurant:okinawa",
+    content:
+      "Okinawan cuisine reflects both Ryukyu kingdom traditions and the postwar American presence. Taco rice (seasoned ground beef over rice with salsa and cheese) originated near U.S. military bases in the 1980s and became a local staple. Goya champuru (bitter melon stir-fry) is the older tradition. Both appear on most casual menus, often on the same page.",
+    icon: "🌶️",
+    pillar: "omotenashi",
+  },
+
+  // ─── Kanazawa, Hiroshima, Nagoya fill ──────────────────────────────────────
+
+  {
+    id: "cm-68",
+    key: "cafe:kanazawa",
+    content:
+      "Kanazawa's Higashi Chaya district is one of Japan's preserved geisha (geiko) neighborhoods, and the tea houses here still host traditional evening performances. Official signage asks visitors not to photograph geiko in the street without permission. A polite nod works if one passes you; official tourism guidance treats the district as a working community, not a film set.",
+    icon: "🍵",
+  },
+  {
+    id: "cm-69",
+    key: "restaurant:hiroshima",
+    content:
+      "Hiroshima-style okonomiyaki is layered, not mixed. Batter, cabbage, pork, noodles, and egg stack on the griddle in sequence, then get flipped as a single tower. This differs from Osaka-style, which mixes everything before grilling. At specialist shops like those in Okonomi-mura, sitting at the counter lets you watch the layering technique up close.",
+    icon: "🥞",
+    pillar: "omotenashi",
+  },
+  {
+    id: "cm-70",
+    key: "restaurant:nagoya",
+    content:
+      "Hitsumabushi is Nagoya's signature unagi (freshwater eel) dish, and it's eaten in three specific stages. First quarter: plain. Second: with condiments like wasabi and nori. Third: with hot dashi broth poured over (ochazuke style). Fourth: your choice of favorite. The ritual is printed on most menus, and the staff won't serve condiments until they see you're ready.",
+    icon: "🍱",
+    pillar: "omotenashi",
+  },
 ];
