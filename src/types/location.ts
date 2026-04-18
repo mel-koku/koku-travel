@@ -129,6 +129,22 @@ export const PAYMENT_TYPE_VALUES = [
 
 export type PaymentType = (typeof PAYMENT_TYPE_VALUES)[number];
 
+/**
+ * Initial vocabulary of known dietary accommodations surfaced by Yuku's dietary-flags badge.
+ * Derivation helpers treat unknown string values in `dietaryFlags` as inert (no pill),
+ * so future additions (kosher, etc.) do not require a code change to render safely.
+ * Adding a new value still requires updates to the priority order, label map, and UI tests
+ * — forward-compat is about safe data round-tripping, not single-line vocabulary expansion.
+ */
+export const DIETARY_FLAG_VALUES = [
+  "vegetarian",
+  "vegan",
+  "halal",
+  "gluten_free",
+] as const;
+
+export type DietaryFlag = (typeof DIETARY_FLAG_VALUES)[number];
+
 export type Location = {
   id: string;
   name: string;
@@ -384,6 +400,14 @@ export type Location = {
    * array through is treated as unknown by the derivation helper.
    */
   paymentTypes?: PaymentType[];
+
+  /**
+   * Dietary accommodations offered. Absent means unknown (no pills rendered).
+   * Empty arrays rejected at the DB layer; a DB mishap that slips an empty
+   * array through is treated as unknown by the derivation helper.
+   * Only rendered on restaurant/cafe/bar categories.
+   */
+  dietaryFlags?: DietaryFlag[];
 
   /**
    * Reservation status: "required", "recommended", or undefined if not needed/unknown
