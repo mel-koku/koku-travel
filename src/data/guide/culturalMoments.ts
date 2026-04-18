@@ -454,7 +454,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-54",
     key: "temple:nara",
     content:
-      "If you're visiting Nara's temples in late spring or autumn, the deer may look patchy or scruffy. They're molting, not sick. Tourism boards ask visitors to avoid petting them during this window (roughly April-May and September) since it stresses the animals. Watching from a polite distance is the local norm.",
+      "If you're visiting Nara's temples in late spring or autumn, the deer may look patchy or scruffy. They're molting, not sick. Visitors tend to keep a polite distance during this window (roughly April-May and September), since handling stresses the animals. Watching them rest in the shade is part of the quieter rhythm of those seasons.",
     icon: "🦌",
     pillar: "kegare",
   },
@@ -489,7 +489,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-58",
     key: "restaurant:nagasaki",
     content:
-      "Nagasaki's cuisine carries centuries of Portuguese, Dutch, and Chinese influence, unusual for Japan's historically closed borders. Castella sponge cake came from 16th-century Portuguese traders; champon noodles trace to Chinese students in the 1890s. You can taste the city's history in a single meal, which is part of what UNESCO recognized when it listed the region's heritage sites.",
+      "Nagasaki's cuisine carries centuries of Portuguese, Dutch, and Chinese influence, unusual for Japan's historically closed borders. Castella sponge cake came from 16th-century Portuguese traders; champon noodles trace to Chinese students in the 1890s. That cross-cultural thread is still visible across the old port district, where Dejima island and the Chinese quarter sit within a short walk of each other.",
     icon: "🍜",
     pillar: "omotenashi",
   },
@@ -557,9 +557,9 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
   },
   {
     id: "cm-66",
-    key: "any:okinawa",
+    key: "market:okinawa",
     content:
-      "Okinawa's coral reefs are ecologically fragile and reef-safe sunscreen is strongly encouraged by prefectural tourism boards. Oxybenzone and octinoxate, common in mainland brands, bleach coral. Most hotels and dive shops in Naha, Ishigaki, and Miyako stock reef-safe alternatives. It's a small switch that keeps the snorkeling spots snorkel-worthy.",
+      "If your Okinawa plans include beaches or snorkeling, reef-safe sunscreen is strongly encouraged by prefectural tourism boards. Oxybenzone and octinoxate, common in mainland brands, bleach coral. Most hotels and dive shops in Naha, Ishigaki, and Miyako stock reef-safe alternatives, as do many market pharmacies. It's a small switch that keeps the snorkeling spots snorkel-worthy.",
     icon: "🐠",
   },
   {
@@ -592,7 +592,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-70",
     key: "restaurant:nagoya",
     content:
-      "Hitsumabushi is Nagoya's signature unagi (freshwater eel) dish, and it's eaten in three specific stages. First quarter: plain. Second: with condiments like wasabi and nori. Third: with hot dashi broth poured over (ochazuke style). Fourth: your choice of favorite. The ritual is printed on most menus, and the staff won't serve condiments until they see you're ready.",
+      "Hitsumabushi is Nagoya's signature unagi (freshwater eel) dish, and it's eaten in four specific stages. First quarter: plain. Second: with condiments like wasabi, nori, and scallions. Third: with hot dashi broth poured over (ochazuke style). Fourth: your favorite of the three. The ritual is printed on most menus; take it as an invitation to try each style before settling on one.",
     icon: "🍱",
     pillar: "omotenashi",
   },

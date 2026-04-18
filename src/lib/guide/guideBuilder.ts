@@ -92,8 +92,11 @@ function getCityFromDay(day: ItineraryDay): string {
   return "generic";
 }
 
-// Sub-categories that trigger cultural moments
-const CULTURAL_SUBCATEGORIES = new Set([
+// Sub-categories that trigger cultural moments.
+// Exported so tests can verify that all cultural-moment template keys are
+// reachable. If a key like "landmark:tokyo" exists in the data but landmark
+// isn't in this set, the template will never fire.
+export const CULTURAL_SUBCATEGORIES = new Set([
   "shrine",
   "temple",
   "onsen",

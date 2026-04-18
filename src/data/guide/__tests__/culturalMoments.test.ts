@@ -1,23 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { CULTURAL_MOMENT_TEMPLATES } from "../culturalMoments";
 import { REGIONS } from "@/data/regions";
+import { CULTURAL_SUBCATEGORIES } from "@/lib/guide/guideBuilder";
 
 const VALID_REGION_IDS = new Set(REGIONS.map((r) => r.id));
 
-// Mirrors CULTURAL_SUBCATEGORIES in src/lib/guide/guideBuilder.ts.
-// If that set changes, update this list.
-const TRIGGERING_SUBCATEGORIES = new Set([
-  "shrine",
-  "temple",
-  "onsen",
-  "market",
-  "garden",
-  "museum",
-  "restaurant",
-  "cafe",
-  "bar",
-  // these exist as keys in templates but aren't currently in CULTURAL_SUBCATEGORIES
-  // (flagged as separate follow-up task). Still valid key syntax.
+// Superset of the production triggering set plus historical keys.
+// "landmark" appears as a key in cm-32/33/34/47 but isn't in
+// CULTURAL_SUBCATEGORIES yet (tracked as a separate follow-up task).
+// "any" is the wildcard used in fallback keys.
+const TRIGGERING_SUBCATEGORIES = new Set<string>([
+  ...CULTURAL_SUBCATEGORIES,
   "landmark",
   "any",
 ]);

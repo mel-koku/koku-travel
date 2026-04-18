@@ -226,9 +226,10 @@ export function matchCulturalMoment(
   const s = subCategory.toLowerCase();
   const c = city.toLowerCase();
   // Region fallback lets a single template (e.g. "onsen:kyushu") cover every
-  // city in that region without duplication. We only look up region for known
-  // static cities to avoid pulling in the dynamic-city metadata file at test
-  // time; dynamic cities fall through to subcat:any and any:any as before.
+  // city in that region without duplication. Restricted to static known cities
+  // for now; dynamic (metadata-driven) cities still fall through to subcat:any
+  // and any:any, matching pre-C11 behavior. Lifting this gate is tracked as a
+  // follow-up.
   const region = isKnownCity(c) ? CITY_TO_REGION[c] : undefined;
 
   const fallbackKeys: string[] = [`${s}:${c}`];
