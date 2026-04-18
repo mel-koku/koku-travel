@@ -59,3 +59,61 @@ describe("PlanningWarningsBanner", () => {
     expect(screen.getByText(/Long Distance Between Regions/)).toBeInTheDocument();
   });
 });
+
+describe("PlanningWarningsBanner — actionable warnings filter", () => {
+  const FESTIVAL_NM_INFO: PlanningWarning = {
+    id: "festival-near-miss-aoi-matsuri",
+    type: "festival_near_miss",
+    severity: "info",
+    title: "Aoi Matsuri wraps just before you arrive",
+    message: "It ended the day before you arrive.",
+    icon: "🎆",
+  };
+
+  const FESTIVAL_NM_ACTION: PlanningWarning = {
+    id: "festival-near-miss-tenjin-matsuri",
+    type: "festival_near_miss",
+    severity: "info",
+    title: "Tenjin Matsuri starts right after your trip",
+    message: "It begins 2 days after your trip ends.",
+    icon: "🎆",
+    action: "extend_trip",
+    actionData: { festivalId: "tenjin-matsuri", extendDays: 2, newEndDate: "2026-07-24" },
+  };
+
+  it("renders info-only festival_near_miss in the post-generation banner", () => {
+    render(<PlanningWarningsBanner warnings={[FESTIVAL_NM_INFO]} />);
+    fireEvent.click(screen.getByRole("button", { name: /Trip context/i }));
+    expect(screen.getByText(/Aoi Matsuri wraps just before you arrive/)).toBeInTheDocument();
+  });
+
+  it("hides actionable festival_near_miss from the post-generation banner", () => {
+    render(<PlanningWarningsBanner warnings={[FESTIVAL_NM_ACTION]} />);
+    expect(screen.queryByRole("button", { name: /Trip context/i })).not.toBeInTheDocument();
+  });
+
+  it("renders return_to_airport warnings even though they carry an action field", () => {
+    const RETURN_TO_AIRPORT: PlanningWarning = {
+      id: "return-to-airport",
+      type: "return_to_airport",
+      severity: "caution",
+      title: "Long Trip to Your Departure Airport",
+      message: "Your last city is ~3h from your departure airport.",
+      icon: "✈️",
+      action: "Add return day in Tokyo",
+      actionData: { returnCityId: "tokyo", returnCityName: "Tokyo", travelMinutes: 180 },
+    };
+    render(<PlanningWarningsBanner warnings={[RETURN_TO_AIRPORT]} />);
+    fireEvent.click(screen.getByRole("button", { name: /Trip context/i }));
+    expect(screen.getByText(/Long Trip to Your Departure Airport/)).toBeInTheDocument();
+  });
+
+  it("renders only the info-only festival_near_miss when both info and actionable variants are present", () => {
+    // Reuse the FESTIVAL_NM_INFO and FESTIVAL_NM_ACTION fixtures already declared
+    // in this describe block.
+    render(<PlanningWarningsBanner warnings={[FESTIVAL_NM_INFO, FESTIVAL_NM_ACTION]} />);
+    fireEvent.click(screen.getByRole("button", { name: /Trip context/i }));
+    expect(screen.getByText(/Aoi Matsuri wraps just before you arrive/)).toBeInTheDocument();
+    expect(screen.queryByText(/Tenjin Matsuri starts right after your trip/)).not.toBeInTheDocument();
+  });
+});

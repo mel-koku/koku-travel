@@ -20,6 +20,7 @@ export { VibeCard } from "./VibeCard";
 export { RegionMapPanel } from "./RegionMapPanel";
 export { TripSummaryEditorial } from "./TripSummaryEditorial";
 export { PreferenceCard } from "./PreferenceCard";
+export { FestivalNearMissCard } from "./FestivalNearMissCard";
 export { GeneratingOverlay } from "./GeneratingOverlay";
 
 // Shared components
