@@ -113,6 +113,22 @@ export type LocationTransitMode =
   | "ferry"
   | "taxi";
 
+/**
+ * Initial vocabulary of known payment methods surfaced by Yuku's payment-type badge.
+ * Derivation helpers treat unknown string values in `paymentTypes` as inert (no pill),
+ * so future additions (apple_pay, paypay, etc.) do not require a code change to render safely.
+ */
+export const PAYMENT_TYPE_VALUES = [
+  "cash",
+  "ic_card",
+  "visa",
+  "mastercard",
+  "jcb",
+  "amex",
+] as const;
+
+export type PaymentType = (typeof PAYMENT_TYPE_VALUES)[number];
+
 export type Location = {
   id: string;
   name: string;
@@ -361,6 +377,13 @@ export type Location = {
    * True if the location only accepts cash (no credit cards)
    */
   cashOnly?: boolean;
+
+  /**
+   * Accepted payment methods. Absent means unknown (pill not rendered).
+   * Empty arrays rejected at the DB layer; a DB mishap that slips an empty
+   * array through is treated as unknown by the derivation helper.
+   */
+  paymentTypes?: PaymentType[];
 
   /**
    * Reservation status: "required", "recommended", or undefined if not needed/unknown
