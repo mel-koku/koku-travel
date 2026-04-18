@@ -603,7 +603,7 @@ function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
 
 const TRIP_DURATION_CAP = 21;
 
-function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningWarning[] {
+export function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningWarning[] {
   if (!data.dates?.start || !data.dates?.end) return [];
 
   const startParts = data.dates.start.split("-").map(Number);
