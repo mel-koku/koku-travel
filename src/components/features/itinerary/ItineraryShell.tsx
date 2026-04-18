@@ -43,11 +43,13 @@ import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
 import { PrepBanner } from "./PrepBanner";
+import { DisasterBanner } from "./DisasterBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 import { PrintHeader } from "./PrintHeader";
 import { PrintFooter } from "./PrintFooter";
-import { REGIONS } from "@/data/regions";
+import { REGIONS, getWeatherRegion } from "@/data/regions";
+import { shouldShowDisasterBanner } from "@/lib/trip/disasterOverlay";
 import { useItineraryDiscover } from "./hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanel } from "./ItineraryDiscoverPanel";
 import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
@@ -814,6 +816,17 @@ export const ItineraryShell = ({
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
+            {/* Disaster/typhoon awareness banner — above prep checklist */}
+            {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
+              const primaryCityId = currentTrip.builderData?.cities?.[0];
+              const tripRegion = primaryCityId ? getWeatherRegion(primaryCityId) : "temperate";
+              return (
+                <div className="mb-3">
+                  <DisasterBanner trip={currentTrip} region={tripRegion} />
+                </div>
+              );
+            })()}
+
             {/* Pre-trip prep checklist — auto-hides when trip is active */}
             {currentTrip && (
               <div className="mb-3">
