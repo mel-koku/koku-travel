@@ -127,6 +127,47 @@ describe("generateActivityTips — last-train trigger (B1)", () => {
   });
 });
 
+describe("generateActivityTips — reservation lead-time tiers (B2)", () => {
+  it("says 1-3 months ahead for omakase at top-rated venues", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "omakase", rating: 4.8 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res).toBeDefined();
+    expect(res?.message).toMatch(/1-3 months|months? ahead/i);
+  });
+
+  it("says 1-3 months ahead for kaiseki at top-rated venues", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "kaiseki", rating: 4.8 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res?.message).toMatch(/1-3 months|months? ahead/i);
+  });
+
+  it("says 2-4 weeks for fine dining (not top-rated)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "fine_dining", rating: 4.5 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res?.message).toMatch(/weeks? ahead|2-4 weeks/i);
+  });
+
+  it("keeps the generic copy for merely popular restaurants (4.7+)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "restaurant", rating: 4.7 }),
+    );
+    const res = tips.find((t) => t.type === "reservation");
+    expect(res).toBeDefined();
+    // Should NOT use the months-ahead copy for a generic 4.7 restaurant
+    expect(res?.message).not.toMatch(/months? ahead/i);
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips

@@ -725,16 +725,46 @@ function generateReservationTips(
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
   const category = location.category?.toLowerCase() ?? "";
+  const rating = location.rating ?? 0;
 
-  // High-end restaurants
-  const reservationCategories = ["fine_dining", "kaiseki", "omakase", "sushi"];
-  const needsReservation = reservationCategories.some((cat) => category.includes(cat));
+  // Tier 1: top-rated kaiseki/omakase/sushi venues — realistic lead time is
+  // 1-3 months. Saying "a few days" sets the wrong expectation for travelers
+  // who would otherwise not bother calling ahead.
+  const TIER1_CATEGORIES = ["kaiseki", "omakase"];
+  const isTier1 = TIER1_CATEGORIES.some((cat) => category.includes(cat)) ||
+    (category.includes("sushi") && rating >= 4.7);
 
-  if (needsReservation || (location.rating && location.rating >= 4.7 && (category === "restaurant" || activity.mealType === "dinner"))) {
+  // Tier 2: fine dining and other high-end categories where 2-4 weeks is
+  // usually enough.
+  const TIER2_CATEGORIES = ["fine_dining", "sushi"];
+  const isTier2 = TIER2_CATEGORIES.some((cat) => category.includes(cat));
+
+  // Tier 3: merely popular restaurant — a few days ahead is fine.
+  const isTier3 = rating >= 4.7 && (category === "restaurant" || activity.mealType === "dinner");
+
+  if (isTier1) {
     tips.push({
       type: "reservation",
-      title: "Reservation Recommended",
-      message: "Popular with tourists and locals alike. Book several days in advance if possible.",
+      title: "Reservation required",
+      message: "Top kaiseki and omakase venues typically book out 1-3 months ahead. If you're set on this one, call or email as soon as your dates are fixed — waitlist spots do open up.",
+      priority: 9,
+      icon: "📞",
+      isImportant: true,
+    });
+  } else if (isTier2) {
+    tips.push({
+      type: "reservation",
+      title: "Reservation recommended",
+      message: "For fine dining, 2-4 weeks ahead is usually enough. Concierge desks and OMAKASE.in can help if the restaurant's site is Japanese-only.",
+      priority: 9,
+      icon: "📞",
+      isImportant: true,
+    });
+  } else if (isTier3) {
+    tips.push({
+      type: "reservation",
+      title: "Reservation recommended",
+      message: "Popular with locals and travelers. A few days ahead is usually enough; walk-ins sometimes work on weekdays before 6 PM.",
       priority: 9,
       icon: "📞",
       isImportant: true,
@@ -742,7 +772,7 @@ function generateReservationTips(
   }
 
   // Popular attractions
-  if (location.rating && location.rating >= 4.5 && (category === "museum" || category === "attraction")) {
+  if (rating >= 4.5 && (category === "museum" || category === "attraction")) {
     tips.push({
       type: "reservation",
       title: "Consider Advance Tickets",
