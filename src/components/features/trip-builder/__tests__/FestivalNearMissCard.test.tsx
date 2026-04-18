@@ -59,7 +59,7 @@ describe("FestivalNearMissCard", () => {
       duration: 5,
     });
     fireEvent.click(screen.getByRole("button", { name: /Extend trip by 2 days/ }));
-    expect(screen.getByRole("status")).toHaveTextContent(/Trip extended through 2026-07-24/);
+    expect(screen.getByRole("status")).toHaveTextContent(/Trip extended through Friday, July 24/);
     expect(screen.getByRole("status")).toHaveTextContent(/Tenjin Matsuri/);
     expect(screen.getByRole("button", { name: /Undo trip extension/ })).toBeInTheDocument();
   });

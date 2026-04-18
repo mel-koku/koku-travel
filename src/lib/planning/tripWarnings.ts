@@ -655,9 +655,11 @@ export function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningW
 
 function addDaysToIsoDate(iso: string, days: number): string {
   // Use parseLocalDateWithOffset + formatLocalDateISO so we stay in local time
-  // (no UTC drift).
+  // (no UTC drift). Caller validates iso parses upstream; throw if that
+  // invariant ever breaks rather than silently returning a wrong-but-valid
+  // date that would mis-extend a trip.
   const date = parseLocalDateWithOffset(iso, days);
-  if (!date) return iso;
+  if (!date) throw new Error(`addDaysToIsoDate: failed to parse "${iso}"`);
   return formatLocalDateISO(date);
 }
 

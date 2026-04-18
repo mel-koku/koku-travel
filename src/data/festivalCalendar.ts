@@ -214,6 +214,12 @@ interface NearMissOptions {
 
 const NEAR_MISS_REF_YEAR = 2025;
 
+/**
+ * Festivals must hit this crowdImpact level to be worth a near-miss recommendation.
+ * Below this, the festival isn't significant enough to suggest reshaping the trip.
+ */
+const HIGH_IMPACT_THRESHOLD = 4;
+
 function mdToDayOfYear(month: number, day: number): number {
   const date = new Date(NEAR_MISS_REF_YEAR, month - 1, day);
   const start = new Date(NEAR_MISS_REF_YEAR, 0, 1);
@@ -244,7 +250,7 @@ export function getFestivalNearMisses(
   const results: FestivalNearMiss[] = [];
 
   for (const f of FESTIVALS) {
-    if (f.crowdImpact < 4) continue;
+    if (f.crowdImpact < HIGH_IMPACT_THRESHOLD) continue;
     if (!cities.includes(f.city)) continue;
 
     const overlaps = periodsOverlap(

@@ -3,6 +3,17 @@
 import { useMemo, useState } from "react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectFestivalNearMissWarnings } from "@/lib/planning/tripWarnings";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
+
+function formatFriendlyDate(iso: string): string {
+  const date = parseLocalDate(iso);
+  if (!date) return iso;
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
 
 export function FestivalNearMissCard() {
   const { data, setData } = useTripBuilder();
@@ -31,7 +42,7 @@ export function FestivalNearMissCard() {
       >
         <p className="text-sm text-foreground-secondary">
           <span aria-hidden="true">✓ </span>
-          Trip extended through {confirmed.newEndDate}. We&apos;ll plan {confirmed.days === 1 ? "1 extra day" : `${confirmed.days} extra days`} around {confirmed.festivalName}.
+          Trip extended through {formatFriendlyDate(confirmed.newEndDate)}. We&apos;ll plan {confirmed.days === 1 ? "1 extra day" : `${confirmed.days} extra days`} around {confirmed.festivalName}.
         </p>
         <button
           type="button"
