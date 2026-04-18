@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import { getRandomErrorPageTip } from "@/data/errorPageTips";
 
 export const metadata: Metadata = {
   title: "Page Not Found | Yuku Japan",
 };
 
 export default function RootNotFound() {
+  const tip = getRandomErrorPageTip();
+
   return (
     <div
       style={{
@@ -62,6 +65,18 @@ export default function RootNotFound() {
         >
           Take Me Home
         </a>
+        <div
+          style={{
+            marginTop: "3rem",
+            paddingTop: "2rem",
+            borderTop: "1px solid rgba(240, 232, 220, 0.1)",
+            fontSize: "0.875rem",
+            opacity: 0.7,
+          }}
+        >
+          <p style={{ marginBottom: "0.5rem" }}>💡 Travel tip:</p>
+          <p>{tip}</p>
+        </div>
       </div>
     </div>
   );

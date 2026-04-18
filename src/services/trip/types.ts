@@ -13,6 +13,17 @@ import type { CulturalBriefing } from "@/types/culturalBriefing";
  */
 export type PrepState = Record<string, boolean>;
 
+/**
+ * Planning-phase warnings and one-time tips state.
+ * Tracks which trip-level tips (goshuin, 5-yen coin) have been shown to avoid repetition.
+ */
+export type PlanningWarnings = {
+  /** Whether the goshuin etiquette banner has been dismissed */
+  goshuinShown?: boolean;
+  /** Whether the 5-yen coin tip has been shown (only show once per trip) */
+  coinTipShown?: boolean;
+};
+
 export type StoredTrip = {
   id: string;
   name: string;
@@ -32,6 +43,8 @@ export type StoredTrip = {
   freeRefinementsUsed?: number;
   /** Pre-trip checklist completion. Undefined on rows/responses older than the 2026-04-19 migration. */
   prepState?: PrepState;
+  /** Planning warnings and one-time tip state. Undefined on rows/responses older than the 2026-04-18 migration. */
+  planningWarnings?: PlanningWarnings;
 };
 
 export type CreateTripInput = {
