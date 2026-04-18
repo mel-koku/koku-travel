@@ -176,6 +176,28 @@ export function getRegionForCity(cityId: CityId): RegionId | undefined {
   return undefined;
 }
 
+export type WeatherRegion = "tropical_south" | "temperate" | "subarctic_north";
+
+const TROPICAL_SOUTH_CITIES = new Set<string>([
+  "naha", "ishigaki", "miyakojima", "okinawa",
+]);
+
+const SUBARCTIC_NORTH_CITIES = new Set<string>([
+  "sapporo", "hakodate", "asahikawa", "otaru", "noboribetsu", "furano", "biei", "niseko",
+]);
+
+/**
+ * Climate-aware bucketing. Coarser than the 9 tourism regions because Japan's
+ * climate spans subtropical (Okinawa) to subarctic (Hokkaido) but most cities
+ * are temperate. Used by seasonal-period lookups that must vary by climate
+ * (cherry blossom timing, tsuyu rainy season, etc.).
+ */
+export function getWeatherRegion(cityId: CityId): WeatherRegion {
+  if (TROPICAL_SOUTH_CITIES.has(cityId)) return "tropical_south";
+  if (SUBARCTIC_NORTH_CITIES.has(cityId)) return "subarctic_north";
+  return "temperate";
+}
+
 /**
  * Derive unique region IDs from a list of selected cities.
  * Used to keep `data.regions` in sync when selection is city-driven.
