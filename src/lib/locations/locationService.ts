@@ -149,6 +149,9 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     paymentTypes: "payment_types" in r
       ? ((r.payment_types as Location["paymentTypes"] | null) ?? undefined)
       : undefined,
+    dietaryFlags: "dietary_flags" in r
+      ? ((r.dietary_flags as Location["dietaryFlags"] | null) ?? undefined)
+      : undefined,
     reservationInfo: "reservation_info" in r ? (r.reservation_info as Location["reservationInfo"]) ?? undefined : undefined,
     isFeatured: "is_featured" in r ? (r.is_featured as boolean | null) ?? undefined : undefined,
     isHiddenGem: "is_hidden_gem" in r ? (r.is_hidden_gem as boolean | null) ?? undefined : undefined,
