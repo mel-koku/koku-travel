@@ -5,6 +5,7 @@ import {
   tripBuilderConfigQuery,
   pagesContentQuery,
   aboutPageQuery,
+  commerceDisclosureQuery,
   culturalPillarsQuery,
 } from "@/sanity/queries";
 import type {
@@ -13,6 +14,7 @@ import type {
   TripBuilderConfig,
   PagesContent,
   AboutPageContent,
+  CommerceDisclosureContent,
 } from "@/types/sanitySiteContent";
 import type { CulturalPillar } from "@/types/culturalBriefing";
 import { readFileCache, readFileCacheStale, writeFileCache } from "@/lib/api/fileCache";
@@ -107,6 +109,10 @@ export async function getPagesContent(): Promise<PagesContent | null> {
 
 export async function getAboutPageContent(): Promise<AboutPageContent | null> {
   return fetchWithCache<AboutPageContent>("aboutPage", aboutPageQuery);
+}
+
+export async function getCommerceDisclosureContent(): Promise<CommerceDisclosureContent | null> {
+  return fetchWithCache<CommerceDisclosureContent>("commerceDisclosure", commerceDisclosureQuery);
 }
 
 export async function getCulturalPillars(): Promise<CulturalPillar[] | null> {

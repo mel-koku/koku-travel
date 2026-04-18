@@ -310,3 +310,19 @@ export type AboutPageContent = {
   ctaDescription?: string;
   ctaButtonText?: string;
 };
+
+export type CommerceDisclosureContent = {
+  businessName?: string;
+  representative?: string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  businessType?: string;
+  serviceDescription?: string;
+  pricingDescription?: string;
+  paymentMethods?: string;
+  paymentTiming?: string;
+  deliveryDescription?: string;
+  cancellationPolicy?: string;
+  cancellationContact?: string;
+};
