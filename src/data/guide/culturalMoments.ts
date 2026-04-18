@@ -141,7 +141,7 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     id: "cm-17",
     key: "onsen:any",
     content:
-      "An outdoor bath (rotenburo) in winter is one of Japan's great pleasures. The contrast of freezing air on your face and 42-degree water on your body is hard to describe. Ease in slowly. Sudden immersion can spike your blood pressure. And stay hydrated; the heat draws out more water than you realize.",
+      "An outdoor bath (rotenburo) in winter is one of Japan's distinct pleasures. The contrast of freezing air on your face and 42-degree water on your body is the whole point. Ease in slowly. Sudden immersion can spike your blood pressure. And stay hydrated; the heat draws out more water than you realize.",
     icon: "🏔️",
     pillar: "kegare",
   },

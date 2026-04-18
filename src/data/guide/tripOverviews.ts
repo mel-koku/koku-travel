@@ -62,7 +62,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     id: "to-7",
     key: "kyoto+nara+osaka:fall",
     content:
-      "Autumn across the Kansai region is something special. Kyoto's maple-lined paths, Nara's golden park canopy, and Osaka's cozy street food scene come together into a single run of fall colors and flavors that's hard to match.",
+      "Autumn in Kansai means three distinct moods within a 90-minute train ride: Kyoto's maple-lined temple paths, Nara's golden park canopy with its deer, and Osaka's cooler-weather street food scene around Dotonbori.",
     icon: "🍁",
   },
   {

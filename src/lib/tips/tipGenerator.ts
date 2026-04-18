@@ -1,4 +1,4 @@
-import type { Location } from "@/types/location";
+import type { Location, Weekday } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { WeatherForecast } from "@/types/weather";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
@@ -328,19 +328,25 @@ function generateTimingTips(
   const tips: ActivityTip[] = [];
   const category = location.category?.toLowerCase() ?? "";
 
-  // Operating hours tips
+  // Operating hours tip — fire only when the location is closed on at least
+  // one weekday (a real, actionable signal). The previous implementation
+  // checked if any period was on a day other than Mon/Tue, which was true for
+  // nearly every location open on weekends — so the tip always fired.
   if (location.operatingHours?.periods && location.operatingHours.periods.length > 0) {
     const periods = location.operatingHours.periods;
-    
-    // Check if it's a weekday-specific location
-    const hasWeekdayRestrictions = periods.some((p) => p.day !== "monday" && p.day !== "tuesday");
-    
-    if (hasWeekdayRestrictions) {
+    const openDays = new Set(periods.map((p) => p.day));
+    const allWeekdays: readonly Weekday[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+    const closedDays = allWeekdays.filter((d) => !openDays.has(d));
+
+    if (closedDays.length > 0 && closedDays.length < 7) {
+      const closedLabel = closedDays.length === 1
+        ? `${closedDays[0]!.charAt(0).toUpperCase()}${closedDays[0]!.slice(1)}s`
+        : `${closedDays.length} days a week`;
       tips.push({
         type: "timing",
-        title: "Check Operating Hours",
-        message: "This location may have specific operating hours. Verify before visiting to avoid disappointment.",
-        priority: 6,
+        title: "Closed some days",
+        message: `Closed on ${closedLabel}. Verify hours before visiting.`,
+        priority: 7,
         icon: "🕐",
       });
     }

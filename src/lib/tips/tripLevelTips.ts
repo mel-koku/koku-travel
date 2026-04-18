@@ -83,6 +83,7 @@ export function getTripLevelTips(
         startDate.getDate(),
         endDate.getMonth() + 1,
         endDate.getDate(),
+        startDate.getFullYear(),
       );
       for (const holiday of holidays) {
         tips.push({
