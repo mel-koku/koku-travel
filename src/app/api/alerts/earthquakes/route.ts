@@ -87,7 +87,15 @@ export async function GET(request: NextRequest) {
 
       const supabase = await createClient();
       const existing = await fetchTripById(supabase, user!.id, tripId);
-      if (!existing.success || !existing.data) {
+      if (!existing.success) {
+        logger.error("Failed to fetch trip for earthquake alert", new Error(existing.error ?? "unknown"), {
+          requestId: context.requestId,
+          userId: user!.id,
+          tripId,
+        });
+        return notFound("Trip not found", { requestId: context.requestId });
+      }
+      if (!existing.data) {
         return notFound("Trip not found", { requestId: context.requestId });
       }
 
