@@ -9,7 +9,11 @@
 import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
-import { getFestivalsForTrip } from "@/data/festivalCalendar";
+import {
+  getFestivalsForTrip,
+  type Festival,
+  type FestivalNearMiss,
+} from "@/data/festivalCalendar";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { travelTimeFromEntryPoint, getNearestCityToEntryPoint } from "@/lib/travelTime";
 import { getActiveHolidays } from "@/data/crowdPatterns";
@@ -33,6 +37,7 @@ export type WarningType =
   | "distance"
   | "weather"
   | "festival"
+  | "festival_near_miss"
   | "return_to_airport";
 
 /**
@@ -440,6 +445,122 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
 
   return warnings;
 }
+
+// ---------------------------------------------------------------------------
+// Festival near-miss (C10) — copy + centerpiece resolution
+// ---------------------------------------------------------------------------
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function pluralDays(n: number): string {
+  return n === 1 ? "1 day" : `${n} days`;
+}
+
+function roughWindow(month: number, day: number): string {
+  const part = day <= 10 ? "early" : day <= 20 ? "mid" : "late";
+  return `${part} ${MONTH_NAMES[month - 1]}`;
+}
+
+/**
+ * Per-festival centerpiece overrides. The default category-noun is unsafe
+ * for several festivals (Awa Odori is a dance, not floats; Sanja is mikoshi,
+ * not floats). Names here come from the travel guide; expand as needed.
+ */
+const FESTIVAL_CENTERPIECE: Partial<Record<Festival["id"], string>> = {
+  "gion-matsuri": "float procession",
+  "tenjin-matsuri": "boat procession and fireworks",
+  "sumida-fireworks": "fireworks show",
+  "daimonji": "mountain bonfires",
+  "nebuta": "illuminated float parade",
+  "awa-odori": "dance",
+  "yosakoi-soran": "dance performances",
+  "sanja-matsuri": "mikoshi processions",
+  "takayama-spring": "yatai float parade",
+  "takayama-autumn": "illuminated yatai",
+  "kanda-matsuri": "shrine procession",
+  "aoi-matsuri": "imperial procession",
+  "jidai-matsuri": "historical costume procession",
+  "kishiwada-danjiri": "danjiri float runs",
+  "hakata-gion": "dawn float race",
+  "nagasaki-kunchi": "dragon dances",
+  "karatsu-kunchi": "lacquered float procession",
+  "chichibu-night": "night floats and fireworks",
+  "kobe-luminarie": "light tunnel",
+  "autumn-leaves-kyoto": "evening illuminations",
+  "sapporo-snow": "snow sculptures",
+  "omagari-fireworks": "fireworks competition",
+  "nagaoka-fireworks": "phoenix fireworks",
+  "miyajima-fireworks": "water fireworks",
+  "hakata-dontaku": "parade days",
+  "sanno-matsuri": "shrine procession",
+  "tanabata-sendai": "decoration arcades",
+  "koenji-awa": "street dance",
+  "nada-kenka": "mikoshi clashes",
+  "kawagoe-matsuri": "float confrontations",
+};
+
+const CATEGORY_CENTERPIECE_FALLBACK: Partial<Record<Festival["category"], string>> = {
+  matsuri: "main day",
+  fireworks: "fireworks",
+  illumination: "illuminations",
+  seasonal: "peak",
+  cultural: "main ceremony",
+  food: "festival days",
+};
+
+function festivalCenterpiece(festivalId: string, category: string): string {
+  return (
+    FESTIVAL_CENTERPIECE[festivalId] ??
+    CATEGORY_CENTERPIECE_FALLBACK[category as Festival["category"]] ??
+    "main day"
+  );
+}
+
+function buildNearMissTitle(nm: FestivalNearMiss): string {
+  const { festival, direction } = nm;
+  const isApprox = !!festival.isApproximate;
+  if (direction === "forward") {
+    return isApprox
+      ? `${festival.name} happens around this time`
+      : `${festival.name} starts right after your trip`;
+  }
+  return isApprox
+    ? `${festival.name} typically falls around this time`
+    : `${festival.name} wraps just before you arrive`;
+}
+
+function buildNearMissMessage(nm: FestivalNearMiss, overCap: boolean): string {
+  const { festival, direction, gapDays } = nm;
+  const isApprox = !!festival.isApproximate;
+
+  if (direction === "forward") {
+    if (isApprox) {
+      return `${festival.name} typically falls in ${roughWindow(festival.startMonth, festival.startDay)}. Exact dates vary year to year, so check forecasts closer to your trip.`;
+    }
+    if (overCap) {
+      return `It begins ${pluralDays(gapDays)} after your trip ends. Worth knowing if you can shift dates.`;
+    }
+    const piece = festivalCenterpiece(festival.id, festival.category);
+    return `It begins ${pluralDays(gapDays)} after your trip ends. Adding ${pluralDays(gapDays)} would catch the ${piece}.`;
+  }
+
+  // backward
+  if (isApprox) {
+    return "Peak typically wraps around this time. Worth checking forecasts if you can still shift your start date.";
+  }
+  const dayPhrase = gapDays === 1 ? "the day" : `${gapDays} days`;
+  return `It ended ${dayPhrase} before you arrive. Worth knowing if you can still shift your start date.`;
+}
+
+export const _testables = {
+  buildNearMissTitle,
+  buildNearMissMessage,
+  festivalCenterpiece,
+  roughWindow,
+};
 
 /**
  * Detect festivals overlapping with the trip dates in planned cities
