@@ -22,16 +22,24 @@ export function getTripLevelTips(
   const days = itinerary.days;
   if (days.length === 0) return tips;
 
-  const hasTransit = days.some((d) =>
-    d.activities.some(
-      (a) =>
-        a.kind === "place" &&
-        a.travelFromPrevious &&
-        ["train", "subway", "bus", "tram", "ferry", "transit"].includes(
-          a.travelFromPrevious.mode,
-        ),
-    ),
+  // Count transit legs, not any-transit. One-leg trips (e.g., a single bus
+  // ride in a walking-heavy Tokyo itinerary) don't justify the IC card tip
+  // at the top of Travel Essentials — it becomes noise. Require at least 3
+  // legs to signal that getting an IC card is actually worthwhile.
+  const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
+  const transitLegCount = days.reduce(
+    (count, d) =>
+      count +
+      d.activities.filter(
+        (a) =>
+          a.kind === "place" &&
+          a.travelFromPrevious &&
+          TRANSIT_MODES.has(a.travelFromPrevious.mode),
+      ).length,
+    0,
   );
+  const hasMeaningfulTransit = transitLegCount >= 3;
+  const hasAnyTransit = transitLegCount > 0;
   const hasTemplesOrShrines = days.some((d) =>
     d.activities.some((a) =>
       a.kind === "place" &&
@@ -39,8 +47,8 @@ export function getTripLevelTips(
     ),
   );
 
-  // IC Card
-  if (hasTransit) {
+  // IC Card — only once the traveler will use transit enough to justify it.
+  if (hasMeaningfulTransit) {
     tips.push({
       id: "trip-ic-card",
       title: "Get an IC Card",
@@ -50,8 +58,8 @@ export function getTripLevelTips(
     });
   }
 
-  // Escalator etiquette
-  if (hasTransit) {
+  // Escalator etiquette — relevant any time the traveler is in a station.
+  if (hasAnyTransit) {
     tips.push({
       id: "trip-escalator",
       title: "Escalator etiquette",
