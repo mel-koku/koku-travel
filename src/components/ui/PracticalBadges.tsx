@@ -4,6 +4,7 @@ import { memo, useMemo } from "react";
 import type { Location } from "@/types/location";
 import { getOpenStatus, formatOpenStatus } from "@/lib/availability/isOpenNow";
 import { derivePaymentPill } from "@/lib/payments/paymentPill";
+import { deriveDietaryPills } from "@/lib/dietary/dietaryPills";
 
 type PracticalBadgesProps = {
   location: Location;
@@ -49,6 +50,18 @@ export const PracticalBadges = memo(function PracticalBadges({
       icon: paymentPill.label === "Cash only" ? <CashIcon /> : <CardIcon />,
       label: paymentPill.label,
       tone: paymentPill.tone,
+    });
+  }
+
+  // Dietary pills (Halal / Vegan friendly / Gluten-free / Vegetarian friendly).
+  // Up to 2 pills, priority-sorted with vegan-subsumes-vegetarian rule.
+  // Gated internally to restaurant/cafe/bar categories; helper returns [] otherwise.
+  for (const pill of deriveDietaryPills(location)) {
+    badges.push({
+      key: `dietary-${pill.flag}`,
+      icon: <LeafIcon />,
+      label: pill.label,
+      tone: pill.tone,
     });
   }
 
@@ -125,6 +138,30 @@ const toneClasses = {
   success: "bg-sage/10 text-sage",
   error: "bg-error/10 text-error",
 } as const;
+
+// Single shared icon for all four dietary pills. Deliberately NOT using a
+// crescent for Halal or per-flag iconography — Yuku is a secular travel
+// product, not a certification body. A neutral leaf reads as "dietary info"
+// and lets the label carry the specific claim. Do not "fix" this to be
+// per-flag without reading the spec.
+function LeafIcon() {
+  return (
+    <svg
+      className="h-2.5 w-2.5 shrink-0"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        d="M13 3c0 5-3 8-8 9-1-5 2-8 8-9z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M11 5L5 11" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 function CashIcon() {
   return (
