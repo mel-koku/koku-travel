@@ -15,8 +15,11 @@ function getCityInterestsData(): CityInterestsJson {
   if (!_cityInterestsData) {
     // Dynamic require for synchronous access after first load.
     // Next.js will code-split this into a separate chunk.
+    // Relative path (not the @ alias) because CommonJS require() bypasses
+    // vite's path resolver, which broke vitest suites that transitively
+    // loaded this file (e.g. matchCulturalMoment region fallback).
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const raw = require("@/data/cityInterests.json");
+    const raw = require("../../data/cityInterests.json");
 
     // Detect format: nested (has .cities + .metadata) vs flat (city names at top level)
     if (raw.cities && raw.metadata) {
