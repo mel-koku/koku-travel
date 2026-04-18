@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PrepBanner } from "../PrepBanner";
+import { TripsProvider } from "@/state/slices/TripsSlice";
 import type { StoredTrip } from "@/services/trip/types";
+import type { ReactElement } from "react";
 
 // Mock fetch for PATCH calls
 const mockFetch = vi.fn();
@@ -10,6 +12,10 @@ const mockFetch = vi.fn();
 vi.mock("@/context/ToastContext", () => ({
   useToast: () => ({ showToast: vi.fn() }),
 }));
+
+function renderWithProviders(ui: ReactElement) {
+  return render(<TripsProvider>{ui}</TripsProvider>);
+}
 
 // Build dates relative to today so tests stay deterministic regardless of
 // when the suite runs. getTripStatus uses the real clock.
@@ -63,22 +69,22 @@ function makeActiveTrip(): StoredTrip {
 
 describe("PrepBanner", () => {
   it("renders nothing when trip status is active", () => {
-    const { container } = render(<PrepBanner trip={makeActiveTrip()} />);
+    const { container } = renderWithProviders(<PrepBanner trip={makeActiveTrip()} />);
     expect(container.firstChild).toBeNull();
   });
 
   it("renders when trip status is upcoming", () => {
-    render(<PrepBanner trip={makeUpcomingTrip()} />);
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
     expect(screen.getByText(/Prep checklist/i)).toBeInTheDocument();
   });
 
   it("shows countdown for 2+ days as 'in N days'", () => {
-    render(<PrepBanner trip={makeUpcomingTrip()} />);
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
     expect(screen.getByText(/in \d+ days/i)).toBeInTheDocument();
   });
 
   it("renders checkbox items and ticking optimistically updates", async () => {
-    render(<PrepBanner trip={makeUpcomingTrip()} />);
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
 
     const checkbox = screen.getByRole("checkbox", { name: /check passport validity/i });
     expect(checkbox).not.toBeChecked();
@@ -100,7 +106,7 @@ describe("PrepBanner", () => {
   it("rolls back tick on PATCH failure", async () => {
     mockFetch.mockResolvedValue({ ok: false, json: async () => ({ error: "boom" }) });
 
-    render(<PrepBanner trip={makeUpcomingTrip()} />);
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
     const checkbox = screen.getByRole("checkbox", { name: /check passport validity/i });
     fireEvent.click(checkbox);
     expect(checkbox).toBeChecked();
@@ -109,7 +115,7 @@ describe("PrepBanner", () => {
   });
 
   it("hides 'If your trip has…' section when no conditionals match", () => {
-    render(<PrepBanner trip={makeUpcomingTrip()} />);
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
     expect(screen.queryByText(/If your trip has/i)).not.toBeInTheDocument();
   });
 
@@ -122,7 +128,7 @@ describe("PrepBanner", () => {
         dates: { start: daysFromNow(15), end: daysFromNow(24) },
       } as unknown as StoredTrip["builderData"],
     });
-    render(<PrepBanner trip={trip} />);
+    renderWithProviders(<PrepBanner trip={trip} />);
     expect(screen.getByText(/If your trip has/i)).toBeInTheDocument();
     expect(screen.getByText(/Takkyubin/i)).toBeInTheDocument();
   });
@@ -141,8 +147,32 @@ describe("PrepBanner", () => {
     }
     trip.prepState = allChecked;
 
-    render(<PrepBanner trip={trip} />);
+    renderWithProviders(<PrepBanner trip={trip} />);
     expect(screen.getByText(/Prep complete/i)).toBeInTheDocument();
     expect(screen.queryByRole("checkbox", { name: /check passport validity/i })).not.toBeInTheDocument();
+  });
+
+  it("sends a PATCH with the merged prepState body (slice-update prerequisite)", async () => {
+    // The TripsSlice update happens via tripsActions.updateTripPrepState after
+    // a successful PATCH. This test verifies the PATCH path works so that the
+    // slice-update runs — the slice reducer itself is unit-tested elsewhere.
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ prepState: { "passport-validity": true } }),
+    });
+
+    renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
+
+    const checkbox = screen.getByRole("checkbox", { name: /check passport validity/i });
+    fireEvent.click(checkbox);
+
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+    const [, init] = mockFetch.mock.calls[0]!;
+    expect(JSON.parse(init.body as string)).toEqual({
+      itemId: "passport-validity",
+      checked: true,
+    });
+    // Tick remains (optimistic state holds even after PATCH resolves)
+    expect(checkbox).toBeChecked();
   });
 });

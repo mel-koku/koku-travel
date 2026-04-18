@@ -5,6 +5,7 @@ import type { StoredTrip } from "@/services/trip/types";
 import { getTripStatus } from "@/lib/trip/tripStatus";
 import { PREP_CHECKLIST, type PrepItem, type PrepSection } from "@/data/prepChecklist";
 import { useToast } from "@/context/ToastContext";
+import { useTrips } from "@/state/slices/TripsSlice";
 
 const SECTION_LABELS: Record<PrepSection, string> = {
   if_you_havent_already: "If you haven't already",
@@ -53,6 +54,7 @@ export function PrepBanner({ trip }: Props) {
     return window.sessionStorage.getItem(sessionKey) === "1";
   });
   const { showToast } = useToast();
+  const { actions: tripsActions } = useTrips();
 
   const applicableItems = useMemo<PrepItem[]>(
     () => PREP_CHECKLIST.filter((item) => (item.condition ? item.condition(trip) : true)),
@@ -85,7 +87,7 @@ export function PrepBanner({ trip }: Props) {
 
   async function handleToggleItem(itemId: string, nextChecked: boolean) {
     const prev = state[itemId] ?? false;
-    // Optimistic update
+    // Optimistic update (local state keeps UI correct while mounted)
     setState((s) => ({ ...s, [itemId]: nextChecked }));
     try {
       const res = await fetch(`/api/trips/${trip.id}/prep-state`, {
@@ -94,6 +96,12 @@ export function PrepBanner({ trip }: Props) {
         body: JSON.stringify({ itemId, checked: nextChecked }),
       });
       if (!res.ok) throw new Error("patch-failed");
+      // Sync the TripsSlice cache with the server's merged state so that
+      // navigating away and back within the session shows the tick. Fallback
+      // to a locally-merged object if the server response doesn't include it.
+      const body = (await res.json().catch(() => null)) as { prepState?: Record<string, boolean> } | null;
+      const merged = body?.prepState ?? { ...(trip.prepState ?? {}), [itemId]: nextChecked };
+      tripsActions.updateTripPrepState(trip.id, merged);
     } catch {
       // Roll back
       setState((s) => ({ ...s, [itemId]: prev }));
@@ -164,7 +172,6 @@ export function PrepBanner({ trip }: Props) {
                       type="checkbox"
                       checked={state[item.id] ?? false}
                       onChange={(e) => handleToggleItem(item.id, e.target.checked)}
-                      aria-label={item.title}
                       className="mt-1"
                     />
                     <label htmlFor={`prep-${item.id}`} className="flex-1 cursor-pointer">
