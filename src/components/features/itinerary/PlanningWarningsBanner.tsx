@@ -9,6 +9,12 @@ import type { PlanningWarning, WarningType } from "@/lib/planning/tripWarnings";
 // act on during the trip: weather, holidays, festivals, distance (e.g.
 // Hokkaido + Kyushu means a domestic flight), and the return-to-airport
 // buffer.
+//
+// Note: `festival_near_miss` warnings carrying an `action` field are
+// suppressed below — the extend-trip offer only makes sense pre-generation.
+// Other warning types (e.g. `return_to_airport`) may also set `action`; their
+// data still shows in the banner because the banner itself never renders
+// the action button.
 const RELEVANT_POST_GENERATION: ReadonlySet<WarningType> = new Set([
   "holiday",
   "seasonal_rainy",
@@ -16,6 +22,7 @@ const RELEVANT_POST_GENERATION: ReadonlySet<WarningType> = new Set([
   "seasonal_autumn",
   "weather",
   "festival",
+  "festival_near_miss",
   "distance",
   "return_to_airport",
 ]);
@@ -26,7 +33,13 @@ type Props = {
 
 export function PlanningWarningsBanner({ warnings }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const relevant = (warnings ?? []).filter((w) => RELEVANT_POST_GENERATION.has(w.type));
+  const relevant = (warnings ?? []).filter((w) => {
+    if (!RELEVANT_POST_GENERATION.has(w.type)) return false;
+    // Hide actionable festival_near_miss post-generation: the extend offer is
+    // builder-only because the trip is already locked.
+    if (w.type === "festival_near_miss" && w.action) return false;
+    return true;
+  });
 
   if (relevant.length === 0) return null;
 
