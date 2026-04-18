@@ -25,3 +25,22 @@ export function haversineKm(a: LatLon, b: LatLon): number {
     Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
 }
+
+/**
+ * Bucketed relative-time string for the banner body.
+ *
+ * Buckets:
+ *   < 90 minutes  → "less than an hour ago"
+ *   otherwise     → "about N hours ago" where N = floor((now - eventMs) / 1h)
+ *
+ * No "yesterday" / "just now" / absolute-date branches — keeps copy tight
+ * and avoids i18n surface in Phase 1. Computed on the server at response
+ * time so the client doesn't need to recompute.
+ */
+export function computeRelativeTime(eventMs: number, nowMs: number): string {
+  const deltaMs = Math.max(0, nowMs - eventMs);
+  const deltaMin = Math.floor(deltaMs / 60_000);
+  if (deltaMin < 90) return "less than an hour ago";
+  const hours = Math.max(1, Math.floor(deltaMin / 60));
+  return `about ${hours} hours ago`;
+}
