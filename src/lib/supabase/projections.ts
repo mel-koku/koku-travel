@@ -84,6 +84,7 @@ export type LocationDbRow = {
   name_japanese: string | null;
   nearest_station: string | null;
   cash_only: boolean | null;
+  payment_types: string[] | null;
   reservation_info: "required" | "recommended" | null;
   insider_tip: string | null;
   tags: string[] | null;
@@ -131,6 +132,7 @@ export const LOCATION_LISTING_COLUMNS = `
   tags,
   name_japanese,
   nearest_station,
+  payment_types,
   insider_tip,
   is_featured,
   jta_approved,
@@ -167,6 +169,7 @@ export const LOCATION_EXPLORE_COLUMNS = `
   name_japanese,
   nearest_station,
   cash_only,
+  payment_types,
   reservation_info,
   operating_hours,
   good_for_children,
@@ -221,6 +224,7 @@ export const LOCATION_DETAIL_COLUMNS = `
   preferred_transit_modes,
   nearest_station,
   cash_only,
+  payment_types,
   reservation_info,
   tags,
   accessibility_options,
@@ -287,6 +291,7 @@ export const LOCATION_ITINERARY_COLUMNS = `
   dietary_options,
   tags,
   cuisine_type,
+  payment_types,
   insider_tip,
   tattoo_policy,
   is_unesco_site,
@@ -364,6 +369,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "name_japanese"
   | "nearest_station"
   | "cash_only"
+  | "payment_types"
   | "reservation_info"
   | "operating_hours"
   | "good_for_children"
@@ -496,6 +502,7 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "tags"
   | "name_japanese"
   | "nearest_station"
+  | "payment_types"
   | "insider_tip"
   | "is_featured"
   | "jta_approved"
