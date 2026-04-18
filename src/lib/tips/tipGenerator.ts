@@ -225,8 +225,13 @@ function generateCrowdTips(
     }
   }
 
-  // High-rated locations are more popular
-  if (location.rating && location.rating >= 4.5) {
+  // High-rated locations are more popular. Skip the generic tip when the
+  // location has a curated peakWarning — that surface produces better,
+  // location-specific copy (via CROWD_OVERRIDES.peakWarning). Raised the
+  // threshold from 4.5 to 4.7 because nearly every curated location is 4.5+,
+  // so the old trigger was wallpaper.
+  const hasCrowdOverride = CROWD_OVERRIDE_MAP.has(location.id);
+  if (!hasCrowdOverride && location.rating && location.rating >= 4.7) {
     tips.push({
       type: "crowd",
       title: "Popular Destination",

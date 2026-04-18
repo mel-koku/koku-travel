@@ -239,6 +239,35 @@ describe("generateActivityTips — shoe-removal narrowing (A4)", () => {
   });
 });
 
+describe("generateActivityTips — Popular Destination noise reduction (A7)", () => {
+  it("does NOT fire generic 'Popular Destination' when location has a crowd override (peakWarning is better)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ id: "a1", locationId: "fushimi-inari" }),
+      makeLocation({ id: "fushimi-inari", category: "shrine", rating: 4.8 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeUndefined();
+  });
+
+  it("does NOT fire 'Popular Destination' at the old 4.5 threshold — only 4.7+", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ id: "random-4-5", category: "museum", rating: 4.5 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeUndefined();
+  });
+
+  it("still fires 'Popular Destination' for 4.7+ without a crowd override", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ id: "random-4-8", category: "museum", rating: 4.8 }),
+    );
+    const popular = tips.find((t) => t.title === "Popular Destination");
+    expect(popular).toBeDefined();
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips
