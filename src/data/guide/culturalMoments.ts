@@ -290,6 +290,13 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
       "If you're visiting the Imperial Palace East Gardens, look for the foundation stones of the old Edo Castle keep. The keep burned down in 1657 and was never rebuilt. The Tokugawa shoguns decided the money was better spent rebuilding the city after the great fire. The empty foundation is now one of Tokyo's most peaceful spots.",
     icon: "🏯",
   },
+  {
+    id: "cm-71",
+    key: "landmark:nara",
+    content:
+      "Nara Park covers more than 500 hectares and is home to roughly 1,200 wild sika deer, designated a national natural treasure. They're not pets: stay calm around them, keep maps and food tucked inside bags, and buy shika-senbei only from licensed vendors. Morning hours before the tour buses arrive are the quietest time to walk the paths.",
+    icon: "🦌",
+  },
 
   // ─── Restaurant ────────────────────────────────────────────────────────────
 

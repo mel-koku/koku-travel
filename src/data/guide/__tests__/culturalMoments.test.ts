@@ -5,13 +5,9 @@ import { CULTURAL_SUBCATEGORIES } from "@/lib/guide/guideBuilder";
 
 const VALID_REGION_IDS = new Set(REGIONS.map((r) => r.id));
 
-// Superset of the production triggering set plus historical keys.
-// "landmark" appears as a key in cm-32/33/34/47 but isn't in
-// CULTURAL_SUBCATEGORIES yet (tracked as a separate follow-up task).
-// "any" is the wildcard used in fallback keys.
+// Production triggering set plus the "any" wildcard used in fallback keys.
 const TRIGGERING_SUBCATEGORIES = new Set<string>([
   ...CULTURAL_SUBCATEGORIES,
-  "landmark",
   "any",
 ]);
 
@@ -82,12 +78,14 @@ describe("CULTURAL_MOMENT_TEMPLATES — data integrity", () => {
     }
   });
 
-  it("no em-dashes in new C11 template content (brand voice rule)", () => {
-    const c11 = CULTURAL_MOMENT_TEMPLATES.filter((t) => {
+  it("no em-dashes in C11+ regional template content (brand voice rule)", () => {
+    // cm-53 through cm-71: C11 regional batch + landmark:nara added when
+    // landmark was wired into CULTURAL_SUBCATEGORIES.
+    const newTemplates = CULTURAL_MOMENT_TEMPLATES.filter((t) => {
       const n = Number(t.id.replace("cm-", ""));
-      return n >= 53 && n <= 70;
+      return n >= 53 && n <= 71;
     });
-    for (const t of c11) {
+    for (const t of newTemplates) {
       expect(t.content.includes("—"), `template ${t.id} contains em-dash`).toBe(false);
     }
   });
