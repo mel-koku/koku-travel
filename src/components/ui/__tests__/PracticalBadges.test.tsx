@@ -13,7 +13,6 @@ function loc(partial: Partial<Location>): Location {
     category: "restaurant",
     image: "",
     shortDescription: "",
-    coordinates: { latitude: 0, longitude: 0 },
     ...partial,
   } as Location;
 }
