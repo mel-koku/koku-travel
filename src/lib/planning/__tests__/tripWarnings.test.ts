@@ -160,3 +160,114 @@ describe("near-miss copy builders", () => {
     expect(msg).not.toContain("float procession");
   });
 });
+
+describe("detectPlanningWarnings — festival near-miss (C10)", () => {
+  it("returns no near-miss warnings when no near-miss festival exists", () => {
+    const data = makeTripData({
+      cities: ["tokyo"],
+      regions: ["kanto"],
+      dates: { start: "2026-09-01", end: "2026-09-07" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    expect(warnings.find((w) => w.type === "festival_near_miss")).toBeUndefined();
+  });
+
+  it("returns at most one near-miss warning per trip", () => {
+    const data = makeTripData({
+      cities: ["kyoto"],
+      regions: ["kansai"],
+      dates: { start: "2026-05-09", end: "2026-05-12" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.filter((w) => w.type === "festival_near_miss");
+    expect(nm.length).toBeLessThanOrEqual(1);
+  });
+
+  it("forward fixed-date within cap sets action='extend_trip' and actionData", () => {
+    // Tenjin Matsuri (osaka) Jul 24-25. Trip Jul 18-22 (5d) → forward gap 2.
+    const data = makeTripData({
+      cities: ["osaka"],
+      regions: ["kansai"],
+      duration: 5,
+      dates: { start: "2026-07-18", end: "2026-07-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBe("extend_trip");
+    expect(nm?.actionData?.extendDays).toBe(2);
+    expect(nm?.actionData?.newEndDate).toBe("2026-07-24");
+    expect(nm?.actionData?.festivalId).toBe("tenjin-matsuri");
+  });
+
+  it("forward over duration cap (21) drops action and uses over-cap copy", () => {
+    // Trip duration 20, gap 2 → would push to 22, over cap.
+    const data = makeTripData({
+      cities: ["osaka"],
+      regions: ["kansai"],
+      duration: 20,
+      dates: { start: "2026-07-03", end: "2026-07-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBeUndefined();
+    expect(nm?.actionData).toBeUndefined();
+    expect(nm?.message).toContain("Worth knowing if you can shift dates");
+  });
+
+  it("backward fixed-date returns warning with no action", () => {
+    // Aoi Matsuri (kyoto) May 15. Trip May 17-22 → backward gap 2.
+    const data = makeTripData({
+      cities: ["kyoto"],
+      regions: ["kansai"],
+      dates: { start: "2026-05-17", end: "2026-05-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBeUndefined();
+    expect(nm?.title).toContain("wraps just before you arrive");
+  });
+
+  it("approximate festival returns warning with no action and rough window in message", () => {
+    // Cherry Blossom Peak Tokyo (Mar 25 - Apr 5, isApproximate).
+    // Trip ends Mar 22 → forward gap 3 from start (Mar 25).
+    const data = makeTripData({
+      cities: ["tokyo"],
+      regions: ["kanto"],
+      dates: { start: "2026-03-17", end: "2026-03-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBeUndefined();
+    expect(nm?.message).toContain("late March");
+  });
+
+  it("returns no warning when dates are missing", () => {
+    const data = makeTripData({
+      cities: ["kyoto"],
+      regions: ["kansai"],
+      dates: { start: "", end: "" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    expect(warnings.find((w) => w.type === "festival_near_miss")).toBeUndefined();
+  });
+
+  it("over-cap detection works without an explicit duration field (uses date math)", () => {
+    // Trip Jul 3 - Jul 22 = 20 days. Tenjin Matsuri Jul 24-25 → forward gap 2.
+    // 20 + 2 = 22, over the 21-day cap. Should drop action.
+    const data = makeTripData({
+      cities: ["osaka"],
+      regions: ["kansai"],
+      duration: undefined as unknown as number, // simulate a trip without a set duration field
+      dates: { start: "2026-07-03", end: "2026-07-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBeUndefined();
+    expect(nm?.actionData).toBeUndefined();
+  });
+});

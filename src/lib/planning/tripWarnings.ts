@@ -11,10 +11,11 @@ import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
 import {
   getFestivalsForTrip,
+  getFestivalNearMisses,
   type Festival,
   type FestivalNearMiss,
 } from "@/data/festivalCalendar";
-import { parseLocalDate } from "@/lib/utils/dateUtils";
+import { parseLocalDate, parseLocalDateWithOffset, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { travelTimeFromEntryPoint, getNearestCityToEntryPoint } from "@/lib/travelTime";
 import { getActiveHolidays } from "@/data/crowdPatterns";
 import { getWeatherRegion, type WeatherRegion } from "@/data/regions";
@@ -437,6 +438,10 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
   const festivalWarnings = detectFestivalWarnings(data);
   warnings.push(...festivalWarnings);
 
+  // Detect festival near-misses (C10)
+  const nearMissWarnings = detectFestivalNearMissWarnings(data);
+  warnings.push(...nearMissWarnings);
+
   // Detect return-to-airport issue
   const returnWarning = detectReturnToAirportWarning(data);
   if (returnWarning) {
@@ -594,6 +599,66 @@ function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
     message: f.description,
     icon: "🎆",
   }));
+}
+
+const TRIP_DURATION_CAP = 21;
+
+function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningWarning[] {
+  if (!data.dates?.start || !data.dates?.end) return [];
+
+  const startParts = data.dates.start.split("-").map(Number);
+  const endParts = data.dates.end.split("-").map(Number);
+  if (!startParts[1] || !startParts[2] || !endParts[1] || !endParts[2]) return [];
+
+  const cities: readonly string[] = data.cities ?? [];
+  const nearMisses = getFestivalNearMisses(
+    startParts[1], startParts[2],
+    endParts[1], endParts[2],
+    cities,
+  );
+
+  if (nearMisses.length === 0) return [];
+
+  const top = nearMisses[0]!;
+  const { festival, direction, gapDays } = top;
+
+  // Compute duration from dates (not data.duration) so an undefined or stale
+  // duration field can't smuggle an over-cap extension past the guard.
+  const tripStart = parseLocalDate(data.dates.start);
+  const tripEnd = parseLocalDate(data.dates.end);
+  if (!tripStart || !tripEnd) return [];
+  const tripDurationDays = Math.round((tripEnd.getTime() - tripStart.getTime()) / 86_400_000) + 1;
+
+  const wouldExceedCap = direction === "forward" && tripDurationDays + gapDays > TRIP_DURATION_CAP;
+  const isActionable = direction === "forward" && !festival.isApproximate && !wouldExceedCap;
+
+  const newEndDate = isActionable
+    ? addDaysToIsoDate(data.dates.end, gapDays)
+    : undefined;
+
+  return [{
+    id: `festival-near-miss-${festival.id}`,
+    type: "festival_near_miss",
+    severity: "info",
+    title: buildNearMissTitle(top),
+    message: buildNearMissMessage(top, wouldExceedCap),
+    icon: "🎆",
+    action: isActionable ? "extend_trip" : undefined,
+    actionData: isActionable && newEndDate ? {
+      festivalId: festival.id,
+      festivalName: festival.name,
+      extendDays: gapDays,
+      newEndDate,
+    } : undefined,
+  }];
+}
+
+function addDaysToIsoDate(iso: string, days: number): string {
+  // Use parseLocalDateWithOffset + formatLocalDateISO so we stay in local time
+  // (no UTC drift).
+  const date = parseLocalDateWithOffset(iso, days);
+  if (!date) return iso;
+  return formatLocalDateISO(date);
 }
 
 /**
