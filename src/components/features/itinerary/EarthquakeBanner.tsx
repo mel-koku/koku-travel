@@ -10,18 +10,24 @@ interface EarthquakeBannerProps {
   tripId: string;
 }
 
-type RailOperator = { name: string; label: string; url: string };
+type RailOperator = {
+  /** Used in body copy: "Check {bodyMention} before traveling." */
+  bodyMention: string;
+  /** Used as the CTA button label. */
+  ctaLabel: string;
+  url: string;
+};
 
 const RAIL_STATUS_BY_REGION: Record<KnownRegionId, RailOperator> = {
-  kanto:    { name: "JR East status",        label: "JR East status",        url: "https://traininfo.jreast.co.jp/service_cloud/en/" },
-  tohoku:   { name: "JR East status",        label: "JR East status",        url: "https://traininfo.jreast.co.jp/service_cloud/en/" },
-  hokkaido: { name: "JR Hokkaido status",    label: "JR Hokkaido status",    url: "https://www.jrhokkaido.co.jp/network/status/" },
-  kansai:   { name: "JR West status",        label: "JR West status",        url: "https://trafficinfo.westjr.co.jp/en/" },
-  chugoku:  { name: "JR West status",        label: "JR West status",        url: "https://trafficinfo.westjr.co.jp/en/" },
-  shikoku:  { name: "JR West status",        label: "JR West status",        url: "https://trafficinfo.westjr.co.jp/en/" },
-  kyushu:   { name: "JR Kyushu status",      label: "JR Kyushu status",      url: "https://www.jrkyushu.co.jp/english/" },
-  chubu:    { name: "JR Central status",     label: "JR Central status",     url: "https://global.jr-central.co.jp/en/" },
-  okinawa:  { name: "Okinawa Monorail info", label: "Okinawa Monorail",      url: "https://www.yui-rail.co.jp/en/" },
+  kanto:    { bodyMention: "JR East service status",     ctaLabel: "JR East status",     url: "https://traininfo.jreast.co.jp/service_cloud/en/" },
+  tohoku:   { bodyMention: "JR East service status",     ctaLabel: "JR East status",     url: "https://traininfo.jreast.co.jp/service_cloud/en/" },
+  hokkaido: { bodyMention: "JR Hokkaido service status", ctaLabel: "JR Hokkaido status", url: "https://www.jrhokkaido.co.jp/network/status/" },
+  kansai:   { bodyMention: "JR West service status",     ctaLabel: "JR West status",     url: "https://trafficinfo.westjr.co.jp/en/" },
+  chugoku:  { bodyMention: "JR West service status",     ctaLabel: "JR West status",     url: "https://trafficinfo.westjr.co.jp/en/" },
+  shikoku:  { bodyMention: "JR West service status",     ctaLabel: "JR West status",     url: "https://trafficinfo.westjr.co.jp/en/" },
+  kyushu:   { bodyMention: "JR Kyushu service status",   ctaLabel: "JR Kyushu status",   url: "https://www.jrkyushu.co.jp/english/" },
+  chubu:    { bodyMention: "JR Central service status",  ctaLabel: "JR Central status",  url: "https://global.jr-central.co.jp/en/" },
+  okinawa:  { bodyMention: "Okinawa Monorail service",   ctaLabel: "Okinawa Monorail",   url: "https://www.yui-rail.co.jp/en/" },
 };
 
 export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProps) {
@@ -43,8 +49,15 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
     }
   };
 
+  const headingId = `earthquake-banner-heading-${alert.id}`;
+
   return (
-    <section className="rounded-md bg-orange-50 border border-orange-200 px-4 py-3">
+    <section
+      role="status"
+      aria-live="polite"
+      aria-labelledby={headingId}
+      className="rounded-md bg-orange-50 border border-orange-200 px-4 py-3"
+    >
       <div className="flex gap-3">
         {/* Warning icon */}
         <div className="shrink-0 pt-0.5">
@@ -53,11 +66,11 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-medium text-orange-900">
+          <h2 id={headingId} className="text-base font-medium text-orange-900">
             {`Magnitude ${alert.magnitude} Earthquake Near ${alert.nearestCity}`}
           </h2>
           <p data-testid="earthquake-banner-body" className="mt-1 text-sm text-orange-800">
-            {`Struck ${alert.distanceKm} km from ${alert.nearestCity} ${alert.relativeTime}. Train inspections may cause transit delays. Check ${operator.name} before traveling.`}
+            {`Struck ${alert.distanceKm} km from ${alert.nearestCity} ${alert.relativeTime}. Train inspections may cause transit delays. Check ${operator.bodyMention} before traveling.`}
           </p>
 
           {/* CTA Buttons */}
@@ -68,7 +81,7 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-md bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-900 transition hover:bg-orange-200"
             >
-              {operator.label}
+              {operator.ctaLabel}
             </a>
             <button
               type="button"
