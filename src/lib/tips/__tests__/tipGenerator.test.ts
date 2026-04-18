@@ -205,6 +205,40 @@ describe("generateActivityTips — holiday-aware crowd tip (C13)", () => {
   });
 });
 
+describe("generateActivityTips — shoe-removal narrowing (A4)", () => {
+  it("does NOT fire shoe-removal tip on a regular restaurant", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "restaurant" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeUndefined();
+  });
+
+  it("does NOT fire shoe-removal tip on a cafe", () => {
+    const tips = generateActivityTips(
+      makeActivity({}),
+      makeLocation({ category: "cafe" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeUndefined();
+  });
+
+  it("fires shoe-removal tip for a kaiseki restaurant", () => {
+    const tips = generateActivityTips(
+      makeActivity({ mealType: "dinner" }),
+      makeLocation({ category: "kaiseki" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeDefined();
+  });
+
+  it("fires shoe-removal tip when tags include traditional", () => {
+    const tips = generateActivityTips(
+      makeActivity({ tags: ["traditional"] }),
+      makeLocation({ category: "restaurant", tags: ["traditional"] }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("shoe"))).toBeDefined();
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips

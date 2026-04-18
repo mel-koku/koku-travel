@@ -401,6 +401,28 @@ function generateTimingTips(
   return tips;
 }
 
+const TRADITIONAL_DINING_CATEGORIES = new Set([
+  "kaiseki", "ryokan", "izakaya_traditional", "traditional",
+]);
+const TRADITIONAL_TAGS = new Set([
+  "traditional", "tatami", "kaiseki", "ryokan",
+]);
+
+/**
+ * A dining venue is traditional (likely shoe removal) if either its category
+ * signals it or its tags do. Keeps the signal narrow so the tip fires on the
+ * small fraction of venues where it's actually useful.
+ */
+function isTraditionalDining(
+  category: string,
+  locationTags: string[] | undefined,
+  activityTags: string[] | undefined,
+): boolean {
+  if (TRADITIONAL_DINING_CATEGORIES.has(category)) return true;
+  const allTags = [...(locationTags ?? []), ...(activityTags ?? [])];
+  return allTags.some((t) => TRADITIONAL_TAGS.has(t.toLowerCase()));
+}
+
 /**
  * City-specific last-train guidance. Cutoff times reflect weekday averages
  * for returning to major accommodation hubs — values simplified to round
@@ -601,12 +623,15 @@ function generateGeneralTips(
       priority: 7,
       icon: "👟",
     });
-  } else if (category === "restaurant" || category === "cafe") {
+  } else if (isTraditionalDining(category, location.tags, activity.tags)) {
+    // Only fire for dining venues where tatami seating is genuinely likely.
+    // The previous blanket "restaurant || cafe" trigger fired on nearly every
+    // meal and trained users to ignore tips.
     tips.push({
       type: "general",
-      title: "Check for shoe removal",
-      message: "Some traditional restaurants with tatami seating require shoe removal. Look for a raised floor (genkan) or shoe shelves at the entrance.",
-      priority: 5,
+      title: "Shoe removal likely",
+      message: "Traditional dining venues often have tatami seating. Look for a raised genkan or shoe shelves at the entrance and slip off your shoes before stepping up.",
+      priority: 6,
       icon: "👟",
     });
   } else if (category === "market") {
