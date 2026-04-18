@@ -1,8 +1,10 @@
 import type { Location, Weekday } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { WeatherForecast } from "@/types/weather";
+import type { CityId } from "@/types/trip";
 import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
+import { CROWD_OVERRIDE_MAP, getHolidayMultiplier } from "@/data/crowdPatterns";
 
 /** Max important tips surfaced per activity */
 const MAX_IMPORTANT = 3;
@@ -53,6 +55,8 @@ export function generateActivityTips(
     weatherForecast?: WeatherForecast;
     allActivities?: ItineraryActivity[];
     dayIndex?: number;
+    cityId?: CityId;
+    activityDate?: Date;
   },
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
@@ -86,6 +90,12 @@ export function generateActivityTips(
   // Timing tips
   const timingTips = generateTimingTips(location, activity);
   tips.push(...timingTips);
+
+  // Last-train tips (evening nightlife activities in major cities)
+  if (options?.cityId) {
+    const lastTrainTips = generateLastTrainTips(location, activity, options.cityId);
+    tips.push(...lastTrainTips);
+  }
 
   // Accessibility tips
   const accessibilityTips = generateAccessibilityTips(location);
@@ -127,6 +137,7 @@ export async function generateActivityTipsAsync(
     allActivities?: ItineraryActivity[];
     dayIndex?: number;
     activityDate?: Date;
+    cityId?: CityId;
   },
 ): Promise<ActivityTip[]> {
   // Get the base tips synchronously
@@ -382,6 +393,56 @@ function generateTimingTips(
   }
 
   return tips;
+}
+
+/**
+ * City-specific last-train guidance. Cutoff times reflect weekday averages
+ * for returning to major accommodation hubs — values simplified to round
+ * times since the tip is directional ("wrap up by ~midnight"), not a
+ * schedule lookup. Users who need exact last-train data should consult
+ * Google Maps at the venue.
+ */
+const LAST_TRAIN_BY_CITY: Record<string, { cutoff: string; hub: string }> = {
+  tokyo: { cutoff: "around 12:20 AM", hub: "Shinjuku" },
+  osaka: { cutoff: "around 11:55 PM", hub: "Umeda" },
+  kyoto: { cutoff: "around 11:30 PM", hub: "Kyoto Station" },
+  nagoya: { cutoff: "around 11:50 PM", hub: "Nagoya Station" },
+  fukuoka: { cutoff: "around 11:40 PM", hub: "Hakata Station" },
+  sapporo: { cutoff: "around 11:50 PM", hub: "Sapporo Station" },
+  yokohama: { cutoff: "around 12:15 AM", hub: "Yokohama Station" },
+};
+
+const NIGHTLIFE_CATEGORIES = new Set([
+  "bar", "izakaya", "nightlife", "entertainment", "club",
+]);
+
+/**
+ * Last-train tip — fires for evening nightlife activities in cities where we
+ * have known cutoff data. Practical advice matters here: missing the last
+ * train means a ¥5,000+ taxi or a capsule hotel.
+ */
+function generateLastTrainTips(
+  location: Location,
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  cityId: CityId,
+): ActivityTip[] {
+  if (activity.timeOfDay !== "evening") return [];
+
+  const category = location.category?.toLowerCase() ?? "";
+  const isNightlife = NIGHTLIFE_CATEGORIES.has(category) ||
+    location.tags?.some((t) => NIGHTLIFE_CATEGORIES.has(t.toLowerCase()));
+  if (!isNightlife) return [];
+
+  const data = LAST_TRAIN_BY_CITY[cityId.toLowerCase()];
+  if (!data) return [];
+
+  return [{
+    type: "timing",
+    title: "Last train",
+    message: `Last trains from ${data.hub} run ${data.cutoff}. Check Google Maps from the venue before your second drink — taxis after midnight run ¥5,000+, and capsule hotels are ¥3,000-4,000 if you miss it.`,
+    priority: 8,
+    icon: "🌙",
+  }];
 }
 
 /**

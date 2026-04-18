@@ -78,6 +78,55 @@ describe("generateActivityTips — rain-proof categories", () => {
   });
 });
 
+describe("generateActivityTips — last-train trigger (B1)", () => {
+  it("fires last-train tip for evening bar with city context", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "bar" }),
+      { cityId: "tokyo" },
+    );
+    const timingTip = tips.find((t) => t.title.toLowerCase().includes("last train"));
+    expect(timingTip).toBeDefined();
+    expect(timingTip?.message).toMatch(/Tokyo|Shinjuku|midnight|around 12/i);
+  });
+
+  it("fires last-train tip for evening izakaya", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "izakaya" }),
+      { cityId: "osaka" },
+    );
+    const timingTip = tips.find((t) => t.title.toLowerCase().includes("last train"));
+    expect(timingTip).toBeDefined();
+  });
+
+  it("does NOT fire last-train tip for afternoon bar (not evening)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "afternoon" }),
+      makeLocation({ category: "bar" }),
+      { cityId: "tokyo" },
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+
+  it("does NOT fire last-train tip for evening restaurant (not nightlife)", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "restaurant" }),
+      { cityId: "tokyo" },
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+
+  it("does NOT fire last-train tip when no cityId provided", () => {
+    const tips = generateActivityTips(
+      makeActivity({ timeOfDay: "evening" }),
+      makeLocation({ category: "bar" }),
+    );
+    expect(tips.find((t) => t.title.toLowerCase().includes("last train"))).toBeUndefined();
+  });
+});
+
 describe("generateActivityTips", () => {
   it("should cap total tips at MAX_TOTAL", () => {
     // Use a location that generates many tips
