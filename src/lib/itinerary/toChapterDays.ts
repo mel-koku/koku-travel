@@ -103,7 +103,43 @@ function mapTransit(travel: ItineraryTravelSegment | undefined): ChapterBeat["tr
   const mode = normalizeMode(travel.mode);
   // TransitStep uses `lineName` field (verified in src/types/itinerary.ts)
   const line = travel.transitSteps?.[0]?.lineName ?? undefined;
-  return { minutes: travel.durationMinutes, mode, line };
+
+  const steps = travel.transitSteps?.map((s) => ({
+    type: s.type,
+    walkMinutes: s.walkMinutes,
+    walkInstruction: s.walkInstruction,
+    lineName: s.lineName,
+    lineShortName: s.lineShortName,
+    lineColor: s.lineColor,
+    trainType: s.trainType,
+    departureStop: s.departureStop,
+    arrivalStop: s.arrivalStop,
+    headsign: s.headsign,
+    numStops: s.numStops,
+    durationMinutes: s.durationMinutes,
+    departureGateway: s.departureGateway,
+    arrivalGateway: s.arrivalGateway,
+    fareYen: s.fareYen,
+    carPosition: s.carPosition,
+  }));
+
+  const totalFareYen =
+    steps && steps.reduce((sum, s) => sum + (s.fareYen ?? 0), 0) > 0
+      ? steps.reduce((sum, s) => sum + (s.fareYen ?? 0), 0)
+      : undefined;
+
+  const firstTransit = steps?.find((s) => s.type === "transit");
+  const summary = firstTransit
+    ? {
+        departureStop: firstTransit.departureStop,
+        arrivalStop: firstTransit.arrivalStop,
+        lineName: firstTransit.lineName,
+        lineShortName: firstTransit.lineShortName,
+        lineColor: firstTransit.lineColor,
+      }
+    : undefined;
+
+  return { minutes: travel.durationMinutes, mode, line, steps, totalFareYen, summary };
 }
 
 // ── ISO date arithmetic ───────────────────────────────────────────────────────

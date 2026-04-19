@@ -109,7 +109,10 @@ describe("toChapterDays", () => {
     } as unknown as Itinerary;
     const locations = new Map<string, Location>([["loc-a", stubLocation({})]]);
     const result = toChapterDays(itinerary, undefined, locations);
-    expect(result[0].beats[0].transitToNext).toEqual({ minutes: 18, mode: "train", line: undefined });
+    // Only assert on the narrow fields — new fields (steps, summary, totalFareYen) are
+    // additive and may be undefined when no transitSteps are present.
+    expect(result[0].beats[0].transitToNext).toMatchObject({ minutes: 18, mode: "train" });
+    expect(result[0].beats[0].transitToNext?.line).toBeUndefined();
     expect(result[0].beats[1].transitToNext).toBeNull();
   });
 

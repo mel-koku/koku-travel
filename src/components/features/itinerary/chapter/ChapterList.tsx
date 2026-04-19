@@ -26,6 +26,32 @@ export type ChapterBeat = {
     minutes: number;
     mode: "walk" | "train" | "car" | "bus" | "transit";
     line?: string;
+    steps?: Array<{
+      type: "walk" | "transit";
+      walkMinutes?: number;
+      walkInstruction?: string;
+      lineName?: string;
+      lineShortName?: string;
+      lineColor?: string;
+      trainType?: string;
+      departureStop?: string;
+      arrivalStop?: string;
+      headsign?: string;
+      numStops?: number;
+      durationMinutes?: number;
+      departureGateway?: string;
+      arrivalGateway?: string;
+      fareYen?: number;
+      carPosition?: string;
+    }>;
+    totalFareYen?: number;
+    summary?: {
+      departureStop?: string;
+      arrivalStop?: string;
+      lineName?: string;
+      lineShortName?: string;
+      lineColor?: string;
+    };
   } | null;
 };
 
