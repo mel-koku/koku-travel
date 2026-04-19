@@ -14,8 +14,8 @@ const ALMOST_GONE_THRESHOLD = 20;
 const DISMISS_KEY = "yuku.launch-banner.v1.dismissed";
 
 export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerProps) {
-  const [remaining] = useState<number | null>(initialRemaining);
-  const [total] = useState<number | null>(initialTotal);
+  const [remaining, setRemaining] = useState<number | null>(initialRemaining);
+  const [total, setTotal] = useState<number | null>(initialTotal);
   const [dismissed, setDismissed] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,6 +24,24 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
       setDismissed(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (dismissed) return;
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/launch-pricing");
+        if (!res.ok) return;
+        const data: { remaining: number | null; total: number | null } =
+          await res.json();
+        if (data.remaining !== null) setRemaining(data.remaining);
+        if (data.total !== null) setTotal(data.total);
+      } catch {
+        // ignore transient errors; keep last known count
+      }
+    };
+    const interval = setInterval(poll, 60_000);
+    return () => clearInterval(interval);
+  }, [dismissed]);
 
   if (dismissed) return null;
   if (remaining === null || total === null) return null;

@@ -62,4 +62,19 @@ describe("LaunchBanner", () => {
     render(<LaunchBanner initialRemaining={247} initialTotal={300} />);
     expect(screen.queryByRole("region")).not.toBeInTheDocument();
   });
+
+  it("updates counter from polling response", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ remaining: 100, total: 300 }),
+    }));
+    render(<LaunchBanner initialRemaining={247} initialTotal={300} />);
+    expect(screen.getByText("247 / 300")).toBeInTheDocument();
+    await vi.advanceTimersByTimeAsync(60_000);
+    await vi.waitFor(() =>
+      expect(screen.getByText("100 / 300")).toBeInTheDocument(),
+    );
+    vi.useRealTimers();
+  });
 });
