@@ -60,7 +60,7 @@ export function DisasterBanner({ trip, region }: DisasterBannerProps) {
   };
 
   return (
-    <section className="rounded-md bg-amber-50 border border-amber-200 px-4 py-3">
+    <section className="rounded-md bg-yuzu-tint px-4 py-3">
       <div className="flex gap-3">
         {/* Warning icon */}
         <div className="shrink-0 pt-0.5">
@@ -71,22 +71,22 @@ export function DisasterBanner({ trip, region }: DisasterBannerProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-medium text-amber-900">{copy.heading}</h2>
-          <p className="mt-1 text-sm text-amber-800">{copy.body}</p>
+          <h2 className="text-base font-medium text-foreground">{copy.heading}</h2>
+          <p className="mt-1 text-sm text-foreground-secondary">{copy.body}</p>
 
           {/* CTA Buttons */}
           <div className="mt-3 flex gap-2">
             <button
               type="button"
               onClick={handleLearnMore}
-              className="inline-flex items-center rounded-md bg-amber-100 px-3 py-1.5 text-xs font-medium text-amber-900 transition hover:bg-amber-200"
+              className="inline-flex items-center rounded-md bg-warning/10 px-3 py-1.5 text-xs font-medium text-warning ring-1 ring-inset ring-warning/20 transition hover:bg-warning/20"
             >
               Learn More
             </button>
             <button
               type="button"
               onClick={handleDismiss}
-              className="inline-flex items-center rounded-md bg-transparent px-3 py-1.5 text-xs font-medium text-amber-700 transition hover:bg-amber-100"
+              className="inline-flex items-center rounded-md bg-transparent px-3 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sand"
             >
               Dismiss
             </button>
