@@ -16,14 +16,16 @@ export function ChapterHeader({ dayIndex, city, date, intro }: ChapterHeaderProp
         {city}
       </h2>
       <div className="text-sm text-foreground-body mb-6">{date}</div>
-      <p
-        className={cn(
-          typography({ intent: "editorial-prose" }),
-          "chapter-prose max-w-[58ch]",
-        )}
-      >
-        {intro}
-      </p>
+      {intro && (
+        <p
+          className={cn(
+            typography({ intent: "editorial-prose" }),
+            "chapter-prose max-w-[58ch]",
+          )}
+        >
+          {intro}
+        </p>
+      )}
     </header>
   );
 }

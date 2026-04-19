@@ -91,9 +91,11 @@ export function Beat({
           {location.category}
           {duration ? ` · ${duration}` : ""}
         </div>
-        <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch]">
-          {body}
-        </p>
+        {body && (
+          <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch]">
+            {body}
+          </p>
+        )}
 
         {/* Inline stakes line — only when isCurrent and at least one promoteInline chip */}
         {inlineChips.length > 0 && (

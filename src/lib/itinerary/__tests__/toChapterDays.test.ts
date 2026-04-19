@@ -116,6 +116,14 @@ describe("toChapterDays", () => {
     expect(result[0].beats[1].transitToNext).toBeNull();
   });
 
+  it("emits empty string when insiderTip, editorialSummary, and category fallback all miss", () => {
+    const locations = new Map<string, Location>([
+      ["loc-a", stubLocation({ category: "unknown-category" })],
+    ]);
+    const result = toChapterDays(stubItinerary(), undefined, locations);
+    expect(result[0].beats[0].body).toBe("");
+  });
+
   it("emits a closure inline note when ≥2 stops are closed on the date", () => {
     // With two closed stops on Thursday, should produce one inline note.
     const closedHours = {

@@ -9,6 +9,7 @@ import {
   type RefObject,
 } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
@@ -892,7 +893,6 @@ export const ItineraryShell = ({
               currentDayIndex={safeSelectedDay}
               totalDays={model.days.length}
               isToday={env.itineraryV2DayOf && focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
-              tripId={currentTrip.id}
               unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
               unlockedPill={isFreePromoUnlock ? (
                 <span
@@ -901,7 +901,6 @@ export const ItineraryShell = ({
                   Unlocked. Launch promo.
                 </span>
               ) : undefined}
-              onOpenOverview={() => setOverviewDrawerOpen(true)}
               onOpenAdvisories={() => setAdvisoriesDrawerOpen(true)}
             />
           )}
@@ -1093,6 +1092,20 @@ export const ItineraryShell = ({
                   >
                     + Add place
                   </button>
+                )}
+                {v2Nav && currentTrip && (
+                  <div className="ml-auto flex items-center gap-4 text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setOverviewDrawerOpen(true)}
+                      className="text-accent"
+                    >
+                      Trip overview ↗
+                    </button>
+                    <Link href={`/trips/${currentTrip.id}/guide`} className="text-accent">
+                      Before you land ↗
+                    </Link>
+                  </div>
                 )}
               </div>
             )}

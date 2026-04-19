@@ -166,6 +166,21 @@ describe("Beat", () => {
     expect(screen.getByText("Free entry")).toBeInTheDocument();
   });
 
+  it("does not render the body paragraph when body is empty", () => {
+    const { container } = render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body=""
+        isPast={false}
+        chips={[]}
+        onExpand={() => {}}
+      />,
+    );
+    expect(container.querySelector("p.max-w-\\[52ch\\]")).toBeNull();
+  });
+
   it("keeps inline-flagged chips in the chip row when isCurrent is false", () => {
     const { container } = render(
       <Beat
