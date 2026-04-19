@@ -7,7 +7,7 @@ import { Beat, type BeatChip } from "./Beat";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
 import { UnlockBeat } from "./UnlockBeat";
-import { LocationSearchBar } from "@/components/features/itinerary/LocationSearchBar";
+import { InlineAddActivity } from "./InlineAddActivity";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { getGtag } from "@/lib/analytics/customLocations";
@@ -51,9 +51,10 @@ export type ChapterListProps = {
     cities: string[];
     totalDays: number;
   };
-  onAddLocation?: (
+  onAddActivity?: (
     dayIndex: number,
     activity: Extract<ItineraryActivity, { kind: "place" }>,
+    meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
   ) => void;
   isReadOnly?: boolean;
 };
@@ -98,7 +99,7 @@ export function ChapterList({
   onExpandBeat,
   onReviewAdvisories,
   unlockProps,
-  onAddLocation,
+  onAddActivity,
   isReadOnly,
 }: ChapterListProps) {
   const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
@@ -200,11 +201,11 @@ export function ChapterList({
                   })}
                 </Spine>
               )}
-              {!isReadOnly && onAddLocation && (
+              {!isReadOnly && onAddActivity && (
                 <div className="mt-8 pl-[30px]">
-                  <LocationSearchBar
+                  <InlineAddActivity
                     dayActivities={day.dayActivities}
-                    onAddActivity={(activity) => onAddLocation(idx, activity)}
+                    onAdd={(activity, meta) => onAddActivity(idx, activity, meta)}
                   />
                 </div>
               )}

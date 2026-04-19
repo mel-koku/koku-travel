@@ -67,11 +67,12 @@ import { ContextualUnlockPrompt, type UnlockPromptContext } from "./ContextualUn
 import { buildItineraryTabs, resolveTabClick, type ItineraryViewMode } from "./itineraryTabs";
 import { isDayAccessible, getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 import { env } from "@/lib/env";
-import { TripAdvisoriesTray, type AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
-import { LaunchNudge } from "@/components/features/itinerary/chapter/LaunchNudge";
+import type { AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
+import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/TripAdvisoriesDrawer";
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
 import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
 import { EditTripDrawer } from "@/components/features/itinerary/chapter/EditTripDrawer";
+import { trackCustomLocationAdded } from "@/lib/analytics/customLocations";
 import {
   getDismissedAdvisoriesLocal,
   dismissAdvisoryLocal,
@@ -217,6 +218,7 @@ export const ItineraryShell = ({
   const v2Nav = env.itineraryV2Nav;
 
   const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+  const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
 
   // All place activities across all days (flattened) — batch location fetch for ChapterList
   const allPlaceActivities = useMemo(() => {
@@ -565,12 +567,30 @@ export const ItineraryShell = ({
     [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
-  // ── Add location to a specific day (chapter layout) ──
-  const handleAddLocationToDay = useCallback(
-    (dayIndex: number, newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+  // ── Add activity to a specific day (chapter layout) ──
+  const handleAddActivityToDay = useCallback(
+    (
+      dayIndex: number,
+      newActivity: Extract<ItineraryActivity, { kind: "place" }>,
+      meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
+    ) => {
       if (isReadOnly) return;
       const targetDay = model.days[dayIndex];
       if (!tripId || isUsingMock || !targetDay) return;
+
+      if (newActivity.isCustom) {
+        trackCustomLocationAdded({
+          addressSource: meta.addressSource === "none" ? "as-is" : meta.addressSource,
+          hasStartTime: Boolean(newActivity.manualStartTime),
+          fieldsFilled: [
+            newActivity.phone,
+            newActivity.website,
+            newActivity.costEstimate,
+            newActivity.notes,
+            newActivity.confirmationNumber,
+          ].filter(Boolean).length,
+        });
+      }
 
       addActivity(tripId, targetDay.id, newActivity);
 
@@ -856,13 +876,15 @@ export const ItineraryShell = ({
               isToday={env.itineraryV2DayOf && focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
               tripId={currentTrip.id}
               unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
+              unlockedPill={isFreePromoUnlock ? (
+                <span
+                  className="inline-flex items-center rounded-full bg-canvas px-3 py-1 text-[11px] text-brand-primary"
+                >
+                  Unlocked. Launch promo.
+                </span>
+              ) : undefined}
               onOpenEdit={() => setEditDrawerOpen(true)}
-              onOpenMore={() => {
-                document.querySelector("[aria-label='Trip advisories']")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }}
+              onOpenAdvisories={() => setAdvisoriesDrawerOpen(true)}
             />
           )}
           {/* v2 Nav: EditTripDrawer */}
@@ -871,6 +893,19 @@ export const ItineraryShell = ({
               open={editDrawerOpen}
               onClose={() => setEditDrawerOpen(false)}
               dashboardProps={dashboardProps}
+            />
+          )}
+          {/* v2 Nav: TripAdvisoriesDrawer */}
+          {v2Nav && currentTrip && (
+            <TripAdvisoriesDrawer
+              open={advisoriesDrawerOpen}
+              onClose={() => setAdvisoriesDrawerOpen(false)}
+              trayProps={{
+                tripId: currentTrip.id,
+                entries: trayEntries,
+                dismissed: dismissedAdvisories,
+                onDismiss: handleDismissAdvisory,
+              }}
             />
           )}
           {/* Header bar */}
@@ -892,6 +927,7 @@ export const ItineraryShell = ({
             >
               {/* Unified toolbar: title | tabs + share */}
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                {!v2Nav && (
                 <div className="flex min-w-0 items-center gap-2">
                   <h1
                     ref={finalHeadingRef}
@@ -916,6 +952,14 @@ export const ItineraryShell = ({
                     </span>
                   )}
                 </div>
+                )}
+                {v2Nav && isUsingMock && (
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                      Mock
+                    </span>
+                  </div>
+                )}
                 {!v2Nav && (
                 <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
                   <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
@@ -1136,24 +1180,7 @@ export const ItineraryShell = ({
               </>
             )}
 
-            {/* v2 Chrome — advisories tray + launch nudge */}
-            {v2Chrome && currentTrip && (
-              <div className="mb-3 space-y-2">
-                {!dismissedAdvisories.has("v2-launch-nudge") && (
-                  <LaunchNudge
-                    onDismiss={() => handleDismissAdvisory("v2-launch-nudge")}
-                  />
-                )}
-                {trayEntries.length > 0 && (
-                  <TripAdvisoriesTray
-                    tripId={currentTrip.id}
-                    entries={trayEntries}
-                    dismissed={dismissedAdvisories}
-                    onDismiss={handleDismissAdvisory}
-                  />
-                )}
-              </div>
-            )}
+            {/* v2 Chrome — advisories now in TripAdvisoriesDrawer (⋯ menu), not inline */}
 
             {/* Day transition interstitial */}
             <AnimatePresence>
@@ -1180,12 +1207,7 @@ export const ItineraryShell = ({
                   <ChapterList
                     trip={{ id: tripId, name: tripName, days: chapterDays }}
                     onExpandBeat={handleExpandBeat}
-                    onReviewAdvisories={() => {
-                      document.querySelector("[aria-label='Trip advisories']")?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      });
-                    }}
+                    onReviewAdvisories={() => setAdvisoriesDrawerOpen(true)}
                     unlockProps={{
                       priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
                       launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
@@ -1193,7 +1215,7 @@ export const ItineraryShell = ({
                       cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
                       totalDays: model.days.length,
                     }}
-                    onAddLocation={handleAddLocationToDay}
+                    onAddActivity={handleAddActivityToDay}
                     isReadOnly={isReadOnly}
                   />
                 ) : (
