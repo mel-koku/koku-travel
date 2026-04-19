@@ -78,12 +78,27 @@ describe("CULTURAL_MOMENT_TEMPLATES — data integrity", () => {
     }
   });
 
+  it("gap-fill city templates (Yokohama/Kamakura/Hakone/Nikko/Sapporo) are present and reachable", () => {
+    const gapIds = ["cm-72", "cm-73", "cm-74", "cm-75", "cm-76"];
+    const byId = new Map(CULTURAL_MOMENT_TEMPLATES.map((t) => [t.id, t]));
+    for (const id of gapIds) {
+      const t = byId.get(id);
+      expect(t, `expected template ${id}`).toBeDefined();
+      const [sub] = t!.key.split(":");
+      expect(
+        TRIGGERING_SUBCATEGORIES.has(sub!),
+        `template ${id} subcategory ${sub} not in TRIGGERING_SUBCATEGORIES`,
+      ).toBe(true);
+    }
+  });
+
   it("no em-dashes in C11+ regional template content (brand voice rule)", () => {
-    // cm-53 through cm-71: C11 regional batch + landmark:nara added when
-    // landmark was wired into CULTURAL_SUBCATEGORIES.
+    // cm-53+: C11 regional batch, landmark:nara, and gap-fill cities.
+    // Bound is open-ended so the guard keeps covering new additions
+    // without needing per-PR updates.
     const newTemplates = CULTURAL_MOMENT_TEMPLATES.filter((t) => {
       const n = Number(t.id.replace("cm-", ""));
-      return n >= 53 && n <= 71;
+      return n >= 53;
     });
     for (const t of newTemplates) {
       expect(t.content.includes("—"), `template ${t.id} contains em-dash`).toBe(false);
