@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { LocationSearchBar } from "@/components/features/itinerary/LocationSearchBar";
 
 vi.mock("@/hooks/useLocationSearch", () => ({
@@ -38,6 +38,8 @@ describe("LocationSearchBar", () => {
     const user = userEvent.setup();
     render(<LocationSearchBar dayActivities={[]} onAddActivity={() => {}} />);
     await user.click(screen.getByRole("button", { name: /add a place/i }));
-    expect(screen.getByRole("button", { name: /close search/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /close search/i })).toBeInTheDocument();
+    });
   });
 });
