@@ -41,6 +41,13 @@ describe("ChapterHeader", () => {
     expect(container.querySelector(".chapter-prose")).toBeTruthy();
   });
 
+  it("does not render the prose paragraph when intro is empty", () => {
+    const { container } = render(
+      <ChapterHeader dayIndex={0} city="Tokyo" date="Mon, Apr 21" intro="" />,
+    );
+    expect(container.querySelector(".chapter-prose")).toBeNull();
+  });
+
   it("handles two-digit day numerals", () => {
     render(
       <ChapterHeader

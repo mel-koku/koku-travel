@@ -50,14 +50,14 @@ export function AddPlaceDialog({
       <div
         role="dialog"
         aria-label="Add a place"
-        className="w-full max-w-lg bg-background rounded-md shadow-[var(--shadow-elevated)] p-6 max-h-[90dvh] overflow-y-auto"
+        className="w-full max-w-lg bg-background rounded-md shadow-[var(--shadow-elevated)] flex flex-col max-h-[85dvh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="flex items-center justify-between mb-5">
-          <div>
+        <header className="flex items-start justify-between gap-4 p-6 pb-4 border-b border-border">
+          <div className="flex-1 min-w-0">
             <h2 className="text-lg font-medium text-foreground">Add a place</h2>
-            <div className="text-sm text-foreground-secondary mt-0.5">
-              <label className="inline-flex items-center gap-2">
+            <div className="text-sm text-foreground-secondary mt-1">
+              <label className="inline-flex items-center gap-2 flex-wrap">
                 <span>Adding to</span>
                 <select
                   value={selectedDayIdx}
@@ -74,20 +74,23 @@ export function AddPlaceDialog({
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-foreground-secondary"
+            className="text-sm text-foreground-secondary shrink-0 mt-1"
+            aria-label="Close"
           >
             Close ✕
           </button>
         </header>
-        {selectedDay && (
-          <InlineAddActivity
-            dayActivities={selectedDay.activities}
-            onAdd={(activity, meta) => {
-              onAdd(selectedDay.index, activity, meta);
-              onClose();
-            }}
-          />
-        )}
+        <div className="flex-1 min-h-0 overflow-y-auto p-6 pt-4">
+          {selectedDay && (
+            <InlineAddActivity
+              dayActivities={selectedDay.activities}
+              onAdd={(activity, meta) => {
+                onAdd(selectedDay.index, activity, meta);
+                onClose();
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -20,6 +20,24 @@ const CATEGORY_FALLBACK: Record<string, string> = {
   shrine: "Arrive before the tour buses.",
   market: "Walk end-to-end and graze.",
   view: "Best at dusk.",
+  landmark: "Walk up close. Photos read better from the side.",
+  culture: "Pause for the story behind the craft.",
+  food: "Worth the queue if it has one.",
+  restaurant: "Worth the queue if it has one.",
+  cafe: "Sit in, not to go.",
+  bar: "Arrive early to get a seat.",
+  park: "Walk the loop path before you settle.",
+  garden: "Take the long path.",
+  onsen: "Shower before the soak. Small towel only in the bath.",
+  museum: "Start at the top floor and work down.",
+  gallery: "Slow down at the back rooms.",
+  nature: "Go early for the quiet.",
+  shopping: "Best finds are on the upper floors.",
+  entertainment: "Book the slot when you plan the day.",
+  view_point: "Best at dusk.",
+  observatory: "Best at dusk.",
+  shopping_street: "Walk end-to-end and graze.",
+  accommodation: "Settle in. Onsen before dinner if there is one.",
 };
 
 // ── Default clock times per slot ─────────────────────────────────────────────
@@ -93,7 +111,9 @@ function bodyFor(location: Location): string {
   if (location.editorialSummary) return location.editorialSummary;
   const cat = location.category?.toLowerCase();
   if (cat && CATEGORY_FALLBACK[cat]) return CATEGORY_FALLBACK[cat]!;
-  return `${location.name}. ${location.category ?? "stop"}.`;
+  // Long-tail: no real body is better than "Name. category."
+  // UI (Beat.tsx) suppresses the paragraph when body is empty.
+  return "";
 }
 
 // ── Transit segment mapping ───────────────────────────────────────────────────

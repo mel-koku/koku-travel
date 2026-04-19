@@ -1,7 +1,6 @@
 "use client";
 
 import { type ReactNode } from "react";
-import Link from "next/link";
 import { DropdownMenu } from "./DropdownMenu";
 
 export type TripBarProps = {
@@ -9,10 +8,8 @@ export type TripBarProps = {
   currentDayIndex: number;
   totalDays: number;
   isToday: boolean;
-  tripId: string;
   unreadAdvisories: number;
   unlockedPill?: ReactNode;
-  onOpenOverview: () => void;
   onShare?: () => void;
   onDownloadPdf?: () => void;
   onOpenAdvisories?: () => void;
@@ -23,10 +20,8 @@ export function TripBar({
   currentDayIndex,
   totalDays,
   isToday,
-  tripId,
   unreadAdvisories,
   unlockedPill,
-  onOpenOverview,
   onShare,
   onDownloadPdf,
   onOpenAdvisories,
@@ -51,12 +46,6 @@ export function TripBar({
         {unlockedPill && <span className="normal-case tracking-normal">{unlockedPill}</span>}
       </div>
       <div className="flex items-center gap-6 normal-case tracking-normal text-sm">
-        <button type="button" onClick={onOpenOverview} className="text-accent">
-          Trip overview ↗
-        </button>
-        <Link href={`/trips/${tripId}/guide`} className="text-accent">
-          Before you land ↗
-        </Link>
         <DropdownMenu
           ariaLabel="More trip actions"
           align="right"
