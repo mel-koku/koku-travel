@@ -603,4 +603,47 @@ export const CULTURAL_MOMENT_TEMPLATES: CulturalMomentTemplate[] = [
     icon: "🍱",
     pillar: "omotenashi",
   },
+
+  // ─── Gap-fill: major tourist cities without city-keyed templates ───────────
+
+  {
+    id: "cm-72",
+    key: "restaurant:yokohama",
+    content:
+      "Yokohama Chinatown is the largest in Japan, with roots going back to the 1859 opening of the port to foreign trade. Look for 'hoppe-yaki' (pan-fried buns) and tapioca shops clustered on Chukagai-odori, and note that most restaurants here do set menus at lunch rather than à la carte, which keeps prices and waits predictable.",
+    icon: "🥟",
+    pillar: "omotenashi",
+  },
+  {
+    id: "cm-73",
+    key: "temple:kamakura",
+    content:
+      "The Great Buddha at Kotoku-in was cast in 1252 and has sat outdoors since a tsunami washed away the wooden hall that once sheltered him in 1498. For a small fee you can step inside the statue itself. The interior surface shows the casting joints, which makes the scale of 13th-century metalwork feel unexpectedly personal.",
+    icon: "🛕",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-74",
+    key: "onsen:hakone",
+    content:
+      "Hakone's ryokan culture runs deep: most traditional inns here expect guests to arrive by 16:00 for tea service and the kaiseki dinner sequence. Checkout is usually 10:00. If your itinerary is tight, the day-use onsen (higaeri onsen) along Hakone-Yumoto give you the bath experience without committing to the full overnight rhythm.",
+    icon: "♨️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-75",
+    key: "shrine:nikko",
+    content:
+      "Nikko's Toshogu, the mausoleum of shogun Tokugawa Ieyasu, is a UNESCO World Heritage site and one of the few shrines in Japan where lavish color is the point rather than the exception. The famous three-monkey carving (see no evil, hear no evil, speak no evil) is small and easy to miss, tucked above the sacred stable near the entrance.",
+    icon: "⛩️",
+    pillar: "kegare",
+  },
+  {
+    id: "cm-76",
+    key: "bar:sapporo",
+    content:
+      "Sapporo is Japan's beer capital; the Sapporo Brewery opened here in 1876 and the city still runs a beer museum in the original brick hall. In izakaya, try a flight of local craft alongside jingisukan (grilled mutton named for Genghis Khan), the Hokkaido pairing that locals default to when beer is on the table.",
+    icon: "🍺",
+    pillar: "omotenashi",
+  },
 ];
