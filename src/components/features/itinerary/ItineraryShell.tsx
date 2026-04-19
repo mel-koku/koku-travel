@@ -41,8 +41,8 @@ import { ShareButton } from "./ShareButton";
 import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
-import { GoshuinBanner } from "./GoshuinBanner";
-import { PrepBanner } from "./PrepBanner";
+import { GoshuinBanner, shouldShowGoshuin } from "./GoshuinBanner";
+import { PrepBanner, hasApplicablePrepItems } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
 import { AccessibilityBanner } from "./AccessibilityBanner";
 import { EarthquakeAlertSlot } from "./EarthquakeAlertSlot";
@@ -553,18 +553,9 @@ export const ItineraryShell = ({
       });
     }
 
-    // GoshuinBanner condition (shrine/temple tag + upcoming)
-    const hasShrineOrTemple = model.days.some((day) =>
-      day.activities.some((activity) => {
-        if (activity.kind !== "place") return false;
-        const tags = (activity.tags as string[]) ?? [];
-        return tags.some((tag) => tag === "shrine" || tag === "temple");
-      })
-    );
-    const isUpcoming = currentTrip.builderData?.dates?.start
-      ? new Date(currentTrip.builderData.dates.start) > new Date()
-      : false;
-    if (hasShrineOrTemple && isUpcoming) {
+    // GoshuinBanner condition — mirrors shouldShowGoshuin exactly (upcoming,
+    // shrine/temple in itinerary, not dismissed in session or trip state).
+    if (shouldShowGoshuin(currentTrip)) {
       entries.push({
         key: "goshuin",
         title: "Goshuin passport for temple days",
@@ -572,9 +563,9 @@ export const ItineraryShell = ({
       });
     }
 
-    // PrepBanner condition (upcoming status + has applicable items)
+    // PrepBanner condition — upcoming + at least one applicable checklist item.
     const tripStatus = getTripStatus(currentTrip);
-    if (tripStatus === "upcoming") {
+    if (tripStatus === "upcoming" && hasApplicablePrepItems(currentTrip)) {
       entries.push({
         key: "prep-checklist",
         title: "Pre-trip checklist",
@@ -601,7 +592,7 @@ export const ItineraryShell = ({
     }
 
     return entries;
-  }, [v2Chrome, currentTrip, model.days, model.seasonalHighlight, dayTripSuggestions]);
+  }, [v2Chrome, currentTrip, model.seasonalHighlight, dayTripSuggestions]);
 
   // Print export data
   const printCities = useMemo(() => {
