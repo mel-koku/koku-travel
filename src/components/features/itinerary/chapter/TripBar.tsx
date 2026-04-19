@@ -12,7 +12,7 @@ export type TripBarProps = {
   tripId: string;
   unreadAdvisories: number;
   unlockedPill?: ReactNode;
-  onOpenEdit: () => void;
+  onOpenOverview: () => void;
   onShare?: () => void;
   onDownloadPdf?: () => void;
   onOpenAdvisories?: () => void;
@@ -26,7 +26,7 @@ export function TripBar({
   tripId,
   unreadAdvisories,
   unlockedPill,
-  onOpenEdit,
+  onOpenOverview,
   onShare,
   onDownloadPdf,
   onOpenAdvisories,
@@ -51,8 +51,8 @@ export function TripBar({
         {unlockedPill && <span className="normal-case tracking-normal">{unlockedPill}</span>}
       </div>
       <div className="flex items-center gap-6 normal-case tracking-normal text-sm">
-        <button type="button" onClick={onOpenEdit} className="text-accent">
-          Edit trip ↗
+        <button type="button" onClick={onOpenOverview} className="text-accent">
+          Trip overview ↗
         </button>
         <Link href={`/trips/${tripId}/guide`} className="text-accent">
           Before you land ↗

@@ -71,7 +71,8 @@ import type { AdvisoryEntry } from "@/components/features/itinerary/chapter/Trip
 import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/TripAdvisoriesDrawer";
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
 import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
-import { EditTripDrawer } from "@/components/features/itinerary/chapter/EditTripDrawer";
+import { TripOverviewDrawer } from "@/components/features/itinerary/chapter/TripOverviewDrawer";
+import { AddPlaceDialog } from "@/components/features/itinerary/chapter/AddPlaceDialog";
 import { trackCustomLocationAdded } from "@/lib/analytics/customLocations";
 import {
   getDismissedAdvisoriesLocal,
@@ -217,8 +218,9 @@ export const ItineraryShell = ({
   // v2 Nav flag — replaces 4-tab strip with TripBar + EditTripDrawer when true
   const v2Nav = env.itineraryV2Nav;
 
-  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+  const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
   const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
+  const [addPlaceDialogOpen, setAddPlaceDialogOpen] = useState(false);
 
   // All place activities across all days (flattened) — batch location fetch for ChapterList
   const allPlaceActivities = useMemo(() => {
@@ -778,7 +780,7 @@ export const ItineraryShell = ({
     tripStartDate,
     onClose: () => {
       if (v2Nav) {
-        setEditDrawerOpen(false);
+        setOverviewDrawerOpen(false);
       } else {
         setViewMode("timeline");
       }
@@ -786,7 +788,7 @@ export const ItineraryShell = ({
     onSelectDay: (dayIndex: number) => {
       handleSelectDayChange(dayIndex);
       if (v2Nav) {
-        setEditDrawerOpen(false);
+        setOverviewDrawerOpen(false);
       } else {
         setViewMode("timeline");
       }
@@ -899,15 +901,15 @@ export const ItineraryShell = ({
                   Unlocked. Launch promo.
                 </span>
               ) : undefined}
-              onOpenEdit={() => setEditDrawerOpen(true)}
+              onOpenOverview={() => setOverviewDrawerOpen(true)}
               onOpenAdvisories={() => setAdvisoriesDrawerOpen(true)}
             />
           )}
-          {/* v2 Nav: EditTripDrawer */}
+          {/* v2 Nav: TripOverviewDrawer */}
           {v2Nav && (
-            <EditTripDrawer
-              open={editDrawerOpen}
-              onClose={() => setEditDrawerOpen(false)}
+            <TripOverviewDrawer
+              open={overviewDrawerOpen}
+              onClose={() => setOverviewDrawerOpen(false)}
               dashboardProps={dashboardProps}
             />
           )}
@@ -922,6 +924,20 @@ export const ItineraryShell = ({
                 dismissed: dismissedAdvisories,
                 onDismiss: handleDismissAdvisory,
               }}
+            />
+          )}
+          {/* Add place dialog — chapter layout only */}
+          {v2Chapter && (
+            <AddPlaceDialog
+              open={addPlaceDialogOpen}
+              onClose={() => setAddPlaceDialogOpen(false)}
+              days={model.days.map((d, idx) => ({
+                index: idx,
+                label: `Day ${idx + 1}${d.cityId ? ` · ${d.cityId}` : ""}`,
+                activities: d.activities,
+              }))}
+              defaultDayIndex={safeSelectedDay}
+              onAdd={handleAddActivityToDay}
             />
           )}
           {/* Header bar */}
@@ -1068,6 +1084,15 @@ export const ItineraryShell = ({
                     onStartTimeChange={handleDayStartTimeChange}
                     onRequireUnlock={() => requireUnlock("refinement")}
                   />
+                )}
+                {v2Chapter && !isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setAddPlaceDialogOpen(true)}
+                    className="rounded-md bg-brand-primary text-white text-sm font-medium px-4 py-2 hover:bg-brand-secondary transition active:scale-[0.98]"
+                  >
+                    + Add place
+                  </button>
                 )}
               </div>
             )}
@@ -1231,8 +1256,12 @@ export const ItineraryShell = ({
                       cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
                       totalDays: model.days.length,
                     }}
-                    onAddActivity={handleAddActivityToDay}
                     onVisibleDayChange={handleVisibleDayChange}
+                    onReorderBeats={(dayIndex, activityIds) => {
+                      const day = model.days[dayIndex];
+                      if (!day) return;
+                      handleReorder(day.id, activityIds);
+                    }}
                     isReadOnly={isReadOnly}
                   />
                 ) : (
