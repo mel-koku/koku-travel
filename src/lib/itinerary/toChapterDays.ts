@@ -160,12 +160,16 @@ function cityDisplay(cityId: string): string {
  *                        When provided, each day's `date` is computed as
  *                        `tripStartDate + dayIndex days`.
  *                        When absent, `day.dateLabel` is used as a fallback string.
+ * @param isDayAccessible - Optional predicate; when provided, days that return false
+ *                          are marked `isLocked: true` and rendered as paywall chapters.
+ *                          Defaults to always-accessible when omitted.
  */
 export function toChapterDays(
   itinerary: Itinerary,
   guideProse: GuideProseLike | undefined,
   locations: Map<string, Location> | Record<string, Location>,
   tripStartDate?: string,
+  isDayAccessible?: (dayIndex: number) => boolean,
 ): ChapterDay[] {
   // Normalize locations to a Map regardless of input shape
   const locMap =
@@ -185,6 +189,21 @@ export function toChapterDays(
     const isoDate = tripStartDate
       ? addDays(tripStartDate, dayIdx)
       : (day.dateLabel ?? "");
+
+    // Locked day early-return — keeps the chapter header/intro but skips beat computation
+    const isLocked = isDayAccessible ? !isDayAccessible(dayIdx) : false;
+    if (isLocked) {
+      return {
+        id: day.id,
+        date: isoDate,
+        city: day.cityId ? cityDisplay(day.cityId) : "",
+        intro: proseByDay.get(day.id) ?? "",
+        beats: [],
+        inlineNotes: [],
+        isLocked: true,
+        dayActivities: day.activities,
+      };
+    }
 
     // Parse a Date object for closure detection (only when we have a real ISO date)
     const dateObj = tripStartDate ? new Date(addDays(tripStartDate, dayIdx) + "T00:00:00Z") : null;
@@ -299,6 +318,8 @@ export function toChapterDays(
       intro: proseByDay.get(day.id) ?? "",
       beats,
       inlineNotes,
+      isLocked: false,
+      dayActivities: day.activities,
     };
   });
 }
