@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { ChapterHeader } from "./ChapterHeader";
 import { Spine } from "./Spine";
 import { Beat, type BeatChip } from "./Beat";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
 import type { Location } from "@/types/location";
+import { getGtag } from "@/lib/analytics/customLocations";
 
 export type ChapterBeat = {
   id: string;
@@ -50,6 +52,32 @@ export function ChapterList({
   onExpandBeat,
   onReviewAdvisories,
 }: ChapterListProps) {
+  const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
+  const hasLoggedScrollDepth = useRef(false);
+
+  useEffect(() => {
+    const el = day1LastBeatRef.current;
+    if (!el || hasLoggedScrollDepth.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !hasLoggedScrollDepth.current) {
+            hasLoggedScrollDepth.current = true;
+            getGtag()?.("event", "itinerary_v2.scroll_depth", {
+              trip_id: trip.id,
+              day_index: 0,
+            });
+            observer.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [trip.id]);
+
   return (
     <div>
       {trip.days.map((day, idx) => (
@@ -68,7 +96,10 @@ export function ChapterList({
           {day.beats.length > 0 && (
             <Spine>
               {day.beats.map((beat, beatIdx) => (
-                <div key={beat.id}>
+                <div
+                  key={beat.id}
+                  ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
+                >
                   <Beat
                     time={beat.time}
                     partOfDay={beat.partOfDay}

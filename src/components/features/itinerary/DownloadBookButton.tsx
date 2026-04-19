@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "@/context/ToastContext";
+import { getGtag } from "@/lib/analytics/customLocations";
 
 type DownloadBookButtonProps = {
   tripId: string;
@@ -47,6 +48,7 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
   );
 
   const handleClick = useCallback(async () => {
+    getGtag()?.("event", "trip_pass.pdf_download_rate", { trip_id: tripId });
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       fallbackToPrintTab("You're offline — opening print view instead");
       return;

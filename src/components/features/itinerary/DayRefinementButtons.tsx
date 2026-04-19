@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
+import { getGtag } from "@/lib/analytics/customLocations";
 import type { RefinementType } from "@/lib/server/refinementEngine";
 import type { Itinerary, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -101,6 +102,10 @@ export function DayRefinementButtons({
 
   const handleRefine = useCallback(async (type: RefinementType) => {
     setIsRefining(true);
+    getGtag()?.("event", "refinement_start_rate", {
+      trip_id: tripId,
+      refinement_type: type,
+    });
     setRefinementError(null);
 
     if (!builderData || !itinerary) {
