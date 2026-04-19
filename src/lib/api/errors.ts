@@ -95,10 +95,10 @@ export function notFound(
  * Creates a 409 Conflict error response.
  */
 export function conflict(
-  message: string,
-  options?: { code?: string; requestId?: string; [key: string]: unknown },
+  message: string = "Conflict",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+  code: string = "CONFLICT",
 ): NextResponse<ApiError> {
-  const { code, ...context } = options ?? {};
   return createErrorResponse(message, 409, code, undefined, context);
 }
 
