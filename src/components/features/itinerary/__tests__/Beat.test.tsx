@@ -110,4 +110,46 @@ describe("Beat", () => {
     fireEvent.click(screen.getByRole("button", { name: /more/i }));
     expect(onExpand).toHaveBeenCalled();
   });
+
+  it("promotes inline-flagged chips to a bold line when isCurrent is true", () => {
+    render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body="Body."
+        isPast={false}
+        isCurrent={true}
+        chips={[
+          { id: "cash-only", label: "Cash preferred", tone: "warn", promoteInline: true },
+          { id: "info", label: "Free entry", tone: "neutral" },
+        ]}
+        onExpand={() => {}}
+      />,
+    );
+    // Inline chip shows as a sibling paragraph with the · joiner
+    expect(screen.getByText(/Cash preferred/)).toBeInTheDocument();
+    // Non-promoted chip still shows in the chip row
+    expect(screen.getByText("Free entry")).toBeInTheDocument();
+  });
+
+  it("keeps inline-flagged chips in the chip row when isCurrent is false", () => {
+    const { container } = render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body="Body."
+        isPast={false}
+        isCurrent={false}
+        chips={[
+          { id: "cash-only", label: "Cash preferred", tone: "warn", promoteInline: true },
+        ]}
+        onExpand={() => {}}
+      />,
+    );
+    // Chip renders inside the chip row (span), not as a paragraph
+    const chipSpan = container.querySelector("span.text-warning");
+    expect(chipSpan?.textContent).toBe("Cash preferred");
+  });
 });
