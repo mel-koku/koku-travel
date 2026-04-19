@@ -9,8 +9,7 @@ export type AdvisoryKind =
   | "seasonal-highlight"
   | "day-trip-festival"
   | "free-launch-promo"
-  | "accessibility-prep"
-  | "v2-launch-nudge";
+  | "accessibility-prep";
 
 /**
  * An advisory_key is a deterministic string combining kind + context.
@@ -20,7 +19,6 @@ export type AdvisoryKind =
  *   "seasonal-highlight:cherry-blossom-2026"  (kind + highlight id)
  *   "day-trip-festival:sensoji:2026-04-24"    (kind + location + date)
  *   "free-launch-promo"                       (one per user lifetime)
- *   "v2-launch-nudge"                         (one per user per trip)
  */
 export type AdvisoryKey = string;
 
