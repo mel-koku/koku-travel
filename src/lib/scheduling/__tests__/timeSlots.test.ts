@@ -72,8 +72,6 @@ describe("timeSlots", () => {
     });
 
     it("should not apply buffer on Day 1 even if first day conceptually", () => {
-      const days = [{ cityId: "tokyo" }, { cityId: "kyoto" }];
-
       const day1Morning = getAvailableTimeForSlot("morning", "balanced");
       const isTransitionDay1 = 0 > 0; // dayIndex > 0 check prevents Day 1
       const buffer1 = isTransitionDay1 ? CITY_TRANSITION_MINUTES : 0;

@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
 import { AppStateProvider, useAppState } from "../AppState";
-import type { AppStateShape } from "../AppState";
 
 // Mock Supabase client
 vi.mock("@/lib/supabase/client", () => ({

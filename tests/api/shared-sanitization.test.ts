@@ -5,10 +5,7 @@ vi.mock("server-only", () => ({}));
 
 // Mock Supabase service role client
 const mockSelect = vi.fn();
-const mockEq = vi.fn();
-const mockIs = vi.fn();
 const mockMaybeSingle = vi.fn();
-const mockUpdate = vi.fn();
 
 vi.mock("@/lib/supabase/serviceRole", () => ({
   getServiceRoleClient: vi.fn(() => ({
