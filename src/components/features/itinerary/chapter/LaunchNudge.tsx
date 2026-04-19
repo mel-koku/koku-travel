@@ -1,5 +1,7 @@
 "use client";
 
+import { getGtag } from "@/lib/analytics/customLocations";
+
 export type LaunchNudgeProps = {
   onDismiss: () => void;
 };
@@ -14,7 +16,10 @@ export function LaunchNudge({ onDismiss }: LaunchNudgeProps) {
       <span className="flex-1">Trip advisories moved here ↗</span>
       <button
         type="button"
-        onClick={onDismiss}
+        onClick={() => {
+          getGtag()?.("event", "v2_launch_nudge.dismissal_rate", {});
+          onDismiss();
+        }}
         className="text-xs text-accent underline underline-offset-2"
       >
         Got it

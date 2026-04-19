@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AdvisoryKey } from "@/types/tripAdvisories";
+import { getGtag } from "@/lib/analytics/customLocations";
 
 export type AdvisoryEntry = {
   key: AdvisoryKey;
@@ -17,10 +18,21 @@ export type TripAdvisoriesTrayProps = {
 };
 
 export function TripAdvisoriesTray({
+  tripId,
   entries,
   dismissed,
   onDismiss,
 }: TripAdvisoriesTrayProps) {
+  const hasLoggedOpen = useRef(false);
+  useEffect(() => {
+    if (hasLoggedOpen.current) return;
+    hasLoggedOpen.current = true;
+    getGtag()?.("event", "trip_advisories_tray.open_rate", {
+      trip_id: tripId,
+      entry_count: entries.length,
+    });
+  }, [tripId, entries.length]);
+
   const [showDismissed, setShowDismissed] = useState(false);
   const active = entries.filter((e) => !dismissed.has(e.key));
   const dismissedEntries = entries.filter((e) => dismissed.has(e.key));

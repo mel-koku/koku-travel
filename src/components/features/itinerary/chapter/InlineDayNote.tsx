@@ -1,5 +1,7 @@
 "use client";
 
+import { getGtag } from "@/lib/analytics/customLocations";
+
 export type InlineDayNoteKind = "safety" | "closure";
 
 export type InlineDayNoteEntry = {
@@ -24,7 +26,13 @@ export function InlineDayNote({ notes, onReview }: InlineDayNoteProps) {
       <span>{label}</span>
       <button
         type="button"
-        onClick={onReview}
+        onClick={() => {
+          getGtag()?.("event", "inline_day_note.tap_rate", {
+            note_count: notes.length,
+            kinds: notes.map((n) => n.kind).join(","),
+          });
+          onReview();
+        }}
         className="text-accent underline underline-offset-2 text-sm"
       >
         Review ↗
