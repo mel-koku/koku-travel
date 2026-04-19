@@ -187,6 +187,7 @@ export const ItineraryShell = ({
 
   const fullAccessEnabled = process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
   const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
+  const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
   const requireUnlock = useCallback(
     (ctx: UnlockPromptContext): boolean => {
@@ -644,6 +645,16 @@ export const ItineraryShell = ({
                   >
                     {tripName}
                   </h1>
+                  {isFreePromoUnlock && (
+                    <span
+                      className={cn(
+                        typography({ intent: "utility-meta" }),
+                        "mt-2 inline-flex items-center rounded-full bg-canvas px-3 py-1 text-brand-primary",
+                      )}
+                    >
+                      Unlocked. Launch promo.
+                    </span>
+                  )}
                   {isUsingMock && (
                     <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
                       Mock
