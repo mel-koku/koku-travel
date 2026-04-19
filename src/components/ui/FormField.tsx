@@ -66,15 +66,22 @@ export const FormField = ({
       id?: string | number;
       "aria-describedby"?: string;
       "aria-invalid"?: boolean | string;
+      "aria-required"?: boolean | string;
     };
     const existingId = props?.id ? String(props.id) : undefined;
     const existingDescribedBy = props?.["aria-describedby"];
+    // Only inject aria-required when the child hasn't declared it itself.
+    // Some controls (DatePicker's combobox-role button, for example) set
+    // aria-required directly on the semantic element where it's valid;
+    // clobbering them forces the attribute onto a wrapper that doesn't
+    // accept it, which trips jsx-a11y/role-supports-aria-props.
+    const childOwnsAriaRequired = props?.["aria-required"] !== undefined;
     control = cloneElement(control, {
       ...props,
       id: existingId ?? controlId,
       "aria-describedby": [existingDescribedBy, ariaDescribedBy].filter(Boolean).join(" ") || undefined,
       "aria-invalid": error ? true : (props?.["aria-invalid"] as boolean | undefined),
-      ...(required ? { "aria-required": true } : {}),
+      ...(required && !childOwnsAriaRequired ? { "aria-required": true } : {}),
     } as Record<string, unknown>);
   }
 
