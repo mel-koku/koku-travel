@@ -76,6 +76,7 @@ import {
   getDismissedAdvisoriesLocal,
   dismissAdvisoryLocal,
 } from "@/services/tripAdvisoriesService";
+import { useFocusDay } from "@/lib/itinerary/useFocusDay";
 import type { AdvisoryKey } from "@/types/tripAdvisories";
 import { getTripStatus } from "@/lib/trip/tripStatus";
 
@@ -242,6 +243,10 @@ export const ItineraryShell = ({
     if (!v2Chapter) return [];
     return toChapterDays(model, guideProse, locationsById, tripStartDate);
   }, [v2Chapter, model, guideProse, locationsById, tripStartDate]);
+
+  // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
+  // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).
+  const focusDayState = useFocusDay(chapterDays);
 
   const [dismissedAdvisories, setDismissedAdvisories] = useState<Set<AdvisoryKey>>(
     () => (typeof window !== "undefined" && v2Chrome
@@ -792,7 +797,7 @@ export const ItineraryShell = ({
               tripName={tripName}
               currentDayIndex={safeSelectedDay}
               totalDays={model.days.length}
-              isToday={false}
+              isToday={env.itineraryV2DayOf && focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
               tripId={currentTrip.id}
               unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
               onOpenEdit={() => setEditDrawerOpen(true)}

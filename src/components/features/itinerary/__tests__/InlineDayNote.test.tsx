@@ -3,22 +3,22 @@ import { render, screen } from "@testing-library/react";
 import { InlineDayNote } from "@/components/features/itinerary/chapter/InlineDayNote";
 
 describe("InlineDayNote", () => {
-  it("renders a single safety advisory", () => {
+  it("renders a single closure advisory", () => {
     render(
       <InlineDayNote
-        notes={[{ kind: "safety", label: "Typhoon advisory in effect" }]}
+        notes={[{ kind: "closure", label: "Closure on this date" }]}
         onReview={() => {}}
       />,
     );
-    expect(screen.getByText(/Typhoon advisory/)).toBeInTheDocument();
+    expect(screen.getByText(/Closure on this date/)).toBeInTheDocument();
   });
 
   it("collapses multiple notes into a single summary line", () => {
     render(
       <InlineDayNote
         notes={[
-          { kind: "safety", label: "Typhoon advisory" },
-          { kind: "closure", label: "2 stops closed on this date" },
+          { kind: "closure", label: "Closure A" },
+          { kind: "closure", label: "Closure B" },
         ]}
         onReview={() => {}}
       />,

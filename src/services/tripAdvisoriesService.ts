@@ -35,6 +35,16 @@ export function clearDismissedAdvisoriesLocal(tripId: string): void {
 }
 
 // ── Authenticated (Supabase) ────────────────────────────────────────────
+//
+// NOTE: These remote helpers are infrastructure for a follow-up PR that wires
+// Supabase sync into ItineraryShell. As of this commit they are exported but
+// not called. The `trip_advisories_seen` table exists and is ready to receive
+// rows; the client-side integration needs a Supabase browser client in
+// ItineraryShell, which is being threaded in a separate PR to avoid sprawling
+// into unrelated auth wiring here.
+//
+// For the current branch, dismissals are localStorage-only (guest + signed-in
+// users see per-device state). This is a known limitation tracked for follow-up.
 export async function getDismissedAdvisoriesRemote(
   supabase: SupabaseClient,
   userId: string,
