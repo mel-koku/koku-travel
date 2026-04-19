@@ -54,6 +54,10 @@ export function Beat({
     (location as unknown as { estimatedDuration?: number | string }).estimatedDuration,
   );
 
+  // Compute splits: only when isCurrent do we promote.
+  const inlineChips = isCurrent ? chips.filter((c) => c.promoteInline) : [];
+  const regularChips = isCurrent ? chips.filter((c) => !c.promoteInline) : chips;
+
   return (
     <li
       data-beat="place"
@@ -83,9 +87,18 @@ export function Beat({
       <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch]">
         {body}
       </p>
-      {chips.length > 0 && (
+
+      {/* Inline stakes line — only when isCurrent and at least one promoteInline chip */}
+      {inlineChips.length > 0 && (
+        <p className="text-sm font-medium text-warning mt-2">
+          {inlineChips.map((c) => c.label).join(" · ")}
+        </p>
+      )}
+
+      {/* Chip row — uses regularChips so promoted chips don't double-render */}
+      {regularChips.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
-          {chips.map((chip) => (
+          {regularChips.map((chip) => (
             <span
               key={chip.id}
               className={cn(
