@@ -92,6 +92,17 @@ export function notFound(
 }
 
 /**
+ * Creates a 409 Conflict error response.
+ */
+export function conflict(
+  message: string,
+  options?: { code?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  const { code, ...context } = options ?? {};
+  return createErrorResponse(message, 409, code, undefined, context);
+}
+
+/**
  * Creates a 500 Internal Server Error response.
  */
 export function internalError(
