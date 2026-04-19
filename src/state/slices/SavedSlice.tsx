@@ -154,7 +154,6 @@ export function SavedProvider({ children }: { children: ReactNode }) {
       hydrate: (patch: Partial<SavedState>) =>
         dispatch({ type: "HYDRATE", patch }),
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [savedSet, bookmarkSet]
   );
 

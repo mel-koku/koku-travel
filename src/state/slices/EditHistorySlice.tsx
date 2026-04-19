@@ -155,8 +155,6 @@ export function EditHistoryProvider({ children }: { children: ReactNode }) {
       hydrate: (patch) => dispatch({ type: "HYDRATE", patch }),
       reset: () => dispatch({ type: "RESET" }),
     }),
-    // getHistoryForTrip / getIndexForTrip depend on state — intentional
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [state]
   );
 

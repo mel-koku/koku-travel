@@ -166,7 +166,7 @@ export function DatePicker({
                 hidden: "invisible",
               }}
               components={{
-                MonthCaption: ({ calendarMonth, displayIndex, ...props }) => (
+                MonthCaption: ({ calendarMonth, displayIndex: _displayIndex, ...props }) => (
                   <div {...props} aria-live="polite" aria-atomic="true">
                     {format(calendarMonth.date, "MMMM yyyy")}
                   </div>
