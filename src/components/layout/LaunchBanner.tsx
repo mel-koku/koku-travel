@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 
@@ -17,6 +18,7 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
   const [remaining, setRemaining] = useState<number | null>(initialRemaining);
   const [total, setTotal] = useState<number | null>(initialTotal);
   const [dismissed, setDismissed] = useState<boolean>(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -63,10 +65,13 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
   };
 
   return (
-    <aside
+    <motion.aside
       role="region"
       aria-label="Launch promotion announcement"
       className="relative flex h-10 items-center border-b border-default bg-canvas sm:h-9"
+      initial={prefersReducedMotion ? false : { opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="mx-auto flex w-full max-w-7xl items-center gap-4 px-4 sm:px-6">
         <span
@@ -111,6 +116,6 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
           &times;
         </button>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
