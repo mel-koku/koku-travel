@@ -94,4 +94,28 @@ describe("ChapterList", () => {
     const unlockEl = document.querySelector("[data-beat='unlock']");
     expect(unlockEl).not.toBeNull();
   });
+
+  it("accepts onReorderBeats without crashing", () => {
+    render(
+      <ChapterList
+        trip={mockTrip as never}
+        onExpandBeat={() => {}}
+        onReviewAdvisories={() => {}}
+        onReorderBeats={() => {}}
+      />,
+    );
+    expect(screen.getByText("DAY 1")).toBeInTheDocument();
+  });
+
+  it("does not render inline add-activity inside chapter sections", () => {
+    render(
+      <ChapterList
+        trip={mockTrip as never}
+        onExpandBeat={() => {}}
+        onReviewAdvisories={() => {}}
+      />,
+    );
+    // The inline add-activity bar is no longer rendered inside ChapterList
+    expect(document.querySelector("[data-inline-add]")).toBeNull();
+  });
 });

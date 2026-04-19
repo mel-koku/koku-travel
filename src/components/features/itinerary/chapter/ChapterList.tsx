@@ -1,13 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useCallback } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import { ChapterHeader } from "./ChapterHeader";
 import { Spine } from "./Spine";
-import { Beat, type BeatChip } from "./Beat";
+import { SortableBeat } from "./SortableBeat";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
 import { UnlockBeat } from "./UnlockBeat";
-import { InlineAddActivity } from "./InlineAddActivity";
+import type { BeatChip } from "./Beat";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { getGtag } from "@/lib/analytics/customLocations";
@@ -77,17 +91,12 @@ export type ChapterListProps = {
     cities: string[];
     totalDays: number;
   };
-  onAddActivity?: (
-    dayIndex: number,
-    activity: Extract<ItineraryActivity, { kind: "place" }>,
-    meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
-  ) => void;
   isReadOnly?: boolean;
   onVisibleDayChange?: (dayIndex: number) => void;
+  onReorderBeats?: (dayIndex: number, activityIds: string[]) => void;
 };
 
 function beatIsBeforeNow(time: string, dayDate: string, now: Date): boolean {
-  // time is "HH:MM", dayDate is YYYY-MM-DD. Combine and compare to `now` as JST.
   const beatAt = new Date(`${dayDate}T${time}:00+09:00`);
   return now.getTime() >= beatAt.getTime();
 }
@@ -97,8 +106,6 @@ function resolveCurrentBeatIdx(
   dayDate: string,
   now: Date,
 ): number {
-  // "Current" = the largest beat index whose time is <= now. If all are after now,
-  // there is no current beat (return -1).
   let currentIdx = -1;
   for (let i = 0; i < beats.length; i++) {
     const beat = beats[i];
@@ -110,8 +117,6 @@ function resolveCurrentBeatIdx(
 
 function formatDateDisplay(iso: string): string {
   if (!iso) return "";
-  // ISO date strings match YYYY-MM-DD — if the string is not a valid date
-  // (e.g. a day.dateLabel fallback like "Day 1 (Tokyo)"), pass through as-is.
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("en-US", {
@@ -126,9 +131,9 @@ export function ChapterList({
   onExpandBeat,
   onReviewAdvisories,
   unlockProps,
-  onAddActivity,
   isReadOnly,
   onVisibleDayChange,
+  onReorderBeats,
 }: ChapterListProps) {
   const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
   const hasLoggedScrollDepth = useRef(false);
@@ -171,8 +176,6 @@ export function ChapterList({
     return () => observer.disconnect();
   }, [trip.id]);
 
-  // IntersectionObserver — fires onVisibleDayChange when a chapter section
-  // enters the viewport. Only created when the callback is provided (SSR-safe).
   useEffect(() => {
     if (!onVisibleDayChange) return;
     if (typeof IntersectionObserver === "undefined") return;
@@ -182,9 +185,6 @@ export function ChapterList({
         const intersecting = entries.filter((e) => e.isIntersecting);
         if (intersecting.length === 0) return;
 
-        // Pick the section whose top is closest to the viewport top (i.e. the
-        // chapter the reader is most likely focused on). Sections with a
-        // negative top have scrolled past — prefer the one least-negative.
         const best = intersecting.reduce((acc, cur) => {
           const accTop = acc.boundingClientRect.top;
           const curTop = cur.boundingClientRect.top;
@@ -203,8 +203,6 @@ export function ChapterList({
         onVisibleDayChange(idx);
       },
       {
-        // Pushes detection zone so a chapter is "active" when its header is
-        // near the top of the viewport, not when its last beat leaves the bottom.
         rootMargin: "-10% 0px -60% 0px",
         threshold: [0, 0.1, 0.25],
       },
@@ -216,6 +214,27 @@ export function ChapterList({
 
     return () => observer.disconnect();
   }, [trip.days.length, onVisibleDayChange]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent, dayIdx: number, dayBeats: ChapterBeat[]) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const oldIdx = dayBeats.findIndex((b) => b.id === active.id);
+      const newIdx = dayBeats.findIndex((b) => b.id === over.id);
+      if (oldIdx < 0 || newIdx < 0) return;
+      const reordered = [...dayBeats];
+      const [moved] = reordered.splice(oldIdx, 1);
+      if (!moved) return;
+      reordered.splice(newIdx, 0, moved);
+      onReorderBeats?.(dayIdx, reordered.map((b) => b.id));
+    },
+    [onReorderBeats],
+  );
 
   return (
     <div>
@@ -250,47 +269,50 @@ export function ChapterList({
               </div>
             )
           ) : (
-            <>
-              {day.beats.length > 0 && (
-                <Spine>
-                  {day.beats.map((beat, beatIdx) => {
-                    const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
-                    const isCurrent = idx === focusDayIdx && beatIdx === currentBeatIdx;
-                    const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
+            day.beats.length > 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(e) => handleDragEnd(e, idx, day.beats)}
+              >
+                <SortableContext
+                  items={day.beats.map((b) => b.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <Spine>
+                    {day.beats.map((beat, beatIdx) => {
+                      const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
+                      const isCurrent = idx === focusDayIdx && beatIdx === currentBeatIdx;
+                      const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
 
-                    return (
-                      <div
-                        key={beat.id}
-                        ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
-                      >
-                        <Beat
-                          time={beat.time}
-                          partOfDay={beat.partOfDay}
-                          location={beat.location}
-                          body={beat.body}
-                          isPast={isPast}
-                          isCurrent={isCurrent}
-                          chips={beat.chips}
-                          hasMore={beat.hasMore}
-                          onExpand={() => onExpandBeat(beat.id)}
-                        />
-                        {beat.transitToNext && beatIdx < day.beats.length - 1 && (
-                          <BeatTransit {...beat.transitToNext} />
-                        )}
-                      </div>
-                    );
-                  })}
-                </Spine>
-              )}
-              {!isReadOnly && onAddActivity && (
-                <div className="mt-8 pl-[30px]">
-                  <InlineAddActivity
-                    dayActivities={day.dayActivities}
-                    onAdd={(activity, meta) => onAddActivity(idx, activity, meta)}
-                  />
-                </div>
-              )}
-            </>
+                      return (
+                        <div
+                          key={beat.id}
+                          ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
+                        >
+                          <SortableBeat
+                            beatId={beat.id}
+                            disabled={isReadOnly}
+                            time={beat.time}
+                            partOfDay={beat.partOfDay}
+                            location={beat.location}
+                            body={beat.body}
+                            isPast={isPast}
+                            isCurrent={isCurrent}
+                            chips={beat.chips}
+                            hasMore={beat.hasMore}
+                            onExpand={() => onExpandBeat(beat.id)}
+                          />
+                          {beat.transitToNext && beatIdx < day.beats.length - 1 && (
+                            <BeatTransit {...beat.transitToNext} />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </Spine>
+                </SortableContext>
+              </DndContext>
+            )
           )}
         </section>
       ))}
