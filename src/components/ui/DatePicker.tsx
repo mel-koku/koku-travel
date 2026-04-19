@@ -89,8 +89,27 @@ export function DatePicker({
           <button
             id={id}
             type="button"
-            disabled={disabled}
+            // WAI-ARIA combobox-datepicker pattern: the trigger is a combobox
+            // that opens a dialog-style popover. role="combobox" supports
+            // aria-required (unlike role="button"), and aria-expanded +
+            // aria-haspopup + aria-controls give screen readers the full
+            // "what does this do" picture on focus.
+            // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-datepicker/
+            role="combobox"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            aria-controls={`${id}-popover`}
             aria-required={required}
+            aria-invalid={error ? true : undefined}
+            disabled={disabled}
+            onKeyDown={(e) => {
+              // Radix opens on Enter/Space by default, but ArrowDown is part of
+              // the WAI-ARIA combobox pattern for opening a listbox/dialog.
+              if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+                e.preventDefault();
+                setOpen(true);
+              }
+            }}
             className={cn(
               "flex h-12 w-full items-center rounded-md border border-input bg-transparent px-4 text-left text-base shadow-[var(--shadow-sm)] transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -109,6 +128,9 @@ export function DatePicker({
 
         <Popover.Portal>
           <Popover.Content
+            id={`${id}-popover`}
+            role="dialog"
+            aria-label={`${label} calendar`}
             align="start"
             sideOffset={6}
             className={cn(
@@ -182,6 +204,16 @@ export function DatePicker({
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
+
+      {/*
+        Live region for selected-value announcements. When the user picks a
+        date inside the popover, the trigger button's label changes. Screen
+        readers don't always announce that DOM update for a button; an
+        explicit polite live region does. Kept visually hidden.
+      */}
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        {displayValue ? `Selected date: ${displayValue}` : ""}
+      </span>
     </FormField>
   );
 }
