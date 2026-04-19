@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -11,11 +11,21 @@ type LaunchBannerProps = {
 };
 
 const ALMOST_GONE_THRESHOLD = 20;
+const DISMISS_KEY = "yuku.launch-banner.v1.dismissed";
 
 export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerProps) {
   const [remaining] = useState<number | null>(initialRemaining);
   const [total] = useState<number | null>(initialTotal);
+  const [dismissed, setDismissed] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.localStorage.getItem(DISMISS_KEY) === "1") {
+      setDismissed(true);
+    }
+  }, []);
+
+  if (dismissed) return null;
   if (remaining === null || total === null) return null;
 
   const isSoldOut = remaining === 0;
@@ -26,6 +36,13 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
     : isAlmostGone
       ? "Almost gone. Trip Pass is free for our final few travellers."
       : `Trip Pass is free for our first ${total} travellers.`;
+
+  const handleDismiss = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(DISMISS_KEY, "1");
+    }
+    setDismissed(true);
+  };
 
   return (
     <aside
@@ -62,6 +79,14 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
             {remaining} / {total}
           </span>
         )}
+        <button
+          type="button"
+          aria-label="Dismiss launch announcement"
+          onClick={handleDismiss}
+          className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center text-foreground-secondary hover:text-foreground"
+        >
+          &times;
+        </button>
       </div>
     </aside>
   );

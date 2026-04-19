@@ -45,4 +45,21 @@ describe("LaunchBanner", () => {
     );
     expect(container.firstChild).toBeNull();
   });
+
+  it("hides after dismiss and persists to localStorage", () => {
+    const { rerender } = render(
+      <LaunchBanner initialRemaining={247} initialTotal={300} />,
+    );
+    const button = screen.getByRole("button", { name: /dismiss launch announcement/i });
+    button.click();
+    expect(window.localStorage.getItem("yuku.launch-banner.v1.dismissed")).toBe("1");
+    rerender(<LaunchBanner initialRemaining={247} initialTotal={300} />);
+    expect(screen.queryByRole("region")).not.toBeInTheDocument();
+  });
+
+  it("stays hidden on mount if previously dismissed", () => {
+    window.localStorage.setItem("yuku.launch-banner.v1.dismissed", "1");
+    render(<LaunchBanner initialRemaining={247} initialTotal={300} />);
+    expect(screen.queryByRole("region")).not.toBeInTheDocument();
+  });
 });
