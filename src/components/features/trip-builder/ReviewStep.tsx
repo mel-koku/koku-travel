@@ -211,7 +211,11 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         >
           {headline}
         </motion.h2>
-        {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS !== "true" && (
+        {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? (
+          <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-center")}>
+            Your full itinerary is free during our launch.
+          </p>
+        ) : (
           <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-center")}>
             Your first day is free. Unlock your full itinerary for ${price} after it&apos;s ready.
           </p>
