@@ -110,6 +110,35 @@ type TimelineActivityListProps = {
   onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
 };
 
+function getAddPlaceAriaLabel(args: {
+  position: "before" | "after";
+  neighbor: ItineraryActivity | null | undefined;
+  nextNeighbor: ItineraryActivity | null | undefined;
+  dayNumber: number;
+}): string {
+  const { position, neighbor, nextNeighbor, dayNumber } = args;
+  const neighborTitle =
+    neighbor && neighbor.kind === "place" && typeof neighbor.title === "string"
+      ? neighbor.title
+      : null;
+  const nextTitle =
+    nextNeighbor && nextNeighbor.kind === "place" && typeof nextNeighbor.title === "string"
+      ? nextNeighbor.title
+      : null;
+
+  if (position === "before") {
+    if (neighborTitle && nextTitle) {
+      return `Add a place between ${neighborTitle} and ${nextTitle}`;
+    }
+    if (nextTitle) {
+      return `Add a place before ${nextTitle}`;
+    }
+    return `Add a place to day ${dayNumber}`;
+  }
+  // position === "after"
+  return `Add a place at the end of day ${dayNumber}`;
+}
+
 export const TimelineActivityList = memo(function TimelineActivityList({
   day,
   dayIndex,
@@ -322,7 +351,16 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                 {/* Inline "+" button before this activity */}
                 {showAddBefore && (
                   <li className="list-none">
-                    <AddActivityButton index={index} onClick={(i) => setSheetState({ index: i })} />
+                    <AddActivityButton
+                      index={index}
+                      onClick={(i) => setSheetState({ index: i })}
+                      ariaLabel={getAddPlaceAriaLabel({
+                        position: "before",
+                        neighbor: prevActivity,
+                        nextNeighbor: activity,
+                        dayNumber: dayIndex + 1,
+                      })}
+                    />
                   </li>
                 )}
                 <SortableActivity
@@ -367,6 +405,12 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     <AddActivityButton
                       index={index + 1}
                       onClick={(i) => setSheetState({ index: i })}
+                      ariaLabel={getAddPlaceAriaLabel({
+                        position: "after",
+                        neighbor: activity,
+                        nextNeighbor: null,
+                        dayNumber: dayIndex + 1,
+                      })}
                     />
                   </li>
                 )}
