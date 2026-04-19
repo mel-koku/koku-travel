@@ -65,7 +65,7 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
       role="status"
       aria-live="polite"
       aria-labelledby={headingId}
-      className="rounded-md bg-orange-50 border border-orange-200 px-4 py-3"
+      className="rounded-md bg-yuzu-tint px-4 py-3"
     >
       <div className="flex gap-3">
         {/* Warning icon */}
@@ -75,10 +75,10 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h2 id={headingId} className="text-base font-medium text-orange-900">
+          <h2 id={headingId} className="text-base font-semibold text-foreground">
             {`Magnitude ${alert.magnitude} Earthquake Near ${alert.nearestCity}`}
           </h2>
-          <p data-testid="earthquake-banner-body" className="mt-1 text-sm text-orange-800">
+          <p data-testid="earthquake-banner-body" className="mt-1 text-sm text-foreground-secondary">
             {`Struck ${alert.distanceKm} km from ${alert.nearestCity} ${alert.relativeTime}. Train inspections may cause transit delays. Check ${operator.bodyMention} before traveling.`}
           </p>
 
@@ -88,14 +88,14 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
               href={operator.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-md bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-900 transition hover:bg-orange-200"
+              className="inline-flex items-center rounded-md bg-warning/10 px-3 py-1.5 text-xs font-medium text-warning ring-1 ring-inset ring-warning/20 transition hover:bg-warning/20"
             >
               {operator.ctaLabel}
             </a>
             <button
               type="button"
               onClick={handleDismiss}
-              className="inline-flex items-center rounded-md bg-transparent px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:bg-orange-100"
+              className="inline-flex items-center rounded-md bg-transparent px-3 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sand"
             >
               Dismiss
             </button>
