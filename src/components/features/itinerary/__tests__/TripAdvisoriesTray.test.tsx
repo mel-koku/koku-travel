@@ -49,15 +49,15 @@ describe("TripAdvisoriesTray", () => {
     expect(onDismiss).toHaveBeenCalledWith("prep-checklist");
   });
 
-  it("renders the dismissed footer when there are dismissed entries", () => {
+  it("renders an empty state when all entries are dismissed", () => {
     render(
       <TripAdvisoriesTray
         tripId="trip-1"
         entries={entries}
-        dismissed={new Set(["goshuin"])}
+        dismissed={new Set(["prep-checklist", "goshuin"])}
         onDismiss={() => {}}
       />,
     );
-    expect(screen.getByText(/Dismissed \(1\)/)).toBeInTheDocument();
+    expect(screen.getByText(/No advisories right now/i)).toBeInTheDocument();
   });
 });

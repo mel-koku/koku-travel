@@ -131,7 +131,7 @@ function CollapsedLine({
   return (
     <button
       type="button"
-      onClick={hasDetails ? onToggle : undefined}
+      onClick={hasDetails ? (e) => { e.stopPropagation(); onToggle(); } : undefined}
       aria-expanded={hasDetails ? expanded : undefined}
       className={cn(
         "block text-[10px] text-foreground-secondary tracking-wide uppercase -mt-4 mb-1 ml-[-24px] text-left",
@@ -278,7 +278,7 @@ export function BeatTransit({
   }
 
   return (
-    <div>
+    <div className="relative z-10">
       <div className="flex items-baseline gap-3">
         <CollapsedLine
           minutes={minutes}
@@ -293,7 +293,10 @@ export function BeatTransit({
         {hasMapsLink && (
           <button
             type="button"
-            onClick={openInGoogleMaps}
+            onClick={(e) => {
+              e.stopPropagation();
+              openInGoogleMaps();
+            }}
             className="flex-shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2 -mt-4 mb-1"
           >
             Open in Maps ↗

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { AdvisoryKey } from "@/types/tripAdvisories";
 import { getGtag } from "@/lib/analytics/customLocations";
 
@@ -33,9 +33,7 @@ export function TripAdvisoriesTray({
     });
   }, [tripId, entries.length]);
 
-  const [showDismissed, setShowDismissed] = useState(false);
   const active = entries.filter((e) => !dismissed.has(e.key));
-  const dismissedEntries = entries.filter((e) => dismissed.has(e.key));
 
   return (
     <aside
@@ -46,46 +44,31 @@ export function TripAdvisoriesTray({
         Trip advisories ({active.length})
       </h3>
       <div className="border-t border-border" />
-      <ul className="divide-y divide-border">
-        {active.map((entry) => (
-          <li key={entry.key} className="py-3 flex items-start gap-3">
-            <span aria-hidden className="text-warning text-xs pt-1">◈</span>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-foreground">{entry.title}</div>
-              <p className="text-xs text-foreground-secondary leading-relaxed mt-0.5">
-                {entry.body}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onDismiss(entry.key)}
-              className="text-xs text-accent underline underline-offset-2 whitespace-nowrap"
-            >
-              Got it
-            </button>
-          </li>
-        ))}
-      </ul>
-      {dismissedEntries.length > 0 && (
-        <>
-          <div className="border-t border-border mt-2" />
-          <button
-            type="button"
-            className="text-xs text-foreground-secondary mt-2"
-            onClick={() => setShowDismissed((v) => !v)}
-          >
-            Dismissed ({dismissedEntries.length}) {showDismissed ? "↑" : "↓"}
-          </button>
-          {showDismissed && (
-            <ul className="mt-2 space-y-2 opacity-70">
-              {dismissedEntries.map((entry) => (
-                <li key={entry.key} className="text-xs text-foreground-secondary">
-                  {entry.title}
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+      {active.length > 0 ? (
+        <ul className="divide-y divide-border">
+          {active.map((entry) => (
+            <li key={entry.key} className="py-3 flex items-start gap-3">
+              <span aria-hidden className="text-warning text-xs pt-1">◈</span>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-foreground">{entry.title}</div>
+                <p className="text-xs text-foreground-secondary leading-relaxed mt-0.5">
+                  {entry.body}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onDismiss(entry.key)}
+                className="text-xs text-accent underline underline-offset-2 whitespace-nowrap"
+              >
+                Got it
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="py-4 text-sm text-foreground-secondary">
+          No advisories right now.
+        </p>
       )}
     </aside>
   );
