@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { StoredTrip } from "@/services/trip/types";
 import type { WeatherRegion } from "@/data/regions";
+import { logTipEvent } from "@/lib/telemetry/tipEvents";
+import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
 interface DisasterBannerProps {
   trip: StoredTrip;
@@ -27,17 +29,24 @@ const COPY_BY_REGION: Record<WeatherRegion, { heading: string; body: string }> =
 
 export function DisasterBanner({ trip, region }: DisasterBannerProps) {
   const sessionKey = `yuku-disaster-dismissed-${trip.id}`;
+  const tipContext = useTipEventContext(trip.id, region);
 
   const [isDismissed, setIsDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(sessionKey) === "1";
   });
 
+  useEffect(() => {
+    if (isDismissed) return;
+    void logTipEvent("disaster", "rendered", tipContext);
+  }, [isDismissed, tipContext]);
+
   if (isDismissed) return null;
 
   const copy = COPY_BY_REGION[region];
 
   const handleDismiss = () => {
+    void logTipEvent("disaster", "dismissed", tipContext);
     setIsDismissed(true);
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem(sessionKey, "1");

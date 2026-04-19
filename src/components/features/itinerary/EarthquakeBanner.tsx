@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { EarthquakeAlert } from "@/lib/alerts/usgs";
 import type { KnownRegionId } from "@/types/trip";
+import { logTipEvent } from "@/lib/telemetry/tipEvents";
+import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
 interface EarthquakeBannerProps {
   alert: EarthquakeAlert;
@@ -32,17 +34,24 @@ const RAIL_STATUS_BY_REGION: Record<KnownRegionId, RailOperator> = {
 
 export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProps) {
   const dismissKey = `yuku-earthquake-dismissed-${tripId}-${alert.id}`;
+  const tipContext = useTipEventContext(tripId, region);
 
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(dismissKey) === "1";
   });
 
+  useEffect(() => {
+    if (dismissed) return;
+    void logTipEvent("earthquake", "rendered", tipContext);
+  }, [dismissed, tipContext]);
+
   if (dismissed) return null;
 
   const operator = RAIL_STATUS_BY_REGION[region];
 
   const handleDismiss = () => {
+    void logTipEvent("earthquake", "dismissed", tipContext);
     setDismissed(true);
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem(dismissKey, "1");

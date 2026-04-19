@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import type { StoredTrip } from "@/services/trip/types";
 import { getTripStatus } from "@/lib/trip/tripStatus";
 import { useToast } from "@/context/ToastContext";
 import { useTrips } from "@/state/slices/TripsSlice";
+import { logTipEvent } from "@/lib/telemetry/tipEvents";
+import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
 type Props = {
   trip: StoredTrip;
@@ -34,6 +36,7 @@ export function GoshuinBanner({ trip }: Props) {
   const sessionKey = `yuku-goshuin-dismissed-${trip.id}`;
   const { showToast } = useToast();
   const { actions: tripsActions } = useTrips();
+  const tipContext = useTipEventContext(trip.id);
 
   // Check if already dismissed in session or in trip state
   const [isDismissed, setIsDismissed] = useState(() => {
@@ -51,7 +54,13 @@ export function GoshuinBanner({ trip }: Props) {
     [status, isDismissed, trip],
   );
 
+  useEffect(() => {
+    if (!shouldShow) return;
+    void logTipEvent("goshuin", "rendered", tipContext);
+  }, [shouldShow, tipContext]);
+
   const handleDismiss = useCallback(async () => {
+    void logTipEvent("goshuin", "dismissed", tipContext);
     // Optimistic update
     setIsDismissed(true);
     if (typeof window !== "undefined") {
@@ -81,7 +90,7 @@ export function GoshuinBanner({ trip }: Props) {
       }
       showToast("Couldn't save — try again", { variant: "error" });
     }
-  }, [trip.id, sessionKey, showToast, tripsActions]);
+  }, [trip.id, sessionKey, showToast, tripsActions, tipContext]);
 
   if (!shouldShow) return null;
 
