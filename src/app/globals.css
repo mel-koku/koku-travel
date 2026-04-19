@@ -8,6 +8,9 @@
 :root {
   color-scheme: light;
 
+  /* Chapter prose drop cap — on by default */
+  --chapter-drop-cap: 1;
+
   /* Core */
   --background: #faf8f5;
   --foreground: #2c2825;
@@ -877,4 +880,20 @@ html.lenis-stopped {
     box-shadow: none !important;
     text-shadow: none !important;
   }
+}
+
+/* Itinerary chapter prose — drop cap on by default, toggleable via --chapter-drop-cap */
+.chapter-prose:first-letter {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 3em;
+  line-height: 0.9;
+  float: left;
+  margin: 0.08em 0.08em 0 0;
+  color: var(--brand-secondary, #c93022);
+  font-weight: 500;
+}
+
+/* Toggle off without a deploy by setting --chapter-drop-cap: 0 on :root */
+:root[style*="--chapter-drop-cap: 0"] .chapter-prose:first-letter {
+  all: unset;
 }
