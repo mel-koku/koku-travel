@@ -241,8 +241,14 @@ export const ItineraryShell = ({
 
   const chapterDays = useMemo(() => {
     if (!v2Chapter) return [];
-    return toChapterDays(model, guideProse, locationsById, tripStartDate);
-  }, [v2Chapter, model, guideProse, locationsById, tripStartDate]);
+    return toChapterDays(
+      model,
+      guideProse,
+      locationsById,
+      tripStartDate,
+      (dayIdx) => isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled),
+    );
+  }, [v2Chapter, model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled]);
 
   // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
   // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).
@@ -557,6 +563,30 @@ export const ItineraryShell = ({
       }, 0);
     },
     [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+  );
+
+  // ── Add location to a specific day (chapter layout) ──
+  const handleAddLocationToDay = useCallback(
+    (dayIndex: number, newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+      if (isReadOnly) return;
+      const targetDay = model.days[dayIndex];
+      if (!tripId || isUsingMock || !targetDay) return;
+
+      addActivity(tripId, targetDay.id, newActivity);
+
+      const nextDays = model.days.map((d) => {
+        if (d.id !== targetDay.id) return d;
+        return { ...d, activities: [...d.activities, newActivity] };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+
+      setModelState(nextItinerary);
+
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, isReadOnly, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
   // ── Refine day (Adjust button) ──
@@ -1156,6 +1186,15 @@ export const ItineraryShell = ({
                         block: "start",
                       });
                     }}
+                    unlockProps={{
+                      priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
+                      launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
+                      onUnlock: onUnlockClick ?? (() => {}),
+                      cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
+                      totalDays: model.days.length,
+                    }}
+                    onAddLocation={handleAddLocationToDay}
+                    isReadOnly={isReadOnly}
                   />
                 ) : (
                   <ItineraryTimeline

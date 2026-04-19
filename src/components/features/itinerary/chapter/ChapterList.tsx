@@ -6,7 +6,10 @@ import { Spine } from "./Spine";
 import { Beat, type BeatChip } from "./Beat";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
+import { UnlockBeat } from "./UnlockBeat";
+import { LocationSearchBar } from "@/components/features/itinerary/LocationSearchBar";
 import type { Location } from "@/types/location";
+import type { ItineraryActivity } from "@/types/itinerary";
 import { getGtag } from "@/lib/analytics/customLocations";
 import { env } from "@/lib/env";
 import { useFocusDay } from "@/lib/itinerary/useFocusDay";
@@ -33,12 +36,26 @@ export type ChapterDay = {
   intro: string;
   beats: ChapterBeat[];
   inlineNotes: InlineDayNoteEntry[];
+  isLocked: boolean;
+  dayActivities: ItineraryActivity[];
 };
 
 export type ChapterListProps = {
   trip: { id: string; name: string; days: ChapterDay[] };
   onExpandBeat: (beatId: string) => void;
   onReviewAdvisories: () => void;
+  unlockProps?: {
+    priceLabel: string;
+    launchSlotsRemaining?: number;
+    onUnlock: () => void;
+    cities: string[];
+    totalDays: number;
+  };
+  onAddLocation?: (
+    dayIndex: number,
+    activity: Extract<ItineraryActivity, { kind: "place" }>,
+  ) => void;
+  isReadOnly?: boolean;
 };
 
 function beatIsBeforeNow(time: string, dayDate: string, now: Date): boolean {
@@ -80,6 +97,9 @@ export function ChapterList({
   trip,
   onExpandBeat,
   onReviewAdvisories,
+  unlockProps,
+  onAddLocation,
+  isReadOnly,
 }: ChapterListProps) {
   const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
   const hasLoggedScrollDepth = useRef(false);
@@ -126,7 +146,7 @@ export function ChapterList({
         <section
           key={day.id}
           id={`day-${idx + 1}`}
-          className={idx === 0 ? "pt-8" : "py-12 sm:py-20 lg:py-28"}
+          className={idx === 0 ? "pt-8" : "py-10 sm:py-14 lg:py-20"}
         >
           <ChapterHeader
             dayIndex={idx}
@@ -135,36 +155,60 @@ export function ChapterList({
             intro={day.intro}
           />
           <InlineDayNote notes={day.inlineNotes} onReview={onReviewAdvisories} />
-          {day.beats.length > 0 && (
-            <Spine>
-              {day.beats.map((beat, beatIdx) => {
-                const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
-                const isCurrent = idx === focusDayIdx && beatIdx === currentBeatIdx;
-                const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
+          {day.isLocked ? (
+            unlockProps && (
+              <div className="mt-6">
+                <UnlockBeat
+                  cities={unlockProps.cities}
+                  totalDays={unlockProps.totalDays}
+                  priceLabel={unlockProps.priceLabel}
+                  launchSlotsRemaining={unlockProps.launchSlotsRemaining}
+                  onUnlock={unlockProps.onUnlock}
+                />
+              </div>
+            )
+          ) : (
+            <>
+              {day.beats.length > 0 && (
+                <Spine>
+                  {day.beats.map((beat, beatIdx) => {
+                    const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
+                    const isCurrent = idx === focusDayIdx && beatIdx === currentBeatIdx;
+                    const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
 
-                return (
-                  <div
-                    key={beat.id}
-                    ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
-                  >
-                    <Beat
-                      time={beat.time}
-                      partOfDay={beat.partOfDay}
-                      location={beat.location}
-                      body={beat.body}
-                      isPast={isPast}
-                      isCurrent={isCurrent}
-                      chips={beat.chips}
-                      hasMore={beat.hasMore}
-                      onExpand={() => onExpandBeat(beat.id)}
-                    />
-                    {beat.transitToNext && beatIdx < day.beats.length - 1 && (
-                      <BeatTransit {...beat.transitToNext} />
-                    )}
-                  </div>
-                );
-              })}
-            </Spine>
+                    return (
+                      <div
+                        key={beat.id}
+                        ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
+                      >
+                        <Beat
+                          time={beat.time}
+                          partOfDay={beat.partOfDay}
+                          location={beat.location}
+                          body={beat.body}
+                          isPast={isPast}
+                          isCurrent={isCurrent}
+                          chips={beat.chips}
+                          hasMore={beat.hasMore}
+                          onExpand={() => onExpandBeat(beat.id)}
+                        />
+                        {beat.transitToNext && beatIdx < day.beats.length - 1 && (
+                          <BeatTransit {...beat.transitToNext} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </Spine>
+              )}
+              {!isReadOnly && onAddLocation && (
+                <div className="mt-8 pl-[30px]">
+                  <LocationSearchBar
+                    dayActivities={day.dayActivities}
+                    onAddActivity={(activity) => onAddLocation(idx, activity)}
+                  />
+                </div>
+              )}
+            </>
           )}
         </section>
       ))}

@@ -24,6 +24,8 @@ const mockTrip = {
         },
       ],
       inlineNotes: [],
+      isLocked: false,
+      dayActivities: [],
     },
     {
       id: "d1",
@@ -32,6 +34,8 @@ const mockTrip = {
       intro: "Asakusa in the morning.",
       beats: [],
       inlineNotes: [],
+      isLocked: false,
+      dayActivities: [],
     },
   ],
 };
@@ -58,5 +62,36 @@ describe("ChapterList", () => {
       />,
     );
     expect(screen.getByText("Shibuya Sky")).toBeInTheDocument();
+  });
+
+  it("renders UnlockBeat instead of beats when day.isLocked is true and unlockProps provided", () => {
+    const lockedTrip = {
+      ...mockTrip,
+      days: [
+        mockTrip.days[0],
+        {
+          ...mockTrip.days[1],
+          isLocked: true,
+          beats: [],
+        },
+      ],
+    };
+    render(
+      <ChapterList
+        trip={lockedTrip as never}
+        onExpandBeat={() => {}}
+        onReviewAdvisories={() => {}}
+        unlockProps={{
+          priceLabel: "$19",
+          onUnlock: () => {},
+          cities: ["Kyoto", "Osaka"],
+          totalDays: 5,
+        }}
+      />,
+    );
+    expect(screen.getByTestId ? screen.queryByText("Asakusa in the morning.") : true).toBeTruthy();
+    // UnlockBeat renders with data-beat="unlock"
+    const unlockEl = document.querySelector("[data-beat='unlock']");
+    expect(unlockEl).not.toBeNull();
   });
 });
