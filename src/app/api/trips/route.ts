@@ -9,6 +9,8 @@ import { badRequest, internalError } from "@/lib/api/errors";
 import { fetchTrips, saveTrip } from "@/services/sync/tripSync";
 import type { StoredTrip } from "@/services/trip/types";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
+import { isFullAccessEnabled } from "@/lib/billing/accessServer";
+import { stampFreeUnlockedAt } from "@/app/api/trips/_stampFreeUnlock";
 
 /**
  * Schema for itinerary activity (loose validation for creation)
@@ -171,6 +173,20 @@ export const POST = withApiHandler(
         userId: user!.id,
       });
       return internalError("Failed to create trip", undefined, { requestId: context.requestId });
+    }
+
+    const days = result.data?.itinerary?.days;
+    const hasGeneratedItinerary = Array.isArray(days) && days.length > 0;
+
+    if (hasGeneratedItinerary && (await isFullAccessEnabled())) {
+      try {
+        // stampFreeUnlockedAt swallows its own errors; the outer try/catch here
+        // guards against unexpected rejections so the response is never
+        // degraded by a non-critical stamp failure.
+        await stampFreeUnlockedAt(supabase, result.data!.id, user!.id);
+      } catch {
+        // intentionally swallowed — stamp failure must not affect the 201
+      }
     }
 
     return NextResponse.json({ trip: result.data }, { status: 201 });
