@@ -45,6 +45,7 @@ import { DayTripBanner } from "./DayTripBanner";
 import { GoshuinBanner } from "./GoshuinBanner";
 import { PrepBanner } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
+import { AccessibilityBanner } from "./AccessibilityBanner";
 import { EarthquakeAlertSlot } from "./EarthquakeAlertSlot";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
@@ -52,6 +53,7 @@ import { PrintHeader } from "./PrintHeader";
 import { PrintFooter } from "./PrintFooter";
 import { REGIONS, getWeatherRegion, getRegionForCity } from "@/data/regions";
 import { shouldShowDisasterBanner } from "@/lib/trip/disasterOverlay";
+import { shouldShowAccessibilityBanner } from "@/lib/trip/accessibilityOverlay";
 import { useItineraryDiscover } from "./hooks/useItineraryDiscover";
 import { ItineraryDiscoverPanel } from "./ItineraryDiscoverPanel";
 import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
@@ -828,6 +830,13 @@ export const ItineraryShell = ({
                 <EarthquakeAlertSlot tripId={currentTrip.id} region={tripRegion as KnownRegionId} />
               );
             })()}
+
+            {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
+            {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
+              <div className="mb-3">
+                <AccessibilityBanner trip={currentTrip} />
+              </div>
+            )}
 
             {/* Disaster/typhoon awareness banner — above prep checklist */}
             {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
