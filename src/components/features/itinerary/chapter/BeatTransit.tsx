@@ -37,6 +37,12 @@ export type BeatTransitProps = {
   steps?: BeatTransitStep[];
   totalFareYen?: number;
   summary?: BeatTransitSummary;
+  /** Origin location for Google Maps escape hatch */
+  origin?: { lat: number; lng: number; name?: string };
+  /** Destination location for Google Maps escape hatch */
+  destination?: { lat: number; lng: number; name?: string };
+  /** True when the travel time is a heuristic estimate, not from a real routing API */
+  isEstimated?: boolean;
 };
 
 const labelForMode: Record<BeatTransitProps["mode"], string> = {
@@ -65,6 +71,7 @@ function CollapsedLine({
   summary,
   hasDetails,
   expanded,
+  isEstimated,
   onToggle,
 }: {
   minutes: number;
@@ -73,6 +80,7 @@ function CollapsedLine({
   summary?: BeatTransitSummary;
   hasDetails: boolean;
   expanded: boolean;
+  isEstimated?: boolean;
   onToggle: () => void;
 }) {
   const showStations =
@@ -132,6 +140,9 @@ function CollapsedLine({
     >
       <span className="inline-flex items-center gap-1.5 flex-wrap">
         {content}
+        {isEstimated && (
+          <span className="text-[9px] opacity-60 italic normal-case tracking-normal">(est.)</span>
+        )}
         {hasDetails && (
           <span className="text-[9px] opacity-60 normal-case tracking-normal">
             {expanded ? "Details ↑" : "Details ↓"}
@@ -228,6 +239,14 @@ function ExpandedDetails({
   );
 }
 
+const TRAVEL_MODE_MAP: Record<BeatTransitProps["mode"], string> = {
+  walk: "walking",
+  car: "driving",
+  bus: "transit",
+  train: "transit",
+  transit: "transit",
+};
+
 export function BeatTransit({
   minutes,
   mode,
@@ -235,21 +254,52 @@ export function BeatTransit({
   steps,
   totalFareYen,
   summary,
+  origin,
+  destination,
+  isEstimated,
 }: BeatTransitProps) {
   const [expanded, setExpanded] = useState(false);
   const hasDetails = Boolean(steps && steps.length > 1) || totalFareYen != null;
+  const hasMapsLink = Boolean(origin && destination);
+
+  function openInGoogleMaps() {
+    if (!origin || !destination) return;
+
+    const params = new URLSearchParams({ api: "1" });
+    params.append("origin", origin.name ?? `${origin.lat},${origin.lng}`);
+    params.append("destination", destination.name ?? `${destination.lat},${destination.lng}`);
+    params.append("travelmode", TRAVEL_MODE_MAP[mode] ?? "transit");
+
+    window.open(
+      `https://www.google.com/maps/dir/?${params.toString()}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
 
   return (
     <div>
-      <CollapsedLine
-        minutes={minutes}
-        mode={mode}
-        line={line}
-        summary={summary}
-        hasDetails={hasDetails}
-        expanded={expanded}
-        onToggle={() => setExpanded((v) => !v)}
-      />
+      <div className="flex items-baseline gap-3">
+        <CollapsedLine
+          minutes={minutes}
+          mode={mode}
+          line={line}
+          summary={summary}
+          hasDetails={hasDetails}
+          expanded={expanded}
+          isEstimated={isEstimated}
+          onToggle={() => setExpanded((v) => !v)}
+        />
+        {hasMapsLink && (
+          <button
+            type="button"
+            onClick={openInGoogleMaps}
+            className="flex-shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2 -mt-4 mb-1"
+          >
+            Open in Maps ↗
+          </button>
+        )}
+      </div>
       {expanded && steps && steps.length > 0 && (
         <ExpandedDetails steps={steps} totalFareYen={totalFareYen} />
       )}

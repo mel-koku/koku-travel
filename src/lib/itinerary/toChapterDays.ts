@@ -118,7 +118,13 @@ function bodyFor(location: Location): string {
 
 // ── Transit segment mapping ───────────────────────────────────────────────────
 
-function mapTransit(travel: ItineraryTravelSegment | undefined): ChapterBeat["transitToNext"] {
+type CoordWithName = { lat?: number | null; lng?: number | null; name?: string };
+
+function mapTransit(
+  travel: ItineraryTravelSegment | undefined,
+  origin?: CoordWithName,
+  destination?: CoordWithName,
+): ChapterBeat["transitToNext"] {
   if (!travel) return null;
   const mode = normalizeMode(travel.mode);
   // TransitStep uses `lineName` field (verified in src/types/itinerary.ts)
@@ -159,7 +165,27 @@ function mapTransit(travel: ItineraryTravelSegment | undefined): ChapterBeat["tr
       }
     : undefined;
 
-  return { minutes: travel.durationMinutes, mode, line, steps, totalFareYen, summary };
+  const originCoords =
+    origin?.lat != null && origin.lng != null
+      ? { lat: origin.lat, lng: origin.lng, name: origin.name }
+      : undefined;
+
+  const destinationCoords =
+    destination?.lat != null && destination.lng != null
+      ? { lat: destination.lat, lng: destination.lng, name: destination.name }
+      : undefined;
+
+  return {
+    minutes: travel.durationMinutes,
+    mode,
+    line,
+    steps,
+    totalFareYen,
+    summary,
+    origin: originCoords,
+    destination: destinationCoords,
+    isEstimated: travel.isEstimated ?? false,
+  };
 }
 
 // ── ISO date arithmetic ───────────────────────────────────────────────────────
@@ -297,7 +323,7 @@ export function toChapterDays(
     }
 
     // Build beats
-    const beats: ChapterBeat[] = resolved.map(({ activity, location }) => {
+    const beats: ChapterBeat[] = resolved.map(({ activity, location }, beatIdx) => {
       const time = pickTime(
         activity.timeOfDay,
         activity.travelFromPrevious,
@@ -342,6 +368,20 @@ export function toChapterDays(
         });
       }
 
+      // Current activity's location is the transit origin;
+      // the next activity's location is the destination.
+      const nextResolved = resolved[beatIdx + 1];
+      const transitOrigin = location.coordinates
+        ? { lat: location.coordinates.lat, lng: location.coordinates.lng, name: location.name }
+        : undefined;
+      const transitDestination = nextResolved?.location.coordinates
+        ? {
+            lat: nextResolved.location.coordinates.lat,
+            lng: nextResolved.location.coordinates.lng,
+            name: nextResolved.location.name,
+          }
+        : undefined;
+
       return {
         id: activity.id,
         time,
@@ -352,7 +392,7 @@ export function toChapterDays(
         hasMore: Boolean(
           location.description || activity.description || activity.notes,
         ),
-        transitToNext: mapTransit(activity.travelToNext),
+        transitToNext: mapTransit(activity.travelToNext, transitOrigin, transitDestination),
       };
     });
 

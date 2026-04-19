@@ -107,6 +107,33 @@ describe("BeatTransit", () => {
     expect(screen.queryByText("JR Yamanote Line")).not.toBeInTheDocument();
   });
 
+  it("renders (est.) marker when isEstimated is true", () => {
+    render(<BeatTransit minutes={55} mode="train" isEstimated />);
+    expect(screen.getByText(/est\./i)).toBeInTheDocument();
+  });
+
+  it("does not render (est.) marker when isEstimated is false or undefined", () => {
+    render(<BeatTransit minutes={55} mode="train" />);
+    expect(screen.queryByText(/est\./i)).not.toBeInTheDocument();
+  });
+
+  it("renders Open in Maps link when origin and destination coords provided", () => {
+    render(
+      <BeatTransit
+        minutes={18}
+        mode="train"
+        origin={{ lat: 35.66, lng: 139.70, name: "Shibuya Station" }}
+        destination={{ lat: 35.68, lng: 139.77, name: "Tokyo Station" }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: /open in maps/i })).toBeInTheDocument();
+  });
+
+  it("does not render Open in Maps link when coords are missing", () => {
+    render(<BeatTransit minutes={18} mode="train" />);
+    expect(screen.queryByRole("button", { name: /open in maps/i })).not.toBeInTheDocument();
+  });
+
   it("collapses back when Details button is clicked again", () => {
     render(
       <BeatTransit
