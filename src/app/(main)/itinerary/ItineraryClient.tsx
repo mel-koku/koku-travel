@@ -184,7 +184,7 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
     } catch (err) {
       logger.error("Checkout network error", err);
     }
-  }, [selectedTrip, user.id]);
+  }, [selectedTrip, user.email]);
 
   const activeItinerary: Itinerary | null = selectedTrip
     ? selectedTrip.itinerary
