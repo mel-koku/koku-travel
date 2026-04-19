@@ -62,7 +62,17 @@ import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
 import { UnlockCard } from "./UnlockCard";
 import { ContextualUnlockPrompt, type UnlockPromptContext } from "./ContextualUnlockPrompt";
 import { buildItineraryTabs, resolveTabClick, type ItineraryViewMode } from "./itineraryTabs";
-import { isDayAccessible, getTripTier } from "@/lib/billing/access";
+import { isDayAccessible, getTripTier, getTierPriceDollars } from "@/lib/billing/access";
+import { env } from "@/lib/env";
+import { TripAdvisoriesTray, type AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
+import { LaunchNudge } from "@/components/features/itinerary/chapter/LaunchNudge";
+import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
+import {
+  getDismissedAdvisoriesLocal,
+  dismissAdvisoryLocal,
+} from "@/services/tripAdvisoriesService";
+import type { AdvisoryKey } from "@/types/tripAdvisories";
+import { getTripStatus } from "@/lib/trip/tripStatus";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -190,6 +200,29 @@ export const ItineraryShell = ({
   const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
   const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
+
+  // v2 Chrome flag + dismissed-advisories state
+  const v2Chrome = env.itineraryV2Chrome;
+
+  const [dismissedAdvisories, setDismissedAdvisories] = useState<Set<AdvisoryKey>>(
+    () => (typeof window !== "undefined" && v2Chrome
+      ? getDismissedAdvisoriesLocal(currentTrip?.id ?? "")
+      : new Set()),
+  );
+
+  const handleDismissAdvisory = useCallback(
+    (key: AdvisoryKey) => {
+      if (!currentTrip?.id) return;
+      dismissAdvisoryLocal(currentTrip.id, key);
+      setDismissedAdvisories((prev) => {
+        const next = new Set(prev);
+        next.add(key);
+        return next;
+      });
+    },
+    [currentTrip?.id],
+  );
+
   const requireUnlock = useCallback(
     (ctx: UnlockPromptContext): boolean => {
       if (!isTripLocked) return false;
@@ -506,6 +539,70 @@ export const ItineraryShell = ({
     submitRating: activityRatingsHook.submitRating,
   }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
 
+  // Tray entries for v2 Chrome advisories
+  const trayEntries = useMemo<AdvisoryEntry[]>(() => {
+    if (!v2Chrome || !currentTrip) return [];
+    const entries: AdvisoryEntry[] = [];
+
+    // AccessibilityBanner condition
+    if (shouldShowAccessibilityBanner(currentTrip)) {
+      entries.push({
+        key: "accessibility-prep",
+        title: "Accessibility prep",
+        body: "Review mobility, sensory, and dietary notes before you land.",
+      });
+    }
+
+    // GoshuinBanner condition (shrine/temple tag + upcoming)
+    const hasShrineOrTemple = model.days.some((day) =>
+      day.activities.some((activity) => {
+        if (activity.kind !== "place") return false;
+        const tags = (activity.tags as string[]) ?? [];
+        return tags.some((tag) => tag === "shrine" || tag === "temple");
+      })
+    );
+    const isUpcoming = currentTrip.builderData?.dates?.start
+      ? new Date(currentTrip.builderData.dates.start) > new Date()
+      : false;
+    if (hasShrineOrTemple && isUpcoming) {
+      entries.push({
+        key: "goshuin",
+        title: "Goshuin passport for temple days",
+        body: "Pick one up at your first shrine. It's the traditional way to collect stamps.",
+      });
+    }
+
+    // PrepBanner condition (upcoming status + has applicable items)
+    const tripStatus = getTripStatus(currentTrip);
+    if (tripStatus === "upcoming") {
+      entries.push({
+        key: "prep-checklist",
+        title: "Pre-trip checklist",
+        body: "Packing, connectivity, and cash to sort before you board.",
+      });
+    }
+
+    // SeasonalBanner condition
+    if (model.seasonalHighlight) {
+      entries.push({
+        key: `seasonal-highlight:${model.seasonalHighlight.id ?? "default"}`,
+        title: model.seasonalHighlight.label ?? "Seasonal highlight",
+        body: model.seasonalHighlight.description ?? "In season during your trip.",
+      });
+    }
+
+    // DayTripBanner condition
+    if (dayTripSuggestions && dayTripSuggestions.length > 0) {
+      entries.push({
+        key: "day-trip-festival",
+        title: "Nearby festival on your dates",
+        body: "Extend the trip. There's a festival within reach.",
+      });
+    }
+
+    return entries;
+  }, [v2Chrome, currentTrip, model.days, model.seasonalHighlight, dayTripSuggestions]);
+
   // Print export data
   const printCities = useMemo(() => {
     const cityMap: Record<string, string> = {};
@@ -820,7 +917,7 @@ export const ItineraryShell = ({
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
-            {/* Live earthquake alert — top of safety-banner stack */}
+            {/* Live earthquake alert — inline exception, renders regardless of v2Chrome flag */}
             {currentTrip && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               if (!primaryCityId) return null;
@@ -831,14 +928,7 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
-            {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
-              <div className="mb-3">
-                <AccessibilityBanner trip={currentTrip} />
-              </div>
-            )}
-
-            {/* Disaster/typhoon awareness banner — above prep checklist */}
+            {/* Disaster/typhoon awareness banner — inline exception, renders regardless of v2Chrome flag */}
             {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               const tripRegion = primaryCityId ? getWeatherRegion(primaryCityId) : "temperate";
@@ -849,43 +939,75 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Goshuin banner — for shrine/temple trips */}
-            {currentTrip && (() => {
-              const hasShrineOrTemple = model.days.some((day) =>
-                day.activities.some((activity) => {
-                  if (activity.kind !== "place") return false;
-                  const tags = (activity.tags as string[]) ?? [];
-                  return tags.some((tag) => tag === "shrine" || tag === "temple");
-                })
-              );
-              const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
-              return hasShrineOrTemple && isUpcoming ? (
-                <div className="mb-3">
-                  <GoshuinBanner trip={currentTrip} />
-                </div>
-              ) : null;
-            })()}
-
-            {/* Pre-trip prep checklist — auto-hides when trip is active */}
-            {currentTrip && (
-              <div className="mb-3">
-                <PrepBanner trip={currentTrip} />
-              </div>
-            )}
-            {/* Compact notification strips */}
-            {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
-              <div className="mb-3 space-y-1">
-                {model.seasonalHighlight && (
-                  <SeasonalBanner highlight={model.seasonalHighlight} />
+            {/* Legacy banner stack — shown when v2Chrome is off */}
+            {!v2Chrome && (
+              <>
+                {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
+                {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
+                  <div className="mb-3">
+                    <AccessibilityBanner trip={currentTrip} />
+                  </div>
                 )}
-                {dayTripSuggestions && dayTripSuggestions.length > 0 && (
-                  <DayTripBanner
-                    suggestions={dayTripSuggestions}
-                    tripId={tripId}
-                    onViewDashboard={() => {
-                      if (requireUnlock("overview")) return;
-                      setViewMode("dashboard");
-                    }}
+
+                {/* Goshuin banner — for shrine/temple trips */}
+                {currentTrip && (() => {
+                  const hasShrineOrTemple = model.days.some((day) =>
+                    day.activities.some((activity) => {
+                      if (activity.kind !== "place") return false;
+                      const tags = (activity.tags as string[]) ?? [];
+                      return tags.some((tag) => tag === "shrine" || tag === "temple");
+                    })
+                  );
+                  const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
+                  return hasShrineOrTemple && isUpcoming ? (
+                    <div className="mb-3">
+                      <GoshuinBanner trip={currentTrip} />
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Pre-trip prep checklist — auto-hides when trip is active */}
+                {currentTrip && (
+                  <div className="mb-3">
+                    <PrepBanner trip={currentTrip} />
+                  </div>
+                )}
+
+                {/* Compact notification strips */}
+                {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
+                  <div className="mb-3 space-y-1">
+                    {model.seasonalHighlight && (
+                      <SeasonalBanner highlight={model.seasonalHighlight} />
+                    )}
+                    {dayTripSuggestions && dayTripSuggestions.length > 0 && (
+                      <DayTripBanner
+                        suggestions={dayTripSuggestions}
+                        tripId={tripId}
+                        onViewDashboard={() => {
+                          if (requireUnlock("overview")) return;
+                          setViewMode("dashboard");
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* v2 Chrome — advisories tray + launch nudge */}
+            {v2Chrome && currentTrip && (
+              <div className="mb-3 space-y-2">
+                {!dismissedAdvisories.has("v2-launch-nudge") && (
+                  <LaunchNudge
+                    onDismiss={() => handleDismissAdvisory("v2-launch-nudge")}
+                  />
+                )}
+                {trayEntries.length > 0 && (
+                  <TripAdvisoriesTray
+                    tripId={currentTrip.id}
+                    entries={trayEntries}
+                    dismissed={dismissedAdvisories}
+                    onDismiss={handleDismissAdvisory}
                   />
                 )}
               </div>
@@ -951,17 +1073,27 @@ export const ItineraryShell = ({
                 />
               </ErrorBoundary>
 
-              {/* Unlock Card (shown after Day 1 when trip is not unlocked) */}
+              {/* Unlock Card / UnlockBeat (shown after Day 1 when trip is not unlocked) */}
               {safeSelectedDay === 0 && !(tripUnlocked ?? false) && !fullAccessEnabled && model.days.length > 1 && (
-                <UnlockCard
-                  tier={getTripTier(model.days.length)}
-                  cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
-                  totalDays={model.days.length}
-                  isGuest={isGuest}
-                  launchPricing={launchPricing}
-                  launchSlotsRemaining={launchSlotsRemaining}
-                  onUnlock={onUnlockClick ?? (() => {})}
-                />
+                v2Chrome ? (
+                  <UnlockBeat
+                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                    totalDays={model.days.length}
+                    priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
+                    launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
+                    onUnlock={onUnlockClick ?? (() => {})}
+                  />
+                ) : (
+                  <UnlockCard
+                    tier={getTripTier(model.days.length)}
+                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                    totalDays={model.days.length}
+                    isGuest={isGuest}
+                    launchPricing={launchPricing}
+                    launchSlotsRemaining={launchSlotsRemaining}
+                    onUnlock={onUnlockClick ?? (() => {})}
+                  />
+                )
               )}
               </>
             ) : (
@@ -976,8 +1108,17 @@ export const ItineraryShell = ({
             )}
 
             {/* Planning status */}
-            {isPlanning && (
+            {isPlanning && !v2Chrome && (
               <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
+                Updating travel times...
+              </div>
+            )}
+            {isPlanning && v2Chrome && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="fixed bottom-4 right-4 z-30 px-3 py-1.5 rounded-full bg-surface border border-border text-xs text-foreground-secondary shadow-[var(--shadow-sm)]"
+              >
                 Updating travel times...
               </div>
             )}
