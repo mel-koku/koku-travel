@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { StoredTrip } from "@/services/trip/types";
 import { getTripStatus } from "@/lib/trip/tripStatus";
 import { PREP_CHECKLIST, type PrepItem, type PrepSection } from "@/data/prepChecklist";
 import { useToast } from "@/context/ToastContext";
 import { useTrips } from "@/state/slices/TripsSlice";
+import { logTipEvent } from "@/lib/telemetry/tipEvents";
+import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
 const SECTION_LABELS: Record<PrepSection, string> = {
   if_you_havent_already: "If you haven't already",
@@ -55,6 +57,14 @@ export function PrepBanner({ trip }: Props) {
   });
   const { showToast } = useToast();
   const { actions: tripsActions } = useTrips();
+  const tipContext = useTipEventContext(trip.id);
+
+  // Log rendered once per mount when the banner is visible (upcoming trips
+  // with applicable items). PrepBanner's "dismissal" is the collapse toggle.
+  useEffect(() => {
+    if (status !== "upcoming") return;
+    void logTipEvent("prep", "rendered", tipContext);
+  }, [status, tipContext]);
 
   const applicableItems = useMemo<PrepItem[]>(
     () => PREP_CHECKLIST.filter((item) => (item.condition ? item.condition(trip) : true)),
@@ -78,6 +88,9 @@ export function PrepBanner({ trip }: Props) {
 
   const toggleCollapse = () => {
     const next = !isCollapsed;
+    // "Dismissed" = user chose to collapse. Expanding back up isn't a
+    // second event; we only log the transition to collapsed.
+    if (next) void logTipEvent("prep", "dismissed", tipContext);
     setIsCollapsed(next);
     if (typeof window !== "undefined") {
       if (next) window.sessionStorage.setItem(sessionKey, "1");

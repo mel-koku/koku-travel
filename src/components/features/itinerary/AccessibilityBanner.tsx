@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { StoredTrip } from "@/services/trip/types";
+import { logTipEvent } from "@/lib/telemetry/tipEvents";
+import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
 type Props = {
   trip: StoredTrip;
@@ -9,15 +11,24 @@ type Props = {
 
 export function AccessibilityBanner({ trip }: Props) {
   const sessionKey = `yuku-accessibility-dismissed-${trip.id}`;
+  const tipContext = useTipEventContext(trip.id);
 
   const [isDismissed, setIsDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(sessionKey) === "1";
   });
 
+  useEffect(() => {
+    if (isDismissed) return;
+    void logTipEvent("accessibility", "rendered", tipContext);
+    // Log once per mount when visible. tipContext identity changes only on
+    // user/trip change; fine to re-log in that unlikely case.
+  }, [isDismissed, tipContext]);
+
   if (isDismissed) return null;
 
   const handleDismiss = () => {
+    void logTipEvent("accessibility", "dismissed", tipContext);
     setIsDismissed(true);
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem(sessionKey, "1");
