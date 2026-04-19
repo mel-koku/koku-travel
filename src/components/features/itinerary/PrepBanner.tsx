@@ -42,6 +42,15 @@ function countdownLabel(startDate: string, primaryCity: string | undefined): str
   return `✈️ ${where} in ${days} days`;
 }
 
+/**
+ * Returns true when the trip has at least one applicable prep checklist item.
+ * Used both by PrepBanner (render gate) and ItineraryShell (tray entry gate)
+ * so the two surfaces stay in sync.
+ */
+export function hasApplicablePrepItems(trip: StoredTrip): boolean {
+  return PREP_CHECKLIST.some((item) => (item.condition ? item.condition(trip) : true));
+}
+
 type Props = {
   trip: StoredTrip;
 };
