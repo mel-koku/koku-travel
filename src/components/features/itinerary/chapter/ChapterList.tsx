@@ -66,6 +66,10 @@ export type ChapterBeat = {
       lineShortName?: string;
       lineColor?: string;
     };
+    // For Google Maps escape hatch
+    origin?: { lat: number; lng: number; name?: string };
+    destination?: { lat: number; lng: number; name?: string };
+    isEstimated?: boolean;
   } | null;
 };
 
