@@ -21,6 +21,7 @@ import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPro
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
 import { useDayTripSuggestions } from "@/hooks/useDayTripSuggestions";
 import { UnlockCeremony } from "@/components/features/itinerary/UnlockCeremony";
+import { useToast } from "@/context/ToastContext";
 
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
@@ -52,6 +53,7 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary, user, refreshFromSupabase } = useAppState();
+  const { showToast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
   const [showCeremony, setShowCeremony] = useState(false);
@@ -170,6 +172,22 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
           })(),
         }),
       });
+
+      if (res.status === 409) {
+        try {
+          const body = await res.json();
+          if (body?.code === "free_access_enabled") {
+            showToast(body.error ?? "Trip Pass is free right now.", {
+              variant: "info",
+              actionLabel: "View itinerary",
+              actionHref: selectedTrip ? `/itinerary?trip=${encodeURIComponent(selectedTrip.id)}` : "/dashboard",
+            });
+            return;
+          }
+        } catch {
+          // fall through to generic error handling
+        }
+      }
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
