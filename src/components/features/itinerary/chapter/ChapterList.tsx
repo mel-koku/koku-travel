@@ -64,7 +64,12 @@ function resolveCurrentBeatIdx(
 }
 
 function formatDateDisplay(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
+  if (!iso) return "";
+  // ISO date strings match YYYY-MM-DD — if the string is not a valid date
+  // (e.g. a day.dateLabel fallback like "Day 1 (Tokyo)"), pass through as-is.
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",

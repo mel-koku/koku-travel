@@ -2,7 +2,10 @@
 
 import { getGtag } from "@/lib/analytics/customLocations";
 
-export type InlineDayNoteKind = "safety" | "closure";
+// "safety" is intentionally removed — no code path produces it yet.
+// The safety integration (typhoon / earthquake inline notes) is a follow-up
+// when banners re-target by day rather than trip-level.
+export type InlineDayNoteKind = "closure";
 
 export type InlineDayNoteEntry = {
   kind: InlineDayNoteKind;
