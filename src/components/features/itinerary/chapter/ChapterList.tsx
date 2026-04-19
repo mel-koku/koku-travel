@@ -83,6 +83,7 @@ export type ChapterListProps = {
     meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
   ) => void;
   isReadOnly?: boolean;
+  onVisibleDayChange?: (dayIndex: number) => void;
 };
 
 function beatIsBeforeNow(time: string, dayDate: string, now: Date): boolean {
@@ -127,9 +128,12 @@ export function ChapterList({
   unlockProps,
   onAddActivity,
   isReadOnly,
+  onVisibleDayChange,
 }: ChapterListProps) {
   const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
   const hasLoggedScrollDepth = useRef(false);
+  const sectionRefs = useRef<Map<number, HTMLElement>>(new Map());
+  const lastReportedIdx = useRef<number>(-1);
 
   const { index: focusDayIdx, isDayOfMode } = useFocusDay(trip.days);
   const dayOfEnabled = env.itineraryV2DayOf;
@@ -167,12 +171,63 @@ export function ChapterList({
     return () => observer.disconnect();
   }, [trip.id]);
 
+  // IntersectionObserver — fires onVisibleDayChange when a chapter section
+  // enters the viewport. Only created when the callback is provided (SSR-safe).
+  useEffect(() => {
+    if (!onVisibleDayChange) return;
+    if (typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const intersecting = entries.filter((e) => e.isIntersecting);
+        if (intersecting.length === 0) return;
+
+        // Pick the section whose top is closest to the viewport top (i.e. the
+        // chapter the reader is most likely focused on). Sections with a
+        // negative top have scrolled past — prefer the one least-negative.
+        const best = intersecting.reduce((acc, cur) => {
+          const accTop = acc.boundingClientRect.top;
+          const curTop = cur.boundingClientRect.top;
+          if (accTop >= 0 && curTop < 0) return acc;
+          if (curTop >= 0 && accTop < 0) return cur;
+          return Math.abs(curTop) < Math.abs(accTop) ? cur : acc;
+        });
+
+        const target = best.target as HTMLElement;
+        const idxAttr = target.dataset.dayIndex;
+        if (!idxAttr) return;
+        const idx = parseInt(idxAttr, 10);
+        if (Number.isNaN(idx)) return;
+        if (idx === lastReportedIdx.current) return;
+        lastReportedIdx.current = idx;
+        onVisibleDayChange(idx);
+      },
+      {
+        // Pushes detection zone so a chapter is "active" when its header is
+        // near the top of the viewport, not when its last beat leaves the bottom.
+        rootMargin: "-10% 0px -60% 0px",
+        threshold: [0, 0.1, 0.25],
+      },
+    );
+
+    for (const el of sectionRefs.current.values()) {
+      observer.observe(el);
+    }
+
+    return () => observer.disconnect();
+  }, [trip.days.length, onVisibleDayChange]);
+
   return (
     <div>
       {trip.days.map((day, idx) => (
         <section
           key={day.id}
           id={`day-${idx + 1}`}
+          data-day-index={idx}
+          ref={(el) => {
+            if (el) sectionRefs.current.set(idx, el);
+            else sectionRefs.current.delete(idx);
+          }}
           className={idx === 0 ? "pt-8" : "py-10 sm:py-14 lg:py-20"}
         >
           <ChapterHeader

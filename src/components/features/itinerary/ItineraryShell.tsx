@@ -521,6 +521,10 @@ export const ItineraryShell = ({
 
   const [dayTransitionLabel, setDayTransitionLabel] = useState<string | null>(null);
 
+  // Prevents the IntersectionObserver from correcting selectedDay mid-scroll
+  // when the user clicks the day picker (programmatic scroll takes ~700ms).
+  const scrollLockRef = useRef<number>(0);
+
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     const targetDay = model.days[dayIndex];
     if (targetDay?.dateLabel) {
@@ -539,10 +543,22 @@ export const ItineraryShell = ({
     if (v2Chapter) {
       const el = document.getElementById(`day-${dayIndex + 1}`);
       if (el) {
+        // Lock the observer for 700ms so programmatic scroll doesn't race with
+        // the observer reporting an intermediate chapter as the active one.
+        scrollLockRef.current = Date.now() + 700;
         el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   }, [model.days, setSelectedActivityId, v2Chapter]);
+
+  // Callback passed to ChapterList — skipped while a programmatic scroll is in flight.
+  const handleVisibleDayChange = useCallback(
+    (dayIndex: number) => {
+      if (Date.now() < scrollLockRef.current) return;
+      handleSelectDayChange(dayIndex);
+    },
+    [handleSelectDayChange],
+  );
 
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
@@ -1216,6 +1232,7 @@ export const ItineraryShell = ({
                       totalDays: model.days.length,
                     }}
                     onAddActivity={handleAddActivityToDay}
+                    onVisibleDayChange={handleVisibleDayChange}
                     isReadOnly={isReadOnly}
                   />
                 ) : (
