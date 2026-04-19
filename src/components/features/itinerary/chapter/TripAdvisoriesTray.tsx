@@ -35,41 +35,34 @@ export function TripAdvisoriesTray({
 
   const active = entries.filter((e) => !dismissed.has(e.key));
 
+  if (active.length === 0) {
+    return (
+      <p className="py-4 text-sm text-foreground-secondary">
+        No advisories right now.
+      </p>
+    );
+  }
+
   return (
-    <aside
-      aria-label="Trip advisories"
-      className="w-full max-w-md bg-surface rounded-md border border-border p-4"
-    >
-      <h3 className="text-sm font-medium text-foreground mb-3">
-        Trip advisories ({active.length})
-      </h3>
-      <div className="border-t border-border" />
-      {active.length > 0 ? (
-        <ul className="divide-y divide-border">
-          {active.map((entry) => (
-            <li key={entry.key} className="py-3 flex items-start gap-3">
-              <span aria-hidden className="text-warning text-xs pt-1">◈</span>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-foreground">{entry.title}</div>
-                <p className="text-xs text-foreground-secondary leading-relaxed mt-0.5">
-                  {entry.body}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onDismiss(entry.key)}
-                className="text-xs text-accent underline underline-offset-2 whitespace-nowrap"
-              >
-                Got it
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="py-4 text-sm text-foreground-secondary">
-          No advisories right now.
-        </p>
-      )}
-    </aside>
+    <ul className="divide-y divide-border">
+      {active.map((entry) => (
+        <li key={entry.key} className="py-3 flex items-start gap-3">
+          <span aria-hidden className="text-warning text-xs pt-1">◈</span>
+          <div className="flex-1">
+            <div className="text-sm font-medium text-foreground">{entry.title}</div>
+            <p className="text-xs text-foreground-secondary leading-relaxed mt-0.5">
+              {entry.body}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onDismiss(entry.key)}
+            className="text-xs text-accent underline underline-offset-2 whitespace-nowrap"
+          >
+            Got it
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }

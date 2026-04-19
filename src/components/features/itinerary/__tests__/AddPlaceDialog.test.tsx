@@ -57,7 +57,7 @@ describe("AddPlaceDialog", () => {
       />,
       { wrapper: makeWrapper() },
     );
-    await userEvent.click(screen.getByText("Close ✕"));
+    await userEvent.click(screen.getByRole("button", { name: /close/i }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

@@ -10,7 +10,7 @@ const entries = [
 describe("TripAdvisoriesTray", () => {
   beforeEach(() => localStorage.clear());
 
-  it("renders an unread count when advisories are present", () => {
+  it("renders the expected number of active entries", () => {
     render(
       <TripAdvisoriesTray
         tripId="trip-1"
@@ -19,7 +19,7 @@ describe("TripAdvisoriesTray", () => {
         onDismiss={() => {}}
       />,
     );
-    expect(screen.getByText(/Trip advisories \(2\)/)).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /got it/i })).toHaveLength(2);
   });
 
   it("hides dismissed entries from the active list", () => {
@@ -31,7 +31,7 @@ describe("TripAdvisoriesTray", () => {
         onDismiss={() => {}}
       />,
     );
-    expect(screen.getByText(/Trip advisories \(1\)/)).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /got it/i })).toHaveLength(1);
     expect(screen.queryByText(/Pack for 14°C mornings/)).not.toBeInTheDocument();
   });
 
