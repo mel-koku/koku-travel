@@ -309,12 +309,28 @@ export const ItineraryShell = ({
   );
 
   // beatId === activity.id per the toChapterDays adapter
+  // Build a lookup from activity id -> day index so we can gate locked days.
+  const beatIdToDayIndex = useMemo(() => {
+    const out = new Map<string, number>();
+    model.days.forEach((day, dayIdx) => {
+      day.activities.forEach((a) => {
+        out.set(a.id, dayIdx);
+      });
+    });
+    return out;
+  }, [model.days]);
+
   const handleExpandBeat = useCallback(
     (beatId: string) => {
+      const dayIdx = beatIdToDayIndex.get(beatId) ?? 0;
+      if (!isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled)) {
+        requireUnlock("locked_day");
+        return;
+      }
       const loc = activityIdToLocation.get(beatId);
       if (loc) handleViewDetails(loc);
     },
-    [activityIdToLocation, handleViewDetails],
+    [beatIdToDayIndex, activityIdToLocation, handleViewDetails, tripUnlocked, fullAccessEnabled, requireUnlock],
   );
 
   useEffect(() => {
@@ -508,7 +524,17 @@ export const ItineraryShell = ({
     }
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
-  }, [model.days, setSelectedActivityId]);
+
+    // When chapter mode is on, scroll to the matching section anchor instead
+    // of relying on the legacy panel-swap. We still update state so the
+    // picker label reflects the choice.
+    if (v2Chapter) {
+      const el = document.getElementById(`day-${dayIndex + 1}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [model.days, setSelectedActivityId, v2Chapter]);
 
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
