@@ -68,7 +68,7 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
     <motion.aside
       role="region"
       aria-label="Launch promotion announcement"
-      className="relative flex h-10 items-center border-b border-default bg-canvas sm:h-9"
+      className="fixed left-0 right-0 top-0 z-[60] flex h-10 items-center border-b border-default bg-canvas sm:h-9"
       initial={prefersReducedMotion ? false : { opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}

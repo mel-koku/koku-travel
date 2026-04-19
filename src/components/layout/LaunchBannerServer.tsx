@@ -23,5 +23,13 @@ export async function LaunchBannerServer() {
   if (process.env.NEXT_PUBLIC_FREE_FULL_ACCESS !== "true") return null;
   const { remaining, total } = await getInitialSlots();
   if (remaining === null || total === null) return null;
-  return <LaunchBanner initialRemaining={remaining} initialTotal={total} />;
+  return (
+    <>
+      <style>{`
+        header.fixed { top: 2.5rem; }
+        @media (min-width: 640px) { header.fixed { top: 2.25rem; } }
+      `}</style>
+      <LaunchBanner initialRemaining={remaining} initialTotal={total} />
+    </>
+  );
 }
