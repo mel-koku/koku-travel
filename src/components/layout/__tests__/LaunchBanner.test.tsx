@@ -77,4 +77,51 @@ describe("LaunchBanner", () => {
     );
     vi.useRealTimers();
   });
+
+  it("slows polling cadence to 5 minutes after the first 10 minutes", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ remaining: 200, total: 300 }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<LaunchBanner initialRemaining={247} initialTotal={300} />);
+
+    // Fast window: 10 polls at 60s each (t=60s..600s).
+    await vi.advanceTimersByTimeAsync(FAST_WINDOW_MS);
+    expect(fetchMock).toHaveBeenCalledTimes(10);
+
+    // Next 11 minutes (660s) at slow cadence (300s) should yield ~2 more polls,
+    // not 11 as the naive 60s cadence would predict.
+    await vi.advanceTimersByTimeAsync(660_000);
+    expect(fetchMock.mock.calls.length).toBeLessThan(13);
+    expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(12);
+
+    vi.useRealTimers();
+  });
+
+  it("resets to fast cadence when the window regains focus", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ remaining: 200, total: 300 }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<LaunchBanner initialRemaining={247} initialTotal={300} />);
+
+    // Burn through fast window so we're in slow cadence.
+    await vi.advanceTimersByTimeAsync(FAST_WINDOW_MS);
+    const callsAfterFastWindow = fetchMock.mock.calls.length;
+
+    // Refocus → should reset to fast cadence.
+    window.dispatchEvent(new FocusEvent("focus"));
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(fetchMock.mock.calls.length).toBe(callsAfterFastWindow + 1);
+
+    vi.useRealTimers();
+  });
 });
+
+const FAST_WINDOW_MS = 600_000;

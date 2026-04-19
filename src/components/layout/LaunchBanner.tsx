@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -12,6 +12,9 @@ type LaunchBannerProps = {
 
 const ALMOST_GONE_THRESHOLD = 20;
 const DISMISS_KEY = "yuku.launch-banner.v1.dismissed";
+const FAST_POLL_MS = 60_000;
+const SLOW_POLL_MS = 300_000;
+const FAST_WINDOW_MS = 600_000;
 
 export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerProps) {
   const [remaining, setRemaining] = useState<number | null>(initialRemaining);
@@ -25,22 +28,54 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
     }
   }, []);
 
+  const fastWindowStartRef = useRef<number>(0);
+
   useEffect(() => {
     if (dismissed) return;
+    if (typeof window === "undefined") return;
+
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let cancelled = false;
+    fastWindowStartRef.current = Date.now();
+
     const poll = async () => {
       try {
         const res = await fetch("/api/launch-pricing");
         if (!res.ok) return;
         const data: { remaining: number | null; total: number | null } =
           await res.json();
+        if (cancelled) return;
         if (data.remaining !== null) setRemaining(data.remaining);
         if (data.total !== null) setTotal(data.total);
       } catch {
         // ignore transient errors; keep last known count
       }
     };
-    const interval = setInterval(poll, 60_000);
-    return () => clearInterval(interval);
+
+    const schedule = () => {
+      if (cancelled) return;
+      const elapsed = Date.now() - fastWindowStartRef.current;
+      const delay = elapsed < FAST_WINDOW_MS ? FAST_POLL_MS : SLOW_POLL_MS;
+      timeoutId = setTimeout(async () => {
+        await poll();
+        schedule();
+      }, delay);
+    };
+
+    const handleFocus = () => {
+      fastWindowStartRef.current = Date.now();
+      if (timeoutId !== null) clearTimeout(timeoutId);
+      schedule();
+    };
+
+    schedule();
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      cancelled = true;
+      if (timeoutId !== null) clearTimeout(timeoutId);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [dismissed]);
 
   if (dismissed) return null;
