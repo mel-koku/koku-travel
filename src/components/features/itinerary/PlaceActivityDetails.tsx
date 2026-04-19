@@ -2,6 +2,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import type { ActivityTip } from "@/lib/tips/tipGenerator";
+import { HoursConfirmationFooter } from "@/components/features/itinerary/chapter/HoursConfirmationFooter";
 
 type LocationDetails = {
   editorialSummary?: string;
@@ -60,6 +61,11 @@ export function PlaceActivityDetails({
                   <p key={idx} className="text-[11px] text-foreground-secondary">{hours}</p>
                 ))}
               </div>
+              <HoursConfirmationFooter
+                hoursSource={
+                  placeLocation.placeId ? "google" : undefined
+                }
+              />
             </div>
           )}
 
