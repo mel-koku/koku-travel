@@ -70,6 +70,8 @@ import { env } from "@/lib/env";
 import { TripAdvisoriesTray, type AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
 import { LaunchNudge } from "@/components/features/itinerary/chapter/LaunchNudge";
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
+import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
+import { EditTripDrawer } from "@/components/features/itinerary/chapter/EditTripDrawer";
 import {
   getDismissedAdvisoriesLocal,
   dismissAdvisoryLocal,
@@ -209,6 +211,11 @@ export const ItineraryShell = ({
 
   // v2 Chapter flag — replaces ItineraryTimeline with ChapterList when true
   const v2Chapter = env.itineraryV2Chapter;
+
+  // v2 Nav flag — replaces 4-tab strip with TripBar + EditTripDrawer when true
+  const v2Nav = env.itineraryV2Nav;
+
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
 
   // All place activities across all days (flattened) — batch location fetch for ChapterList
   const allPlaceActivities = useMemo(() => {
@@ -660,12 +667,43 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-  const tabs = buildItineraryTabs({
+  const tabs = v2Nav ? [] : buildItineraryTabs({
     isTripLocked,
     isReadOnly: Boolean(isReadOnly),
     isUsingMock,
     hasCulturalBriefing: Boolean(culturalBriefing),
   });
+
+  const dashboardProps = {
+    itinerary: model,
+    conflicts: conflictsResult.conflicts,
+    conflictsResult: conflictsResult,
+    tripStartDate,
+    onClose: () => {
+      if (v2Nav) {
+        setEditDrawerOpen(false);
+      } else {
+        setViewMode("timeline");
+      }
+    },
+    onSelectDay: (dayIndex: number) => {
+      handleSelectDayChange(dayIndex);
+      if (v2Nav) {
+        setEditDrawerOpen(false);
+      } else {
+        setViewMode("timeline");
+      }
+    },
+    tripBuilderData,
+    dayTripSuggestions,
+    onAcceptDayTrip: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
+      if (requireUnlock("day_trip")) return;
+      handleAcceptDayTrip(suggestion, dayIndex);
+    },
+    isAcceptingDayTrip,
+    suggestions,
+    dailyBriefings,
+  };
 
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
@@ -748,6 +786,32 @@ export const ItineraryShell = ({
       <div className="flex flex-col md:h-full md:flex-row md:gap-4 md:p-4">
         {/* Left: Cards Panel (60%) */}
         <div className="flex flex-col md:w-1/2 lg:w-3/5 md:min-h-0 md:overflow-y-auto" data-lenis-prevent>
+          {/* v2 Nav: TripBar replaces tab strip */}
+          {v2Nav && currentTrip && (
+            <TripBar
+              tripName={tripName}
+              currentDayIndex={safeSelectedDay}
+              totalDays={model.days.length}
+              isToday={false}
+              tripId={currentTrip.id}
+              unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
+              onOpenEdit={() => setEditDrawerOpen(true)}
+              onOpenMore={() => {
+                document.querySelector("[aria-label='Trip advisories']")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }}
+            />
+          )}
+          {/* v2 Nav: EditTripDrawer */}
+          {v2Nav && (
+            <EditTripDrawer
+              open={editDrawerOpen}
+              onClose={() => setEditDrawerOpen(false)}
+              dashboardProps={dashboardProps}
+            />
+          )}
           {/* Header bar */}
           <div
             className={`border-b border-border bg-background px-4 pb-2.5 md:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
@@ -791,6 +855,7 @@ export const ItineraryShell = ({
                     </span>
                   )}
                 </div>
+                {!v2Nav && (
                 <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
                   <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
                     {tabs.map((tab) => (
@@ -852,6 +917,7 @@ export const ItineraryShell = ({
                     </>
                   )}
                 </div>
+                )}
               </div>
             </div>
 
@@ -887,35 +953,18 @@ export const ItineraryShell = ({
           </div>
 
           {/* Trip Confidence Dashboard */}
+          {!v2Nav && (
           <AnimatePresence>
             {viewMode === "dashboard" && (
               <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
-                <TripConfidenceDashboard
-                  itinerary={model}
-                  conflicts={conflictsResult.conflicts}
-                  conflictsResult={conflictsResult}
-                  tripStartDate={tripStartDate}
-                  onClose={() => setViewMode("timeline")}
-                  onSelectDay={(dayIndex) => {
-                    handleSelectDayChange(dayIndex);
-                    setViewMode("timeline");
-                  }}
-                  tripBuilderData={tripBuilderData}
-                  dayTripSuggestions={dayTripSuggestions}
-                  onAcceptDayTrip={(suggestion, dayIndex) => {
-                    if (requireUnlock("day_trip")) return;
-                    handleAcceptDayTrip(suggestion, dayIndex);
-                  }}
-                  isAcceptingDayTrip={isAcceptingDayTrip}
-                  suggestions={suggestions}
-                  dailyBriefings={dailyBriefings}
-                />
+                <TripConfidenceDashboard {...dashboardProps} />
               </div>
             )}
           </AnimatePresence>
+          )}
 
           {/* Discover Panel */}
-          {viewMode === "discover" && (
+          {!v2Nav && viewMode === "discover" && (
             <div className="flex-1 overflow-hidden lg:rounded-lg lg:border lg:border-border">
               <ItineraryDiscoverPanel
                 locations={discover.locations}
@@ -941,7 +990,7 @@ export const ItineraryShell = ({
           )}
 
           {/* Before You Land (Culture) Tab */}
-          {viewMode === "culture" && culturalBriefing && (
+          {!v2Nav && viewMode === "culture" && culturalBriefing && (
             <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
               <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
@@ -1071,8 +1120,10 @@ export const ItineraryShell = ({
                     trip={{ id: tripId, name: tripName, days: chapterDays }}
                     onExpandBeat={handleExpandBeat}
                     onReviewAdvisories={() => {
-                      // Task 26 wires this to open the TripAdvisoriesTray drawer.
-                      // No-op for Phase 2.
+                      document.querySelector("[aria-label='Trip advisories']")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
                     }}
                   />
                 ) : (
