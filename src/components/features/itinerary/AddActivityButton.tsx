@@ -18,7 +18,7 @@ export function AddActivityButton({ index, onClick, ariaLabel }: Props) {
         type="button"
         aria-label={ariaLabel ?? "Add a place"}
         onClick={() => onClick(index)}
-        className="flex w-full min-h-[44px] items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-transparent px-3 py-2.5 text-xs text-stone transition-colors hover:border-foreground/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary active:bg-orange-50"
+        className="flex w-full min-h-[44px] items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-transparent px-3 py-2.5 text-xs text-stone transition-colors hover:border-foreground/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary active:bg-muted"
       >
         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
