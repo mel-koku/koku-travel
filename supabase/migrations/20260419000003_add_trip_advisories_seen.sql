@@ -9,14 +9,11 @@ create table if not exists trip_advisories_seen (
 
 alter table trip_advisories_seen enable row level security;
 
-create policy "own rows select" on trip_advisories_seen
+create policy "Users read own trip_advisories_seen" on trip_advisories_seen
   for select using (auth.uid() = user_id);
 
-create policy "own rows insert" on trip_advisories_seen
+create policy "Users insert own trip_advisories_seen" on trip_advisories_seen
   for insert with check (auth.uid() = user_id);
 
-create policy "own rows delete" on trip_advisories_seen
+create policy "Users delete own trip_advisories_seen" on trip_advisories_seen
   for delete using (auth.uid() = user_id);
-
-create index if not exists idx_trip_advisories_seen_lookup
-  on trip_advisories_seen (user_id, trip_id);
