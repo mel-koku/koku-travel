@@ -14,8 +14,9 @@ import type {
   NeighborhoodNarrativeTemplate,
   ResolvedCategory,
 } from "@/types/itineraryGuide";
+import type { CityId } from "@/types/trip";
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
-import { CITY_TO_REGION, isKnownCity } from "@/data/regions";
+import { getRegionForCity } from "@/data/regions";
 
 // ── Deterministic hash for consistent random picks ──────────────────
 
@@ -226,11 +227,9 @@ export function matchCulturalMoment(
   const s = subCategory.toLowerCase();
   const c = city.toLowerCase();
   // Region fallback lets a single template (e.g. "onsen:kyushu") cover every
-  // city in that region without duplication. Restricted to static known cities
-  // for now; dynamic (metadata-driven) cities still fall through to subcat:any
-  // and any:any, matching pre-C11 behavior. Lifting this gate is tracked as a
-  // follow-up.
-  const region = isKnownCity(c) ? CITY_TO_REGION[c] : undefined;
+  // city in that region without duplication. Covers both static known cities
+  // (via CITY_TO_REGION) and dynamic cities (via cityInterests metadata).
+  const region = getRegionForCity(c as CityId);
 
   const fallbackKeys: string[] = [`${s}:${c}`];
   if (region) fallbackKeys.push(`${s}:${region}`);

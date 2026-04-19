@@ -71,6 +71,22 @@ describe("matchCulturalMoment — region fallback", () => {
     expect(result?.id).toBe("test-subcat-any");
   });
 
+  it("resolves region through the dynamic-city metadata path without throwing", () => {
+    // Kawaguchiko is a known static city too, but fetching its region goes
+    // through getRegionForCity which transitively loads cityInterests.json.
+    // This test guards against the regression where that require failed under
+    // vitest (original C11 workaround was to gate on isKnownCity).
+    const HAKONE_REGION: CulturalMomentTemplate = {
+      id: "test-kanto",
+      key: "onsen:kanto",
+      content: "kanto onsen tip",
+      icon: "♨️",
+    };
+    initCulturalMomentIndex([HAKONE_REGION]);
+    const result = matchCulturalMoment("onsen", "hakone", "seed-dyn");
+    expect(result?.id).toBe("test-kanto");
+  });
+
   it("falls back to any:region before any:any", () => {
     initCulturalMomentIndex([ANY_REGION_TEMPLATE, ANY_ANY_TEMPLATE]);
     const result = matchCulturalMoment("shrine", "sapporo", "seed-4");
