@@ -106,7 +106,7 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
           type="button"
           aria-label="Dismiss launch announcement"
           onClick={handleDismiss}
-          className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center text-foreground-secondary hover:text-foreground"
+          className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded text-foreground-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         >
           &times;
         </button>
