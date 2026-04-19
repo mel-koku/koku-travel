@@ -87,15 +87,20 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
           {centerCopy}
         </Link>
         {!isSoldOut && (
-          <span
-            aria-live="polite"
-            className={cn(
-              typography({ intent: "utility-tabular" }),
-              "hidden shrink-0 sm:inline-block",
-            )}
-          >
-            {remaining} / {total}
-          </span>
+          <>
+            <span
+              className={cn(
+                typography({ intent: "utility-tabular" }),
+                "hidden shrink-0 sm:inline-block",
+              )}
+              aria-hidden="true"
+            >
+              {remaining} / {total}
+            </span>
+            <span aria-live="polite" className="sr-only">
+              {remaining} of {total} remaining
+            </span>
+          </>
         )}
         <button
           type="button"

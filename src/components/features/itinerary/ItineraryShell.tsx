@@ -649,7 +649,7 @@ export const ItineraryShell = ({
                     <span
                       className={cn(
                         typography({ intent: "utility-meta" }),
-                        "mt-2 inline-flex items-center rounded-full bg-canvas px-3 py-1 text-brand-primary",
+                        "inline-flex items-center rounded-full bg-canvas px-3 py-1 text-brand-primary",
                       )}
                     >
                       Unlocked. Launch promo.

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
+import { logger } from "@/lib/logger";
 
 export const revalidate = 30;
 
@@ -26,7 +27,10 @@ export async function GET(): Promise<NextResponse<LaunchPricingResponse>> {
       { remaining: data.remaining_slots, total: data.total_slots },
       { headers },
     );
-  } catch {
+  } catch (error) {
+    logger.error("Failed to read launch_pricing", error instanceof Error ? error : undefined, {
+      route: "/api/launch-pricing",
+    });
     return NextResponse.json({ remaining: null, total: null }, { headers });
   }
 }
