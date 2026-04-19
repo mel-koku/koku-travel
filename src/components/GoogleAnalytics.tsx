@@ -33,6 +33,16 @@ export default function GoogleAnalytics() {
 
   return (
     <>
+      {/*
+        Consent Mode v2 requires the default-denied consent call to run BEFORE
+        gtag loads, otherwise a brief "granted by default" window leaks events
+        before the user's preference applies. The lint rule flags
+        beforeInteractive outside pages/_document.js, but Next.js App Router's
+        recommended equivalent is beforeInteractive from a root-layout client
+        component, which this is. Google's own Consent Mode docs use this
+        pattern. Do not "fix" by switching to afterInteractive.
+      */}
+      {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document */}
       <Script id="google-analytics-consent" strategy="beforeInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
