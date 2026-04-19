@@ -55,6 +55,12 @@ type EnvConfig = {
   STRIPE_WEBHOOK_SECRET?: string;
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?: string;
   FREE_FULL_ACCESS?: string;
+
+  // Itinerary V2 Phase Flags
+  NEXT_PUBLIC_ITINERARY_V2_CHROME?: string;
+  NEXT_PUBLIC_ITINERARY_V2_CHAPTER?: string;
+  NEXT_PUBLIC_ITINERARY_V2_NAV?: string;
+  NEXT_PUBLIC_ITINERARY_V2_DAYOF?: string;
 };
 
 type RequiredEnvKeys =
@@ -127,6 +133,10 @@ function createLenientConfig(): EnvConfig {
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     FREE_FULL_ACCESS: process.env.FREE_FULL_ACCESS,
+    NEXT_PUBLIC_ITINERARY_V2_CHROME: process.env.NEXT_PUBLIC_ITINERARY_V2_CHROME,
+    NEXT_PUBLIC_ITINERARY_V2_CHAPTER: process.env.NEXT_PUBLIC_ITINERARY_V2_CHAPTER,
+    NEXT_PUBLIC_ITINERARY_V2_NAV: process.env.NEXT_PUBLIC_ITINERARY_V2_NAV,
+    NEXT_PUBLIC_ITINERARY_V2_DAYOF: process.env.NEXT_PUBLIC_ITINERARY_V2_DAYOF,
   };
 }
 
@@ -202,6 +212,10 @@ function validateEnv(): EnvConfig {
     STRIPE_WEBHOOK_SECRET: getOptionalEnv("STRIPE_WEBHOOK_SECRET"),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: getOptionalEnv("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"),
     FREE_FULL_ACCESS: getOptionalEnv("FREE_FULL_ACCESS"),
+    NEXT_PUBLIC_ITINERARY_V2_CHROME: getOptionalEnv("NEXT_PUBLIC_ITINERARY_V2_CHROME"),
+    NEXT_PUBLIC_ITINERARY_V2_CHAPTER: getOptionalEnv("NEXT_PUBLIC_ITINERARY_V2_CHAPTER"),
+    NEXT_PUBLIC_ITINERARY_V2_NAV: getOptionalEnv("NEXT_PUBLIC_ITINERARY_V2_NAV"),
+    NEXT_PUBLIC_ITINERARY_V2_DAYOF: getOptionalEnv("NEXT_PUBLIC_ITINERARY_V2_DAYOF"),
   };
 }
 
@@ -323,5 +337,17 @@ export const env = {
   },
   get freeFullAccess() {
     return envConfig.FREE_FULL_ACCESS === "true";
+  },
+  get itineraryV2Chrome() {
+    return envConfig.NEXT_PUBLIC_ITINERARY_V2_CHROME === "true";
+  },
+  get itineraryV2Chapter() {
+    return envConfig.NEXT_PUBLIC_ITINERARY_V2_CHAPTER === "true";
+  },
+  get itineraryV2Nav() {
+    return envConfig.NEXT_PUBLIC_ITINERARY_V2_NAV === "true";
+  },
+  get itineraryV2DayOf() {
+    return envConfig.NEXT_PUBLIC_ITINERARY_V2_DAYOF === "true";
   },
 } as const;
