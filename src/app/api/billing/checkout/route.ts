@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { badRequest, forbidden } from "@/lib/api/errors";
+import { badRequest, conflict, forbidden } from "@/lib/api/errors";
 import { createCheckoutSession } from "@/lib/billing/stripe";
 import { getTripTier } from "@/lib/billing/access";
 import { isFullAccessEnabled } from "@/lib/billing/accessServer";
@@ -25,9 +25,11 @@ export const POST = withApiHandler(
     }
 
     if (await isFullAccessEnabled()) {
-      return badRequest("Full access is currently enabled. No purchase needed.", {
-        requestId: context.requestId,
-      });
+      return conflict(
+        "Trip Pass is free right now. Head back to your itinerary.",
+        { requestId: context.requestId },
+        "free_access_enabled",
+      );
     }
 
     const validation = await validateRequestBody(request, checkoutSchema);

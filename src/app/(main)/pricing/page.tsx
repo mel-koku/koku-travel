@@ -54,6 +54,10 @@ export default async function PricingPage() {
   const launchSlots = await getLaunchSlots();
   const showLaunchBanner =
     launchSlots !== null && launchSlots.remaining > 0;
+  const isFreePromo =
+    process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" &&
+    launchSlots !== null &&
+    launchSlots.remaining > 0;
 
   return (
     <main className="min-h-[100dvh]">
@@ -92,7 +96,7 @@ export default async function PricingPage() {
       <section className="bg-canvas px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-4xl">
           {/* Launch Pricing Banner */}
-          {showLaunchBanner && (
+          {isFreePromo ? (
             <ScrollReveal>
               <p
                 className={cn(
@@ -100,11 +104,22 @@ export default async function PricingPage() {
                   "mb-8 text-center text-brand-primary",
                 )}
               >
-                Launch pricing: {launchSlots.remaining} of{" "}
-                {launchSlots.total} Passes at $19
+                Trip Pass is free for our first {launchSlots.total} travellers.{" "}
+                {launchSlots.remaining} remaining.
               </p>
             </ScrollReveal>
-          )}
+          ) : showLaunchBanner ? (
+            <ScrollReveal>
+              <p
+                className={cn(
+                  typography({ intent: "utility-meta" }),
+                  "mb-8 text-center text-brand-primary",
+                )}
+              >
+                Launch pricing: {launchSlots.remaining} of {launchSlots.total} Passes at $19
+              </p>
+            </ScrollReveal>
+          ) : null}
 
           {/* Tier Cards */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -126,13 +141,32 @@ export default async function PricingPage() {
                   >
                     {t.days}
                   </p>
-                  <p
-                    className={cn(
-                      "mt-4 font-serif text-5xl tracking-tight text-foreground",
-                    )}
-                  >
-                    ${TIER_PRICES[t.tier] / 100}
-                  </p>
+                  {isFreePromo ? (
+                    <div className="mt-4 flex items-baseline justify-center gap-3">
+                      <span
+                        className={cn(
+                          "font-serif text-3xl tracking-tight text-foreground-secondary line-through",
+                        )}
+                      >
+                        ${TIER_PRICES[t.tier] / 100}
+                      </span>
+                      <span
+                        className={cn(
+                          "font-serif text-5xl tracking-tight text-brand-primary",
+                        )}
+                      >
+                        Free
+                      </span>
+                    </div>
+                  ) : (
+                    <p
+                      className={cn(
+                        "mt-4 font-serif text-5xl tracking-tight text-foreground",
+                      )}
+                    >
+                      ${TIER_PRICES[t.tier] / 100}
+                    </p>
+                  )}
                   <p
                     className={cn(
                       typography({ intent: "utility-meta" }),
@@ -196,7 +230,9 @@ export default async function PricingPage() {
                 "mb-8",
               )}
             >
-              Day 1 is always free. See your trip before you decide.
+              {isFreePromo
+                ? "All days free during our launch. No payment required."
+                : "Day 1 is always free. See your trip before you decide."}
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.16}>
