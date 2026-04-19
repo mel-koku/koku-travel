@@ -110,6 +110,35 @@ type TimelineActivityListProps = {
   onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
 };
 
+function getAddPlaceAriaLabel(args: {
+  position: "before" | "after";
+  neighbor: ItineraryActivity | null | undefined;
+  nextNeighbor: ItineraryActivity | null | undefined;
+  dayNumber: number;
+}): string {
+  const { position, neighbor, nextNeighbor, dayNumber } = args;
+  const neighborTitle =
+    neighbor && neighbor.kind === "place" && typeof neighbor.title === "string"
+      ? neighbor.title
+      : null;
+  const nextTitle =
+    nextNeighbor && nextNeighbor.kind === "place" && typeof nextNeighbor.title === "string"
+      ? nextNeighbor.title
+      : null;
+
+  if (position === "before") {
+    if (neighborTitle && nextTitle) {
+      return `Add a place between ${neighborTitle} and ${nextTitle}`;
+    }
+    if (nextTitle) {
+      return `Add a place before ${nextTitle}`;
+    }
+    return `Add a place to day ${dayNumber}`;
+  }
+  // position === "after"
+  return `Add a place at the end of day ${dayNumber}`;
+}
+
 export const TimelineActivityList = memo(function TimelineActivityList({
   day,
   dayIndex,
@@ -150,18 +179,55 @@ export const TimelineActivityList = memo(function TimelineActivityList({
 
   if (extendedActivities.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-dashed border-border p-6 text-center text-stone">
-        <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open. Add a note to get started."}</p>
-        {!isReadOnly && (
-          <button
-            type="button"
-            onClick={handleAddNote}
-            className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-          >
-            + Add note
-          </button>
+      <>
+        <div className="rounded-lg border-2 border-dashed border-border p-6 text-center text-stone">
+          <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open."}</p>
+          {!isReadOnly && (
+            <button
+              type="button"
+              onClick={handleAddNote}
+              className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            >
+              + Add a note
+            </button>
+          )}
+        </div>
+        {customEnabled && !isReadOnly && (
+          <div className="mt-2">
+            <AddActivityButton
+              index={0}
+              onClick={(i) => setSheetState({ index: i })}
+              ariaLabel={`Add a place to day ${dayIndex + 1}`}
+            />
+          </div>
         )}
-      </div>
+        {sheetState && (
+          <AddActivitySheet
+            open
+            onClose={() => setSheetState(null)}
+            dayActivities={extendedActivities}
+            onSubmit={(activity, meta) => {
+              if (onAddAtIndex) {
+                onAddAtIndex(activity, sheetState.index, meta);
+              }
+              if (activity.isCustom) {
+                trackCustomLocationAdded({
+                  addressSource: meta.addressSource === "none" ? "as-is" : meta.addressSource,
+                  hasStartTime: Boolean(activity.manualStartTime),
+                  fieldsFilled: [
+                    activity.phone,
+                    activity.website,
+                    activity.costEstimate,
+                    activity.notes,
+                    activity.confirmationNumber,
+                  ].filter(Boolean).length,
+                });
+              }
+              setSheetState(null);
+            }}
+          />
+        )}
+      </>
     );
   }
 
@@ -322,7 +388,16 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                 {/* Inline "+" button before this activity */}
                 {showAddBefore && (
                   <li className="list-none">
-                    <AddActivityButton index={index} onClick={(i) => setSheetState({ index: i })} />
+                    <AddActivityButton
+                      index={index}
+                      onClick={(i) => setSheetState({ index: i })}
+                      ariaLabel={getAddPlaceAriaLabel({
+                        position: "before",
+                        neighbor: prevActivity,
+                        nextNeighbor: activity,
+                        dayNumber: dayIndex + 1,
+                      })}
+                    />
                   </li>
                 )}
                 <SortableActivity
@@ -367,6 +442,12 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     <AddActivityButton
                       index={index + 1}
                       onClick={(i) => setSheetState({ index: i })}
+                      ariaLabel={getAddPlaceAriaLabel({
+                        position: "after",
+                        neighbor: activity,
+                        nextNeighbor: null,
+                        dayNumber: dayIndex + 1,
+                      })}
                     />
                   </li>
                 )}

@@ -15,13 +15,20 @@ type LocationSearchBarProps = {
   dayActivities: ItineraryActivity[];
   /** Callback when a new activity is created from a search result */
   onAddActivity: (activity: Extract<ItineraryActivity, { kind: "place" }>) => void;
+  /**
+   * When true, the search input renders expanded + focused immediately, and
+   * the internal close-X + click-outside-to-collapse behavior is disabled
+   * (the parent container — e.g. a modal — owns dismissal).
+   */
+  defaultExpanded?: boolean;
 };
 
 export function LocationSearchBar({
   dayActivities,
   onAddActivity,
+  defaultExpanded = false,
 }: LocationSearchBarProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [query, setQuery] = useState("");
   const [fetchingId, setFetchingId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,9 +52,9 @@ export function LocationSearchBar({
     }
   }, [isExpanded]);
 
-  // Click-outside to close dropdown
+  // Click-outside to close dropdown (skipped when parent owns dismissal)
   useEffect(() => {
-    if (!isExpanded) return;
+    if (!isExpanded || defaultExpanded) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -57,7 +64,7 @@ export function LocationSearchBar({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isExpanded, collapse]);
+  }, [isExpanded, collapse, defaultExpanded]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -143,14 +150,16 @@ export function LocationSearchBar({
               {(isLoading || isDebouncing) && query.trim().length >= 2 && (
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-stone" />
               )}
-              <button
-                type="button"
-                onClick={collapse}
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-stone transition-colors hover:text-foreground"
-                aria-label="Close search"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {!defaultExpanded && (
+                <button
+                  type="button"
+                  onClick={collapse}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-stone transition-colors hover:text-foreground"
+                  aria-label="Close search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
             {/* Dropdown results */}

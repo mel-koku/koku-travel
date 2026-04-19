@@ -49,6 +49,7 @@ export function AddActivitySheet({ open, onClose, dayActivities, onSubmit, initi
         {tab === "catalog" ? (
           <LocationSearchBar
             dayActivities={dayActivities}
+            defaultExpanded
             onAddActivity={(activity) => {
               onSubmit(activity, { addressSource: "mapbox" });
               onClose();

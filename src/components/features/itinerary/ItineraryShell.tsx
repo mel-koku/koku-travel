@@ -21,7 +21,6 @@ import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints"
 import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
 
-import { LocationSearchBar } from "./LocationSearchBar";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 
@@ -742,27 +741,17 @@ export const ItineraryShell = ({
                     : undefined}
                   onLockedClick={() => requireUnlock("locked_day")}
                 />
-                {!isReadOnly && !isUsingMock && currentDay && (
-                  <div className="flex items-center gap-2">
-                    <div className="min-w-0 flex-1">
-                      <LocationSearchBar
-                        dayActivities={currentDay.activities}
-                        onAddActivity={handleAddSearchedActivity}
-                      />
-                    </div>
-                    {tripId && (
-                      <DayRefinementButtons
-                        dayIndex={safeSelectedDay}
-                        tripId={tripId}
-                        builderData={tripBuilderData}
-                        itinerary={model}
-                        onRefine={handleRefineDay}
-                        currentStartTime={currentDay.bounds?.startTime ?? "09:00"}
-                        onStartTimeChange={handleDayStartTimeChange}
-                        onRequireUnlock={() => requireUnlock("refinement")}
-                      />
-                    )}
-                  </div>
+                {!isReadOnly && !isUsingMock && currentDay && tripId && (
+                  <DayRefinementButtons
+                    dayIndex={safeSelectedDay}
+                    tripId={tripId}
+                    builderData={tripBuilderData}
+                    itinerary={model}
+                    onRefine={handleRefineDay}
+                    currentStartTime={currentDay.bounds?.startTime ?? "09:00"}
+                    onStartTimeChange={handleDayStartTimeChange}
+                    onRequireUnlock={() => requireUnlock("refinement")}
+                  />
                 )}
               </div>
             )}
