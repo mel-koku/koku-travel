@@ -77,6 +77,22 @@ describe("Beat", () => {
     expect(container.querySelector("[data-beat-state='past']")).toBeTruthy();
   });
 
+  it("marks itself as current when isCurrent is true", () => {
+    const { container } = render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body="."
+        isPast={false}
+        isCurrent={true}
+        chips={[]}
+        onExpand={() => {}}
+      />,
+    );
+    expect(container.querySelector("[data-beat-state='current']")).toBeTruthy();
+  });
+
   it("calls onExpand when the more link is clicked", () => {
     const onExpand = vi.fn();
     render(

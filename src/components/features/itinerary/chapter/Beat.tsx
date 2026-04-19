@@ -22,6 +22,7 @@ export type BeatProps = {
   location: Location;
   body: string;
   isPast: boolean;
+  isCurrent?: boolean;
   chips: BeatChip[];
   hasMore?: boolean;
   onExpand: () => void;
@@ -44,6 +45,7 @@ export function Beat({
   location,
   body,
   isPast,
+  isCurrent = false,
   chips,
   hasMore = false,
   onExpand,
@@ -55,8 +57,11 @@ export function Beat({
   return (
     <li
       data-beat="place"
-      data-beat-state={isPast ? "past" : "future"}
-      className="relative pb-8"
+      data-beat-state={isPast ? "past" : isCurrent ? "current" : "future"}
+      className={cn(
+        "relative pb-8",
+        isCurrent && "border-l-2 border-brand-primary bg-brand-primary/5 pl-3 -ml-[30px]",
+      )}
     >
       <span
         aria-hidden
