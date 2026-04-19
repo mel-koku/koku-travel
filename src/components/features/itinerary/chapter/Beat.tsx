@@ -84,7 +84,7 @@ export function Beat({
         <div className="eyebrow-editorial mb-1">
           {time} · {partOfDay}
         </div>
-        <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-1")}>
+        <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-1 text-xl sm:text-2xl")}>
           {location.name}
         </h3>
         <div className="text-xs text-foreground-secondary mb-2">

@@ -9,7 +9,6 @@ import {
   type RefObject,
 } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
@@ -73,6 +72,7 @@ import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/Tr
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
 import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
 import { TripOverviewDrawer } from "@/components/features/itinerary/chapter/TripOverviewDrawer";
+import { BeforeYouLandDrawer } from "@/components/features/itinerary/chapter/BeforeYouLandDrawer";
 import { AddPlaceDialog } from "@/components/features/itinerary/chapter/AddPlaceDialog";
 import { trackCustomLocationAdded } from "@/lib/analytics/customLocations";
 import {
@@ -220,6 +220,7 @@ export const ItineraryShell = ({
   const v2Nav = env.itineraryV2Nav;
 
   const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
+  const [beforeYouLandOpen, setBeforeYouLandOpen] = useState(false);
   const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
   const [addPlaceDialogOpen, setAddPlaceDialogOpen] = useState(false);
 
@@ -912,6 +913,14 @@ export const ItineraryShell = ({
               dashboardProps={dashboardProps}
             />
           )}
+          {/* v2 Nav: BeforeYouLandDrawer */}
+          {v2Nav && (
+            <BeforeYouLandDrawer
+              open={beforeYouLandOpen}
+              onClose={() => setBeforeYouLandOpen(false)}
+              briefing={culturalBriefing}
+            />
+          )}
           {/* v2 Nav: TripAdvisoriesDrawer */}
           {v2Nav && currentTrip && (
             <TripAdvisoriesDrawer
@@ -1102,9 +1111,13 @@ export const ItineraryShell = ({
                     >
                       Trip overview ↗
                     </button>
-                    <Link href={`/trips/${currentTrip.id}/guide`} className="text-accent">
+                    <button
+                      type="button"
+                      onClick={() => setBeforeYouLandOpen(true)}
+                      className="text-accent"
+                    >
                       Before you land ↗
-                    </Link>
+                    </button>
                   </div>
                 )}
               </div>
