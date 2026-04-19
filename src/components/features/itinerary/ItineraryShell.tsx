@@ -23,6 +23,9 @@ import { DaySelector } from "./DaySelector";
 
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
+import { ChapterList } from "@/components/features/itinerary/chapter/ChapterList";
+import { toChapterDays } from "@/lib/itinerary/toChapterDays";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
 
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -204,6 +207,35 @@ export const ItineraryShell = ({
   // v2 Chrome flag + dismissed-advisories state
   const v2Chrome = env.itineraryV2Chrome;
 
+  // v2 Chapter flag — replaces ItineraryTimeline with ChapterList when true
+  const v2Chapter = env.itineraryV2Chapter;
+
+  // All place activities across all days (flattened) — batch location fetch for ChapterList
+  const allPlaceActivities = useMemo(() => {
+    if (!v2Chapter) return [];
+    return model.days.flatMap((day) =>
+      day.activities.filter(
+        (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+      ),
+    );
+  }, [v2Chapter, model.days]);
+
+  const { locationsMap: activityIdToLocation } = useActivityLocations(allPlaceActivities);
+
+  // Convert activity-id-keyed map to location-id-keyed map for toChapterDays
+  const locationsById = useMemo(() => {
+    const out = new Map<string, Location>();
+    for (const loc of activityIdToLocation.values()) {
+      if (loc) out.set(loc.id, loc);
+    }
+    return out;
+  }, [activityIdToLocation]);
+
+  const chapterDays = useMemo(() => {
+    if (!v2Chapter) return [];
+    return toChapterDays(model, guideProse, locationsById, tripStartDate);
+  }, [v2Chapter, model, guideProse, locationsById, tripStartDate]);
+
   const [dismissedAdvisories, setDismissedAdvisories] = useState<Set<AdvisoryKey>>(
     () => (typeof window !== "undefined" && v2Chrome
       ? getDismissedAdvisoriesLocal(currentTrip?.id ?? "")
@@ -262,6 +294,15 @@ export const ItineraryShell = ({
       }
     },
     [tripId, isUsingMock, isReadOnly, reorderActivities],
+  );
+
+  // beatId === activity.id per the toChapterDays adapter
+  const handleExpandBeat = useCallback(
+    (beatId: string) => {
+      const loc = activityIdToLocation.get(beatId);
+      if (loc) handleViewDetails(loc);
+    },
+    [activityIdToLocation, handleViewDetails],
   );
 
   useEffect(() => {
@@ -1025,43 +1066,54 @@ export const ItineraryShell = ({
             {currentDay ? (
               <>
               <ErrorBoundary>
-                <ItineraryTimeline
-                  day={currentDay}
-                  dayIndex={safeSelectedDay}
-                  model={model}
-                  setModel={applyModelUpdate}
-                  selectedActivityId={selectedActivityId}
-                  onSelectActivity={handleSelectActivity}
-                  tripStartDate={tripStartDate}
-                  tripId={tripId && !isUsingMock ? tripId : undefined}
-                  onReorder={isReadOnly ? undefined : handleReorder}
-                  onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
-                  tripBuilderData={tripBuilderData}
-                  suggestions={isReadOnly ? undefined : currentDaySuggestions}
-                  onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
-                  onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
-                  loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
-                  conflicts={currentDayConflicts}
-                  conflictsResult={conflictsResult}
-                  guide={currentDayGuide}
-                  onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
-                  onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
-                  previewState={isReadOnly ? undefined : previewState}
-                  onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
-                  onShowAnother={isReadOnly ? undefined : onShowAnother}
-                  onCancelPreview={isReadOnly ? undefined : onCancelPreview}
-                  onFilterChange={isReadOnly ? undefined : onFilterChange}
-                  isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
-                  isReadOnly={isReadOnly}
-                  startLocation={resolvedStartLocation}
-                  endLocation={resolvedEndLocation}
-                  onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
-                  onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
-                  onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
-                  onViewDetails={handleViewDetails}
-                  isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
-                  onUnlockClick={onUnlockClick}
-                />
+                {v2Chapter ? (
+                  <ChapterList
+                    trip={{ id: tripId, name: tripName, days: chapterDays }}
+                    onExpandBeat={handleExpandBeat}
+                    onReviewAdvisories={() => {
+                      // Task 26 wires this to open the TripAdvisoriesTray drawer.
+                      // No-op for Phase 2.
+                    }}
+                  />
+                ) : (
+                  <ItineraryTimeline
+                    day={currentDay}
+                    dayIndex={safeSelectedDay}
+                    model={model}
+                    setModel={applyModelUpdate}
+                    selectedActivityId={selectedActivityId}
+                    onSelectActivity={handleSelectActivity}
+                    tripStartDate={tripStartDate}
+                    tripId={tripId && !isUsingMock ? tripId : undefined}
+                    onReorder={isReadOnly ? undefined : handleReorder}
+                    onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
+                    tripBuilderData={tripBuilderData}
+                    suggestions={isReadOnly ? undefined : currentDaySuggestions}
+                    onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
+                    onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
+                    loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
+                    conflicts={currentDayConflicts}
+                    conflictsResult={conflictsResult}
+                    guide={currentDayGuide}
+                    onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
+                    onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
+                    previewState={isReadOnly ? undefined : previewState}
+                    onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
+                    onShowAnother={isReadOnly ? undefined : onShowAnother}
+                    onCancelPreview={isReadOnly ? undefined : onCancelPreview}
+                    onFilterChange={isReadOnly ? undefined : onFilterChange}
+                    isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
+                    isReadOnly={isReadOnly}
+                    startLocation={resolvedStartLocation}
+                    endLocation={resolvedEndLocation}
+                    onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
+                    onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
+                    onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
+                    onViewDetails={handleViewDetails}
+                    isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
+                    onUnlockClick={onUnlockClick}
+                  />
+                )}
               </ErrorBoundary>
 
               {/* Unlock Card / UnlockBeat (shown after Day 1 when trip is not unlocked) */}
