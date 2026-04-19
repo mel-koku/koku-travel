@@ -60,7 +60,7 @@ export function AddPlaceDialog({
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-40 bg-charcoal/40"
+            className="fixed inset-0 z-[60] bg-charcoal/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -72,7 +72,7 @@ export function AddPlaceDialog({
             role="presentation"
           />
           {/* Dialog centering wrapper — pointer-events-none so clicks pass through to backdrop */}
-          <div className="fixed inset-0 z-40 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               role="dialog"
               aria-label="Add a place"
