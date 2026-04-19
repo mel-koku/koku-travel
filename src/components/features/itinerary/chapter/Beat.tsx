@@ -74,54 +74,59 @@ export function Beat({
           isPast ? "bg-foreground" : "bg-background",
         )}
       />
-      <div className="eyebrow-editorial mb-1">
-        {time} · {partOfDay}
-      </div>
-      <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-1")}>
-        {location.name}
-      </h3>
-      <div className="text-xs text-foreground-secondary mb-2">
-        {location.category}
-        {duration ? ` · ${duration}` : ""}
-      </div>
-      <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch]">
-        {body}
-      </p>
-
-      {/* Inline stakes line — only when isCurrent and at least one promoteInline chip */}
-      {inlineChips.length > 0 && (
-        <p className="text-sm font-medium text-warning mt-2">
-          {inlineChips.map((c) => c.label).join(" · ")}
-        </p>
-      )}
-
-      {/* Chip row — uses regularChips so promoted chips don't double-render */}
-      {regularChips.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-3">
-          {regularChips.map((chip) => (
-            <span
-              key={chip.id}
-              className={cn(
-                "text-[11px] px-2.5 py-0.5 rounded-full border",
-                chip.tone === "warn"
-                  ? "text-warning border-warning/40"
-                  : "text-foreground-secondary border-border",
-              )}
-            >
-              {chip.label}
-            </span>
-          ))}
+      {/* Entire beat card is clickable — opens the detail panel */}
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-label={`Open details for ${location.name}`}
+        className="block w-full text-left -mx-2 px-2 py-1 rounded-md hover:bg-canvas/50 transition-colors"
+      >
+        <div className="eyebrow-editorial mb-1">
+          {time} · {partOfDay}
         </div>
-      )}
-      {hasMore && (
-        <button
-          type="button"
-          onClick={onExpand}
-          className="mt-3 text-xs text-accent underline underline-offset-2"
-        >
-          More ↓
-        </button>
-      )}
+        <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-1")}>
+          {location.name}
+        </h3>
+        <div className="text-xs text-foreground-secondary mb-2">
+          {location.category}
+          {duration ? ` · ${duration}` : ""}
+        </div>
+        <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch]">
+          {body}
+        </p>
+
+        {/* Inline stakes line — only when isCurrent and at least one promoteInline chip */}
+        {inlineChips.length > 0 && (
+          <p className="text-sm font-medium text-warning mt-2">
+            {inlineChips.map((c) => c.label).join(" · ")}
+          </p>
+        )}
+
+        {/* Chip row — uses regularChips so promoted chips don't double-render */}
+        {regularChips.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {regularChips.map((chip) => (
+              <span
+                key={chip.id}
+                className={cn(
+                  "text-[11px] px-2.5 py-0.5 rounded-full border",
+                  chip.tone === "warn"
+                    ? "text-warning border-warning/40"
+                    : "text-foreground-secondary border-border",
+                )}
+              >
+                {chip.label}
+              </span>
+            ))}
+          </div>
+        )}
+        {/* "More" hint — visual only, the whole button opens the panel */}
+        {hasMore && (
+          <span className="mt-3 text-xs text-accent underline underline-offset-2 inline-block">
+            More ↓
+          </span>
+        )}
+      </button>
     </li>
   );
 }

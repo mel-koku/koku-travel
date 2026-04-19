@@ -93,7 +93,7 @@ describe("Beat", () => {
     expect(container.querySelector("[data-beat-state='current']")).toBeTruthy();
   });
 
-  it("calls onExpand when the more link is clicked", () => {
+  it("calls onExpand when the beat card is clicked", () => {
     const onExpand = vi.fn();
     render(
       <Beat
@@ -107,8 +107,41 @@ describe("Beat", () => {
         hasMore
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /more/i }));
+    fireEvent.click(screen.getByRole("button", { name: /open details for/i }));
     expect(onExpand).toHaveBeenCalled();
+  });
+
+  it("calls onExpand when clicked even without hasMore", () => {
+    const onExpand = vi.fn();
+    render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body="."
+        isPast={false}
+        chips={[]}
+        onExpand={onExpand}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /open details for/i }));
+    expect(onExpand).toHaveBeenCalled();
+  });
+
+  it("shows More hint when hasMore is true", () => {
+    render(
+      <Beat
+        time="08:00"
+        partOfDay="Morning"
+        location={loc()}
+        body="."
+        isPast={false}
+        chips={[]}
+        onExpand={() => {}}
+        hasMore
+      />,
+    );
+    expect(screen.getByText(/more/i)).toBeInTheDocument();
   });
 
   it("promotes inline-flagged chips to a bold line when isCurrent is true", () => {
