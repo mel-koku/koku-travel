@@ -11,6 +11,7 @@ const defaultNavColumns = [
       { label: "Places", href: "/places" },
       { label: "Guides", href: "/guides" },
       { label: "Pricing", href: "/pricing" },
+      { label: "Concierge", href: "/concierge" },
     ],
   },
   {
