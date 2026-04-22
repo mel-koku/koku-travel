@@ -1447,8 +1447,8 @@ export const ItineraryShell = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (40%) */}
-        <div className="hidden md:block md:w-1/2 lg:w-2/5">
-          <div className="h-full md:rounded-lg md:overflow-hidden md:border md:border-border">
+        <div className="hidden md:flex md:flex-col md:w-1/2 lg:w-2/5 md:min-h-0">
+          <div className="flex-1 min-h-0 md:rounded-lg md:overflow-hidden md:border md:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (
                 <DiscoverMap
