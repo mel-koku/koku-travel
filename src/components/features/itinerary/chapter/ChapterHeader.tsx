@@ -8,10 +8,9 @@ export type ChapterHeaderProps = {
   intro: string;
 };
 
-export function ChapterHeader({ dayIndex, city, date, intro }: ChapterHeaderProps) {
+export function ChapterHeader({ city, date, intro }: ChapterHeaderProps) {
   return (
     <header className="max-w-[720px]">
-      <div className="eyebrow-editorial mb-1">DAY {dayIndex + 1}</div>
       <h2 className={cn(typography({ intent: "editorial-h1" }), "mb-1")}>
         {city}
       </h2>

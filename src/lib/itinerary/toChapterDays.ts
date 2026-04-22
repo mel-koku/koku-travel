@@ -107,8 +107,9 @@ function pickPartOfDay(time: string, timeOfDay: string): ChapterBeat["partOfDay"
 // ── Body text selection ───────────────────────────────────────────────────────
 
 function bodyFor(location: Location): string {
-  if (location.insiderTip) return location.insiderTip;
+  if (location.shortDescription) return location.shortDescription;
   if (location.editorialSummary) return location.editorialSummary;
+  if (location.insiderTip) return location.insiderTip;
   const cat = location.category?.toLowerCase();
   if (cat && CATEGORY_FALLBACK[cat]) return CATEGORY_FALLBACK[cat]!;
   // Long-tail: no real body is better than "Name. category."
@@ -135,6 +136,7 @@ function mapTransit(
     walkMinutes: s.walkMinutes,
     walkInstruction: s.walkInstruction,
     lineName: s.lineName,
+    lineNameRomaji: s.lineNameRomaji,
     lineShortName: s.lineShortName,
     lineColor: s.lineColor,
     trainType: s.trainType,
