@@ -335,6 +335,7 @@ function buildTransitSteps(route: RoutingResult): TransitStep[] | undefined {
         steps.push({
           type: "transit",
           lineName: td.lineName,
+          lineNameRomaji: td.lineNameRomaji,
           lineShortName: td.lineShortName,
           vehicleType: td.vehicleType,
           departureStop: td.departureStop,
@@ -617,7 +618,10 @@ async function planItineraryDay(
       const distanceKm = (phase1Result.distanceMeters ?? 0) / 1000;
       if (distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM) {
         const transitResult = transitResultMap.get(i);
-        if (transitResult && transitResult.durationSeconds > 0) {
+        const hasTransitSteps = transitResult?.legs.some((leg) =>
+          leg.steps?.some((step) => step.stepMode === "transit"),
+        );
+        if (transitResult && transitResult.durationSeconds > 0 && hasTransitSteps) {
           resolvedRouteByActivityId.set(pair.activityId, {
             route: transitResult,
             travelMode: "train",
@@ -629,7 +633,11 @@ async function planItineraryDay(
             travelMode: "walk",
             skippedOverCustom,
           });
-          logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
+          if (transitResult && !hasTransitSteps) {
+            logger.warn("NAVITIME returned walk-only for transit request, using walk", { distanceKm });
+          } else {
+            logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
+          }
         }
       } else {
         resolvedRouteByActivityId.set(pair.activityId, {
