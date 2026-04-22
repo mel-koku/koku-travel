@@ -7,6 +7,7 @@ export type DropdownMenuItem = {
   onClick: () => void;
   disabled?: boolean;
   icon?: ReactNode;
+  tone?: "default" | "destructive";
 };
 
 export type DropdownMenuProps = {
@@ -75,7 +76,7 @@ export function DropdownMenu({
                   item.onClick();
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-foreground hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+                className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40 ${item.tone === "destructive" ? "text-error" : "text-foreground"}`}
               >
                 {item.icon && <span aria-hidden>{item.icon}</span>}
                 {item.label}

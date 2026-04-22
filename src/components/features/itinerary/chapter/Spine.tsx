@@ -9,7 +9,7 @@ export function Spine({ children }: { children: ReactNode }) {
           "linear-gradient(to bottom, var(--border) 0, var(--border) 100%)",
         backgroundRepeat: "no-repeat",
         backgroundSize: "1px calc(100% - 20px)",
-        backgroundPosition: "6px 10px",
+        backgroundPosition: "12px 10px",
       }}
     >
       {children}

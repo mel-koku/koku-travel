@@ -134,7 +134,7 @@ function CollapsedLine({
       onClick={hasDetails ? (e) => { e.stopPropagation(); onToggle(); } : undefined}
       aria-expanded={hasDetails ? expanded : undefined}
       className={cn(
-        "block text-[10px] text-foreground-secondary tracking-wide uppercase -mt-4 mb-1 ml-[-24px] text-left",
+        "block text-[10px] text-foreground-secondary tracking-wide uppercase mt-2 mb-6 text-left",
         hasDetails && "hover:text-foreground transition-colors",
       )}
     >

@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils";
 import type { AssembledPillar } from "@/types/culturalBriefing";
 import { easeEditorial } from "@/lib/motion";
 
+/**
+ * Normalize ASCII double-hyphens (`--`) and unicode em-dashes (`—`) to periods,
+ * matching the brand voice rule that forbids em-dashes in user-facing copy.
+ * Sanity content occasionally slips them through; this is a last-mile guardrail.
+ */
+function normalizeProse(s: string): string {
+  return s.replace(/\s*(?:--|—)\s*/g, ". ");
+}
+
 type PillarCardProps = {
   pillar: AssembledPillar;
   defaultExpanded?: boolean;
@@ -28,19 +37,16 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
         className="flex w-full items-start gap-4 px-4 py-5 text-left sm:px-5"
       >
         <div className="min-w-0 flex-1">
-          <div className="flex items-baseline gap-2">
-            <span className={typography({ intent: "utility-h2" })}>
-              {pillar.name}
-            </span>
-            <span className="font-mono text-sm text-foreground-secondary">
-              {pillar.japanese}
-            </span>
-            <span className="text-xs text-foreground-secondary">
-              ({pillar.pronunciation})
-            </span>
+          <div className={cn(typography({ intent: "utility-h2" }))}>
+            {pillar.name}
           </div>
-          <p className="mt-1 text-sm text-foreground-secondary">
-            {pillar.briefIntro}
+          <div className="mt-0.5 text-xs text-foreground-secondary">
+            <span className="font-mono">{pillar.japanese}</span>
+            <span className="mx-1.5 opacity-50">·</span>
+            <span>{pillar.pronunciation}</span>
+          </div>
+          <p className="mt-2 text-sm text-foreground-body">
+            {normalizeProse(pillar.briefIntro)}
           </p>
           {!expanded && (
             <p className="mt-2 text-xs text-stone">
@@ -68,13 +74,13 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
             <div className="border-t border-border px-4 pt-4 pb-5 sm:px-5">
               <div className="space-y-3">
                 <p className={typography({ intent: "editorial-prose" })}>
-                  {pillar.concept}
+                  {normalizeProse(pillar.concept)}
                 </p>
                 <p className={typography({ intent: "utility-body" })}>
-                  {pillar.inPractice}
+                  {normalizeProse(pillar.inPractice)}
                 </p>
                 <p className={typography({ intent: "utility-body-muted" })}>
-                  {pillar.forTravelers}
+                  {normalizeProse(pillar.forTravelers)}
                 </p>
               </div>
 
@@ -98,13 +104,13 @@ export function PillarCard({ pillar, defaultExpanded = false }: PillarCardProps)
                         </p>
                       )}
                       <p className="text-sm font-medium text-foreground">
-                        {behavior.situation}
+                        {normalizeProse(behavior.situation)}
                       </p>
                       <p className="mt-0.5 text-sm text-foreground-body">
-                        {behavior.action}
+                        {normalizeProse(behavior.action)}
                       </p>
                       <p className="mt-0.5 text-xs text-foreground-secondary">
-                        {behavior.why}
+                        {normalizeProse(behavior.why)}
                       </p>
                     </div>
                   ))}

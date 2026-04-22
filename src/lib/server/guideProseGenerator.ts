@@ -313,7 +313,10 @@ export function buildDaySchema() {
  * move in lockstep via code change.
  */
 const PER_CALL_TIMEOUT_MS = env.guideProsePerCallTimeoutMs;
-const GLOBAL_DEADLINE_MS = 18_000;
+const GLOBAL_DEADLINE_MS = Number.parseInt(
+  process.env.GUIDE_PROSE_GLOBAL_DEADLINE_MS ?? "",
+  10,
+) || 18_000;
 
 /**
  * Fires the header call and one call per day in parallel, yielding each
