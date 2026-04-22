@@ -63,8 +63,8 @@ export function SlideDrawer({
             exit={{ x: "100%" }}
             transition={{ duration: durationBase, ease: easeEditorialMut }}
           >
-            <header className="flex items-start justify-between gap-4 px-6 pt-6 pb-4 border-b border-border">
-              <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-0")}>
+            <header className="flex items-center justify-between gap-4 px-6 pt-5 pb-4 border-b border-border">
+              <h2 className={cn(typography({ intent: "editorial-h3" }), "mb-0 text-2xl")}>
                 {title}
               </h2>
               <button

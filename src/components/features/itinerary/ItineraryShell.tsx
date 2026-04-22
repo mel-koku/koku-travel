@@ -160,7 +160,7 @@ export const ItineraryShell = ({
   launchPricing,
   launchSlotsRemaining,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
+  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo, deleteActivity } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -253,8 +253,9 @@ export const ItineraryShell = ({
       locationsById,
       tripStartDate,
       (dayIdx) => isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled),
+      dayIntros,
     );
-  }, [v2Chapter, model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled]);
+  }, [v2Chapter, model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
 
   // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
   // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).
@@ -467,6 +468,64 @@ export const ItineraryShell = ({
     [tripId, currentDay, setCityAccommodation, isReadOnly],
   );
 
+  // ── Beat-level actions for v2 chapter view ──
+  const [removeConfirm, setRemoveConfirm] = useState<{ dayIndex: number; beatId: string; name: string } | null>(null);
+
+  const handleChapterReplace = useCallback(
+    (dayIndex: number, beatId: string) => {
+      if (isReadOnly || !tripId || isUsingMock) return;
+      if (dayIndex !== safeSelectedDay) setSelectedDay(dayIndex);
+      handleReplace(beatId);
+    },
+    [isReadOnly, tripId, isUsingMock, safeSelectedDay, handleReplace],
+  );
+
+  const handleChapterNoteChange = useCallback(
+    (dayIndex: number, beatId: string, note: string) => {
+      if (isReadOnly) return;
+      applyModelUpdate((current) => ({
+        ...current,
+        days: current.days.map((d, idx) => {
+          if (idx !== dayIndex) return d;
+          return {
+            ...d,
+            activities: d.activities.map((a) => {
+              if (a.id !== beatId || a.kind !== "place") return a;
+              return { ...a, notes: note.length > 0 ? note : undefined };
+            }),
+          };
+        }),
+      }));
+    },
+    [isReadOnly, applyModelUpdate],
+  );
+
+  const handleChapterRemoveRequest = useCallback(
+    (dayIndex: number, beatId: string) => {
+      if (isReadOnly) return;
+      const day = model.days[dayIndex];
+      const activity = day?.activities.find((a) => a.id === beatId);
+      const name =
+        activity && activity.kind === "place"
+          ? activity.title
+          : "this stop";
+      setRemoveConfirm({ dayIndex, beatId, name });
+    },
+    [isReadOnly, model.days],
+  );
+
+  const handleChapterRemoveConfirm = useCallback(() => {
+    if (!removeConfirm || !tripId) {
+      setRemoveConfirm(null);
+      return;
+    }
+    const day = model.days[removeConfirm.dayIndex];
+    if (day) {
+      deleteActivity(tripId, day.id, removeConfirm.beatId);
+    }
+    setRemoveConfirm(null);
+  }, [removeConfirm, tripId, model.days, deleteActivity]);
+
   // Handler: change day start time
   const handleDayStartTimeChange = useCallback(
     (startTime: string) => {
@@ -527,8 +586,6 @@ export const ItineraryShell = ({
 
   // Prevents the IntersectionObserver from correcting selectedDay mid-scroll
   // when the user clicks the day picker (programmatic scroll takes ~700ms).
-  const scrollLockRef = useRef<number>(0);
-
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     const targetDay = model.days[dayIndex];
     if (targetDay?.dateLabel) {
@@ -541,28 +598,7 @@ export const ItineraryShell = ({
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
 
-    // When chapter mode is on, scroll to the matching section anchor instead
-    // of relying on the legacy panel-swap. We still update state so the
-    // picker label reflects the choice.
-    if (v2Chapter) {
-      const el = document.getElementById(`day-${dayIndex + 1}`);
-      if (el) {
-        // Lock the observer for 700ms so programmatic scroll doesn't race with
-        // the observer reporting an intermediate chapter as the active one.
-        scrollLockRef.current = Date.now() + 700;
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [model.days, setSelectedActivityId, v2Chapter]);
-
-  // Callback passed to ChapterList — skipped while a programmatic scroll is in flight.
-  const handleVisibleDayChange = useCallback(
-    (dayIndex: number) => {
-      if (Date.now() < scrollLockRef.current) return;
-      handleSelectDayChange(dayIndex);
-    },
-    [handleSelectDayChange],
-  );
+  }, [model.days, setSelectedActivityId]);
 
   // ── Add activity from location search ──
   const handleAddSearchedActivity = useCallback(
@@ -1282,12 +1318,21 @@ export const ItineraryShell = ({
                       cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
                       totalDays: model.days.length,
                     }}
-                    onVisibleDayChange={handleVisibleDayChange}
+                    selectedDayIndex={safeSelectedDay}
+                    onDayChange={handleSelectDayChange}
                     onReorderBeats={(dayIndex, activityIds) => {
                       const day = model.days[dayIndex];
                       if (!day) return;
                       handleReorder(day.id, activityIds);
                     }}
+                    onReplaceBeat={!isReadOnly && tripId && !isUsingMock ? handleChapterReplace : undefined}
+                    onNoteChange={isReadOnly ? undefined : handleChapterNoteChange}
+                    onRemoveBeat={isReadOnly ? undefined : handleChapterRemoveRequest}
+                    dayStartLocation={resolvedStartLocation}
+                    dayEndLocation={resolvedEndLocation}
+                    onDayStartChange={isReadOnly ? undefined : handleStartLocationChange}
+                    onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
+                    onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
                     isReadOnly={isReadOnly}
                   />
                 ) : (
@@ -1479,6 +1524,43 @@ export const ItineraryShell = ({
       }}
       onClose={() => setUnlockPromptCtx(null)}
     />
+    {removeConfirm && (
+      <div
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-charcoal/60 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="remove-beat-title"
+        onClick={() => setRemoveConfirm(null)}
+      >
+        <div
+          className="max-w-sm w-full rounded-lg bg-surface p-6 shadow-[var(--shadow-elevated)]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 id="remove-beat-title" className={cn(typography({ intent: "editorial-h3" }), "mb-2")}>
+            Remove {removeConfirm.name}?
+          </h2>
+          <p className="text-sm text-foreground-body mb-5">
+            This stop will be removed from the day. You can undo with Cmd+Z.
+          </p>
+          <div className="flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setRemoveConfirm(null)}
+              className="text-sm text-foreground-secondary hover:text-foreground transition-colors px-3 py-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleChapterRemoveConfirm}
+              className="rounded-md bg-error text-white text-sm font-medium px-4 py-2 hover:opacity-90 active:scale-[0.98] transition"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </ActivityRatingsProvider>
   );
 };

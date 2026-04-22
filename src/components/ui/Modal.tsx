@@ -161,7 +161,7 @@ export function Modal(props: ModalProps) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-1200 overflow-y-auto">
+    <div className="fixed inset-0 z-1200 overflow-y-auto" data-lenis-prevent>
       <div
         ref={backdropRef}
         className={cn(

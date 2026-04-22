@@ -252,6 +252,7 @@ export function toChapterDays(
   locations: Map<string, Location> | Record<string, Location>,
   tripStartDate?: string,
   isDayAccessible?: (dayIndex: number) => boolean,
+  dayIntros?: Record<string, string>,
 ): ChapterDay[] {
   // Normalize locations to a Map regardless of input shape
   const locMap =
@@ -279,7 +280,8 @@ export function toChapterDays(
         id: day.id,
         date: isoDate,
         city: day.cityId ? cityDisplay(day.cityId) : "",
-        intro: proseByDay.get(day.id) ?? "",
+        cityId: day.cityId,
+        intro: proseByDay.get(day.id) || dayIntros?.[day.id] || "",
         beats: [],
         inlineNotes: [],
         isLocked: true,
@@ -388,9 +390,10 @@ export function toChapterDays(
         partOfDay,
         location,
         body: bodyFor(location),
+        note: activity.kind === "place" ? activity.notes : undefined,
         chips,
         hasMore: Boolean(
-          location.description || activity.description || activity.notes,
+          location.description || activity.description,
         ),
         transitToNext: mapTransit(activity.travelToNext, transitOrigin, transitDestination),
       };
@@ -411,7 +414,8 @@ export function toChapterDays(
       id: day.id,
       date: isoDate,
       city: day.cityId ? cityDisplay(day.cityId) : "",
-      intro: proseByDay.get(day.id) ?? "",
+      cityId: day.cityId,
+      intro: proseByDay.get(day.id) || dayIntros?.[day.id] || "",
       beats,
       inlineNotes,
       isLocked: false,
