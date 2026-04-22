@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GET, PATCH, DELETE } from "@/app/api/trips/[id]/route";
 import { createMockRequest } from "../utils/mocks";
 
@@ -33,6 +33,28 @@ vi.mock("@/lib/api/middleware", async (importOriginal) => {
 // Mock Supabase server client
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockResolvedValue({}),
+}));
+
+// Mock Supabase service role client (used by POST duplicate-id check)
+vi.mock("@/lib/supabase/serviceRole", () => ({
+  getServiceRoleClient: vi.fn().mockReturnValue({
+    from: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    }),
+  }),
+}));
+
+// Mock stamp helper (Task 8 will add this module)
+const mockStampFreeUnlockedAt = vi.fn();
+vi.mock("@/app/api/trips/_stampFreeUnlock", () => ({
+  stampFreeUnlockedAt: (...args: unknown[]) => mockStampFreeUnlockedAt(...args),
+}));
+
+// Mock billing access check
+vi.mock("@/lib/billing/accessServer", () => ({
+  isFullAccessEnabled: vi.fn(),
 }));
 
 const mockUserId = "user-123";
@@ -420,5 +442,145 @@ describe("DELETE /api/trips/[id]", () => {
 
       expect(response.status).toBe(500);
     });
+  });
+});
+
+describe("POST /api/trips — free_unlocked_at stamp", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Default: authenticated user
+    mockRequireAuth.mockResolvedValue({
+      user: { id: mockUserId },
+      context: { requestId: "req-123", ip: "127.0.0.1" },
+    });
+  });
+
+  function makePostRequest(body: object): NextRequest {
+    return createMockRequest("http://localhost/api/trips", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  }
+
+  const itineraryWithDays = {
+    days: [
+      { id: "day-1", activities: [] },
+      { id: "day-2", activities: [] },
+    ],
+  };
+
+  it("stamps free_unlocked_at when fullAccess=true and itinerary has days", async () => {
+    const { isFullAccessEnabled } = await import("@/lib/billing/accessServer");
+    vi.mocked(isFullAccessEnabled).mockResolvedValue(true);
+    mockSaveTrip.mockResolvedValue({
+      success: true,
+      data: {
+        id: "11111111-1111-1111-1111-111111111111",
+        name: "t",
+        itinerary: itineraryWithDays,
+        builderData: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+
+    const req = makePostRequest({
+      id: "11111111-1111-1111-1111-111111111111",
+      name: "t",
+      itinerary: itineraryWithDays,
+    });
+    const { POST } = await import("@/app/api/trips/route");
+    // @ts-expect-error NextRequest vs Request
+    const res = await POST(req);
+
+    expect(res.status).toBe(201);
+    expect(mockStampFreeUnlockedAt).toHaveBeenCalledTimes(1);
+    const callArgs = mockStampFreeUnlockedAt.mock.calls[0];
+    expect(callArgs[1]).toBe("11111111-1111-1111-1111-111111111111");
+    expect(typeof callArgs[2]).toBe("string"); // user id
+  });
+
+  it("does NOT stamp when fullAccess=false", async () => {
+    const { isFullAccessEnabled } = await import("@/lib/billing/accessServer");
+    vi.mocked(isFullAccessEnabled).mockResolvedValue(false);
+    mockSaveTrip.mockResolvedValue({
+      success: true,
+      data: {
+        id: "22222222-2222-2222-2222-222222222222",
+        name: "t",
+        itinerary: itineraryWithDays,
+        builderData: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+
+    const req = makePostRequest({
+      id: "22222222-2222-2222-2222-222222222222",
+      name: "t",
+      itinerary: itineraryWithDays,
+    });
+    const { POST } = await import("@/app/api/trips/route");
+    // @ts-expect-error NextRequest vs plain Request type mismatch in test context
+    await POST(req);
+
+    expect(mockStampFreeUnlockedAt).not.toHaveBeenCalled();
+  });
+
+  it("does NOT stamp when itinerary has no days", async () => {
+    const { isFullAccessEnabled } = await import("@/lib/billing/accessServer");
+    vi.mocked(isFullAccessEnabled).mockResolvedValue(true);
+    const emptyItin = { days: [] };
+    mockSaveTrip.mockResolvedValue({
+      success: true,
+      data: {
+        id: "33333333-3333-3333-3333-333333333333",
+        name: "t",
+        itinerary: emptyItin,
+        builderData: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+
+    const req = makePostRequest({
+      id: "33333333-3333-3333-3333-333333333333",
+      name: "t",
+      itinerary: emptyItin,
+    });
+    const { POST } = await import("@/app/api/trips/route");
+    // @ts-expect-error NextRequest vs plain Request type mismatch in test context
+    await POST(req);
+
+    expect(mockStampFreeUnlockedAt).not.toHaveBeenCalled();
+  });
+
+  it("still returns 201 when stamp helper throws", async () => {
+    const { isFullAccessEnabled } = await import("@/lib/billing/accessServer");
+    vi.mocked(isFullAccessEnabled).mockResolvedValue(true);
+    mockSaveTrip.mockResolvedValue({
+      success: true,
+      data: {
+        id: "44444444-4444-4444-4444-444444444444",
+        name: "t",
+        itinerary: itineraryWithDays,
+        builderData: {},
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    mockStampFreeUnlockedAt.mockRejectedValue(new Error("db error"));
+
+    const req = makePostRequest({
+      id: "44444444-4444-4444-4444-444444444444",
+      name: "t",
+      itinerary: itineraryWithDays,
+    });
+    const { POST } = await import("@/app/api/trips/route");
+    // @ts-expect-error NextRequest vs plain Request type mismatch in test context
+    const res = await POST(req);
+
+    expect(res.status).toBe(201);
   });
 });
