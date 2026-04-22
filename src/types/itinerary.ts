@@ -75,6 +75,8 @@ export type TransitStep = {
   walkInstruction?: string;
   /** Transit line name, e.g. "JR Yamanote Line" */
   lineName?: string;
+  /** Romaji reading of line name, e.g. "Yamanote sen" */
+  lineNameRomaji?: string;
   /** Short line name, e.g. "Yamanote" */
   lineShortName?: string;
   /** Vehicle type from Google, e.g. "HEAVY_RAIL", "SUBWAY" */

@@ -3,6 +3,7 @@ import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 import { formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { env } from "@/lib/env";
+import lineRomaji from "@/data/transitLineRomaji.json";
 
 // -- NAVITIME Route(totalnavi) response types --
 
@@ -245,14 +246,18 @@ function parseSections(sections: NavitimeSection[]): RoutingLegStep[] {
       // Base fare (unit_0 = single adult fare in yen)
       const fareYen = move.transport.fare?.unit_0;
 
+      const lineName = move.transport.name;
+      const lineNameRomaji = (lineRomaji as Record<string, string>)[lineName];
+
       steps.push({
-        instruction: `${move.transport.name} · ${departureStation ?? "?"} → ${arrivalStation ?? "?"} · ${move.time} min`,
+        instruction: `${lineName} · ${departureStation ?? "?"} → ${arrivalStation ?? "?"} · ${move.time} min`,
         durationSeconds,
         distanceMeters,
         stepMode: "transit",
         transitDetails: {
-          lineName: move.transport.name,
-          lineShortName: move.transport.links?.[0]?.name !== move.transport.name
+          lineName,
+          lineNameRomaji,
+          lineShortName: move.transport.links?.[0]?.name !== lineName
             ? move.transport.links?.[0]?.name
             : undefined,
           vehicleType: mapVehicleType(move.transport.name),
