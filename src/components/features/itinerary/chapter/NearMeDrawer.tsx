@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Clock, Train } from "lucide-react";
 import { SlideDrawer } from "./SlideDrawer";
 import { NearMeMap, type NearbyLocation } from "./NearMeMap";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,12 @@ type NearMeState =
 
 // ── Detail panel ──────────────────────────────────────────────────────────────
 
+function priceLevelLabel(level: number | undefined | null): string | null {
+  if (level == null) return null;
+  if (level === 0) return "Free";
+  return "¥".repeat(level);
+}
+
 function NearMeDetail({
   location,
   isAdded,
@@ -43,8 +49,16 @@ function NearMeDetail({
     resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 600) ??
     FALLBACK_IMAGE;
 
+  const priceLabel = priceLevelLabel(location.priceLevel);
+  // Prefer the full editorial description; fall back to the card blurb
+  const bodyText = location.description ?? location.shortDescription;
+  const metaParts: string[] = [location.category ?? ""];
+  if (location.rating) metaParts.push(`★ ${location.rating.toFixed(1)}`);
+  if (priceLabel) metaParts.push(priceLabel);
+  metaParts.push(formatDistance(location.distance));
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-2">
       <button
         type="button"
         onClick={onBack}
@@ -67,20 +81,55 @@ function NearMeDetail({
         </div>
       )}
 
+      {/* Name + meta */}
       <div>
         <p className="text-base font-medium text-foreground">{location.name}</p>
         <p className="mt-0.5 text-sm text-foreground-secondary capitalize">
-          {location.category}
-          {location.rating ? ` · ★ ${location.rating.toFixed(1)}` : ""}
-          {" · "}
-          {formatDistance(location.distance)}
+          {metaParts.join(" · ")}
         </p>
-        {location.shortDescription && (
-          <p className="mt-2 text-sm text-foreground-secondary leading-relaxed line-clamp-3">
-            {location.shortDescription}
+        {(location.neighborhood || location.estimatedDuration) && (
+          <p className="mt-0.5 text-xs text-foreground-secondary">
+            {[location.neighborhood, location.estimatedDuration]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
         )}
       </div>
+
+      {/* Description */}
+      {bodyText && (
+        <p className="text-sm text-foreground-body leading-relaxed">
+          {bodyText}
+        </p>
+      )}
+
+      {/* Insider tip */}
+      {location.insiderTip && (
+        <div>
+          <p className="eyebrow-mono mb-1.5">Local tip</p>
+          <div className="rounded-lg bg-yuzu-tint px-3 py-2.5">
+            <p className="text-sm leading-relaxed text-foreground-body">
+              {location.insiderTip}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Nearest station */}
+      {location.nearestStation && (
+        <div className="flex items-center gap-2 text-sm text-foreground-secondary">
+          <Train className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span>{location.nearestStation}</span>
+        </div>
+      )}
+
+      {/* Duration standalone (if not shown in meta above) */}
+      {location.estimatedDuration && !location.neighborhood && (
+        <div className="flex items-center gap-2 text-sm text-foreground-secondary">
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span>{location.estimatedDuration}</span>
+        </div>
+      )}
 
       <button
         type="button"
