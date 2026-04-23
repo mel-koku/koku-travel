@@ -3,13 +3,14 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { BeatTransit } from "@/components/features/itinerary/chapter/BeatTransit";
 
 describe("BeatTransit", () => {
-  it("renders minutes and line when provided", () => {
+  it("renders minutes and mode label in collapsed state", () => {
     render(<BeatTransit minutes={8} mode="train" line="JR Yamanote Line" />);
-    expect(screen.getByText(/8 min/)).toBeInTheDocument();
-    expect(screen.getByText(/JR Yamanote Line/)).toBeInTheDocument();
+    expect(screen.getByText(/8 min train/i)).toBeInTheDocument();
+    // Line name not shown in collapsed state — only appears in expanded steps
+    expect(screen.queryByText(/JR Yamanote Line/i)).not.toBeInTheDocument();
   });
 
-  it("renders station pair when summary includes stops", () => {
+  it("collapsed state shows time only — station pair not rendered until expanded", () => {
     render(
       <BeatTransit
         minutes={8}
@@ -22,8 +23,9 @@ describe("BeatTransit", () => {
         }}
       />,
     );
-    expect(screen.getByText(/Shibuya/)).toBeInTheDocument();
-    expect(screen.getByText(/Harajuku/)).toBeInTheDocument();
+    expect(screen.getByText(/8 min train/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Shibuya/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Harajuku/)).not.toBeInTheDocument();
   });
 
   it("shows Details affordance and expands when clicked", () => {
@@ -89,7 +91,7 @@ describe("BeatTransit", () => {
     expect(screen.getByText(/Details/i)).toBeInTheDocument();
   });
 
-  it("renders lineShortName over lineName in collapsed summary", () => {
+  it("collapsed never shows line name — only expanded steps do", () => {
     render(
       <BeatTransit
         minutes={10}
@@ -102,9 +104,9 @@ describe("BeatTransit", () => {
         }}
       />,
     );
-    expect(screen.getByText(/Yamanote/)).toBeInTheDocument();
-    // Full name should NOT appear in collapsed view when short name is present
-    expect(screen.queryByText("JR Yamanote Line")).not.toBeInTheDocument();
+    expect(screen.getByText(/10 min train/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Yamanote/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/JR Yamanote Line/i)).not.toBeInTheDocument();
   });
 
   it("renders (est.) marker when isEstimated is true", () => {
