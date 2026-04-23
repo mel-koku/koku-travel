@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Minus, Plus, Utensils, Landmark, Baby, Moon, Palette } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { getGtag } from "@/lib/analytics/customLocations";
 import type { RefinementType } from "@/lib/server/refinementEngine";
@@ -24,51 +26,16 @@ type DayRefinementButtonsProps = {
 const REFINEMENT_OPTIONS: Array<{
   type: RefinementType;
   label: string;
-  icon: string;
+  Icon: LucideIcon;
   description: string;
 }> = [
-  {
-    type: "too_busy",
-    label: "Too Busy",
-    icon: "\u23F8\uFE0F",
-    description: "Remove some activities",
-  },
-  {
-    type: "too_light",
-    label: "Too Light",
-    icon: "\u2795",
-    description: "Add more activities",
-  },
-  {
-    type: "more_food",
-    label: "More Food",
-    icon: "\uD83C\uDF5C",
-    description: "Add dining options",
-  },
-  {
-    type: "more_culture",
-    label: "More Culture",
-    icon: "\uD83C\uDFDB\uFE0F",
-    description: "Add cultural sites",
-  },
-  {
-    type: "more_kid_friendly",
-    label: "Kid Friendly",
-    icon: "\uD83D\uDC76",
-    description: "Make it family-friendly",
-  },
-  {
-    type: "more_rest",
-    label: "More Rest",
-    icon: "\uD83D\uDE34",
-    description: "Add rest time",
-  },
-  {
-    type: "more_craft",
-    label: "More Craft",
-    icon: "\uD83C\uDFA8",
-    description: "Add craft workshops",
-  },
+  { type: "too_busy",          label: "Too Busy",     Icon: Minus,    description: "Remove some activities" },
+  { type: "too_light",         label: "Too Light",    Icon: Plus,     description: "Add more activities" },
+  { type: "more_food",         label: "More Food",    Icon: Utensils, description: "Add dining options" },
+  { type: "more_culture",      label: "More Culture", Icon: Landmark, description: "Add cultural sites" },
+  { type: "more_kid_friendly", label: "Kid Friendly", Icon: Baby,     description: "Make it family-friendly" },
+  { type: "more_rest",         label: "More Rest",    Icon: Moon,     description: "Add rest time" },
+  { type: "more_craft",        label: "More Craft",   Icon: Palette,  description: "Add craft workshops" },
 ];
 
 const START_TIME_OPTIONS = ["08:00", "09:00", "10:00", "11:00"];
@@ -202,7 +169,7 @@ export function DayRefinementButtons({
                 className="bg-background text-foreground-secondary hover:border-sage/30 hover:bg-sage/10 hover:text-sage"
                 title={option.description}
               >
-                <span>{option.icon}</span>
+                <option.Icon className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{option.label}</span>
               </Button>
             ))}
