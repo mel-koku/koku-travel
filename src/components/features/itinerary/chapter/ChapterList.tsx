@@ -275,7 +275,6 @@ export function ChapterList({
                     >
                       <Beat
                         time={beat.time}
-                        partOfDay={beat.partOfDay}
                         location={beat.location}
                         body={beat.body}
                         note={beat.note}

@@ -22,7 +22,6 @@ export type BeatChip = {
 
 export type BeatProps = {
   time: string; // "08:00"
-  partOfDay: "Morning" | "Midday" | "Afternoon" | "Evening" | "Night";
   location: Location;
   body: string;
   note?: string;

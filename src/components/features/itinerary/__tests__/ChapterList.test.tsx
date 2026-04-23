@@ -49,8 +49,8 @@ describe("ChapterList", () => {
         onReviewAdvisories={() => {}}
       />,
     );
-    expect(screen.getByText("DAY 1")).toBeInTheDocument();
-    expect(screen.getByText("DAY 2")).toBeInTheDocument();
+    expect(screen.getAllByText("Tokyo")).toHaveLength(2);
+    expect(screen.queryByText(/DAY\s+\d/i)).not.toBeInTheDocument();
   });
 
   it("renders beats inside their chapter", () => {
@@ -104,7 +104,7 @@ describe("ChapterList", () => {
         onReorderBeats={() => {}}
       />,
     );
-    expect(screen.getByText("DAY 1")).toBeInTheDocument();
+    expect(screen.getAllByText("Tokyo")).toHaveLength(2);
   });
 
   it("does not render inline add-activity inside chapter sections", () => {

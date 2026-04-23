@@ -113,23 +113,26 @@ const buildRoute = (
   mode: RoutingRequest["mode"],
   durationSeconds: number,
   distanceMeters = 800,
-) => ({
-  provider: "mock",
-  mode,
-  durationSeconds,
-  distanceMeters,
-  legs: [
-    {
-      mode,
-      durationSeconds,
-      distanceMeters,
-      summary: `${mode} leg`,
-      steps: [],
-    },
-  ],
-  warnings: [],
-  fetchedAt: new Date().toISOString(),
-});
+) => {
+  const stepMode = mode === "transit" || mode === "train" ? "transit" : mode === "walk" ? "walk" : "drive";
+  return {
+    provider: "mock",
+    mode,
+    durationSeconds,
+    distanceMeters,
+    legs: [
+      {
+        mode,
+        durationSeconds,
+        distanceMeters,
+        summary: `${mode} leg`,
+        steps: [{ instruction: `${mode} step`, stepMode }],
+      },
+    ],
+    warnings: [],
+    fetchedAt: new Date().toISOString(),
+  };
+};
 
 function createItinerary(
   activities: ItineraryActivity[],

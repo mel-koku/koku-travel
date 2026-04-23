@@ -17,7 +17,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="Beat the crowd."
         isPast={false}
@@ -25,7 +24,7 @@ describe("Beat", () => {
         onExpand={() => {}}
       />,
     );
-    expect(screen.getByText("08:00 · Morning")).toBeInTheDocument();
+    expect(screen.getByText("08:00")).toBeInTheDocument();
     expect(screen.getByText("Fushimi Inari")).toBeInTheDocument();
     expect(screen.getByText(/temple/i)).toBeInTheDocument();
     expect(screen.getByText(/2h/)).toBeInTheDocument();
@@ -36,7 +35,6 @@ describe("Beat", () => {
     const { container } = render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc({ cashOnly: true, reservationInfo: "required" } as unknown as Location)}
         body="."
         isPast={false}
@@ -51,7 +49,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={false}
@@ -66,7 +63,6 @@ describe("Beat", () => {
     const { container } = render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={true}
@@ -81,7 +77,6 @@ describe("Beat", () => {
     const { container } = render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={false}
@@ -98,7 +93,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={false}
@@ -116,7 +110,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={false}
@@ -132,7 +125,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="."
         isPast={false}
@@ -148,7 +140,6 @@ describe("Beat", () => {
     render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="Body."
         isPast={false}
@@ -170,7 +161,6 @@ describe("Beat", () => {
     const { container } = render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body=""
         isPast={false}
@@ -185,7 +175,6 @@ describe("Beat", () => {
     const { container } = render(
       <Beat
         time="08:00"
-        partOfDay="Morning"
         location={loc()}
         body="Body."
         isPast={false}
