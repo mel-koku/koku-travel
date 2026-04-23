@@ -75,11 +75,8 @@ export function PlaceActivityDetails({
               <p className="mb-1.5 text-xs font-semibold text-foreground">All Tips</p>
               <div className="space-y-1">
                 {tips.slice(2).map((tip, index) => (
-                  <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
-                    <span className="shrink-0">{tip.icon ?? "💡"}</span>
-                    <span>
-                      <span className="font-medium">{tip.title}:</span> {tip.message}
-                    </span>
+                  <div key={index} className="text-xs text-foreground-secondary">
+                    <span className="font-medium">{tip.title}:</span> {tip.message}
                   </div>
                 ))}
               </div>
