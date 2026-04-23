@@ -71,6 +71,7 @@ import type { AdvisoryEntry } from "@/components/features/itinerary/chapter/Trip
 import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/TripAdvisoriesDrawer";
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
 import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
+import { NearMeDrawer } from "@/components/features/itinerary/chapter/NearMeDrawer";
 import { TripOverviewDrawer } from "@/components/features/itinerary/chapter/TripOverviewDrawer";
 import { BeforeYouLandDrawer } from "@/components/features/itinerary/chapter/BeforeYouLandDrawer";
 import { AddPlaceDialog } from "@/components/features/itinerary/chapter/AddPlaceDialog";
@@ -222,6 +223,7 @@ export const ItineraryShell = ({
   const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
   const [beforeYouLandOpen, setBeforeYouLandOpen] = useState(false);
   const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
+  const [nearMeDrawerOpen, setNearMeDrawerOpen] = useState(false);
   const [addPlaceDialogOpen, setAddPlaceDialogOpen] = useState(false);
 
   // All place activities across all days (flattened) — batch location fetch for ChapterList
@@ -939,6 +941,17 @@ export const ItineraryShell = ({
                 </span>
               ) : undefined}
               onOpenAdvisories={() => setAdvisoriesDrawerOpen(true)}
+              onNearMe={() => setNearMeDrawerOpen(true)}
+            />
+          )}
+          {/* v2 Nav: NearMeDrawer */}
+          {v2Nav && (
+            <NearMeDrawer
+              open={nearMeDrawerOpen}
+              onClose={() => setNearMeDrawerOpen(false)}
+              currentDayIndex={safeSelectedDay}
+              currentDayActivities={currentDay?.activities ?? []}
+              onAdd={handleAddActivityToDay}
             />
           )}
           {/* v2 Nav: TripOverviewDrawer */}
