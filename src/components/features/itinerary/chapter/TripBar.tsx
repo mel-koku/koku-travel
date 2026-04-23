@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import { MapPin } from "lucide-react";
 import { DropdownMenu } from "./DropdownMenu";
 
 export type TripBarProps = {
@@ -52,8 +53,9 @@ export function TripBar({
           <button
             type="button"
             onClick={onNearMe}
-            className="text-[10px] text-accent uppercase tracking-wide underline underline-offset-2"
+            className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent transition-colors hover:bg-accent/20 active:scale-[0.98]"
           >
+            <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
             Near Me
           </button>
         )}
