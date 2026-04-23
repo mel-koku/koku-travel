@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { ChapterHeader } from "@/components/features/itinerary/chapter/ChapterHeader";
 
 describe("ChapterHeader", () => {
-  it("renders numeric day eyebrow, never 'Chapter'", () => {
+  it("renders city and date, never a numeric day eyebrow or 'Chapter'", () => {
     render(
       <ChapterHeader
         dayIndex={2}
@@ -12,7 +12,9 @@ describe("ChapterHeader", () => {
         intro="A quiet morning of temples."
       />,
     );
-    expect(screen.getByText("DAY 3")).toBeInTheDocument();
+    expect(screen.getByText("Kyoto")).toBeInTheDocument();
+    expect(screen.getByText("Thursday, April 23")).toBeInTheDocument();
+    expect(screen.queryByText(/DAY\s+\d/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Chapter/i)).not.toBeInTheDocument();
   });
 
@@ -48,15 +50,4 @@ describe("ChapterHeader", () => {
     expect(container.querySelector(".chapter-prose")).toBeNull();
   });
 
-  it("handles two-digit day numerals", () => {
-    render(
-      <ChapterHeader
-        dayIndex={13}
-        city="Fukuoka"
-        date="Thu, May 7"
-        intro="Final push south."
-      />,
-    );
-    expect(screen.getByText("DAY 14")).toBeInTheDocument();
-  });
 });

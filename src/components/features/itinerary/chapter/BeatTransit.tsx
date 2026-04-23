@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export type BeatTransitStep = {
   type: "walk" | "transit";
@@ -67,21 +68,87 @@ function LineDot({ color }: { color?: string }) {
 function CollapsedLine({
   minutes,
   mode,
+  line,
+  summary,
+  hasDetails,
+  expanded,
   isEstimated,
+  onToggle,
 }: {
   minutes: number;
   mode: BeatTransitProps["mode"];
+  line?: string;
+  summary?: BeatTransitSummary;
+  hasDetails: boolean;
+  expanded: boolean;
   isEstimated?: boolean;
+  onToggle: () => void;
 }) {
+  const showStations = summary?.departureStop && summary?.arrivalStop;
+  const displayLine = summary?.lineShortName ?? summary?.lineName ?? line;
+
+  let content: React.ReactNode;
+
+  if (showStations) {
+    content = (
+      <span className="inline-flex items-center gap-1 flex-wrap">
+        <span>↓ {minutes} min</span>
+        <span aria-hidden="true">·</span>
+        <span>
+          {summary!.departureStop} → {summary!.arrivalStop}
+        </span>
+        {displayLine && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1">
+              <LineDot color={summary?.lineColor} />
+              {displayLine}
+            </span>
+          </>
+        )}
+      </span>
+    );
+  } else if (displayLine) {
+    content = (
+      <span className="inline-flex items-center gap-1 flex-wrap">
+        <span>↓ {minutes} min</span>
+        <span aria-hidden="true">·</span>
+        <span className="inline-flex items-center gap-1">
+          <LineDot color={summary?.lineColor} />
+          {displayLine}
+        </span>
+      </span>
+    );
+  } else {
+    content = (
+      <span>
+        ↓ {minutes} min {labelForMode[mode]}
+      </span>
+    );
+  }
+
   return (
-    <span className="block text-[10px] text-foreground-secondary tracking-wide uppercase mt-2 text-left">
-      <span className="inline-flex items-center gap-1.5">
-        <span>↓ {minutes} min {labelForMode[mode]}</span>
+    <button
+      type="button"
+      onClick={hasDetails ? (e) => { e.stopPropagation(); onToggle(); } : undefined}
+      aria-expanded={hasDetails ? expanded : undefined}
+      className={cn(
+        "block text-[10px] text-foreground-secondary tracking-wide uppercase mt-2 mb-6 text-left",
+        hasDetails && "hover:text-foreground transition-colors",
+      )}
+    >
+      <span className="inline-flex items-center gap-1.5 flex-wrap">
+        {content}
         {isEstimated && (
           <span className="text-[9px] opacity-60 italic normal-case tracking-normal">(est.)</span>
         )}
+        {hasDetails && (
+          <span className="text-[9px] opacity-60 normal-case tracking-normal">
+            {expanded ? "Details ↑" : "Details ↓"}
+          </span>
+        )}
       </span>
-    </span>
+    </button>
   );
 }
 
@@ -89,7 +156,10 @@ function WalkStep({ step }: { step: BeatTransitStep }) {
   return (
     <div className="text-xs text-foreground-secondary">
       <span className="text-foreground-secondary/60 mr-1">↳</span>
-      {step.walkInstruction ?? `Walk ${step.walkMinutes} min`}
+      Walk {step.walkMinutes} min
+      {step.walkInstruction && (
+        <span className="text-foreground-secondary/80"> — {step.walkInstruction}</span>
+      )}
     </div>
   );
 }
@@ -182,14 +252,16 @@ const TRAVEL_MODE_MAP: Record<BeatTransitProps["mode"], string> = {
 export function BeatTransit({
   minutes,
   mode,
+  line,
   steps,
   totalFareYen,
+  summary,
   origin,
   destination,
   isEstimated,
 }: BeatTransitProps) {
   const [expanded, setExpanded] = useState(false);
-  const hasDetails = Boolean(steps && steps.length > 0) || totalFareYen != null;
+  const hasDetails = Boolean(steps && steps.length > 1) || totalFareYen != null;
   const hasMapsLink = Boolean(origin && destination);
 
   function openInGoogleMaps() {
@@ -209,35 +281,28 @@ export function BeatTransit({
 
   return (
     <div className="relative z-10">
-      <div className="flex items-baseline gap-3 mt-2 mb-6">
-        <CollapsedLine
-          minutes={minutes}
-          mode={mode}
-          isEstimated={isEstimated}
-        />
-        {hasDetails && (
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
-            aria-expanded={expanded}
-            className="shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2"
-          >
-            {expanded ? "Details ↑" : "Details ↓"}
-          </button>
-        )}
-        {hasMapsLink && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              openInGoogleMaps();
-            }}
-            className="shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2"
-          >
-            Open in Maps ↗
-          </button>
-        )}
-      </div>
+      <CollapsedLine
+        minutes={minutes}
+        mode={mode}
+        line={line}
+        summary={summary}
+        hasDetails={hasDetails}
+        expanded={expanded}
+        isEstimated={isEstimated}
+        onToggle={() => setExpanded((v) => !v)}
+      />
+      {hasMapsLink && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            openInGoogleMaps();
+          }}
+          className="shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2 mb-6 block"
+        >
+          Open in Maps ↗
+        </button>
+      )}
       {expanded && steps && steps.length > 0 && (
         <ExpandedDetails steps={steps} totalFareYen={totalFareYen} />
       )}

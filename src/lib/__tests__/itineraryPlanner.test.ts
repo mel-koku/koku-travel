@@ -87,23 +87,26 @@ beforeEach(() => {
   mockRequestRoute.mockReset();
 });
 
-const buildRoute = (mode: RoutingRequest["mode"], durationSeconds: number, instruction?: string) => ({
-  provider: "mock",
-  mode,
-  durationSeconds,
-  distanceMeters: 7800,
-  legs: [
-    {
-      mode,
-      durationSeconds,
-      distanceMeters: 7800,
-      summary: `${mode} leg`,
-      steps: instruction ? [{ instruction }] : [],
-    },
-  ],
-  warnings: [],
-  fetchedAt: new Date().toISOString(),
-});
+const buildRoute = (mode: RoutingRequest["mode"], durationSeconds: number, instruction?: string) => {
+  const stepMode = mode === "transit" || mode === "train" ? "transit" : mode === "walk" ? "walk" : "drive";
+  return {
+    provider: "mock",
+    mode,
+    durationSeconds,
+    distanceMeters: 7800,
+    legs: [
+      {
+        mode,
+        durationSeconds,
+        distanceMeters: 7800,
+        summary: `${mode} leg`,
+        steps: instruction ? [{ instruction, stepMode }] : [],
+      },
+    ],
+    warnings: [],
+    fetchedAt: new Date().toISOString(),
+  };
+};
 
 const createTestItinerary = (): Itinerary => ({
   timezone: "Asia/Tokyo",
