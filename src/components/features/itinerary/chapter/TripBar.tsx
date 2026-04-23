@@ -13,6 +13,7 @@ export type TripBarProps = {
   onShare?: () => void;
   onDownloadPdf?: () => void;
   onOpenAdvisories?: () => void;
+  onNearMe?: () => void;
 };
 
 export function TripBar({
@@ -25,6 +26,7 @@ export function TripBar({
   onShare,
   onDownloadPdf,
   onOpenAdvisories,
+  onNearMe,
 }: TripBarProps) {
   const counter = isToday
     ? `Day ${currentDayIndex + 1} of ${totalDays} · Today`
@@ -46,6 +48,15 @@ export function TripBar({
         {unlockedPill && <span className="normal-case tracking-normal">{unlockedPill}</span>}
       </div>
       <div className="flex items-center gap-6 normal-case tracking-normal text-sm">
+        {onNearMe && (
+          <button
+            type="button"
+            onClick={onNearMe}
+            className="text-[10px] text-accent uppercase tracking-wide underline underline-offset-2"
+          >
+            Near Me
+          </button>
+        )}
         <DropdownMenu
           ariaLabel="More trip actions"
           align="right"
