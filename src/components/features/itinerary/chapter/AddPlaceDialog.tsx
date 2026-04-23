@@ -88,7 +88,7 @@ export function AddPlaceDialog({
             >
               <header className="flex items-start justify-between gap-4 p-6 pb-4 border-b border-border">
                 <div className="flex-1 min-w-0">
-                  <h2 className={cn(typography({ intent: "editorial-h3" }), "mb-1")}>
+                  <h2 className={cn(typography({ intent: "editorial-h3" }), "mb-3")}>
                     Add a place
                   </h2>
                   <div className="text-sm text-foreground-secondary mt-1">
