@@ -12,6 +12,39 @@ type LaunchBannerProps = {
 const ALMOST_GONE_THRESHOLD = 20;
 const DISMISS_KEY = "yuku.launch-banner.v1.dismissed";
 
+function resetHeaderPosition() {
+  document.documentElement.style.setProperty("--header-h", "80px");
+  // Must set to "0px" explicitly — clearing the inline style lets the
+  // injected <style> tag's `header.fixed { top: 2.5rem }` win again.
+  const header = document.querySelector("header.fixed") as HTMLElement | null;
+  if (header) header.style.top = "0px";
+}
+
+type CopyNode = { type: "text"; value: string } | { type: "accent"; value: string };
+
+function buildCopy(
+  isSoldOut: boolean,
+  isAlmostGone: boolean,
+  remaining: number,
+  total: number,
+): CopyNode[] {
+  if (isSoldOut) {
+    return [{ type: "text", value: "Launch pricing now live from $19." }];
+  }
+  if (isAlmostGone) {
+    return [
+      { type: "text", value: `Only ${remaining} spots left. Trip Pass is ` },
+      { type: "accent", value: "free" },
+      { type: "text", value: " until they're gone." },
+    ];
+  }
+  return [
+    { type: "text", value: `Trip Pass is ` },
+    { type: "accent", value: "free" },
+    { type: "text", value: ` for our first ${total} travellers. ${remaining} spots remain.` },
+  ];
+}
+
 export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerProps) {
   const [remaining, setRemaining] = useState<number | null>(initialRemaining);
   const [total, setTotal] = useState<number | null>(initialTotal);
@@ -21,9 +54,7 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.localStorage.getItem(DISMISS_KEY) === "1") {
-      document.documentElement.style.setProperty("--header-h", "80px");
-      const header = document.querySelector("header.fixed") as HTMLElement | null;
-      if (header) header.style.top = "";
+      resetHeaderPosition();
       setDismissed(true);
     }
   }, []);
@@ -51,19 +82,12 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
 
   const isSoldOut = remaining === 0;
   const isAlmostGone = remaining > 0 && remaining <= ALMOST_GONE_THRESHOLD;
-
-  const centerCopy = isSoldOut
-    ? "Launch pricing now live from $19."
-    : isAlmostGone
-      ? `Only ${remaining} spots left. Trip Pass is free until they're gone.`
-      : `Trip Pass is free for our first ${total} travellers. ${remaining} spots remain.`;
+  const copyNodes = buildCopy(isSoldOut, isAlmostGone, remaining, total);
 
   const handleDismiss = () => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(DISMISS_KEY, "1");
-      document.documentElement.style.setProperty("--header-h", "80px");
-      const header = document.querySelector("header.fixed") as HTMLElement | null;
-      if (header) header.style.top = "";
+      resetHeaderPosition();
     }
     setDismissed(true);
   };
@@ -80,9 +104,15 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
       <div className="mx-auto flex w-full max-w-7xl items-center px-4 sm:px-6">
         <Link
           href="/pricing"
-          className="flex-1 text-center font-serif text-[15px] italic leading-none tracking-[0.02em] text-white/85 hover:text-white transition-colors"
+          className="flex-1 text-center font-sans text-[13px] font-medium leading-none tracking-[0.01em] text-white transition-colors hover:text-white/80"
         >
-          {centerCopy}
+          {copyNodes.map((node, i) =>
+            node.type === "accent" ? (
+              <span key={i} className="text-brand-primary">{node.value}</span>
+            ) : (
+              <span key={i}>{node.value}</span>
+            )
+          )}
         </Link>
         <span aria-live="polite" className="sr-only">
           {isAlmostGone
@@ -98,8 +128,8 @@ export function LaunchBanner({ initialRemaining, initialTotal }: LaunchBannerPro
           className="ml-4 flex h-8 shrink-0 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal"
         >
           {/* × on mobile, CLOSE on sm+ */}
-          <span className="text-white/40 hover:text-white/70 transition-colors text-[15px] sm:hidden">&times;</span>
-          <span className="hidden sm:inline font-mono text-[9px] tracking-[0.2em] uppercase text-white/30 hover:text-white/60 transition-colors">CLOSE</span>
+          <span className="text-[15px] text-white/40 transition-colors hover:text-white/70 sm:hidden">&times;</span>
+          <span className="hidden font-mono text-[9px] uppercase tracking-[0.2em] text-white/30 transition-colors hover:text-white/60 sm:inline">CLOSE</span>
         </button>
       </div>
     </motion.aside>
