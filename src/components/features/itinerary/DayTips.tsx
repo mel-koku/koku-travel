@@ -111,9 +111,6 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
           key={tip.id}
           className="flex items-start gap-2 rounded-lg bg-background/70 p-2 text-left"
         >
-          <span className="shrink-0 text-base">
-            {tip.icon}
-          </span>
           <div
             className={`min-w-0 flex-1${tip.content ? " cursor-pointer" : ""}`}
             {...(tip.content ? {
@@ -178,7 +175,6 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
         className="flex w-full items-center justify-between p-3 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg">{"\uD83C\uDDEF\uD83C\uDDF5"}</span>
           <span className="text-sm font-semibold text-foreground">
             Travel Tips for Today
           </span>

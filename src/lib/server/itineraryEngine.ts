@@ -18,6 +18,7 @@ import { refineDays } from "./dayRefinement";
 import { generateDailyBriefings } from "./dailyBriefingGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
+import { pickDayIntroOpener } from "@/lib/guide/templateMatcher";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
 import { applyLateArrivalStrip } from "@/lib/itinerary/lateArrival";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
@@ -670,9 +671,23 @@ export async function generateTripFromBuilderData(
   // Downstream guideBuilder already has a three-tier fallback:
   //   guideProse.intro → dayIntros → DAY_INTRO_TEMPLATES
   // so undefined here just drops to the template layer.
-  const dayIntros = effectiveGuideProse
+  const proseIntros = effectiveGuideProse
     ? Object.fromEntries(effectiveGuideProse.days.map(d => [d.dayId, d.intro]))
-    : undefined;
+    : {};
+
+  // Backfill template-tier intro for any day missing prose (LLM failure,
+  // timeout, or deferred generation). Guarantees every day has editorial
+  // intro copy so the chapter header is never empty.
+  const dayIntros: Record<string, string> = {};
+  for (const day of plannedItinerary.days) {
+    const proseIntro = proseIntros[day.id];
+    if (proseIntro && proseIntro.trim().length > 0) {
+      dayIntros[day.id] = proseIntro;
+      continue;
+    }
+    const cityName = day.cityId ? day.cityId.replace(/_/g, " ") : "Japan";
+    dayIntros[day.id] = pickDayIntroOpener(cityName, `${day.id}-intro`);
+  }
 
   // Day refinement: holistic quality pass — can swap, reorder, or flag activities.
   // Runs sequentially after planning since it needs scheduled times.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertTriangle, Clock, Phone } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import type { DayAvailabilityIssues, BatchAvailabilityResult } from "@/lib/availability/availabilityService";
@@ -80,9 +81,12 @@ export function AvailabilityAlert({
         className="flex w-full items-center justify-between gap-3 p-3 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className={cn("text-lg", styles.icon)}>
-            {hasClosedIssues ? "⚠️" : hasBusyIssues ? "⏰" : "📞"}
-          </span>
+          {hasClosedIssues
+            ? <AlertTriangle className={cn("h-4 w-4 shrink-0", styles.icon)} aria-hidden="true" />
+            : hasBusyIssues
+            ? <Clock className={cn("h-4 w-4 shrink-0", styles.icon)} aria-hidden="true" />
+            : <Phone className={cn("h-4 w-4 shrink-0", styles.icon)} aria-hidden="true" />
+          }
           <div>
             <p className={cn("text-sm font-semibold", styles.title)}>
               {issues.summary.total} {issues.summary.total === 1 ? "activity" : "activities"} may be affected
@@ -212,19 +216,19 @@ export function InlineAvailabilityStatus({
     closed: {
       bg: "bg-error/10",
       text: "text-error",
-      icon: "⚠️",
+      Icon: AlertTriangle,
       label: "Closed",
     },
     busy: {
       bg: "bg-warning/10",
       text: "text-warning",
-      icon: "⏰",
+      Icon: Clock,
       label: "Busy",
     },
     requires_reservation: {
       bg: "bg-warning/10",
       text: "text-warning",
-      icon: "📞",
+      Icon: Phone,
       label: "Reservation recommended",
     },
   };
@@ -240,7 +244,8 @@ export function InlineAvailabilityStatus({
           config.text
         )}
       >
-        {config.icon} {config.label}
+        <config.Icon className="h-3 w-3" aria-hidden="true" />
+        {config.label}
       </span>
       {operatingHours && (
         <span className="font-mono text-[11px] text-stone">

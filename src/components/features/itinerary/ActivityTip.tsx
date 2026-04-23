@@ -50,7 +50,6 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
           tip.isImportant && "ring-1 ring-current/30"
         )}
       >
-        {tip.icon && <span className="text-xs">{tip.icon}</span>}
         <span className="truncate max-w-[120px]">{tip.title}</span>
       </button>
 
@@ -63,7 +62,6 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start gap-2">
-            {tip.icon && <span className="text-sm">{tip.icon}</span>}
             <div className="flex-1 min-w-0">
               <p className={cn("text-xs font-semibold", styles.text)}>
                 {tip.title}
@@ -144,7 +142,6 @@ export function CompactTip({ tip, className }: CompactTipProps) {
       )}
       title={`${tip.title}: ${tip.message}`}
     >
-      {tip.icon && <span>{tip.icon}</span>}
       <span className="truncate max-w-[100px]">{tip.title}</span>
     </span>
   );

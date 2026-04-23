@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertTriangle, Info } from "lucide-react";
 import type { PlanningWarning, WarningType } from "@/lib/planning/tripWarnings";
 
 // Warning types worth re-surfacing AFTER the itinerary is generated.
@@ -64,7 +65,10 @@ export function PlanningWarningsBanner({ warnings }: Props) {
         <ul className="mt-3 space-y-3">
           {relevant.map((w) => (
             <li key={w.id} className="flex gap-3">
-              <span aria-hidden="true" className="text-lg">{w.icon}</span>
+              {w.severity === "info"
+                ? <Info className="mt-0.5 h-4 w-4 shrink-0 text-foreground-secondary" aria-hidden="true" />
+                : <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+              }
               <div>
                 <div className="font-medium text-foreground">{w.title}</div>
                 <div className="text-sm text-foreground-secondary">{w.message}</div>
