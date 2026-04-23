@@ -48,7 +48,7 @@ export function DropdownMenu({
   }, [open]);
 
   return (
-    <div ref={containerRef} className="relative" aria-label={ariaLabel}>
+    <div ref={containerRef} className="relative flex items-center" aria-label={ariaLabel}>
       <div
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={(e) => {
