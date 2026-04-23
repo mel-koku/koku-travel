@@ -22,14 +22,14 @@ export function InlineAddActivity({ dayActivities, onAdd }: InlineAddActivityPro
         <button
           type="button"
           onClick={() => setTab("catalog")}
-          className={`flex-1 py-2 text-sm ${tab === "catalog" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
+          className={`flex-1 min-h-11 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary ${tab === "catalog" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
         >
           Search catalog
         </button>
         <button
           type="button"
           onClick={() => setTab("custom")}
-          className={`flex-1 py-2 text-sm ${tab === "custom" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
+          className={`flex-1 min-h-11 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary ${tab === "custom" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
         >
           Add custom
         </button>
