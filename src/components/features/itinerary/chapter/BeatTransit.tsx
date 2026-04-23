@@ -133,7 +133,7 @@ function CollapsedLine({
       onClick={hasDetails ? (e) => { e.stopPropagation(); onToggle(); } : undefined}
       aria-expanded={hasDetails ? expanded : undefined}
       className={cn(
-        "block text-[10px] text-foreground-secondary tracking-wide uppercase mt-2 mb-6 text-left",
+        "flex-1 text-[10px] text-foreground-secondary tracking-wide uppercase text-left",
         hasDetails && "hover:text-foreground transition-colors",
       )}
     >
@@ -281,28 +281,30 @@ export function BeatTransit({
 
   return (
     <div className="relative z-10">
-      <CollapsedLine
-        minutes={minutes}
-        mode={mode}
-        line={line}
-        summary={summary}
-        hasDetails={hasDetails}
-        expanded={expanded}
-        isEstimated={isEstimated}
-        onToggle={() => setExpanded((v) => !v)}
-      />
-      {hasMapsLink && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            openInGoogleMaps();
-          }}
-          className="shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2 mb-6 block"
-        >
-          Open in Maps ↗
-        </button>
-      )}
+      <div className="flex items-baseline gap-3 mt-2 mb-6">
+        <CollapsedLine
+          minutes={minutes}
+          mode={mode}
+          line={line}
+          summary={summary}
+          hasDetails={hasDetails}
+          expanded={expanded}
+          isEstimated={isEstimated}
+          onToggle={() => setExpanded((v) => !v)}
+        />
+        {hasMapsLink && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openInGoogleMaps();
+            }}
+            className="shrink-0 text-[10px] text-accent uppercase tracking-wide underline underline-offset-2"
+          >
+            Open in Maps ↗
+          </button>
+        )}
+      </div>
       {expanded && steps && steps.length > 0 && (
         <ExpandedDetails steps={steps} totalFareYen={totalFareYen} />
       )}
