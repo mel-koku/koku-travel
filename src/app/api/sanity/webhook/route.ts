@@ -74,6 +74,10 @@ export const POST = withApiHandler(async (request: NextRequest) => {
         "/account",
         "/itinerary",
       ]);
+    case "commerceDisclosure":
+      return await handleSingletonRevalidation(body._type, ["/commerce-disclosure"]);
+    case "aboutPage":
+      return await handleSingletonRevalidation(body._type, ["/about"]);
     default:
       return NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
   }

@@ -27,9 +27,7 @@ export async function LaunchBannerServer() {
     <>
       <style>{`
         :root { --header-h: calc(80px + 2.5rem); }
-        @media (min-width: 640px) { :root { --header-h: calc(80px + 2.25rem); } }
         header.fixed { top: 2.5rem; }
-        @media (min-width: 640px) { header.fixed { top: 2.25rem; } }
       `}</style>
       <LaunchBanner initialRemaining={remaining} initialTotal={total} />
     </>
