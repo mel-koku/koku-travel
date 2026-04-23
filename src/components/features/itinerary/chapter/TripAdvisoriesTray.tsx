@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { AlertTriangle } from "lucide-react";
 import type { AdvisoryKey } from "@/types/tripAdvisories";
 import { getGtag } from "@/lib/analytics/customLocations";
 
@@ -55,7 +56,7 @@ export function TripAdvisoriesTray({
     <ul className="divide-y divide-border">
       {active.map((entry) => (
         <li key={entry.key} className="py-3 flex items-start gap-3">
-          <span aria-hidden className="text-warning text-xs pt-1">◈</span>
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" aria-hidden="true" />
           <div className="flex-1">
             <div className="text-sm font-medium text-foreground">{entry.title}</div>
             <p className="text-xs text-foreground-secondary leading-relaxed mt-0.5">

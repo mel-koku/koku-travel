@@ -110,7 +110,7 @@ export function AddPlaceDialog({
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="shrink-0 -mr-1 p-1 rounded-md text-foreground-secondary hover:bg-canvas/50 hover:text-foreground transition-colors"
+                  className="shrink-0 -mr-2 flex h-11 w-11 items-center justify-center rounded-md text-foreground-secondary hover:bg-canvas/50 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 >
                   <X className="w-5 h-5" aria-hidden="true" />
                 </button>
