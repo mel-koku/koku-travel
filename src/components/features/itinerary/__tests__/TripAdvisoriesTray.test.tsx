@@ -3,7 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { TripAdvisoriesTray } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
 
 const entries = [
-  { key: "prep-checklist", title: "Pack for 14°C mornings", body: "3 days before departure." },
+  {
+    key: "prep-checklist",
+    title: "Pack for 14°C mornings",
+    body: "3 days before departure.",
+    action: { label: "View checklist", key: "open-prep-checklist" as const },
+  },
   { key: "goshuin", title: "Goshuin passport", body: "One-time read." },
 ];
 
@@ -47,6 +52,33 @@ describe("TripAdvisoriesTray", () => {
     );
     fireEvent.click(screen.getAllByRole("button", { name: /got it/i })[0]);
     expect(onDismiss).toHaveBeenCalledWith("prep-checklist");
+  });
+
+  it("renders action button and fires onAction when clicked", () => {
+    const onAction = vi.fn();
+    render(
+      <TripAdvisoriesTray
+        tripId="trip-1"
+        entries={entries}
+        dismissed={new Set()}
+        onDismiss={() => {}}
+        onAction={onAction}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /view checklist/i }));
+    expect(onAction).toHaveBeenCalledWith("open-prep-checklist");
+  });
+
+  it("does not render action button when onAction prop is absent", () => {
+    render(
+      <TripAdvisoriesTray
+        tripId="trip-1"
+        entries={entries}
+        dismissed={new Set()}
+        onDismiss={() => {}}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: /view checklist/i })).not.toBeInTheDocument();
   });
 
   it("renders an empty state when all entries are dismissed", () => {
