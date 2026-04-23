@@ -75,7 +75,7 @@ describe("PrepBanner", () => {
 
   it("renders when trip status is upcoming", () => {
     renderWithProviders(<PrepBanner trip={makeUpcomingTrip()} />);
-    expect(screen.getByText(/Prep checklist/i)).toBeInTheDocument();
+    expect(screen.getByText(/in \d+ days|tomorrow/i)).toBeInTheDocument();
   });
 
   it("shows countdown for 2+ days as 'in N days'", () => {

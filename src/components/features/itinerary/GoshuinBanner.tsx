@@ -8,12 +8,9 @@ import { useTrips } from "@/state/slices/TripsSlice";
 import { logTipEvent } from "@/lib/telemetry/tipEvents";
 import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
 
-type Props = {
-  trip: StoredTrip;
-};
-
 /**
  * Checks if trip itinerary includes any shrine or temple activities.
+ * Reads from `trip.itinerary?.days` (persisted data), not a live planning model.
  */
 function hasVisitedShrineOrTemple(trip: StoredTrip): boolean {
   if (!trip.itinerary?.days) return false;
@@ -31,8 +28,34 @@ function hasVisitedShrineOrTemple(trip: StoredTrip): boolean {
   return false;
 }
 
+/**
+ * Single source of truth for "should the goshuin banner / tray entry show?"
+ * Returns false when ANY of:
+ *   - trip is not upcoming
+ *   - no shrine/temple in the itinerary
+ *   - user previously dismissed (planningWarnings.goshuinShown)
+ *   - user dismissed in the current session (sessionStorage)
+ *
+ * Used both by GoshuinBanner (render gate) and ItineraryShell (tray entry gate).
+ */
+export function shouldShowGoshuin(trip: StoredTrip): boolean {
+  if (getTripStatus(trip) !== "upcoming") return false;
+  if (!hasVisitedShrineOrTemple(trip)) return false;
+  if (trip.planningWarnings?.goshuinShown === true) return false;
+  if (
+    typeof window !== "undefined" &&
+    window.sessionStorage.getItem(`yuku-goshuin-dismissed-${trip.id}`) === "1"
+  ) {
+    return false;
+  }
+  return true;
+}
+
+type Props = {
+  trip: StoredTrip;
+};
+
 export function GoshuinBanner({ trip }: Props) {
-  const status = getTripStatus(trip);
   const sessionKey = `yuku-goshuin-dismissed-${trip.id}`;
   const { showToast } = useToast();
   const { actions: tripsActions } = useTrips();
@@ -48,10 +71,11 @@ export function GoshuinBanner({ trip }: Props) {
     return trip.planningWarnings?.goshuinShown === true;
   });
 
-  // Memoize the shouldShow check to avoid calling hooks conditionally
+  // Derive shouldShow from the canonical predicate. isDismissed is local
+  // React state for optimistic updates; when it flips the effect re-runs.
   const shouldShow = useMemo(
-    () => status === "upcoming" && !isDismissed && hasVisitedShrineOrTemple(trip),
-    [status, isDismissed, trip],
+    () => !isDismissed && shouldShowGoshuin(trip),
+    [isDismissed, trip],
   );
 
   useEffect(() => {

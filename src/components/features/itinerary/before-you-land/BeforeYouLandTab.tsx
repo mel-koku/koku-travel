@@ -4,37 +4,59 @@ import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { CulturalBriefing } from "@/types/culturalBriefing";
-import { PillarCard } from "./PillarCard";
+import { PillarSection } from "./PillarSection";
+
+function normalizeProse(s: string): string {
+  return s.replace(/\s*(?:--|—)\s*/g, ". ");
+}
 
 type BeforeYouLandTabProps = {
   briefing: CulturalBriefing;
 };
 
 export function BeforeYouLandTab({ briefing }: BeforeYouLandTabProps) {
+  const pillarCount = briefing.pillars.length;
+
   return (
-    <div className="space-y-6 py-6">
+    <article className="pb-20">
+      {/* Hero lede */}
       <ScrollReveal>
-        <div className="rounded-lg bg-canvas px-4 py-6 sm:px-5">
-          <p className="eyebrow-mono mb-2">Before You Land</p>
-          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-3")}>
-            The Japanese Way
-          </h2>
-          <p className={typography({ intent: "utility-body-muted" })}>
-            {briefing.intro}
+        <header className="pt-4 pb-14">
+          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-foreground-secondary mb-6">
+            A primer
+          </div>
+          <h1
+            className={cn(
+              typography({ intent: "editorial-hero" }),
+              "mb-8 leading-[0.95]",
+            )}
+          >
+            The Japanese
+            <br />
+            Way.
+          </h1>
+          <p
+            className={cn(
+              typography({ intent: "editorial-prose" }),
+              "max-w-[54ch]",
+            )}
+          >
+            {normalizeProse(briefing.intro)}
           </p>
-        </div>
+        </header>
       </ScrollReveal>
 
-      <div className="space-y-4">
+      {/* Pillars — one editorial chapter each */}
+      <div>
         {briefing.pillars.map((pillar, index) => (
-          <ScrollReveal key={pillar.slug} delay={index * 0.08}>
-            <PillarCard
-              pillar={pillar}
-              defaultExpanded={index === 0}
-            />
-          </ScrollReveal>
+          <PillarSection
+            key={pillar.slug}
+            pillar={pillar}
+            index={index}
+            total={pillarCount}
+          />
         ))}
       </div>
-    </div>
+    </article>
   );
 }

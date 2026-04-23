@@ -23,6 +23,9 @@ import { DaySelector } from "./DaySelector";
 
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
+import { ChapterList } from "@/components/features/itinerary/chapter/ChapterList";
+import { toChapterDays } from "@/lib/itinerary/toChapterDays";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
 
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
@@ -41,8 +44,8 @@ import { ShareButton } from "./ShareButton";
 import { DownloadBookButton } from "./DownloadBookButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { DayTripBanner } from "./DayTripBanner";
-import { GoshuinBanner } from "./GoshuinBanner";
-import { PrepBanner } from "./PrepBanner";
+import { GoshuinBanner, shouldShowGoshuin } from "./GoshuinBanner";
+import { PrepBanner, hasApplicablePrepItems } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
 import { AccessibilityBanner } from "./AccessibilityBanner";
 import { EarthquakeAlertSlot } from "./EarthquakeAlertSlot";
@@ -62,7 +65,25 @@ import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
 import { UnlockCard } from "./UnlockCard";
 import { ContextualUnlockPrompt, type UnlockPromptContext } from "./ContextualUnlockPrompt";
 import { buildItineraryTabs, resolveTabClick, type ItineraryViewMode } from "./itineraryTabs";
-import { isDayAccessible, getTripTier } from "@/lib/billing/access";
+import { isDayAccessible, getTripTier, getTierPriceDollars } from "@/lib/billing/access";
+import { env } from "@/lib/env";
+import type { AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
+import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/TripAdvisoriesDrawer";
+import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
+import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
+import { NearMeDrawer } from "@/components/features/itinerary/chapter/NearMeDrawer";
+import { PrepDrawer } from "@/components/features/itinerary/chapter/PrepDrawer";
+import { TripOverviewDrawer } from "@/components/features/itinerary/chapter/TripOverviewDrawer";
+import { BeforeYouLandDrawer } from "@/components/features/itinerary/chapter/BeforeYouLandDrawer";
+import { AddPlaceDialog } from "@/components/features/itinerary/chapter/AddPlaceDialog";
+import { trackCustomLocationAdded } from "@/lib/analytics/customLocations";
+import {
+  getDismissedAdvisoriesLocal,
+  dismissAdvisoryLocal,
+} from "@/services/tripAdvisoriesService";
+import { useFocusDay } from "@/lib/itinerary/useFocusDay";
+import type { AdvisoryKey } from "@/types/tripAdvisories";
+import { getTripStatus } from "@/lib/trip/tripStatus";
 
 const DiscoverMap = dynamic(
   () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -141,7 +162,7 @@ export const ItineraryShell = ({
   launchPricing,
   launchSlotsRemaining,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
+  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo, deleteActivity } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -190,6 +211,79 @@ export const ItineraryShell = ({
   const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
   const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
+
+  // v2 Chrome flag + dismissed-advisories state
+  const v2Chrome = env.itineraryV2Chrome;
+
+  // v2 Chapter flag — replaces ItineraryTimeline with ChapterList when true
+  const v2Chapter = env.itineraryV2Chapter;
+
+  // v2 Nav flag — replaces 4-tab strip with TripBar + EditTripDrawer when true
+  const v2Nav = env.itineraryV2Nav;
+
+  const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
+  const [beforeYouLandOpen, setBeforeYouLandOpen] = useState(false);
+  const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
+  const [prepDrawerOpen, setPrepDrawerOpen] = useState(false);
+  const [nearMeDrawerOpen, setNearMeDrawerOpen] = useState(false);
+  const [addPlaceDialogOpen, setAddPlaceDialogOpen] = useState(false);
+
+  // All place activities across all days (flattened) — batch location fetch for ChapterList
+  const allPlaceActivities = useMemo(() => {
+    if (!v2Chapter) return [];
+    return model.days.flatMap((day) =>
+      day.activities.filter(
+        (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+      ),
+    );
+  }, [v2Chapter, model.days]);
+
+  const { locationsMap: activityIdToLocation } = useActivityLocations(allPlaceActivities);
+
+  // Convert activity-id-keyed map to location-id-keyed map for toChapterDays
+  const locationsById = useMemo(() => {
+    const out = new Map<string, Location>();
+    for (const loc of activityIdToLocation.values()) {
+      if (loc) out.set(loc.id, loc);
+    }
+    return out;
+  }, [activityIdToLocation]);
+
+  const chapterDays = useMemo(() => {
+    if (!v2Chapter) return [];
+    return toChapterDays(
+      model,
+      guideProse,
+      locationsById,
+      tripStartDate,
+      (dayIdx) => isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled),
+      dayIntros,
+    );
+  }, [v2Chapter, model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
+
+  // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
+  // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).
+  const focusDayState = useFocusDay(chapterDays);
+
+  const [dismissedAdvisories, setDismissedAdvisories] = useState<Set<AdvisoryKey>>(
+    () => (typeof window !== "undefined" && v2Chrome
+      ? getDismissedAdvisoriesLocal(currentTrip?.id ?? "")
+      : new Set()),
+  );
+
+  const handleDismissAdvisory = useCallback(
+    (key: AdvisoryKey) => {
+      if (!currentTrip?.id) return;
+      dismissAdvisoryLocal(currentTrip.id, key);
+      setDismissedAdvisories((prev) => {
+        const next = new Set(prev);
+        next.add(key);
+        return next;
+      });
+    },
+    [currentTrip?.id],
+  );
+
   const requireUnlock = useCallback(
     (ctx: UnlockPromptContext): boolean => {
       if (!isTripLocked) return false;
@@ -229,6 +323,31 @@ export const ItineraryShell = ({
       }
     },
     [tripId, isUsingMock, isReadOnly, reorderActivities],
+  );
+
+  // beatId === activity.id per the toChapterDays adapter
+  // Build a lookup from activity id -> day index so we can gate locked days.
+  const beatIdToDayIndex = useMemo(() => {
+    const out = new Map<string, number>();
+    model.days.forEach((day, dayIdx) => {
+      day.activities.forEach((a) => {
+        out.set(a.id, dayIdx);
+      });
+    });
+    return out;
+  }, [model.days]);
+
+  const handleExpandBeat = useCallback(
+    (beatId: string) => {
+      const dayIdx = beatIdToDayIndex.get(beatId) ?? 0;
+      if (!isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled)) {
+        requireUnlock("locked_day");
+        return;
+      }
+      const loc = activityIdToLocation.get(beatId);
+      if (loc) handleViewDetails(loc);
+    },
+    [beatIdToDayIndex, activityIdToLocation, handleViewDetails, tripUnlocked, fullAccessEnabled, requireUnlock],
   );
 
   useEffect(() => {
@@ -353,6 +472,64 @@ export const ItineraryShell = ({
     [tripId, currentDay, setCityAccommodation, isReadOnly],
   );
 
+  // ── Beat-level actions for v2 chapter view ──
+  const [removeConfirm, setRemoveConfirm] = useState<{ dayIndex: number; beatId: string; name: string } | null>(null);
+
+  const handleChapterReplace = useCallback(
+    (dayIndex: number, beatId: string) => {
+      if (isReadOnly || !tripId || isUsingMock) return;
+      if (dayIndex !== safeSelectedDay) setSelectedDay(dayIndex);
+      handleReplace(beatId);
+    },
+    [isReadOnly, tripId, isUsingMock, safeSelectedDay, handleReplace],
+  );
+
+  const handleChapterNoteChange = useCallback(
+    (dayIndex: number, beatId: string, note: string) => {
+      if (isReadOnly) return;
+      applyModelUpdate((current) => ({
+        ...current,
+        days: current.days.map((d, idx) => {
+          if (idx !== dayIndex) return d;
+          return {
+            ...d,
+            activities: d.activities.map((a) => {
+              if (a.id !== beatId || a.kind !== "place") return a;
+              return { ...a, notes: note.length > 0 ? note : undefined };
+            }),
+          };
+        }),
+      }));
+    },
+    [isReadOnly, applyModelUpdate],
+  );
+
+  const handleChapterRemoveRequest = useCallback(
+    (dayIndex: number, beatId: string) => {
+      if (isReadOnly) return;
+      const day = model.days[dayIndex];
+      const activity = day?.activities.find((a) => a.id === beatId);
+      const name =
+        activity && activity.kind === "place"
+          ? activity.title
+          : "this stop";
+      setRemoveConfirm({ dayIndex, beatId, name });
+    },
+    [isReadOnly, model.days],
+  );
+
+  const handleChapterRemoveConfirm = useCallback(() => {
+    if (!removeConfirm || !tripId) {
+      setRemoveConfirm(null);
+      return;
+    }
+    const day = model.days[removeConfirm.dayIndex];
+    if (day) {
+      deleteActivity(tripId, day.id, removeConfirm.beatId);
+    }
+    setRemoveConfirm(null);
+  }, [removeConfirm, tripId, model.days, deleteActivity]);
+
   // Handler: change day start time
   const handleDayStartTimeChange = useCallback(
     (startTime: string) => {
@@ -411,6 +588,8 @@ export const ItineraryShell = ({
 
   const [dayTransitionLabel, setDayTransitionLabel] = useState<string | null>(null);
 
+  // Prevents the IntersectionObserver from correcting selectedDay mid-scroll
+  // when the user clicks the day picker (programmatic scroll takes ~700ms).
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     const targetDay = model.days[dayIndex];
     if (targetDay?.dateLabel) {
@@ -422,6 +601,7 @@ export const ItineraryShell = ({
     }
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
+
   }, [model.days, setSelectedActivityId]);
 
   // ── Add activity from location search ──
@@ -445,6 +625,48 @@ export const ItineraryShell = ({
       }, 0);
     },
     [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+  );
+
+  // ── Add activity to a specific day (chapter layout) ──
+  const handleAddActivityToDay = useCallback(
+    (
+      dayIndex: number,
+      newActivity: Extract<ItineraryActivity, { kind: "place" }>,
+      meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
+    ) => {
+      if (isReadOnly) return;
+      const targetDay = model.days[dayIndex];
+      if (!tripId || isUsingMock || !targetDay) return;
+
+      if (newActivity.isCustom) {
+        trackCustomLocationAdded({
+          addressSource: meta.addressSource === "none" ? "as-is" : meta.addressSource,
+          hasStartTime: Boolean(newActivity.manualStartTime),
+          fieldsFilled: [
+            newActivity.phone,
+            newActivity.website,
+            newActivity.costEstimate,
+            newActivity.notes,
+            newActivity.confirmationNumber,
+          ].filter(Boolean).length,
+        });
+      }
+
+      addActivity(tripId, targetDay.id, newActivity);
+
+      const nextDays = model.days.map((d) => {
+        if (d.id !== targetDay.id) return d;
+        return { ...d, activities: [...d.activities, newActivity] };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+
+      setModelState(nextItinerary);
+
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, isReadOnly, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
   // ── Refine day (Adjust button) ──
@@ -506,6 +728,64 @@ export const ItineraryShell = ({
     submitRating: activityRatingsHook.submitRating,
   }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
 
+  // Tray entries for v2 Chrome advisories
+  const trayEntries = useMemo<AdvisoryEntry[]>(() => {
+    if (!v2Chrome || !currentTrip) return [];
+    const entries: AdvisoryEntry[] = [];
+
+    // AccessibilityBanner condition
+    if (shouldShowAccessibilityBanner(currentTrip)) {
+      entries.push({
+        key: "accessibility-prep",
+        title: "Accessibility prep",
+        body: "Review mobility, sensory, and dietary notes before you land.",
+      });
+    }
+
+    // GoshuinBanner condition — mirrors shouldShowGoshuin exactly (upcoming,
+    // shrine/temple in itinerary, not dismissed in session or trip state).
+    if (shouldShowGoshuin(currentTrip)) {
+      entries.push({
+        key: "goshuin",
+        title: "Goshuin passport for temple days",
+        body: "Pick one up at your first shrine. It's the traditional way to collect stamps.",
+      });
+    }
+
+    // PrepBanner condition — upcoming + at least one applicable checklist item.
+    const tripStatus = getTripStatus(currentTrip);
+    if (tripStatus === "upcoming" && hasApplicablePrepItems(currentTrip)) {
+      entries.push({
+        key: "prep-checklist",
+        title: "Pre-trip checklist",
+        body: "Packing, connectivity, and cash to sort before you board.",
+        action: { label: "View checklist", key: "open-prep-checklist" },
+      });
+    }
+
+    // SeasonalBanner condition
+    if (model.seasonalHighlight) {
+      entries.push({
+        key: `seasonal-highlight:${model.seasonalHighlight.id ?? "default"}`,
+        title: model.seasonalHighlight.label ?? "Seasonal highlight",
+        body: model.seasonalHighlight.description ?? "In season during your trip.",
+      });
+    }
+
+    // DayTripBanner condition
+    if (dayTripSuggestions && dayTripSuggestions.length > 0) {
+      const top = dayTripSuggestions[0]!;
+      entries.push({
+        key: "day-trip-festival",
+        title: `Day trip: ${top.targetLocationName}`,
+        body: top.description,
+        action: { label: "Explore", key: "open-trip-overview" },
+      });
+    }
+
+    return entries;
+  }, [v2Chrome, currentTrip, model.seasonalHighlight, dayTripSuggestions]);
+
   // Print export data
   const printCities = useMemo(() => {
     const cityMap: Record<string, string> = {};
@@ -531,12 +811,43 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-  const tabs = buildItineraryTabs({
+  const tabs = v2Nav ? [] : buildItineraryTabs({
     isTripLocked,
     isReadOnly: Boolean(isReadOnly),
     isUsingMock,
     hasCulturalBriefing: Boolean(culturalBriefing),
   });
+
+  const dashboardProps = {
+    itinerary: model,
+    conflicts: conflictsResult.conflicts,
+    conflictsResult: conflictsResult,
+    tripStartDate,
+    onClose: () => {
+      if (v2Nav) {
+        setOverviewDrawerOpen(false);
+      } else {
+        setViewMode("timeline");
+      }
+    },
+    onSelectDay: (dayIndex: number) => {
+      handleSelectDayChange(dayIndex);
+      if (v2Nav) {
+        setOverviewDrawerOpen(false);
+      } else {
+        setViewMode("timeline");
+      }
+    },
+    tripBuilderData,
+    dayTripSuggestions,
+    onAcceptDayTrip: (suggestion: import("@/types/dayTrips").DayTripSuggestion, dayIndex: number) => {
+      if (requireUnlock("day_trip")) return;
+      handleAcceptDayTrip(suggestion, dayIndex);
+    },
+    isAcceptingDayTrip,
+    suggestions,
+    dailyBriefings,
+  };
 
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
@@ -619,6 +930,91 @@ export const ItineraryShell = ({
       <div className="flex flex-col md:h-full md:flex-row md:gap-4 md:p-4">
         {/* Left: Cards Panel (60%) */}
         <div className="flex flex-col md:w-1/2 lg:w-3/5 md:min-h-0 md:overflow-y-auto" data-lenis-prevent>
+          {/* v2 Nav: TripBar replaces tab strip */}
+          {v2Nav && currentTrip && (
+            <TripBar
+              tripName={tripName}
+              currentDayIndex={safeSelectedDay}
+              totalDays={model.days.length}
+              isToday={env.itineraryV2DayOf && focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
+              unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
+              unlockedPill={isFreePromoUnlock ? (
+                <span
+                  className="inline-flex items-center rounded-full bg-canvas px-3 py-1 text-[11px] text-brand-primary"
+                >
+                  Unlocked. Launch promo.
+                </span>
+              ) : undefined}
+              onOpenAdvisories={() => setAdvisoriesDrawerOpen(true)}
+              onNearMe={() => setNearMeDrawerOpen(true)}
+            />
+          )}
+          {/* v2 Nav: NearMeDrawer */}
+          {v2Nav && (
+            <NearMeDrawer
+              open={nearMeDrawerOpen}
+              onClose={() => setNearMeDrawerOpen(false)}
+              currentDayIndex={safeSelectedDay}
+              currentDayActivities={currentDay?.activities ?? []}
+              onAdd={handleAddActivityToDay}
+            />
+          )}
+          {/* v2 Nav: TripOverviewDrawer */}
+          {v2Nav && (
+            <TripOverviewDrawer
+              open={overviewDrawerOpen}
+              onClose={() => setOverviewDrawerOpen(false)}
+              dashboardProps={dashboardProps}
+            />
+          )}
+          {/* v2 Nav: BeforeYouLandDrawer */}
+          {v2Nav && (
+            <BeforeYouLandDrawer
+              open={beforeYouLandOpen}
+              onClose={() => setBeforeYouLandOpen(false)}
+              briefing={culturalBriefing}
+            />
+          )}
+          {/* v2 Nav: TripAdvisoriesDrawer */}
+          {v2Nav && currentTrip && (
+            <TripAdvisoriesDrawer
+              open={advisoriesDrawerOpen}
+              onClose={() => setAdvisoriesDrawerOpen(false)}
+              trayProps={{
+                tripId: currentTrip.id,
+                entries: trayEntries,
+                dismissed: dismissedAdvisories,
+                onDismiss: handleDismissAdvisory,
+                onAction: (key) => {
+                  setAdvisoriesDrawerOpen(false);
+                  if (key === "open-prep-checklist") setPrepDrawerOpen(true);
+                  if (key === "open-trip-overview") setOverviewDrawerOpen(true);
+                },
+              }}
+            />
+          )}
+          {/* v2 Nav: PrepDrawer */}
+          {v2Nav && currentTrip && (
+            <PrepDrawer
+              open={prepDrawerOpen}
+              onClose={() => setPrepDrawerOpen(false)}
+              trip={currentTrip}
+            />
+          )}
+          {/* Add place dialog — chapter layout only */}
+          {v2Chapter && (
+            <AddPlaceDialog
+              open={addPlaceDialogOpen}
+              onClose={() => setAddPlaceDialogOpen(false)}
+              days={model.days.map((d, idx) => ({
+                index: idx,
+                label: `Day ${idx + 1}${d.cityId ? ` · ${d.cityId}` : ""}`,
+                activities: d.activities,
+              }))}
+              defaultDayIndex={safeSelectedDay}
+              onAdd={handleAddActivityToDay}
+            />
+          )}
           {/* Header bar */}
           <div
             className={`border-b border-border bg-background px-4 pb-2.5 md:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
@@ -638,6 +1034,7 @@ export const ItineraryShell = ({
             >
               {/* Unified toolbar: title | tabs + share */}
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                {!v2Nav && (
                 <div className="flex min-w-0 items-center gap-2">
                   <h1
                     ref={finalHeadingRef}
@@ -662,6 +1059,15 @@ export const ItineraryShell = ({
                     </span>
                   )}
                 </div>
+                )}
+                {v2Nav && isUsingMock && (
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                      Mock
+                    </span>
+                  </div>
+                )}
+                {!v2Nav && (
                 <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
                   <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
                     {tabs.map((tab) => (
@@ -723,6 +1129,7 @@ export const ItineraryShell = ({
                     </>
                   )}
                 </div>
+                )}
               </div>
             </div>
 
@@ -753,40 +1160,50 @@ export const ItineraryShell = ({
                     onRequireUnlock={() => requireUnlock("refinement")}
                   />
                 )}
+                {v2Chapter && !isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setAddPlaceDialogOpen(true)}
+                    className="rounded-md bg-brand-primary text-white text-sm font-medium px-4 py-2 hover:bg-brand-secondary transition active:scale-[0.98]"
+                  >
+                    + Add place
+                  </button>
+                )}
+                {v2Nav && currentTrip && (
+                  <div className="ml-auto flex items-center gap-4 text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setOverviewDrawerOpen(true)}
+                      className="text-accent"
+                    >
+                      Trip overview ↗
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBeforeYouLandOpen(true)}
+                      className="text-accent"
+                    >
+                      Before you land ↗
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Trip Confidence Dashboard */}
+          {!v2Nav && (
           <AnimatePresence>
             {viewMode === "dashboard" && (
               <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
-                <TripConfidenceDashboard
-                  itinerary={model}
-                  conflicts={conflictsResult.conflicts}
-                  conflictsResult={conflictsResult}
-                  tripStartDate={tripStartDate}
-                  onClose={() => setViewMode("timeline")}
-                  onSelectDay={(dayIndex) => {
-                    handleSelectDayChange(dayIndex);
-                    setViewMode("timeline");
-                  }}
-                  tripBuilderData={tripBuilderData}
-                  dayTripSuggestions={dayTripSuggestions}
-                  onAcceptDayTrip={(suggestion, dayIndex) => {
-                    if (requireUnlock("day_trip")) return;
-                    handleAcceptDayTrip(suggestion, dayIndex);
-                  }}
-                  isAcceptingDayTrip={isAcceptingDayTrip}
-                  suggestions={suggestions}
-                  dailyBriefings={dailyBriefings}
-                />
+                <TripConfidenceDashboard {...dashboardProps} />
               </div>
             )}
           </AnimatePresence>
+          )}
 
           {/* Discover Panel */}
-          {viewMode === "discover" && (
+          {!v2Nav && viewMode === "discover" && (
             <div className="flex-1 overflow-hidden lg:rounded-lg lg:border lg:border-border">
               <ItineraryDiscoverPanel
                 locations={discover.locations}
@@ -812,7 +1229,7 @@ export const ItineraryShell = ({
           )}
 
           {/* Before You Land (Culture) Tab */}
-          {viewMode === "culture" && culturalBriefing && (
+          {!v2Nav && viewMode === "culture" && culturalBriefing && (
             <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
               <BeforeYouLandTab briefing={culturalBriefing} />
             </div>
@@ -820,7 +1237,7 @@ export const ItineraryShell = ({
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
-            {/* Live earthquake alert — top of safety-banner stack */}
+            {/* Live earthquake alert — inline exception, renders regardless of v2Chrome flag */}
             {currentTrip && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               if (!primaryCityId) return null;
@@ -831,14 +1248,7 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
-            {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
-              <div className="mb-3">
-                <AccessibilityBanner trip={currentTrip} />
-              </div>
-            )}
-
-            {/* Disaster/typhoon awareness banner — above prep checklist */}
+            {/* Disaster/typhoon awareness banner — inline exception, renders regardless of v2Chrome flag */}
             {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               const tripRegion = primaryCityId ? getWeatherRegion(primaryCityId) : "temperate";
@@ -849,47 +1259,62 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Goshuin banner — for shrine/temple trips */}
-            {currentTrip && (() => {
-              const hasShrineOrTemple = model.days.some((day) =>
-                day.activities.some((activity) => {
-                  if (activity.kind !== "place") return false;
-                  const tags = (activity.tags as string[]) ?? [];
-                  return tags.some((tag) => tag === "shrine" || tag === "temple");
-                })
-              );
-              const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
-              return hasShrineOrTemple && isUpcoming ? (
-                <div className="mb-3">
-                  <GoshuinBanner trip={currentTrip} />
-                </div>
-              ) : null;
-            })()}
+            {/* Legacy banner stack — shown when v2Chrome is off */}
+            {!v2Chrome && (
+              <>
+                {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
+                {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
+                  <div className="mb-3">
+                    <AccessibilityBanner trip={currentTrip} />
+                  </div>
+                )}
 
-            {/* Pre-trip prep checklist — auto-hides when trip is active */}
-            {currentTrip && (
-              <div className="mb-3">
-                <PrepBanner trip={currentTrip} />
-              </div>
-            )}
-            {/* Compact notification strips */}
-            {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
-              <div className="mb-3 space-y-1">
-                {model.seasonalHighlight && (
-                  <SeasonalBanner highlight={model.seasonalHighlight} />
+                {/* Goshuin banner — for shrine/temple trips */}
+                {currentTrip && (() => {
+                  const hasShrineOrTemple = model.days.some((day) =>
+                    day.activities.some((activity) => {
+                      if (activity.kind !== "place") return false;
+                      const tags = (activity.tags as string[]) ?? [];
+                      return tags.some((tag) => tag === "shrine" || tag === "temple");
+                    })
+                  );
+                  const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
+                  return hasShrineOrTemple && isUpcoming ? (
+                    <div className="mb-3">
+                      <GoshuinBanner trip={currentTrip} />
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Pre-trip prep checklist — auto-hides when trip is active */}
+                {currentTrip && (
+                  <div className="mb-3">
+                    <PrepBanner trip={currentTrip} />
+                  </div>
                 )}
-                {dayTripSuggestions && dayTripSuggestions.length > 0 && (
-                  <DayTripBanner
-                    suggestions={dayTripSuggestions}
-                    tripId={tripId}
-                    onViewDashboard={() => {
-                      if (requireUnlock("overview")) return;
-                      setViewMode("dashboard");
-                    }}
-                  />
+
+                {/* Compact notification strips */}
+                {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
+                  <div className="mb-3 space-y-1">
+                    {model.seasonalHighlight && (
+                      <SeasonalBanner highlight={model.seasonalHighlight} />
+                    )}
+                    {dayTripSuggestions && dayTripSuggestions.length > 0 && (
+                      <DayTripBanner
+                        suggestions={dayTripSuggestions}
+                        tripId={tripId}
+                        onViewDashboard={() => {
+                          if (requireUnlock("overview")) return;
+                          setViewMode("dashboard");
+                        }}
+                      />
+                    )}
+                  </div>
                 )}
-              </div>
+              </>
             )}
+
+            {/* v2 Chrome — advisories now in TripAdvisoriesDrawer (⋯ menu), not inline */}
 
             {/* Day transition interstitial */}
             <AnimatePresence>
@@ -912,56 +1337,97 @@ export const ItineraryShell = ({
             {currentDay ? (
               <>
               <ErrorBoundary>
-                <ItineraryTimeline
-                  day={currentDay}
-                  dayIndex={safeSelectedDay}
-                  model={model}
-                  setModel={applyModelUpdate}
-                  selectedActivityId={selectedActivityId}
-                  onSelectActivity={handleSelectActivity}
-                  tripStartDate={tripStartDate}
-                  tripId={tripId && !isUsingMock ? tripId : undefined}
-                  onReorder={isReadOnly ? undefined : handleReorder}
-                  onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
-                  tripBuilderData={tripBuilderData}
-                  suggestions={isReadOnly ? undefined : currentDaySuggestions}
-                  onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
-                  onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
-                  loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
-                  conflicts={currentDayConflicts}
-                  conflictsResult={conflictsResult}
-                  guide={currentDayGuide}
-                  onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
-                  onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
-                  previewState={isReadOnly ? undefined : previewState}
-                  onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
-                  onShowAnother={isReadOnly ? undefined : onShowAnother}
-                  onCancelPreview={isReadOnly ? undefined : onCancelPreview}
-                  onFilterChange={isReadOnly ? undefined : onFilterChange}
-                  isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
-                  isReadOnly={isReadOnly}
-                  startLocation={resolvedStartLocation}
-                  endLocation={resolvedEndLocation}
-                  onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
-                  onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
-                  onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
-                  onViewDetails={handleViewDetails}
-                  isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
-                  onUnlockClick={onUnlockClick}
-                />
+                {v2Chapter ? (
+                  <ChapterList
+                    trip={{ id: tripId, name: tripName, days: chapterDays }}
+                    onExpandBeat={handleExpandBeat}
+                    onReviewAdvisories={() => setAdvisoriesDrawerOpen(true)}
+                    unlockProps={{
+                      priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
+                      launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
+                      onUnlock: onUnlockClick ?? (() => {}),
+                      cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
+                      totalDays: model.days.length,
+                    }}
+                    selectedDayIndex={safeSelectedDay}
+                    onDayChange={handleSelectDayChange}
+                    onReorderBeats={(dayIndex, activityIds) => {
+                      const day = model.days[dayIndex];
+                      if (!day) return;
+                      handleReorder(day.id, activityIds);
+                    }}
+                    onReplaceBeat={!isReadOnly && tripId && !isUsingMock ? handleChapterReplace : undefined}
+                    onNoteChange={isReadOnly ? undefined : handleChapterNoteChange}
+                    onRemoveBeat={isReadOnly ? undefined : handleChapterRemoveRequest}
+                    dayStartLocation={resolvedStartLocation}
+                    dayEndLocation={resolvedEndLocation}
+                    onDayStartChange={isReadOnly ? undefined : handleStartLocationChange}
+                    onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
+                    onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
+                    isReadOnly={isReadOnly}
+                  />
+                ) : (
+                  <ItineraryTimeline
+                    day={currentDay}
+                    dayIndex={safeSelectedDay}
+                    model={model}
+                    setModel={applyModelUpdate}
+                    selectedActivityId={selectedActivityId}
+                    onSelectActivity={handleSelectActivity}
+                    tripStartDate={tripStartDate}
+                    tripId={tripId && !isUsingMock ? tripId : undefined}
+                    onReorder={isReadOnly ? undefined : handleReorder}
+                    onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
+                    tripBuilderData={tripBuilderData}
+                    suggestions={isReadOnly ? undefined : currentDaySuggestions}
+                    onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
+                    onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
+                    loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
+                    conflicts={currentDayConflicts}
+                    conflictsResult={conflictsResult}
+                    guide={currentDayGuide}
+                    onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
+                    onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
+                    previewState={isReadOnly ? undefined : previewState}
+                    onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
+                    onShowAnother={isReadOnly ? undefined : onShowAnother}
+                    onCancelPreview={isReadOnly ? undefined : onCancelPreview}
+                    onFilterChange={isReadOnly ? undefined : onFilterChange}
+                    isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
+                    isReadOnly={isReadOnly}
+                    startLocation={resolvedStartLocation}
+                    endLocation={resolvedEndLocation}
+                    onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
+                    onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
+                    onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
+                    onViewDetails={handleViewDetails}
+                    isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
+                    onUnlockClick={onUnlockClick}
+                  />
+                )}
               </ErrorBoundary>
 
-              {/* Unlock Card (shown after Day 1 when trip is not unlocked) */}
+              {/* Unlock Card / UnlockBeat (shown after Day 1 when trip is not unlocked) */}
               {safeSelectedDay === 0 && !(tripUnlocked ?? false) && !fullAccessEnabled && model.days.length > 1 && (
-                <UnlockCard
-                  tier={getTripTier(model.days.length)}
-                  cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
-                  totalDays={model.days.length}
-                  isGuest={isGuest}
-                  launchPricing={launchPricing}
-                  launchSlotsRemaining={launchSlotsRemaining}
-                  onUnlock={onUnlockClick ?? (() => {})}
-                />
+                v2Chrome ? (
+                  <UnlockBeat
+                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                    totalDays={model.days.length}
+                    priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
+                    launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
+                    onUnlock={onUnlockClick ?? (() => {})}
+                  />
+                ) : (
+                  <UnlockCard
+                    tier={getTripTier(model.days.length)}
+                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                    totalDays={model.days.length}
+                    isGuest={isGuest}
+                    launchPricing={launchPricing}
+                    launchSlotsRemaining={launchSlotsRemaining}
+                    onUnlock={onUnlockClick ?? (() => {})}
+                  />
+                )
               )}
               </>
             ) : (
@@ -976,8 +1442,17 @@ export const ItineraryShell = ({
             )}
 
             {/* Planning status */}
-            {isPlanning && (
+            {isPlanning && !v2Chrome && (
               <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
+                Updating travel times...
+              </div>
+            )}
+            {isPlanning && v2Chrome && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="fixed bottom-4 right-4 z-30 px-3 py-1.5 rounded-full bg-surface border border-border text-xs text-foreground-secondary shadow-[var(--shadow-sm)]"
+              >
                 Updating travel times...
               </div>
             )}
@@ -1003,8 +1478,8 @@ export const ItineraryShell = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (40%) */}
-        <div className="hidden md:block md:w-1/2 lg:w-2/5">
-          <div className="h-full md:rounded-lg md:overflow-hidden md:border md:border-border">
+        <div className="hidden md:flex md:flex-col md:w-1/2 lg:w-2/5 md:min-h-0">
+          <div className="flex-1 min-h-0 md:rounded-lg md:overflow-hidden md:border md:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               {viewMode === "discover" ? (
                 <DiscoverMap
@@ -1080,6 +1555,43 @@ export const ItineraryShell = ({
       }}
       onClose={() => setUnlockPromptCtx(null)}
     />
+    {removeConfirm && (
+      <div
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-charcoal/60 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="remove-beat-title"
+        onClick={() => setRemoveConfirm(null)}
+      >
+        <div
+          className="max-w-sm w-full rounded-lg bg-surface p-6 shadow-[var(--shadow-elevated)]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 id="remove-beat-title" className={cn(typography({ intent: "editorial-h3" }), "mb-2")}>
+            Remove {removeConfirm.name}?
+          </h2>
+          <p className="text-sm text-foreground-body mb-5">
+            This stop will be removed from the day. You can undo with Cmd+Z.
+          </p>
+          <div className="flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setRemoveConfirm(null)}
+              className="text-sm text-foreground-secondary hover:text-foreground transition-colors px-3 py-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleChapterRemoveConfirm}
+              className="rounded-md bg-error text-white text-sm font-medium px-4 py-2 hover:opacity-90 active:scale-[0.98] transition"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </ActivityRatingsProvider>
   );
 };

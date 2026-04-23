@@ -138,7 +138,7 @@ class Logger {
    * Logs an error message
    */
   error(message: string, error?: Error | unknown, context?: LogContext): void {
-    const errorDetails = error instanceof Error ? error.message : String(error);
+    const errorDetails = error instanceof Error ? error.message : (error && typeof error === "object" && "message" in error ? String((error as { message: unknown }).message) : String(error));
     console.error(`[ERROR] ${message}`, errorDetails, context || "");
 
     // In production, send to error tracking service

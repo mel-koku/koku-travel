@@ -1,6 +1,6 @@
 type GtagFn = (event: string, name: string, options: Record<string, unknown>) => void;
 
-function getGtag(): GtagFn | null {
+export function getGtag(): GtagFn | null {
   if (typeof window === "undefined") return null;
   const gtag = (window as unknown as { gtag?: GtagFn }).gtag;
   return typeof gtag === "function" ? gtag : null;
