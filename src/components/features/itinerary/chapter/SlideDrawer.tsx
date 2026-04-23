@@ -12,6 +12,8 @@ export type SlideDrawerProps = {
   onClose: () => void;
   title: string;
   ariaLabel?: string;
+  /** Removes padding and overflow-y-auto from content area so children own the layout */
+  noPadding?: boolean;
   children: ReactNode;
 };
 
@@ -20,6 +22,7 @@ export function SlideDrawer({
   onClose,
   title,
   ariaLabel,
+  noPadding,
   children,
 }: SlideDrawerProps) {
   // Escape to close
@@ -76,7 +79,7 @@ export function SlideDrawer({
                 <X className="w-5 h-5" aria-hidden="true" />
               </button>
             </header>
-            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+            <div className={noPadding ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-y-auto px-6 py-6"}>
               {children}
             </div>
           </motion.aside>

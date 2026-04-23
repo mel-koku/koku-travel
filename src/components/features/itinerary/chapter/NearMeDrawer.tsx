@@ -2,22 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { ChevronLeft } from "lucide-react";
 import { SlideDrawer } from "./SlideDrawer";
+import { NearMeMap, type NearbyLocation } from "./NearMeMap";
 import { cn } from "@/lib/utils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
-import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
-
-type NearbyLocation = Location & { distance: number };
-
-type NearMeState =
-  | { status: "idle" }
-  | { status: "requesting" }
-  | { status: "loading" }
-  | { status: "results"; items: NearbyLocation[] }
-  | { status: "empty" }
-  | { status: "error"; message: string };
 
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -27,56 +18,134 @@ function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
-function NearMeRow({
+type NearMeState =
+  | { status: "idle" }
+  | { status: "requesting" }
+  | { status: "loading"; coords: { lat: number; lng: number } }
+  | { status: "results"; coords: { lat: number; lng: number }; items: NearbyLocation[] }
+  | { status: "empty"; coords: { lat: number; lng: number } }
+  | { status: "error"; message: string };
+
+// ── Detail panel ──────────────────────────────────────────────────────────────
+
+function NearMeDetail({
   location,
   isAdded,
   onAdd,
+  onBack,
 }: {
   location: NearbyLocation;
   isAdded: boolean;
   onAdd: () => void;
+  onBack: () => void;
 }) {
   const imageSrc =
-    resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 400) ?? FALLBACK_IMAGE;
+    resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 600) ??
+    FALLBACK_IMAGE;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-sm)]">
-      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-canvas">
-        <Image
-          src={imageSrc || FALLBACK_IMAGE}
-          alt={location.name}
-          fill
-          className="object-cover"
-          sizes="56px"
-          priority={false}
-        />
+    <div className="space-y-4">
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex items-center gap-1 text-sm text-foreground-secondary hover:text-foreground transition-colors"
+      >
+        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+        All places
+      </button>
+
+      {imageSrc && imageSrc !== FALLBACK_IMAGE && (
+        <div className="relative h-44 w-full overflow-hidden rounded-lg bg-canvas">
+          <Image
+            src={imageSrc}
+            alt={location.name}
+            fill
+            className="object-cover"
+            sizes="520px"
+            priority={false}
+          />
+        </div>
+      )}
+
+      <div>
+        <p className="text-base font-medium text-foreground">{location.name}</p>
+        <p className="mt-0.5 text-sm text-foreground-secondary capitalize">
+          {location.category}
+          {location.rating ? ` · ★ ${location.rating.toFixed(1)}` : ""}
+          {" · "}
+          {formatDistance(location.distance)}
+        </p>
+        {location.shortDescription && (
+          <p className="mt-2 text-sm text-foreground-secondary leading-relaxed line-clamp-3">
+            {location.shortDescription}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={isAdded ? undefined : onAdd}
+        disabled={isAdded}
+        className={cn(
+          "w-full rounded-lg py-3 text-sm font-medium transition-colors active:scale-[0.98]",
+          isAdded
+            ? "bg-canvas text-foreground-secondary cursor-default"
+            : "bg-brand-primary text-white hover:bg-brand-secondary",
+        )}
+      >
+        {isAdded ? "Added to today's itinerary" : "Add to today's itinerary"}
+      </button>
+    </div>
+  );
+}
+
+// ── Compact list row ───────────────────────────────────────────────────────────
+
+function NearMeListRow({
+  location,
+  isAdded,
+  onSelect,
+}: {
+  location: NearbyLocation;
+  isAdded: boolean;
+  onSelect: () => void;
+}) {
+  const thumb = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 120);
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="flex w-full items-center gap-3 rounded-lg bg-surface px-3 py-2.5 text-left shadow-[var(--shadow-sm)] transition-colors hover:bg-canvas active:scale-[0.99]"
+    >
+      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-canvas">
+        {thumb ? (
+          <Image
+            src={thumb}
+            alt={location.name}
+            fill
+            className="object-cover"
+            sizes="40px"
+          />
+        ) : null}
       </div>
       <div className="flex-1 min-w-0 space-y-0.5">
         <p className="text-sm font-medium text-foreground line-clamp-1">{location.name}</p>
-        <p className="text-xs text-stone capitalize">
+        <p className="text-xs text-foreground-secondary capitalize">
           {location.category}
           {location.rating ? ` · ★ ${location.rating.toFixed(1)}` : ""}
           {" · "}
           {formatDistance(location.distance)}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={isAdded ? undefined : onAdd}
-        disabled={isAdded}
-        aria-label={isAdded ? `${location.name} added` : `Add ${location.name} to today`}
-        className={cn(
-          "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-          isAdded
-            ? "bg-canvas text-foreground-secondary cursor-default"
-            : "bg-brand-primary text-white hover:bg-brand-secondary active:scale-[0.98]",
-        )}
-      >
-        {isAdded ? "Added" : "Add"}
-      </button>
-    </div>
+      {isAdded && (
+        <span className="shrink-0 text-xs text-foreground-secondary">Added</span>
+      )}
+    </button>
   );
 }
+
+// ── Drawer ────────────────────────────────────────────────────────────────────
 
 export type NearMeDrawerProps = {
   open: boolean;
@@ -98,11 +167,13 @@ export function NearMeDrawer({
   onAdd,
 }: NearMeDrawerProps) {
   const [state, setState] = useState<NearMeState>({ status: "idle" });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!open) {
       setState({ status: "idle" });
+      setSelectedId(null);
       setAdded(new Set());
       return;
     }
@@ -116,14 +187,18 @@ export function NearMeDrawer({
 
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        setState({ status: "loading" });
         const { latitude: lat, longitude: lng } = coords;
+        setState({ status: "loading", coords: { lat, lng } });
 
         fetch(`/api/locations/nearby?lat=${lat}&lng=${lng}&radius=1.5&limit=20`)
           .then((r) => r.json())
           .then((data: { data?: NearbyLocation[] }) => {
             const items = data.data ?? [];
-            setState(items.length > 0 ? { status: "results", items } : { status: "empty" });
+            setState(
+              items.length > 0
+                ? { status: "results", coords: { lat, lng }, items }
+                : { status: "empty", coords: { lat, lng } },
+            );
           })
           .catch(() => {
             setState({ status: "error", message: "Failed to load nearby places." });
@@ -148,41 +223,82 @@ export function NearMeDrawer({
     [currentDayIndex, currentDayActivities, onAdd],
   );
 
+  const handleLocationClick = useCallback((location: NearbyLocation) => {
+    setSelectedId(location.id);
+  }, []);
+
+  const hasCoords =
+    state.status === "loading" ||
+    state.status === "results" ||
+    state.status === "empty";
+
+  const items = state.status === "results" ? state.items : [];
+  const coords = hasCoords ? state.coords : null;
+  const selected = selectedId ? items.find((l) => l.id === selectedId) ?? null : null;
+
   return (
-    <SlideDrawer open={open} onClose={onClose} title="Near Me" ariaLabel="Nearby places">
-      {(state.status === "requesting" || state.status === "loading") && (
-        <div className="flex items-center justify-center py-16 text-sm text-foreground-secondary">
-          {state.status === "requesting" ? "Getting your location..." : "Finding nearby places..."}
-        </div>
-      )}
-
-      {state.status === "error" && (
-        <div className="rounded-lg bg-canvas px-5 py-4 text-sm text-foreground-secondary">
-          {state.message}
-        </div>
-      )}
-
-      {state.status === "empty" && (
-        <div className="py-16 text-center text-sm text-foreground-secondary">
-          No places found within 1.5 km.
-        </div>
-      )}
-
-      {state.status === "results" && (
-        <div className="space-y-3">
-          <p className="text-xs text-foreground-secondary">
-            {state.items.length} place{state.items.length !== 1 ? "s" : ""} within 1.5 km
-          </p>
-          {state.items.map((loc) => (
-            <NearMeRow
-              key={loc.id}
-              location={loc}
-              isAdded={added.has(loc.id)}
-              onAdd={() => handleAdd(loc)}
+    <SlideDrawer open={open} onClose={onClose} title="Near Me" ariaLabel="Nearby places" noPadding>
+      <div className="flex h-full flex-col">
+        {/* Map area — always 260px tall when we have coordinates */}
+        {coords ? (
+          <div className="relative h-[260px] shrink-0 bg-canvas">
+            <NearMeMap
+              userLocation={coords}
+              locations={items}
+              selectedId={selectedId}
+              onLocationClick={handleLocationClick}
             />
-          ))}
-        </div>
-      )}
+            {state.status === "loading" && (
+              <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-4">
+                <span className="rounded-full bg-background/90 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
+                  Finding nearby places...
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-1 items-center justify-center px-6 py-8 text-sm text-foreground-secondary">
+            {state.status === "requesting" && "Getting your location..."}
+            {state.status === "error" && (
+              <div className="rounded-lg bg-canvas px-5 py-4 text-center">
+                {state.message}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Content below map */}
+        {coords && (
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+            {selected ? (
+              <NearMeDetail
+                location={selected}
+                isAdded={added.has(selected.id)}
+                onAdd={() => handleAdd(selected)}
+                onBack={() => setSelectedId(null)}
+              />
+            ) : state.status === "empty" ? (
+              <p className="text-center text-sm text-foreground-secondary py-8">
+                No places found within 1.5 km.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-foreground-secondary mb-3">
+                  {items.length} place{items.length !== 1 ? "s" : ""} within 1.5 km — tap a pin or row
+                </p>
+                {items.map((loc) => (
+                  <NearMeListRow
+                    key={loc.id}
+                    location={loc}
+                    isAdded={added.has(loc.id)}
+                    onSelect={() => handleLocationClick(loc)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </SlideDrawer>
   );
 }
