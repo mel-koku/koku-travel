@@ -774,7 +774,7 @@ export const ItineraryShell = ({
 
     // DayTripBanner condition
     if (dayTripSuggestions && dayTripSuggestions.length > 0) {
-      const top = dayTripSuggestions[0];
+      const top = dayTripSuggestions[0]!;
       entries.push({
         key: "day-trip-festival",
         title: `Day trip: ${top.targetLocationName}`,
