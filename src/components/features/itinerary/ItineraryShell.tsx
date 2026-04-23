@@ -72,6 +72,7 @@ import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/Tr
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
 import { TripBar } from "@/components/features/itinerary/chapter/TripBar";
 import { NearMeDrawer } from "@/components/features/itinerary/chapter/NearMeDrawer";
+import { PrepDrawer } from "@/components/features/itinerary/chapter/PrepDrawer";
 import { TripOverviewDrawer } from "@/components/features/itinerary/chapter/TripOverviewDrawer";
 import { BeforeYouLandDrawer } from "@/components/features/itinerary/chapter/BeforeYouLandDrawer";
 import { AddPlaceDialog } from "@/components/features/itinerary/chapter/AddPlaceDialog";
@@ -223,6 +224,7 @@ export const ItineraryShell = ({
   const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
   const [beforeYouLandOpen, setBeforeYouLandOpen] = useState(false);
   const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
+  const [prepDrawerOpen, setPrepDrawerOpen] = useState(false);
   const [nearMeDrawerOpen, setNearMeDrawerOpen] = useState(false);
   const [addPlaceDialogOpen, setAddPlaceDialogOpen] = useState(false);
 
@@ -757,6 +759,7 @@ export const ItineraryShell = ({
         key: "prep-checklist",
         title: "Pre-trip checklist",
         body: "Packing, connectivity, and cash to sort before you board.",
+        action: { label: "View checklist", key: "open-prep-checklist" },
       });
     }
 
@@ -771,10 +774,12 @@ export const ItineraryShell = ({
 
     // DayTripBanner condition
     if (dayTripSuggestions && dayTripSuggestions.length > 0) {
+      const top = dayTripSuggestions[0];
       entries.push({
         key: "day-trip-festival",
-        title: "Nearby festival on your dates",
-        body: "Extend the trip. There's a festival within reach.",
+        title: `Day trip: ${top.targetLocationName}`,
+        body: top.description,
+        action: { label: "Explore", key: "open-trip-overview" },
       });
     }
 
@@ -980,7 +985,20 @@ export const ItineraryShell = ({
                 entries: trayEntries,
                 dismissed: dismissedAdvisories,
                 onDismiss: handleDismissAdvisory,
+                onAction: (key) => {
+                  setAdvisoriesDrawerOpen(false);
+                  if (key === "open-prep-checklist") setPrepDrawerOpen(true);
+                  if (key === "open-trip-overview") setOverviewDrawerOpen(true);
+                },
               }}
+            />
+          )}
+          {/* v2 Nav: PrepDrawer */}
+          {v2Nav && currentTrip && (
+            <PrepDrawer
+              open={prepDrawerOpen}
+              onClose={() => setPrepDrawerOpen(false)}
+              trip={currentTrip}
             />
           )}
           {/* Add place dialog — chapter layout only */}
