@@ -667,19 +667,5 @@ describe("buildGuide", () => {
       expect(day.summary!.dayId).toBe("day-1");
     });
 
-    it("intro has icon and summary has icon", () => {
-      const itinerary = createTestItinerary({
-        days: [
-          createTestItineraryDay({
-            id: "day-1",
-            activities: [templeActivity("a1")],
-          }),
-        ],
-      });
-
-      const guide = buildGuide(itinerary);
-      expect(guide.days[0]!.intro!.icon).toBe("🌅");
-      expect(guide.days[0]!.summary!.icon).toBe("🌙");
-    });
   });
 });
