@@ -4,10 +4,18 @@ import type { User, AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 import { logger } from "@/lib/logger";
+import { cn } from "@/lib/cn";
 
-function circle(initial: string) {
+function circle(initial: string, onDark: boolean) {
   return (
-    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sage/10 text-sage text-sm font-semibold">
+    <span
+      className={cn(
+        "inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300",
+        onDark
+          ? "bg-white/15 text-white ring-1 ring-inset ring-white/30"
+          : "bg-sage/10 text-sage"
+      )}
+    >
       {initial.toUpperCase()}
     </span>
   );
@@ -18,11 +26,13 @@ export default function IdentityBadge({
   showChevron = false,
   isOpen = false,
   compact = false,
+  onDark = false,
 }: {
   className?: string;
   showChevron?: boolean;
   isOpen?: boolean;
   compact?: boolean;
+  onDark?: boolean;
 }) {
   const supabase = createClient();
   const { user } = useAppState();
@@ -55,12 +65,12 @@ export default function IdentityBadge({
   const initial = (label?.[0] ?? "G").toUpperCase();
 
   if (compact) {
-    return <span className={className}>{circle(initial)}</span>;
+    return <span className={className}>{circle(initial, onDark)}</span>;
   }
 
   return (
     <span className={`inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 ${className}`}>
-      {circle(initial)}
+      {circle(initial, onDark)}
       <span className="text-sm font-medium text-foreground">{label}</span>
       {showChevron && (
         <svg
