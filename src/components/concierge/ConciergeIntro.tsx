@@ -6,16 +6,11 @@ export function ConciergeIntro() {
   return (
     <section
       aria-label="Why Concierge"
-      className="bg-background px-6 py-16 sm:py-24 lg:py-28"
+      className="bg-background px-6 py-12 sm:py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[760px] text-center">
         <ScrollReveal>
-          <p
-            className="mb-4 inline-block font-sans font-medium uppercase text-foreground-secondary"
-            style={{ fontSize: "11px", letterSpacing: "0.2em" }}
-          >
-            Why Concierge
-          </p>
+          <p className="eyebrow-editorial mb-4 inline-block">Why Concierge</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
           <h2
@@ -31,7 +26,7 @@ export function ConciergeIntro() {
         </ScrollReveal>
         <ScrollReveal delay={0.16}>
           <p
-            className="font-serif text-foreground/85"
+            className="font-serif text-foreground-body"
             style={{ fontSize: "clamp(1.125rem, 1.6vw, 1.375rem)", lineHeight: 1.55 }}
           >
             Guidebooks get you a list. Apps get you a route. Neither one will call the
@@ -41,7 +36,7 @@ export function ConciergeIntro() {
         </ScrollReveal>
         <ScrollReveal delay={0.22}>
           <p
-            className="mt-5 font-serif text-foreground/85"
+            className="mt-5 font-serif text-foreground-body"
             style={{ fontSize: "clamp(1.125rem, 1.6vw, 1.375rem)", lineHeight: 1.55 }}
           >
             Yuku Concierge does. You bring the dates, the vibe, and the people you&rsquo;re

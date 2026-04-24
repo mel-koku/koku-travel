@@ -9,11 +9,11 @@ const items = [
   },
   {
     q: "How is this different from the Yuku app?",
-    a: "The app is self-serve: you build your own itinerary with our routing and tips. Concierge is hands-on: we build the itinerary, make the bookings, and stay on call while you travel. Both get you to a great trip — one puts the planning on you, one puts it on us.",
+    a: "The app is self-serve: you build your own itinerary with our routing and tips. Concierge is hands-on: we build the itinerary, make the bookings, and stay on call while you travel. Both get you to a great trip. One puts the planning on you, one puts it on us.",
   },
   {
     q: "What if I've already started planning?",
-    a: "Even better. We can pick up from whatever you have — a rough list, a few anchor reservations, or a full draft — and finish the rest. Bring what you've got when you reach out.",
+    a: "Even better. We can pick up from whatever you have (a rough list, a few anchor reservations, or a full draft) and finish the rest. Bring what you've got when you reach out.",
   },
   {
     q: "When should I reach out?",
@@ -21,7 +21,7 @@ const items = [
   },
   {
     q: "What does it cost?",
-    a: "It depends on the trip — length, party size, pace, and what you want us to arrange. We'll share pricing once we understand what you're looking for.",
+    a: "It depends on the trip: length, party size, pace, and what you want us to arrange. We'll share pricing once we understand what you're looking for.",
   },
 ];
 
@@ -29,16 +29,11 @@ export function ConciergeFAQ() {
   return (
     <section
       aria-label="Frequently asked questions"
-      className="bg-secondary px-6 py-16 sm:py-24 lg:py-28"
+      className="bg-canvas px-6 py-12 sm:py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[720px] text-center">
         <ScrollReveal>
-          <p
-            className="mb-4 inline-block font-sans font-medium uppercase text-foreground-secondary"
-            style={{ fontSize: "11px", letterSpacing: "0.2em" }}
-          >
-            Questions
-          </p>
+          <p className="eyebrow-editorial mb-4 inline-block">Questions</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
           <h2

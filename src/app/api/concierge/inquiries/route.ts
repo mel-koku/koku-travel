@@ -4,6 +4,7 @@ import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { sendConciergeInquiryNotification } from "@/lib/email/emailService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest, internalError } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 
 const conciergeInquirySchema = z.object({
@@ -13,7 +14,7 @@ const conciergeInquirySchema = z.object({
 
 /**
  * POST /api/concierge/inquiries
- * Public endpoint — captures a lead from the Yuku Concierge landing page.
+ * Public endpoint. Captures a lead from the Yuku Concierge landing page.
  * Writes to concierge_inquiries and fires a notification email (non-blocking).
  */
 export const POST = withApiHandler(
@@ -23,15 +24,11 @@ export const POST = withApiHandler(
       const raw = await request.json();
       body = conciergeInquirySchema.parse(raw);
     } catch (err) {
-      return NextResponse.json(
-        {
-          error:
-            err instanceof z.ZodError
-              ? err.errors.map((e) => e.message).join(", ")
-              : "Invalid request body",
-        },
-        { status: 400 },
-      );
+      const message =
+        err instanceof z.ZodError
+          ? err.errors.map((e) => e.message).join(", ")
+          : "Invalid request body";
+      return badRequest(message, undefined, { route: "/api/concierge/inquiries" });
     }
 
     const userAgent = request.headers.get("user-agent") ?? null;
@@ -52,9 +49,10 @@ export const POST = withApiHandler(
         "Failed to insert concierge inquiry",
         error instanceof Error ? error : new Error(String(error)),
       );
-      return NextResponse.json(
-        { error: "We couldn't save your inquiry. Please try again." },
-        { status: 500 },
+      return internalError(
+        "We couldn't save your inquiry. Please try again.",
+        undefined,
+        { route: "/api/concierge/inquiries" },
       );
     }
 

@@ -77,7 +77,7 @@ export function ConciergeHero() {
               className="mt-6 max-w-[48ch] text-white/80"
               style={{ fontSize: "clamp(1rem, 1.3vw, 1.15rem)", lineHeight: 1.55 }}
             >
-              The app plans the route. Our team plans the rest — down to the ryokan room,
+              The app plans the route. Our team plans the rest, down to the ryokan room,
               the train seat, and the phone call in Japanese when something needs sorting.
               Everything short of boarding the plane with you.
             </motion.p>
@@ -92,7 +92,7 @@ export function ConciergeHero() {
                 href="#inquire"
                 className="inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-8 text-[13px] font-semibold uppercase tracking-[0.1em] text-white shadow-[var(--shadow-elevated)] transition-colors hover:bg-brand-primary/90 active:scale-[0.98]"
               >
-                I&rsquo;m interested &mdash; reach out
+                Start my inquiry
               </Link>
               <Link
                 href="#includes"
@@ -108,7 +108,7 @@ export function ConciergeHero() {
               transition={{ duration: 0.4, delay: 0.85, ease: easeReveal }}
               className="mt-4 text-xs text-white/60"
             >
-              Limited introductions. We typically reply within 2 business days.
+              We typically reply within 2 business days.
             </motion.p>
           </div>
         </div>

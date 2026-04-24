@@ -49,7 +49,7 @@ export function ConciergeFinalCTA() {
               letterSpacing: "-0.005em",
             }}
           >
-            Your Japan is waiting &mdash; and we&rsquo;d love to plan it.
+            Your Japan is waiting. We&rsquo;d love to plan it.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -80,7 +80,7 @@ export function ConciergeFinalCTA() {
               href="#inquire"
               className="inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-8 text-[13px] font-semibold uppercase tracking-[0.1em] text-white shadow-[var(--shadow-elevated)] transition-colors hover:bg-brand-primary/90 active:scale-[0.98]"
             >
-              I&rsquo;m interested &mdash; reach out
+              Start my inquiry
             </Link>
           </motion.div>
         </div>
