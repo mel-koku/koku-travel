@@ -22,7 +22,6 @@ import type { CulturalBriefing } from "@/types/culturalBriefing";
 import { DaySelector } from "./DaySelector";
 
 import { DayRefinementButtons } from "./DayRefinementButtons";
-import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ChapterList } from "@/components/features/itinerary/chapter/ChapterList";
 import { toChapterDays } from "@/lib/itinerary/toChapterDays";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
@@ -30,24 +29,16 @@ import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { BeforeYouLandTab } from "./before-you-land/BeforeYouLandTab";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
-import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
+import { detectItineraryConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
-import { TripConfidenceDashboard } from "./TripConfidenceDashboard";
 import { calculateTripHealth, getHealthLevel } from "@/lib/itinerary/tripHealth";
 import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
-import { useItineraryGuide } from "./hooks/useItineraryGuide";
-import { ShareButton } from "./ShareButton";
-import { DownloadBookButton } from "./DownloadBookButton";
-import { SeasonalBanner } from "./SeasonalBanner";
-import { DayTripBanner } from "./DayTripBanner";
-import { GoshuinBanner, shouldShowGoshuin } from "./GoshuinBanner";
-import { PrepBanner, hasApplicablePrepItems } from "./PrepBanner";
+import { shouldShowGoshuin } from "./GoshuinBanner";
+import { hasApplicablePrepItems } from "./PrepBanner";
 import { DisasterBanner } from "./DisasterBanner";
-import { AccessibilityBanner } from "./AccessibilityBanner";
 import { EarthquakeAlertSlot } from "./EarthquakeAlertSlot";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
@@ -57,16 +48,12 @@ import { REGIONS, getWeatherRegion, getRegionForCity } from "@/data/regions";
 import { shouldShowDisasterBanner } from "@/lib/trip/disasterOverlay";
 import { shouldShowAccessibilityBanner } from "@/lib/trip/accessibilityOverlay";
 import { useItineraryDiscover } from "./hooks/useItineraryDiscover";
-import { ItineraryDiscoverPanel } from "./ItineraryDiscoverPanel";
-import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
 import { useReplacementState } from "@/hooks/useReplacementState";
 import { useDayTripActions } from "@/hooks/useDayTripActions";
 import { useHeaderCollapse } from "@/hooks/useHeaderCollapse";
-import { UnlockCard } from "./UnlockCard";
 import { ContextualUnlockPrompt, type UnlockPromptContext } from "./ContextualUnlockPrompt";
-import { buildItineraryTabs, resolveTabClick, type ItineraryViewMode } from "./itineraryTabs";
+import { type ItineraryViewMode } from "./itineraryTabs";
 import { isDayAccessible, getTripTier, getTierPriceDollars } from "@/lib/billing/access";
-import { env } from "@/lib/env";
 import type { AdvisoryEntry } from "@/components/features/itinerary/chapter/TripAdvisoriesTray";
 import { TripAdvisoriesDrawer } from "@/components/features/itinerary/chapter/TripAdvisoriesDrawer";
 import { UnlockBeat } from "@/components/features/itinerary/chapter/UnlockBeat";
@@ -146,19 +133,19 @@ export const ItineraryShell = ({
   dailyBriefings,
   culturalBriefing,
   suggestions,
-  onAcceptSuggestion,
-  onSkipSuggestion,
-  loadingSuggestionId,
-  previewState,
-  onConfirmPreview,
-  onShowAnother,
-  onCancelPreview,
-  onFilterChange,
-  isPreviewLoading,
+  onAcceptSuggestion: _onAcceptSuggestion,
+  onSkipSuggestion: _onSkipSuggestion,
+  loadingSuggestionId: _loadingSuggestionId,
+  previewState: _previewState,
+  onConfirmPreview: _onConfirmPreview,
+  onShowAnother: _onShowAnother,
+  onCancelPreview: _onCancelPreview,
+  onFilterChange: _onFilterChange,
+  isPreviewLoading: _isPreviewLoading,
   dayTripSuggestions,
   onUnlockClick,
   tripUnlocked,
-  isGuest,
+  isGuest: _isGuest,
   launchPricing,
   launchSlotsRemaining,
 }: ItineraryShellProps) => {
@@ -169,13 +156,11 @@ export const ItineraryShell = ({
     model,
     setModelState,
     isPlanning,
-    setIsPlanning,
     planningError,
     setPlanningError,
     applyModelUpdate,
     scheduleUserPlanning,
     scheduleUserPlanningRef,
-    skipAutoOptimizeRef,
   } = useItineraryPlanning({
     itinerary,
     tripBuilderData,
@@ -187,7 +172,9 @@ export const ItineraryShell = ({
 
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
-  const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
+  // viewMode is kept as-is (always "timeline") to avoid refactoring downstream conditionals
+  // around mobile map / header collapse. Setter is retained but unused after v1 removal.
+  const [viewMode] = useState<ItineraryViewMode>("timeline");
   const [cultureTabSeen, setCultureTabSeen] = useState(() => {
     if (typeof window === "undefined") return true;
     // localStorage.getItem throws in iOS Safari Private mode.
@@ -212,15 +199,6 @@ export const ItineraryShell = ({
   const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
 
-  // v2 Chrome flag + dismissed-advisories state
-  const v2Chrome = env.itineraryV2Chrome;
-
-  // v2 Chapter flag — replaces ItineraryTimeline with ChapterList when true
-  const v2Chapter = env.itineraryV2Chapter;
-
-  // v2 Nav flag — replaces 4-tab strip with TripBar + EditTripDrawer when true
-  const v2Nav = env.itineraryV2Nav;
-
   const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
   const [beforeYouLandOpen, setBeforeYouLandOpen] = useState(false);
   const [advisoriesDrawerOpen, setAdvisoriesDrawerOpen] = useState(false);
@@ -230,13 +208,12 @@ export const ItineraryShell = ({
 
   // All place activities across all days (flattened) — batch location fetch for ChapterList
   const allPlaceActivities = useMemo(() => {
-    if (!v2Chapter) return [];
     return model.days.flatMap((day) =>
       day.activities.filter(
         (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
       ),
     );
-  }, [v2Chapter, model.days]);
+  }, [model.days]);
 
   const { locationsMap: activityIdToLocation } = useActivityLocations(allPlaceActivities);
 
@@ -250,7 +227,6 @@ export const ItineraryShell = ({
   }, [activityIdToLocation]);
 
   const chapterDays = useMemo(() => {
-    if (!v2Chapter) return [];
     return toChapterDays(
       model,
       guideProse,
@@ -259,14 +235,14 @@ export const ItineraryShell = ({
       (dayIdx) => isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled),
       dayIntros,
     );
-  }, [v2Chapter, model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
+  }, [model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
 
   // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
   // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).
   const focusDayState = useFocusDay(chapterDays);
 
   const [dismissedAdvisories, setDismissedAdvisories] = useState<Set<AdvisoryKey>>(
-    () => (typeof window !== "undefined" && v2Chrome
+    () => (typeof window !== "undefined"
       ? getDismissedAdvisoriesLocal(currentTrip?.id ?? "")
       : new Set()),
   );
@@ -551,14 +527,6 @@ export const ItineraryShell = ({
     [safeSelectedDay, applyModelUpdate, isReadOnly],
   );
 
-  const { currentDaySuggestions, handleAcceptSuggestion } = useSmartSuggestions({
-    suggestions,
-    currentDay,
-    safeSelectedDay,
-    onAcceptSuggestion,
-    setIsPlanning,
-  });
-
   // Detect scheduling conflicts in the itinerary
   const conflictsResult = useMemo(() => {
     return detectItineraryConflicts(model);
@@ -572,15 +540,6 @@ export const ItineraryShell = ({
   const dayHealthLevels = useMemo(() => {
     return tripHealth.days.map((d) => getHealthLevel(d.score));
   }, [tripHealth]);
-
-  // Guide hook — lazy-loads ~90KB of template data
-  const { currentDayGuide } = useItineraryGuide(model, tripBuilderData, dayIntros, currentDay?.id, guideProse);
-
-  // Get conflicts for the current day
-  const currentDayConflicts = useMemo(() => {
-    if (!currentDay) return [];
-    return getDayConflicts(conflictsResult, currentDay.id);
-  }, [conflictsResult, currentDay]);
 
   // Scroll sync hook — IntersectionObserver-based activity highlighting
   const { selectedActivityId, setSelectedActivityId, handleSelectActivity } =
@@ -603,29 +562,6 @@ export const ItineraryShell = ({
     setSelectedActivityId(null);
 
   }, [model.days, setSelectedActivityId]);
-
-  // ── Add activity from location search ──
-  const handleAddSearchedActivity = useCallback(
-    (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
-      if (isReadOnly) return;
-      if (!tripId || isUsingMock || !currentDay) return;
-
-      addActivity(tripId, currentDay.id, newActivity);
-
-      const nextDays = model.days.map((d) => {
-        if (d.id !== currentDay.id) return d;
-        return { ...d, activities: [...d.activities, newActivity] };
-      });
-      const nextItinerary = { ...model, days: nextDays };
-
-      setModelState(nextItinerary);
-
-      setTimeout(() => {
-        scheduleUserPlanningRef.current?.(nextItinerary);
-      }, 0);
-    },
-    [tripId, isUsingMock, isReadOnly, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
-  );
 
   // ── Add activity to a specific day (chapter layout) ──
   const handleAddActivityToDay = useCallback(
@@ -705,15 +641,6 @@ export const ItineraryShell = ({
     dayIndex: safeSelectedDay,
   });
 
-  const handleAddDiscoverActivity = useCallback(
-    (location: Location) => {
-      if (isReadOnly) return;
-      const newActivity = discover.buildActivity(location);
-      handleAddSearchedActivity(newActivity);
-    },
-    [discover, handleAddSearchedActivity, isReadOnly],
-  );
-
   // Activity ratings
   const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
   useEffect(() => {
@@ -730,7 +657,7 @@ export const ItineraryShell = ({
 
   // Tray entries for v2 Chrome advisories
   const trayEntries = useMemo<AdvisoryEntry[]>(() => {
-    if (!v2Chrome || !currentTrip) return [];
+    if (!currentTrip) return [];
     const entries: AdvisoryEntry[] = [];
 
     // AccessibilityBanner condition
@@ -784,7 +711,7 @@ export const ItineraryShell = ({
     }
 
     return entries;
-  }, [v2Chrome, currentTrip, model.seasonalHighlight, dayTripSuggestions]);
+  }, [currentTrip, model.seasonalHighlight, dayTripSuggestions]);
 
   // Print export data
   const printCities = useMemo(() => {
@@ -811,32 +738,17 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-  const tabs = v2Nav ? [] : buildItineraryTabs({
-    isTripLocked,
-    isReadOnly: Boolean(isReadOnly),
-    isUsingMock,
-    hasCulturalBriefing: Boolean(culturalBriefing),
-  });
-
   const dashboardProps = {
     itinerary: model,
     conflicts: conflictsResult.conflicts,
     conflictsResult: conflictsResult,
     tripStartDate,
     onClose: () => {
-      if (v2Nav) {
-        setOverviewDrawerOpen(false);
-      } else {
-        setViewMode("timeline");
-      }
+      setOverviewDrawerOpen(false);
     },
     onSelectDay: (dayIndex: number) => {
       handleSelectDayChange(dayIndex);
-      if (v2Nav) {
-        setOverviewDrawerOpen(false);
-      } else {
-        setViewMode("timeline");
-      }
+      setOverviewDrawerOpen(false);
     },
     tripBuilderData,
     dayTripSuggestions,
@@ -930,13 +842,13 @@ export const ItineraryShell = ({
       <div className="flex flex-col md:h-full md:flex-row md:gap-4 md:p-4">
         {/* Left: Cards Panel (60%) */}
         <div className="flex flex-col md:w-1/2 lg:w-3/5 md:min-h-0 md:overflow-y-auto" data-lenis-prevent>
-          {/* v2 Nav: TripBar replaces tab strip */}
-          {v2Nav && currentTrip && (
+          {/* TripBar replaces tab strip */}
+          {currentTrip && (
             <TripBar
               tripName={tripName}
               currentDayIndex={safeSelectedDay}
               totalDays={model.days.length}
-              isToday={env.itineraryV2DayOf && focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
+              isToday={focusDayState.isDayOfMode && focusDayState.index === safeSelectedDay}
               unreadAdvisories={trayEntries.filter((e) => !dismissedAdvisories.has(e.key)).length}
               unlockedPill={isFreePromoUnlock ? (
                 <span
@@ -949,34 +861,24 @@ export const ItineraryShell = ({
               onNearMe={() => setNearMeDrawerOpen(true)}
             />
           )}
-          {/* v2 Nav: NearMeDrawer */}
-          {v2Nav && (
-            <NearMeDrawer
-              open={nearMeDrawerOpen}
-              onClose={() => setNearMeDrawerOpen(false)}
-              currentDayIndex={safeSelectedDay}
-              currentDayActivities={currentDay?.activities ?? []}
-              onAdd={handleAddActivityToDay}
-            />
-          )}
-          {/* v2 Nav: TripOverviewDrawer */}
-          {v2Nav && (
-            <TripOverviewDrawer
-              open={overviewDrawerOpen}
-              onClose={() => setOverviewDrawerOpen(false)}
-              dashboardProps={dashboardProps}
-            />
-          )}
-          {/* v2 Nav: BeforeYouLandDrawer */}
-          {v2Nav && (
-            <BeforeYouLandDrawer
-              open={beforeYouLandOpen}
-              onClose={() => setBeforeYouLandOpen(false)}
-              briefing={culturalBriefing}
-            />
-          )}
-          {/* v2 Nav: TripAdvisoriesDrawer */}
-          {v2Nav && currentTrip && (
+          <NearMeDrawer
+            open={nearMeDrawerOpen}
+            onClose={() => setNearMeDrawerOpen(false)}
+            currentDayIndex={safeSelectedDay}
+            currentDayActivities={currentDay?.activities ?? []}
+            onAdd={handleAddActivityToDay}
+          />
+          <TripOverviewDrawer
+            open={overviewDrawerOpen}
+            onClose={() => setOverviewDrawerOpen(false)}
+            dashboardProps={dashboardProps}
+          />
+          <BeforeYouLandDrawer
+            open={beforeYouLandOpen}
+            onClose={() => setBeforeYouLandOpen(false)}
+            briefing={culturalBriefing}
+          />
+          {currentTrip && (
             <TripAdvisoriesDrawer
               open={advisoriesDrawerOpen}
               onClose={() => setAdvisoriesDrawerOpen(false)}
@@ -993,28 +895,25 @@ export const ItineraryShell = ({
               }}
             />
           )}
-          {/* v2 Nav: PrepDrawer */}
-          {v2Nav && currentTrip && (
+          {currentTrip && (
             <PrepDrawer
               open={prepDrawerOpen}
               onClose={() => setPrepDrawerOpen(false)}
               trip={currentTrip}
             />
           )}
-          {/* Add place dialog — chapter layout only */}
-          {v2Chapter && (
-            <AddPlaceDialog
-              open={addPlaceDialogOpen}
-              onClose={() => setAddPlaceDialogOpen(false)}
-              days={model.days.map((d, idx) => ({
-                index: idx,
-                label: `Day ${idx + 1}${d.cityId ? ` · ${d.cityId}` : ""}`,
-                activities: d.activities,
-              }))}
-              defaultDayIndex={safeSelectedDay}
-              onAdd={handleAddActivityToDay}
-            />
-          )}
+          {/* Add place dialog — chapter layout */}
+          <AddPlaceDialog
+            open={addPlaceDialogOpen}
+            onClose={() => setAddPlaceDialogOpen(false)}
+            days={model.days.map((d, idx) => ({
+              index: idx,
+              label: `Day ${idx + 1}${d.cityId ? ` · ${d.cityId}` : ""}`,
+              activities: d.activities,
+            }))}
+            defaultDayIndex={safeSelectedDay}
+            onAdd={handleAddActivityToDay}
+          />
           {/* Header bar */}
           <div
             className={`border-b border-border bg-background px-4 pb-2.5 md:px-6 ${viewMode === "timeline" ? "sticky top-0 z-30" : ""}`}
@@ -1032,103 +931,14 @@ export const ItineraryShell = ({
                 transition: "max-height 0.25s ease, opacity 0.2s ease",
               }}
             >
-              {/* Unified toolbar: title | tabs + share */}
+              {/* Toolbar: mock badge only */}
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                {!v2Nav && (
-                <div className="flex min-w-0 items-center gap-2">
-                  <h1
-                    ref={finalHeadingRef}
-                    tabIndex={-1}
-                    className="min-w-0 truncate font-serif text-base font-semibold tracking-heading leading-snug text-foreground focus:outline-none sm:text-lg"
-                  >
-                    {tripName}
-                  </h1>
-                  {isFreePromoUnlock && (
-                    <span
-                      className={cn(
-                        typography({ intent: "utility-meta" }),
-                        "inline-flex items-center rounded-full bg-canvas px-3 py-1 text-brand-primary",
-                      )}
-                    >
-                      Unlocked. Launch promo.
-                    </span>
-                  )}
-                  {isUsingMock && (
-                    <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
-                      Mock
-                    </span>
-                  )}
-                </div>
-                )}
-                {v2Nav && isUsingMock && (
+                {isUsingMock && (
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="shrink-0 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
                       Mock
                     </span>
                   </div>
-                )}
-                {!v2Nav && (
-                <div className="flex shrink-0 items-center gap-1 overflow-x-auto overscroll-contain sm:overflow-visible">
-                  <div className="flex items-center rounded-lg border border-border bg-surface p-0.5">
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab.key}
-                        type="button"
-                        onClick={() => {
-                          const decision = resolveTabClick(tab);
-                          if (decision.action === "unlock") {
-                            requireUnlock(decision.context);
-                          } else {
-                            setViewMode(decision.key);
-                          }
-                        }}
-                        aria-label={tab.locked ? `${tab.label} (locked, requires Trip Pass)` : undefined}
-                        className={`inline-flex min-h-11 items-center rounded-md px-3 py-2 text-xs font-medium transition-colors ${
-                          viewMode === tab.key
-                            ? "bg-brand-primary text-white"
-                            : "text-stone hover:text-foreground"
-                        }`}
-                      >
-                        {tab.locked && (
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            className="mr-1 opacity-70"
-                            aria-hidden
-                          >
-                            <path
-                              d="M4 7V5a4 4 0 118 0v2M3.5 7h9a1 1 0 011 1v5.5a1 1 0 01-1 1h-9a1 1 0 01-1-1V8a1 1 0 011-1z"
-                              stroke="currentColor"
-                              strokeWidth="1.3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                        {tab.label}
-                        {tab.key === "culture" && !cultureTabSeen && (
-                          <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-primary" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  {!isReadOnly && tripId && !isUsingMock && (
-                    <>
-                      <DownloadBookButton
-                        tripId={tripId}
-                        locked={isTripLocked}
-                        onLockedClick={() => requireUnlock("pdf")}
-                      />
-                      <ShareButton
-                        tripId={tripId}
-                        locked={isTripLocked}
-                        onLockedClick={() => requireUnlock("share")}
-                      />
-                    </>
-                  )}
-                </div>
                 )}
               </div>
             </div>
@@ -1160,7 +970,7 @@ export const ItineraryShell = ({
                     onRequireUnlock={() => requireUnlock("refinement")}
                   />
                 )}
-                {v2Chapter && !isReadOnly && (
+                {!isReadOnly && (
                   <button
                     type="button"
                     onClick={() => setAddPlaceDialogOpen(true)}
@@ -1169,7 +979,7 @@ export const ItineraryShell = ({
                     + Add place
                   </button>
                 )}
-                {v2Nav && currentTrip && (
+                {currentTrip && (
                   <div className="ml-auto flex items-center gap-4 text-sm">
                     <button
                       type="button"
@@ -1191,53 +1001,9 @@ export const ItineraryShell = ({
             )}
           </div>
 
-          {/* Trip Confidence Dashboard */}
-          {!v2Nav && (
-          <AnimatePresence>
-            {viewMode === "dashboard" && (
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
-                <TripConfidenceDashboard {...dashboardProps} />
-              </div>
-            )}
-          </AnimatePresence>
-          )}
-
-          {/* Discover Panel */}
-          {!v2Nav && viewMode === "discover" && (
-            <div className="flex-1 overflow-hidden lg:rounded-lg lg:border lg:border-border">
-              <ItineraryDiscoverPanel
-                locations={discover.locations}
-                isLoading={discover.isLoading}
-                category={discover.category}
-                onCategoryChange={discover.setCategory}
-                openNow={discover.openNow}
-                onOpenNowChange={discover.setOpenNow}
-                searchQuery={discover.searchQuery}
-                onSearchQueryChange={discover.setSearchQuery}
-                highlightedLocationId={discover.highlightedLocationId}
-                onHighlightChange={discover.setHighlightedLocationId}
-                onLocationClick={discover.setExpandedLocation}
-                onAddToDay={handleAddDiscoverActivity}
-                usedLocationIds={discover.usedLocationIds}
-                dayLabel={discover.dayLabel}
-                userPosition={discover.userPosition}
-                onRequestGeolocation={discover.requestGeolocation}
-                geoLoading={discover.geoLocation.isLoading}
-                geoError={discover.geoLocation.error}
-              />
-            </div>
-          )}
-
-          {/* Before You Land (Culture) Tab */}
-          {!v2Nav && viewMode === "culture" && culturalBriefing && (
-            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:flex-none md:overflow-visible" data-lenis-prevent>
-              <BeforeYouLandTab briefing={culturalBriefing} />
-            </div>
-          )}
-
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain bg-background px-3 pt-3 pb-[env(safe-area-inset-bottom)] md:flex-none md:overflow-visible ${viewMode !== "timeline" ? "hidden" : ""}`}>
-            {/* Live earthquake alert — inline exception, renders regardless of v2Chrome flag */}
+            {/* Live earthquake alert */}
             {currentTrip && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               if (!primaryCityId) return null;
@@ -1248,7 +1014,7 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Disaster/typhoon awareness banner — inline exception, renders regardless of v2Chrome flag */}
+            {/* Disaster/typhoon awareness banner */}
             {currentTrip && shouldShowDisasterBanner(currentTrip) && (() => {
               const primaryCityId = currentTrip.builderData?.cities?.[0];
               const tripRegion = primaryCityId ? getWeatherRegion(primaryCityId) : "temperate";
@@ -1259,62 +1025,7 @@ export const ItineraryShell = ({
               );
             })()}
 
-            {/* Legacy banner stack — shown when v2Chrome is off */}
-            {!v2Chrome && (
-              <>
-                {/* Accessibility banner — user-specific (opt-in via builderData.accessibility.mobility), so it sits above trip-generic banners */}
-                {currentTrip && shouldShowAccessibilityBanner(currentTrip) && (
-                  <div className="mb-3">
-                    <AccessibilityBanner trip={currentTrip} />
-                  </div>
-                )}
-
-                {/* Goshuin banner — for shrine/temple trips */}
-                {currentTrip && (() => {
-                  const hasShrineOrTemple = model.days.some((day) =>
-                    day.activities.some((activity) => {
-                      if (activity.kind !== "place") return false;
-                      const tags = (activity.tags as string[]) ?? [];
-                      return tags.some((tag) => tag === "shrine" || tag === "temple");
-                    })
-                  );
-                  const isUpcoming = currentTrip.builderData?.dates?.start ? new Date(currentTrip.builderData.dates.start) > new Date() : false;
-                  return hasShrineOrTemple && isUpcoming ? (
-                    <div className="mb-3">
-                      <GoshuinBanner trip={currentTrip} />
-                    </div>
-                  ) : null;
-                })()}
-
-                {/* Pre-trip prep checklist — auto-hides when trip is active */}
-                {currentTrip && (
-                  <div className="mb-3">
-                    <PrepBanner trip={currentTrip} />
-                  </div>
-                )}
-
-                {/* Compact notification strips */}
-                {(model.seasonalHighlight || (dayTripSuggestions && dayTripSuggestions.length > 0)) && (
-                  <div className="mb-3 space-y-1">
-                    {model.seasonalHighlight && (
-                      <SeasonalBanner highlight={model.seasonalHighlight} />
-                    )}
-                    {dayTripSuggestions && dayTripSuggestions.length > 0 && (
-                      <DayTripBanner
-                        suggestions={dayTripSuggestions}
-                        tripId={tripId}
-                        onViewDashboard={() => {
-                          if (requireUnlock("overview")) return;
-                          setViewMode("dashboard");
-                        }}
-                      />
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* v2 Chrome — advisories now in TripAdvisoriesDrawer (⋯ menu), not inline */}
+            {/* Advisories now in TripAdvisoriesDrawer (⋯ menu), not inline */}
 
             {/* Day transition interstitial */}
             <AnimatePresence>
@@ -1337,97 +1048,45 @@ export const ItineraryShell = ({
             {currentDay ? (
               <>
               <ErrorBoundary>
-                {v2Chapter ? (
-                  <ChapterList
-                    trip={{ id: tripId, name: tripName, days: chapterDays }}
-                    onExpandBeat={handleExpandBeat}
-                    onReviewAdvisories={() => setAdvisoriesDrawerOpen(true)}
-                    unlockProps={{
-                      priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
-                      launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
-                      onUnlock: onUnlockClick ?? (() => {}),
-                      cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
-                      totalDays: model.days.length,
-                    }}
-                    selectedDayIndex={safeSelectedDay}
-                    onDayChange={handleSelectDayChange}
-                    onReorderBeats={(dayIndex, activityIds) => {
-                      const day = model.days[dayIndex];
-                      if (!day) return;
-                      handleReorder(day.id, activityIds);
-                    }}
-                    onReplaceBeat={!isReadOnly && tripId && !isUsingMock ? handleChapterReplace : undefined}
-                    onNoteChange={isReadOnly ? undefined : handleChapterNoteChange}
-                    onRemoveBeat={isReadOnly ? undefined : handleChapterRemoveRequest}
-                    dayStartLocation={resolvedStartLocation}
-                    dayEndLocation={resolvedEndLocation}
-                    onDayStartChange={isReadOnly ? undefined : handleStartLocationChange}
-                    onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
-                    onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
-                    isReadOnly={isReadOnly}
-                  />
-                ) : (
-                  <ItineraryTimeline
-                    day={currentDay}
-                    dayIndex={safeSelectedDay}
-                    model={model}
-                    setModel={applyModelUpdate}
-                    selectedActivityId={selectedActivityId}
-                    onSelectActivity={handleSelectActivity}
-                    tripStartDate={tripStartDate}
-                    tripId={tripId && !isUsingMock ? tripId : undefined}
-                    onReorder={isReadOnly ? undefined : handleReorder}
-                    onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
-                    tripBuilderData={tripBuilderData}
-                    suggestions={isReadOnly ? undefined : currentDaySuggestions}
-                    onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
-                    onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
-                    loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
-                    conflicts={currentDayConflicts}
-                    conflictsResult={conflictsResult}
-                    guide={currentDayGuide}
-                    onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
-                    onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
-                    previewState={isReadOnly ? undefined : previewState}
-                    onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
-                    onShowAnother={isReadOnly ? undefined : onShowAnother}
-                    onCancelPreview={isReadOnly ? undefined : onCancelPreview}
-                    onFilterChange={isReadOnly ? undefined : onFilterChange}
-                    isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
-                    isReadOnly={isReadOnly}
-                    startLocation={resolvedStartLocation}
-                    endLocation={resolvedEndLocation}
-                    onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
-                    onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
-                    onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
-                    onViewDetails={handleViewDetails}
-                    isLocked={!isDayAccessible(safeSelectedDay, tripUnlocked ?? false, fullAccessEnabled)}
-                    onUnlockClick={onUnlockClick}
-                  />
-                )}
+                <ChapterList
+                  trip={{ id: tripId, name: tripName, days: chapterDays }}
+                  onExpandBeat={handleExpandBeat}
+                  onReviewAdvisories={() => setAdvisoriesDrawerOpen(true)}
+                  unlockProps={{
+                    priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
+                    launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
+                    onUnlock: onUnlockClick ?? (() => {}),
+                    cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
+                    totalDays: model.days.length,
+                  }}
+                  selectedDayIndex={safeSelectedDay}
+                  onDayChange={handleSelectDayChange}
+                  onReorderBeats={(dayIndex, activityIds) => {
+                    const day = model.days[dayIndex];
+                    if (!day) return;
+                    handleReorder(day.id, activityIds);
+                  }}
+                  onReplaceBeat={!isReadOnly && tripId && !isUsingMock ? handleChapterReplace : undefined}
+                  onNoteChange={isReadOnly ? undefined : handleChapterNoteChange}
+                  onRemoveBeat={isReadOnly ? undefined : handleChapterRemoveRequest}
+                  dayStartLocation={resolvedStartLocation}
+                  dayEndLocation={resolvedEndLocation}
+                  onDayStartChange={isReadOnly ? undefined : handleStartLocationChange}
+                  onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
+                  onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
+                  isReadOnly={isReadOnly}
+                />
               </ErrorBoundary>
 
-              {/* Unlock Card / UnlockBeat (shown after Day 1 when trip is not unlocked) */}
+              {/* UnlockBeat (shown after Day 1 when trip is not unlocked) */}
               {safeSelectedDay === 0 && !(tripUnlocked ?? false) && !fullAccessEnabled && model.days.length > 1 && (
-                v2Chrome ? (
-                  <UnlockBeat
-                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
-                    totalDays={model.days.length}
-                    priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
-                    launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
-                    onUnlock={onUnlockClick ?? (() => {})}
-                  />
-                ) : (
-                  <UnlockCard
-                    tier={getTripTier(model.days.length)}
-                    cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
-                    totalDays={model.days.length}
-                    isGuest={isGuest}
-                    launchPricing={launchPricing}
-                    launchSlotsRemaining={launchSlotsRemaining}
-                    onUnlock={onUnlockClick ?? (() => {})}
-                  />
-                )
+                <UnlockBeat
+                  cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
+                  totalDays={model.days.length}
+                  priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
+                  launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
+                  onUnlock={onUnlockClick ?? (() => {})}
+                />
               )}
               </>
             ) : (
@@ -1442,12 +1101,7 @@ export const ItineraryShell = ({
             )}
 
             {/* Planning status */}
-            {isPlanning && !v2Chrome && (
-              <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
-                Updating travel times...
-              </div>
-            )}
-            {isPlanning && v2Chrome && (
+            {isPlanning && (
               <div
                 role="status"
                 aria-live="polite"

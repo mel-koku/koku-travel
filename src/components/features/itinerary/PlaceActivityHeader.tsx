@@ -4,11 +4,9 @@ import { useState } from "react";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
-import { env } from "@/lib/env";
 import { StarIcon } from "./activityIcons";
 import { numberFormatter } from "./activityUtils";
 import { ActivityConflictIndicator } from "./ConflictBadge";
-import { PracticalBadges } from "@/components/ui/PracticalBadges";
 
 // Roughly 2 lines of 40-char mobile text; anything longer gets clamped and
 // deserves a "Read more" affordance.
@@ -90,9 +88,6 @@ export function PlaceActivityHeader({
             {durationLabel.replace("~", "")}
           </span>
         ) : null}
-        {!env.itineraryV2Chapter && (
-          <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} showStation={false} />
-        )}
         {availabilityStatus && availabilityStatus.status === "closed" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
             Closed
