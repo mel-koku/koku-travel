@@ -125,7 +125,7 @@ export async function sendConciergeInquiryNotification(
 
     await resend.emails.send({
       from: "Yuku Japan <noreply@yukujapan.com>",
-      to: "inquiries@yukujapan.com",
+      to: "concierge@yukujapan.com",
       replyTo: data.email,
       subject: `[Concierge] New inquiry — ${data.name}`,
       text: [
