@@ -10,6 +10,7 @@ import { landingPage } from "./landingPage";
 import { tripBuilderConfig } from "./tripBuilderConfig";
 import { pagesContent } from "./pagesContent";
 import { aboutPage } from "./aboutPage";
+import { conciergePage } from "./conciergePage";
 import { commerceDisclosure } from "./commerceDisclosure";
 import { culturalPillar } from "./culturalPillar";
 import { person } from "./person";
@@ -27,6 +28,7 @@ export const schemaTypes = [
   tripBuilderConfig,
   pagesContent,
   aboutPage,
+  conciergePage,
   commerceDisclosure,
   culturalPillar,
 ];
