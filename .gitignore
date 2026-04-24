@@ -4,6 +4,9 @@ CLAUDE.md
 # Claude Code session state (launch configs, worktrees, local settings)
 .claude/
 
+# Superpowers CLI local state
+.superpowers/
+
 # Internal app documentation (local only, not needed for deployment)
 about-yuku.md
 
