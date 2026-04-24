@@ -17,8 +17,8 @@ describe("<AccessibilityBanner>", () => {
       "Accessibility in Japan",
     );
 
-    // Icon is aria-hidden, so look for the character directly.
-    expect(screen.getByText("♿")).toBeDefined();
+    // Icon is aria-hidden, so look for the Lucide SVG directly.
+    expect(document.querySelector("svg.lucide-accessibility")).not.toBeNull();
 
     // Five bullets covering the five sourced topics.
     const bullets = screen.getAllByRole("listitem");

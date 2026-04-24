@@ -78,6 +78,7 @@ export type RoutingLegStep = {
   /** Structured transit details from routing provider */
   transitDetails?: {
     lineName?: string;
+    lineNameRomaji?: string;
     lineShortName?: string;
     vehicleType?: string;
     departureStop?: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 
@@ -35,15 +36,15 @@ export function ConflictBadge({
   const severityStyles = {
     error: {
       badge: "bg-error/10 text-error border-error/20",
-      icon: "⚠️",
+      Icon: AlertTriangle,
     },
     warning: {
       badge: "bg-warning/10 text-warning border-warning/20",
-      icon: "⚠️",
+      Icon: AlertTriangle,
     },
     info: {
       badge: "bg-sage/10 text-sage border-sage/20",
-      icon: "ℹ️",
+      Icon: Info,
     },
   };
 
@@ -60,7 +61,8 @@ export function ConflictBadge({
         )}
         title={conflicts.map((c) => c.message).join("; ")}
       >
-        {styles.icon} {conflicts.length} {conflicts.length === 1 ? "issue" : "issues"}
+        <styles.Icon className="h-3 w-3" aria-hidden="true" />
+        {conflicts.length} {conflicts.length === 1 ? "issue" : "issues"}
       </span>
     );
   }
@@ -74,7 +76,7 @@ export function ConflictBadge({
         className="flex w-full items-center justify-between gap-2 p-3 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg">{styles.icon}</span>
+          <styles.Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span className="text-sm font-semibold">
             {conflicts.length} scheduling {conflicts.length === 1 ? "issue" : "issues"}
           </span>
@@ -117,7 +119,6 @@ function ConflictItem({ conflict }: ConflictItemProps) {
       )}
     >
       <div className="flex items-start gap-2">
-        <span className="text-sm">{conflict.icon}</span>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold text-foreground">
             {conflict.title}

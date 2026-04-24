@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Footprints, Car, Bus, TrainFront, Bike } from "lucide-react";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import type { Coordinate, RoutingRequest } from "@/lib/routing/types";
 import { cn } from "@/lib/cn";
@@ -8,20 +10,20 @@ import { cn } from "@/lib/cn";
 type TravelModeOption = {
   mode: ItineraryTravelMode;
   label: string;
-  icon: string;
+  Icon: LucideIcon;
   color: string;
   bgColor: string;
 };
 
 const TRAVEL_MODES: TravelModeOption[] = [
-  { mode: "walk", label: "Walk", icon: "🚶", color: "text-blue-700", bgColor: "bg-blue-50" },
-  { mode: "car", label: "Drive", icon: "🚗", color: "text-gray-700", bgColor: "bg-gray-50" },
-  { mode: "taxi", label: "Taxi", icon: "🚕", color: "text-yellow-700", bgColor: "bg-yellow-50" },
-  { mode: "bus", label: "Bus", icon: "🚌", color: "text-green-700", bgColor: "bg-green-50" },
-  { mode: "train", label: "Train", icon: "🚆", color: "text-indigo-700", bgColor: "bg-indigo-50" },
-  { mode: "subway", label: "Subway", icon: "🚇", color: "text-purple-700", bgColor: "bg-purple-50" },
-  { mode: "transit", label: "Transit", icon: "🚊", color: "text-teal-700", bgColor: "bg-teal-50" },
-  { mode: "bicycle", label: "Bike", icon: "🚲", color: "text-orange-700", bgColor: "bg-orange-50" },
+  { mode: "walk",    label: "Walk",    Icon: Footprints, color: "text-blue-700",   bgColor: "bg-blue-50" },
+  { mode: "car",     label: "Drive",   Icon: Car,        color: "text-gray-700",   bgColor: "bg-gray-50" },
+  { mode: "taxi",    label: "Taxi",    Icon: Car,        color: "text-yellow-700", bgColor: "bg-yellow-50" },
+  { mode: "bus",     label: "Bus",     Icon: Bus,        color: "text-green-700",  bgColor: "bg-green-50" },
+  { mode: "train",   label: "Train",   Icon: TrainFront, color: "text-indigo-700", bgColor: "bg-indigo-50" },
+  { mode: "subway",  label: "Subway",  Icon: TrainFront, color: "text-purple-700", bgColor: "bg-purple-50" },
+  { mode: "transit", label: "Transit", Icon: Bus,        color: "text-teal-700",   bgColor: "bg-teal-50" },
+  { mode: "bicycle", label: "Bike",    Icon: Bike,       color: "text-orange-700", bgColor: "bg-orange-50" },
 ];
 
 type ModeEstimate = {
@@ -202,15 +204,15 @@ export function TravelModeSelector({
 
   const formatDurationWithMode = (minutes: number, mode: ItineraryTravelMode) => {
     const duration = formatDuration(minutes);
-    const modeOption = TRAVEL_MODES.find((m) => m.mode === mode);
-    const icon = modeOption?.icon ?? "";
-    const label = modeOption?.label ?? "";
-    return duration === "-" ? duration : `${icon} ${duration} ${label}`;
+    const label = TRAVEL_MODES.find((m) => m.mode === mode)?.label ?? "";
+    return duration === "-" ? duration : `${duration} ${label}`;
   };
 
   const getEstimate = (mode: ItineraryTravelMode): ModeEstimate | undefined => {
     return estimates.get(mode);
   };
+
+  const CurrentModeIcon = TRAVEL_MODES.find((o) => o.mode === currentMode)?.Icon ?? null;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -221,6 +223,7 @@ export function TravelModeSelector({
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
+        {CurrentModeIcon && <CurrentModeIcon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
         <span className="font-mono">{formatDurationWithMode(durationMinutes, currentMode)}</span>
         <svg
           className={cn("h-4 w-4 transition-transform text-stone", isOpen && "rotate-180")}
@@ -259,7 +262,7 @@ export function TravelModeSelector({
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-base flex-shrink-0">{option.icon}</span>
+                    <option.Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="capitalize flex-shrink-0">{option.label}</span>
                     {isEstimateLoading && (
                       <svg

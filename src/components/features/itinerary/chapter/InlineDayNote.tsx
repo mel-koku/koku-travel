@@ -1,0 +1,45 @@
+"use client";
+
+import { getGtag } from "@/lib/analytics/customLocations";
+
+// "safety" is intentionally removed — no code path produces it yet.
+// The safety integration (typhoon / earthquake inline notes) is a follow-up
+// when banners re-target by day rather than trip-level.
+export type InlineDayNoteKind = "closure";
+
+export type InlineDayNoteEntry = {
+  kind: InlineDayNoteKind;
+  label: string;
+};
+
+export type InlineDayNoteProps = {
+  notes: InlineDayNoteEntry[];
+  onReview: () => void;
+};
+
+export function InlineDayNote({ notes, onReview }: InlineDayNoteProps) {
+  if (notes.length === 0) return null;
+  const label =
+    notes.length === 1
+      ? notes[0]!.label
+      : `${notes.length} advisories for today`;
+  return (
+    <div className="inline-flex items-center gap-2 mt-5 mb-1 px-3 py-2 rounded-md bg-yuzu-tint text-sm text-foreground">
+      <span aria-hidden className="text-warning text-xs">◈</span>
+      <span>{label}</span>
+      <button
+        type="button"
+        onClick={() => {
+          getGtag()?.("event", "inline_day_note.tap_rate", {
+            note_count: notes.length,
+            kinds: notes.map((n) => n.kind).join(","),
+          });
+          onReview();
+        }}
+        className="text-accent underline underline-offset-2 text-sm"
+      >
+        Review ↗
+      </button>
+    </div>
+  );
+}

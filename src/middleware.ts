@@ -37,6 +37,7 @@ const PUBLIC_API_ROUTES = [
   "/api/csp-report",
   "/api/billing/stripe-webhook",
   "/api/concierge/inquiries",
+  "/api/launch-pricing",
 ];
 
 /**

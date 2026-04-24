@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import type { StoredTrip } from "@/services/trip/types";
 import type { WeatherRegion } from "@/data/regions";
 import { logTipEvent } from "@/lib/telemetry/tipEvents";
@@ -64,9 +65,7 @@ export function DisasterBanner({ trip, region }: DisasterBannerProps) {
       <div className="flex gap-3">
         {/* Warning icon */}
         <div className="shrink-0 pt-0.5">
-          <span className="text-xl" aria-hidden="true">
-            ⚠️
-          </span>
+          <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
         </div>
 
         {/* Content */}
