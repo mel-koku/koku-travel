@@ -62,6 +62,8 @@ export const landingPage = defineType({
       type: "image",
       options: { hotspot: true },
       fieldset: "hero",
+      description:
+        "Full-viewport background (100dvh). Preferred ratio: 16:9 landscape or wider. Min width 1920px. Use hotspot to keep the subject in frame on mobile (9:16 crop).",
     }),
 
     // ── Philosophy ───────────────────────────────
@@ -85,6 +87,8 @@ export const landingPage = defineType({
       type: "image",
       options: { hotspot: true },
       fieldset: "philosophy",
+      description:
+        "Reserved for future use — not currently rendered. Preferred ratio: 16:9 landscape. Min width 1920px.",
     }),
     defineField({
       name: "philosophyStats",
@@ -171,6 +175,8 @@ export const landingPage = defineType({
               title: "Image",
               type: "image",
               options: { hotspot: true },
+              description:
+                "Acts 1 & 2: displayed at 4:3 (e.g. 1200×900px). Act 3 (the full-width cinematic act): displayed at 16:7 on large screens — upload at least 1600×700px. A 4:3 shot works for all three; use hotspot to keep the subject centred.",
             }),
             defineField({
               name: "alt",
@@ -196,7 +202,7 @@ export const landingPage = defineType({
       options: { hotspot: true },
       fieldset: "testimonials",
       description:
-        "Background image behind the 'Every day, routed and timed' feature showcase on the landing page. Used when no real testimonials are configured.",
+        "Background image behind the 'Every day, routed and timed' feature showcase. Preferred ratio: 16:9 landscape. Min width 1920px. Used when no real testimonials are configured.",
     }),
 
     // ── Featured Locations ───────────────────────
@@ -301,6 +307,8 @@ export const landingPage = defineType({
               title: "Image",
               type: "image",
               options: { hotspot: true },
+              description:
+                "Used as a full-bleed background for the featured (first) testimonial. Preferred ratio: 16:9 landscape. Min width 1920px. Use hotspot to anchor the key subject. Subsequent testimonials don't show their image.",
             }),
             defineField({
               name: "alt",
@@ -394,6 +402,8 @@ export const landingPage = defineType({
       type: "image",
       options: { hotspot: true },
       fieldset: "finalCta",
+      description:
+        "Reserved for future use — not currently rendered (section uses a solid charcoal background). Preferred ratio: 16:9 landscape. Min width 1920px.",
     }),
 
     // ── Seasonal Spotlight ─────────────────────────
