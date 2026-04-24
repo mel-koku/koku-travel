@@ -27,7 +27,7 @@ describe("<EarthquakeBanner>", () => {
     expect(body.textContent).toContain("95 km");
     expect(body.textContent).toContain("about 6 hours ago");
 
-    expect(screen.getByText("⚠️")).toBeDefined();
+    expect(document.querySelector("svg.lucide-triangle-alert")).not.toBeNull();
 
     const cta = screen.getByRole("link", { name: /JR East status/i }) as HTMLAnchorElement;
     expect(cta.href).toBe("https://traininfo.jreast.co.jp/service_cloud/en/");
