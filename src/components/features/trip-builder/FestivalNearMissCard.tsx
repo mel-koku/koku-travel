@@ -80,7 +80,7 @@ export function FestivalNearMissCard() {
     <div className="rounded-lg border border-sage/30 bg-sage/5 px-4 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <span aria-hidden="true" className="text-lg">{warning.icon}</span>
+          <warning.icon className="h-4 w-4 shrink-0 text-foreground-secondary" aria-hidden />
           <div>
             <p className="text-sm font-semibold text-foreground">{warning.title}</p>
             <p className="mt-1 text-sm text-foreground-secondary">{warning.message}</p>

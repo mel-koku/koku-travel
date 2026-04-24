@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { selectPocketPhrases } from "@/lib/phrases/phraseSelector";
 import { easeReveal } from "@/lib/motion";
@@ -33,7 +34,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
         }}
         className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-brand-primary/5 hover:text-foreground"
       >
-        <span>{"🗣️"}</span>
+        <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden />
         <span>Say this:</span>
         <svg
           className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}

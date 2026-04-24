@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Plane } from "lucide-react";
 import type { StoredTrip } from "@/services/trip/types";
 import { getTripStatus } from "@/lib/trip/tripStatus";
 import { PREP_CHECKLIST, type PrepItem, type PrepSection } from "@/data/prepChecklist";
@@ -38,8 +39,17 @@ function daysUntil(startDate: string): number {
 function countdownLabel(startDate: string, primaryCity: string | undefined): string {
   const days = daysUntil(startDate);
   const where = primaryCity ? primaryCity.charAt(0).toUpperCase() + primaryCity.slice(1) : "your trip";
-  if (days <= 1) return `✈️ ${where} tomorrow`;
-  return `✈️ ${where} in ${days} days`;
+  if (days <= 1) return `${where} tomorrow`;
+  return `${where} in ${days} days`;
+}
+
+/**
+ * Returns true when the trip has at least one applicable prep checklist item.
+ * Used both by PrepBanner (render gate) and ItineraryShell (tray entry gate)
+ * so the two surfaces stay in sync.
+ */
+export function hasApplicablePrepItems(trip: StoredTrip): boolean {
+  return PREP_CHECKLIST.some((item) => (item.condition ? item.condition(trip) : true));
 }
 
 type Props = {
@@ -82,7 +92,7 @@ export function PrepBanner({ trip }: Props) {
 
   const startDate = trip.builderData?.dates?.start ?? "";
   const primaryCity = trip.builderData?.cities?.[0];
-  const label = startDate ? countdownLabel(startDate, primaryCity) : "✈️ Upcoming trip";
+  const label = startDate ? countdownLabel(startDate, primaryCity) : "Upcoming trip";
 
   const allDone = done === total && total > 0;
 
@@ -132,10 +142,12 @@ export function PrepBanner({ trip }: Props) {
           className="flex w-full items-center justify-between text-left"
           aria-expanded={false}
         >
-          <span className="text-base text-foreground">
-            {allDone ? `✓ Prep complete — ${done} of ${total} done` : `${label} — Prep checklist — ${done} of ${total} done`}
+          <span className="flex items-center gap-2 text-sm text-foreground">
+            {!allDone && <Plane className="h-3.5 w-3.5 shrink-0 text-foreground-secondary" aria-hidden="true" />}
+            {allDone ? `Prep complete — ${done} of ${total} done` : `${label}`}
+            <span className="text-foreground-secondary">· {done} of {total} done</span>
           </span>
-          <span aria-hidden="true">+</span>
+          <span aria-hidden="true" className="text-foreground-secondary">+</span>
         </button>
       </section>
     );
@@ -159,13 +171,12 @@ export function PrepBanner({ trip }: Props) {
         className="flex w-full items-center justify-between text-left"
         aria-expanded={true}
       >
-        <span className="text-base text-foreground">
+        <span className="flex items-center gap-2 text-sm text-foreground">
+          <Plane className="h-3.5 w-3.5 shrink-0 text-foreground-secondary" aria-hidden="true" />
           {label}
-          <span className="ml-2 text-sm text-foreground-secondary">
-            Prep checklist — {done} of {total} done
-          </span>
+          <span className="text-foreground-secondary">· {done} of {total} done</span>
         </span>
-        <span aria-hidden="true">−</span>
+        <span aria-hidden="true" className="text-foreground-secondary">−</span>
       </button>
 
       <div className="mt-4 space-y-6">
@@ -174,7 +185,7 @@ export function PrepBanner({ trip }: Props) {
           if (items.length === 0) return null;
           return (
             <div key={sectionKey}>
-              <h3 className="text-sm font-medium text-foreground-secondary">
+              <h3 className="eyebrow-mono">
                 {SECTION_LABELS[sectionKey]}
               </h3>
               <ul className="mt-2 space-y-3">
@@ -185,14 +196,11 @@ export function PrepBanner({ trip }: Props) {
                       type="checkbox"
                       checked={state[item.id] ?? false}
                       onChange={(e) => handleToggleItem(item.id, e.target.checked)}
-                      className="mt-1"
+                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-brand-primary"
                     />
                     <label htmlFor={`prep-${item.id}`} className="flex-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <span aria-hidden="true">{item.icon}</span>
-                        <span className="font-medium text-foreground">{item.title}</span>
-                      </div>
-                      <div className="mt-1 text-sm text-foreground-secondary">{item.body}</div>
+                      <span className="text-sm font-medium text-foreground">{item.title}</span>
+                      <p className="mt-0.5 text-sm text-foreground-secondary leading-relaxed">{item.body}</p>
                     </label>
                   </li>
                 ))}

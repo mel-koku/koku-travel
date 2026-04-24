@@ -483,14 +483,11 @@ function TravelEssentialsAccordion({ tips }: { tips: TripLevelTip[] }) {
         {isOpen && (
           <div className="divide-y divide-border/50 border-t border-border/50">
             {tips.map((tip) => (
-              <div key={tip.id} className="flex items-start gap-3 px-4 py-3">
-                <span className="text-base mt-0.5 shrink-0">{tip.icon}</span>
-                <div className="min-w-0">
-                  <p className={typography({ intent: "utility-label" })}>{tip.title}</p>
-                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-0.5")}>
-                    {tip.summary}
-                  </p>
-                </div>
+              <div key={tip.id} className="px-4 py-3">
+                <p className="text-sm font-medium text-foreground">{tip.title}</p>
+                <p className="mt-0.5 text-sm text-foreground-secondary leading-relaxed">
+                  {tip.summary}
+                </p>
               </div>
             ))}
           </div>

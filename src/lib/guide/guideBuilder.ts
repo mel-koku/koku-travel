@@ -154,7 +154,6 @@ function composeDayIntro(
     id: `guide-${dayId}-intro`,
     type: "day_intro",
     content,
-    icon: "🌅",
     dayId,
     afterActivityId: null,
   };
@@ -277,7 +276,6 @@ function composeDaySummary(
     id: `guide-${dayId}-summary`,
     type: "day_summary",
     content,
-    icon: "🌙",
     dayId,
   };
 }
@@ -316,7 +314,6 @@ function buildDayGuide(
         id: `guide-${dayId}-intro`,
         type: "day_intro" as const,
         content: aiIntro,
-        icon: "🌅",
         dayId,
         afterActivityId: null,
       }
@@ -355,7 +352,6 @@ function buildDayGuide(
             id: `guide-${dayId}-cm`,
             type: "cultural_moment",
             content: cmTemplate.content,
-            icon: cmTemplate.icon,
             dayId,
             beforeActivityId: currActivity.id,
             templateId: cmTemplate.id,
@@ -381,7 +377,6 @@ function buildDayGuide(
             id: `guide-${dayId}-cm`,
             type: "cultural_moment",
             content: cmTemplate.content,
-            icon: cmTemplate.icon,
             dayId,
             beforeActivityId: activities[i]!.id,
             templateId: cmTemplate.id,
@@ -409,7 +404,6 @@ function buildDayGuide(
       id: `guide-${dayId}-tip`,
       type: "practical_tip",
       content: tipTemplate.content,
-      icon: tipTemplate.icon,
       dayId,
       beforeActivityId: tipActivity!.id,
       templateId: tipTemplate.id,
@@ -440,7 +434,6 @@ function buildDayGuide(
             id: `guide-${dayId}-nn`,
             type: "neighborhood_narrative",
             content: narrative.content,
-            icon: narrative.icon ?? "🏘️",
             dayId,
             beforeActivityId: activities[i]!.id,
             templateId: narrative.id,
@@ -468,7 +461,6 @@ function buildDayGuide(
       id: `guide-${dayId}-nw`,
       type: "neighborhood_walk",
       content: walkContent,
-      icon: "🚶",
       dayId,
       beforeActivityId: firstActivityId,
     });
@@ -615,7 +607,6 @@ export function buildGuide(
           id: `guide-${day.id}-summary`,
           type: "day_summary",
           content: prose.summary,
-          icon: "🌙",
           dayId: day.id,
         }
       : templateGuide.summary ?? {
@@ -642,7 +633,6 @@ export function buildGuide(
       id: "guide-trip-overview",
       type: "trip_overview",
       content: guideProse.tripOverview,
-      icon: "✈️",
     };
   } else {
     const cities = [
@@ -664,7 +654,6 @@ export function buildGuide(
           id: "guide-trip-overview",
           type: "trip_overview",
           content: overviewTemplate.content,
-          icon: overviewTemplate.icon,
           templateId: overviewTemplate.id,
         }
       : undefined;

@@ -29,6 +29,16 @@ export function ActivityReplacementPicker({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<"score" | "rating" | "distance">("score");
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+  const [expandedReasoning, setExpandedReasoning] = useState<Set<string>>(new Set());
+
+  const toggleReasoning = useCallback((locationId: string) => {
+    setExpandedReasoning((prev) => {
+      const next = new Set(prev);
+      if (next.has(locationId)) next.delete(locationId);
+      else next.add(locationId);
+      return next;
+    });
+  }, []);
 
   const toggleDescription = useCallback((locationId: string) => {
     setExpandedDescriptions((prev) => {
@@ -88,19 +98,19 @@ export function ActivityReplacementPicker({
     >
       <div className="space-y-4">
         {/* Sort controls */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground-secondary">Sort by:</span>
-          <div className="flex gap-1 rounded-lg border border-border p-1">
+        <div className="flex items-center gap-3">
+          <span className="eyebrow-editorial">Sort by</span>
+          <div className="inline-flex rounded-md bg-canvas p-0.5">
             {(["score", "rating", "distance"] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => setSortBy(option)}
                 aria-label={`Sort by ${option}`}
                 aria-pressed={sortBy === option}
-                className={`rounded-lg px-3 py-1 text-xs font-medium transition ${
+                className={`rounded-sm px-3 py-1.5 text-xs font-medium transition ${
                   sortBy === option
-                    ? "bg-brand-primary text-white"
-                    : "text-foreground-secondary hover:bg-surface"
+                    ? "bg-surface text-foreground shadow-[var(--shadow-sm)]"
+                    : "text-foreground-secondary hover:text-foreground"
                 }`}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -119,7 +129,7 @@ export function ActivityReplacementPicker({
             <div className="text-sm text-stone">No alternatives nearby</div>
           </div>
         ) : (
-          <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-3">
             {sortedCandidates.map((candidate, index) => {
               const location = candidate.location;
               const rating = location.rating ?? 0;
@@ -129,24 +139,31 @@ export function ActivityReplacementPicker({
               return (
                 <div
                   key={location.id}
-                  className={`rounded-lg border-2 p-4 transition ${
+                  className={`rounded-lg border p-4 transition ${
                     isSelected
-                      ? "border-brand-primary bg-brand-primary/5"
-                      : "border-border bg-background hover:border-brand-primary/30"
+                      ? "border-brand-primary bg-brand-primary/5 shadow-[var(--shadow-card)]"
+                      : "border-border bg-surface hover:border-brand-primary/40 hover:shadow-[var(--shadow-card)]"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-3">
-                        {location.image && (
-                          <Image
-                            src={resizePhotoUrl(location.image, 400) ?? location.image}
-                            alt={location.name}
-                            width={80}
-                            height={80}
-                            className="h-20 w-20 shrink-0 rounded-lg object-cover"
-                          />
-                        )}
+                        {(() => {
+                          const imgSrc = resizePhotoUrl(
+                            location.primaryPhotoUrl ?? location.image,
+                            400,
+                          );
+                          if (!imgSrc) return null;
+                          return (
+                            <Image
+                              src={imgSrc}
+                              alt={location.name}
+                              width={80}
+                              height={80}
+                              className="h-20 w-20 shrink-0 rounded-lg object-cover"
+                            />
+                          );
+                        })()}
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base font-semibold text-foreground">
                             {location.name}
@@ -212,20 +229,37 @@ export function ActivityReplacementPicker({
                       </div>
 
                       {/* Reasoning */}
-                      {candidate.reasoning.length > 0 && (
-                        <div className="mt-2 text-xs text-foreground-secondary">
-                          <details className="cursor-pointer">
-                            <summary className="font-medium text-foreground">
+                      {candidate.reasoning.length > 0 && (() => {
+                        const isOpen = expandedReasoning.has(location.id);
+                        return (
+                          <div className="mt-2 text-xs text-foreground-secondary">
+                            <button
+                              type="button"
+                              onClick={() => toggleReasoning(location.id)}
+                              aria-expanded={isOpen}
+                              className="inline-flex items-center gap-1 font-medium text-foreground hover:text-brand-primary transition-colors"
+                            >
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 10 10"
+                                className={`transition-transform ${isOpen ? "rotate-90" : ""}`}
+                                aria-hidden
+                              >
+                                <path d="M3 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
                               Why this match?
-                            </summary>
-                            <ul className="mt-1 ml-4 list-disc space-y-0.5">
-                              {candidate.reasoning.slice(0, 3).map((reason, i) => (
-                                <li key={i}>{reason}</li>
-                              ))}
-                            </ul>
-                          </details>
-                        </div>
-                      )}
+                            </button>
+                            {isOpen && (
+                              <ul className="mt-1 ml-4 list-disc space-y-0.5">
+                                {candidate.reasoning.slice(0, 3).map((reason, i) => (
+                                  <li key={i}>{reason}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div className="flex flex-col items-end gap-2">

@@ -64,9 +64,6 @@ export default async function PricingPage() {
       {/* Section 1: Editorial Hero */}
       <section className="bg-background px-6 py-12 sm:py-20 lg:py-28">
         <div className="mx-auto max-w-2xl text-center">
-          <ScrollReveal>
-            <p className="eyebrow-editorial mb-4">Trip Pass</p>
-          </ScrollReveal>
           <ScrollReveal delay={0.08}>
             <h1
               className={cn(
