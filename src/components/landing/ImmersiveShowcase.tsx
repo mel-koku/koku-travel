@@ -10,29 +10,29 @@ const defaultActs = [
   {
     number: "01",
     eyebrow: "DISCOVER",
-    title: "Every place scored for context, not stars",
+    title: "Every place scored for your trip, not someone else's",
     description:
-      "Transit access, operating hours, seasonal fit, crowds. Scored on what matters for your dates. Not reviews. Context.",
+      "Seasonal fit, opening hours, transit distance, how it matches your pace. Scored for your exact dates and travel style. Not a star average.",
     image: "/images/fallback.jpg",
-    alt: "Traditional Japanese alley",
+    alt: "Traditional Japanese street",
   },
   {
     number: "02",
     eyebrow: "PLAN",
-    title: "Real routes. Real transit times.",
+    title: "Routes that account for every minute",
     description:
-      "Shinkansen schedules, local train transfers, walking segments. Your day accounts for every minute between stops, not just pins on a map.",
+      "Local trains, walking segments, bus connections. Every transfer timed. Your day is built around how Japan actually moves, not how it looks on a map.",
     image: "/images/fallback.jpg",
-    alt: "Peaceful Japanese garden",
+    alt: "Japanese train platform",
   },
   {
     number: "03",
     eyebrow: "GO",
-    title: "Your itinerary. Pocket-ready.",
+    title: "Your plan, in your pocket",
     description:
-      "Day-by-day timeline with timed activities, transit directions, and weather-aware tips. Share it with a link. Check it on the Shinkansen.",
+      "Day-by-day timeline, transit directions, and weather-aware tips. Ask Yuku anything mid-trip. Download as a PDF, share it with a link.",
     image: "/images/fallback.jpg",
-    alt: "Japanese train station",
+    alt: "Traveler exploring Japan",
   },
 ];
 

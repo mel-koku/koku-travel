@@ -23,56 +23,54 @@ function FeatureShowcase({ content }: { content?: LandingPageContent }) {
   const imageSrc = content?.testimonialBackgroundImage?.url ?? "/images/fallback.jpg";
 
   return (
-    <section aria-label="What your itinerary delivers" className="bg-background">
-      {/* Hero moment */}
-      <div className="relative flex min-h-[50vh] sm:min-h-[80vh] items-center justify-center overflow-hidden">
-        <Image
-          src={imageSrc}
-          alt="Narrow Kyoto backstreet at night with warm lantern light"
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-charcoal/70" />
+    <section aria-label="What your itinerary delivers" className="bg-canvas py-12 sm:py-16 lg:py-20">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16 xl:gap-24">
 
-        <div className="relative z-10 max-w-3xl px-6 py-12 sm:px-8 sm:py-20 lg:py-28 text-center">
-          <p className="eyebrow-editorial text-brand-primary">What ships in every Pass</p>
-          <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4 text-white")}>
-            Every day, routed and timed
-          </h2>
-        </div>
-      </div>
+          {/* Left: sticky image */}
+          <div className="lg:sticky lg:top-8 lg:self-start">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-[3/4]">
+              <Image
+                src={imageSrc}
+                alt="Narrow Kyoto backstreet at night with warm lantern light"
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 40vw, 100vw"
+              />
+            </div>
+          </div>
 
-      {/* Numbered editorial feature list */}
-      <div className="bg-canvas py-12 sm:py-20 lg:py-28">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="grid gap-x-16 sm:grid-cols-2">
-            {FEATURES.map((feature, idx) => (
-              <ScrollReveal key={feature.title} delay={idx * 0.06}>
-                <div className={cn(
-                  "py-6",
-                  idx < FEATURES.length - 2 && "border-b border-border",
-                  /* Last item in each column has no bottom border on desktop */
-                  idx === FEATURES.length - 2 && "sm:border-b-0",
-                  idx === FEATURES.length - 1 && "border-b-0",
-                )}>
-                  <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-xs text-foreground-secondary">
+          {/* Right: heading + feature list */}
+          <div>
+            <p className="eyebrow-editorial text-brand-primary">What&apos;s in every Trip Pass</p>
+            <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
+              Every day, routed and timed.
+            </h2>
+
+            <div className="mt-10 sm:mt-12">
+              {FEATURES.map((feature, idx) => (
+                <ScrollReveal key={feature.title} delay={idx * 0.05}>
+                  <div className={cn(
+                    "flex items-baseline gap-5 py-5",
+                    idx < FEATURES.length - 1 ? "border-b border-border" : "",
+                  )}>
+                    <span className="w-5 shrink-0 font-mono text-xs text-foreground-secondary">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className={cn(typography({ intent: "editorial-h3" }))}>
+                      <h3 className={cn(typography({ intent: "utility-body" }), "font-semibold text-foreground")}>
                         {feature.title}
                       </h3>
-                      <p className={cn(typography({ intent: "utility-body-muted" }), "mt-1.5 text-sm leading-relaxed")}>
+                      <p className={cn(typography({ intent: "utility-body-muted" }), "mt-1 text-sm leading-relaxed")}>
                         {feature.description}
                       </p>
                     </div>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
+
         </div>
       </div>
     </section>

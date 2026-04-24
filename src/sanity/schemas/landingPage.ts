@@ -10,7 +10,7 @@ export const landingPage = defineType({
     { name: "showcase", title: "Showcase Section", options: { collapsible: true } },
     { name: "featuredLocations", title: "Featured Locations Section", options: { collapsible: true } },
     { name: "featuredExperiences", title: "Featured Experiences Section", options: { collapsible: true } },
-    { name: "testimonials", title: "Testimonials Section", options: { collapsible: true } },
+    { name: "testimonials", title: "Feature Showcase Section", options: { collapsible: true } },
     { name: "featuredGuides", title: "Featured Guides Section", options: { collapsible: true } },
     { name: "seasonalSpotlight", title: "Seasonal Spotlight Section", options: { collapsible: true } },
     { name: "finalCta", title: "Final CTA Section", options: { collapsible: true } },
@@ -197,7 +197,7 @@ export const landingPage = defineType({
 
     defineField({
       name: "testimonialBackgroundImage",
-      title: "Testimonial / Feature Showcase Background",
+      title: "Feature Showcase Image",
       type: "image",
       options: { hotspot: true },
       fieldset: "testimonials",
