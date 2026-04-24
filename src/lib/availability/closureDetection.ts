@@ -3,15 +3,18 @@ import type { Location, Weekday } from "@/types/location";
 export type ClosureReason = "weekly-closure" | "date-specific";
 export type StopClosure = { stopId: string; reason: ClosureReason };
 
-const WEEKDAYS_BY_JS_DAY: readonly Weekday[] = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
+// date.getDay() uses the system timezone. Vercel runs in UTC, so a midnight-JST
+// Date would resolve to the previous calendar day. Evaluate the weekday in the
+// stop's timezone (always "Asia/Tokyo") via Intl to get the correct local day.
+function weekdayInTimezone(date: Date, timezone: string): Weekday {
+  const name = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    timeZone: timezone,
+  })
+    .format(date)
+    .toLowerCase() as Weekday;
+  return name;
+}
 
 /**
  * Returns one StopClosure per stop confidently closed on the given date.
@@ -29,12 +32,12 @@ export function getClosuresForTripDate(
   stops: Array<Pick<Location, "id" | "operatingHours">>,
   date: Date,
 ): StopClosure[] {
-  const weekday = WEEKDAYS_BY_JS_DAY[date.getDay()];
   const closures: StopClosure[] = [];
   for (const stop of stops) {
     const hours = stop.operatingHours;
     if (!hours) continue; // unknown → silent
     if (!Array.isArray(hours.periods) || hours.periods.length === 0) continue; // unknown → silent
+    const weekday = weekdayInTimezone(date, hours.timezone ?? "Asia/Tokyo");
     const hasWeekday = hours.periods.some((p) => p.day === weekday);
     if (!hasWeekday) {
       closures.push({ stopId: stop.id, reason: "weekly-closure" });
