@@ -4,8 +4,21 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import type { ConciergePageContent } from "@/types/sanitySiteContent";
 
-export function ConciergeHero() {
+type Props = {
+  content?: ConciergePageContent;
+};
+
+export function ConciergeHero({ content }: Props) {
+  const eyebrow = content?.heroEyebrow ?? "Yuku Concierge";
+  const heading = content?.heroHeading ?? "Your trip to Japan, handled end to end.";
+  const body =
+    content?.heroBody ??
+    "The app plans the route. Our team plans the rest, down to the ryokan room, the train seat, and the phone call in Japanese when something needs sorting.";
+  const ctaText = content?.heroCtaText ?? "Start my inquiry";
+  const meta = content?.heroMeta ?? "We typically reply within 2 business days.";
+
   return (
     <section
       aria-label="Yuku Concierge"
@@ -13,7 +26,7 @@ export function ConciergeHero() {
     >
       <div className="mx-auto max-w-2xl text-center">
         <ScrollReveal>
-          <p className="eyebrow-editorial mb-4">Yuku Concierge</p>
+          <p className="eyebrow-editorial mb-4">{eyebrow}</p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.08}>
@@ -23,7 +36,7 @@ export function ConciergeHero() {
               "mb-6 text-[clamp(2rem,4vw,3rem)]",
             )}
           >
-            Your trip to Japan, handled end to end.
+            {heading}
           </h1>
         </ScrollReveal>
 
@@ -34,26 +47,17 @@ export function ConciergeHero() {
               "mb-8 text-foreground-secondary",
             )}
           >
-            The app plans the route. Our team plans the rest, down to the ryokan room,
-            the train seat, and the phone call in Japanese when something needs sorting.
+            {body}
           </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.22}>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              href="#inquire"
-              className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
-            >
-              Start my inquiry
-            </Link>
-            <Link
-              href="#includes"
-              className="inline-flex h-12 items-center rounded-lg border border-border bg-transparent px-8 font-sans text-sm font-medium text-foreground transition-colors hover:bg-canvas active:scale-[0.98]"
-            >
-              What&rsquo;s included
-            </Link>
-          </div>
+          <Link
+            href="#inquire"
+            className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
+          >
+            {ctaText}
+          </Link>
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
@@ -63,7 +67,7 @@ export function ConciergeHero() {
               "mt-6",
             )}
           >
-            We typically reply within 2 business days.
+            {meta}
           </p>
         </ScrollReveal>
       </div>

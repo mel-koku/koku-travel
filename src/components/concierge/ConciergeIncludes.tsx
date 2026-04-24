@@ -3,8 +3,13 @@
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import type { ConciergePageContent } from "@/types/sanitySiteContent";
 
-const items = [
+type Props = {
+  content?: ConciergePageContent;
+};
+
+const DEFAULT_ITEMS = [
   {
     number: "01",
     title: "Full Yuku app access",
@@ -37,27 +42,50 @@ const items = [
   },
 ];
 
-export function ConciergeIncludes() {
+const DEFAULT_LEAD =
+  "We call the ryokan in Hakone when there’s a typhoon rolling in. We hold the table at a counter kaiseki that doesn’t take email. You bring the dates and the group. We handle the rest.";
+
+export function ConciergeIncludes({ content }: Props) {
+  const eyebrow = content?.includesEyebrow ?? "What’s Included";
+  const heading = content?.includesHeading ?? "Built for travelers who want the trip, not the logistics.";
+  const lead = content?.includesLead ?? DEFAULT_LEAD;
+  const items =
+    content?.includesItems && content.includesItems.length > 0
+      ? content.includesItems
+      : DEFAULT_ITEMS;
+
   return (
     <section
       id="includes"
       aria-label="What's included"
-      className="bg-canvas px-6 py-12 sm:py-20 lg:py-28"
+      className="bg-background px-6 py-12 sm:py-16 lg:py-20"
     >
       <div className="mx-auto max-w-[720px] text-center">
         <ScrollReveal>
-          <p className="eyebrow-editorial mb-4 inline-block">What&rsquo;s Included</p>
+          <p className="eyebrow-editorial mb-4 inline-block">{eyebrow}</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-14")}>
-            Six things you don&rsquo;t have to worry about.
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-6")}>
+            {heading}
           </h2>
         </ScrollReveal>
+        {lead && (
+          <ScrollReveal delay={0.16}>
+            <p
+              className={cn(
+                typography({ intent: "utility-body-muted" }),
+                "mx-auto mb-14 max-w-prose",
+              )}
+            >
+              {lead}
+            </p>
+          </ScrollReveal>
+        )}
       </div>
       <div className="mx-auto grid max-w-[1200px] gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
         {items.map((item, i) => (
-          <ScrollReveal key={item.number} delay={0.08 + i * 0.05}>
-            <article className="h-full rounded-lg border border-border bg-background p-7 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]">
+          <ScrollReveal key={item.number ?? i} delay={0.08 + i * 0.05}>
+            <article className="h-full rounded-lg border border-border bg-surface p-7 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]">
               <p className="eyebrow-mono text-brand-primary">{item.number}</p>
               <h3 className={cn(typography({ intent: "editorial-h3" }), "mt-4")}>
                 {item.title}

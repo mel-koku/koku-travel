@@ -558,6 +558,43 @@ export const aboutPageQuery = groq`
   }
 `;
 
+/** Concierge page singleton with resolved image */
+export const conciergePageQuery = groq`
+  *[_type == "conciergePage"][0] {
+    heroEyebrow,
+    heroHeading,
+    heroBody,
+    heroCtaText,
+    heroMeta,
+    "photoBreakImage": photoBreakImage {
+      ...,
+      "url": asset->url
+    },
+    photoBreakAlt,
+    photoBreakCaption,
+    includesEyebrow,
+    includesHeading,
+    includesLead,
+    includesItems[] {
+      number,
+      title,
+      body
+    },
+    faqEyebrow,
+    faqHeading,
+    faqItems[] {
+      question,
+      answer
+    },
+    formHeading,
+    formBody,
+    formCtaText,
+    formFinePrint,
+    formSuccessHeading,
+    formSuccessBody
+  }
+`;
+
 /** Commerce disclosure singleton */
 export const commerceDisclosureQuery = groq`
   *[_type == "commerceDisclosure"][0] {

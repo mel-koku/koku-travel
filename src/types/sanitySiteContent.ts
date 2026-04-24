@@ -311,6 +311,37 @@ export type AboutPageContent = {
   ctaButtonText?: string;
 };
 
+export type ConciergePageContent = {
+  heroEyebrow?: string;
+  heroHeading?: string;
+  heroBody?: string;
+  heroCtaText?: string;
+  heroMeta?: string;
+  photoBreakImage?: SanityImageAsset & { url?: string };
+  photoBreakAlt?: string;
+  photoBreakCaption?: string;
+  includesEyebrow?: string;
+  includesHeading?: string;
+  includesLead?: string;
+  includesItems?: Array<{
+    number?: string;
+    title?: string;
+    body?: string;
+  }>;
+  faqEyebrow?: string;
+  faqHeading?: string;
+  faqItems?: Array<{
+    question?: string;
+    answer?: string;
+  }>;
+  formHeading?: string;
+  formBody?: string;
+  formCtaText?: string;
+  formFinePrint?: string;
+  formSuccessHeading?: string;
+  formSuccessBody?: string;
+};
+
 export type CommerceDisclosureContent = {
   businessName?: string;
   representative?: string;
