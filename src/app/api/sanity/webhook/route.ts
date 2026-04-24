@@ -179,7 +179,7 @@ async function handleSingletonRevalidation(
 ) {
   // Bust the Next.js data cache for this content type so ISR rebuilds
   // fetch fresh data rather than serving the cached Sanity response.
-  revalidateTag(`sanity-${type}`);
+  revalidateTag(`sanity-${type}`, {});
 
   for (const path of paths) {
     revalidatePath(path);
