@@ -43,22 +43,17 @@ export function ConciergeInquiryForm() {
     <section
       id="inquire"
       aria-label="Contact"
-      className="bg-background px-6 py-16 sm:py-24 lg:py-28"
+      className="bg-background px-6 py-12 sm:py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[560px]">
         <ScrollReveal>
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)] sm:p-12">
+          <div className="rounded-lg border border-border bg-surface p-8 shadow-[var(--shadow-elevated)] sm:p-12">
             {status === "success" ? (
               <SuccessState />
             ) : (
               <>
                 <div className="text-center">
-                  <p
-                    className="mb-4 inline-block font-sans font-medium uppercase text-foreground-secondary"
-                    style={{ fontSize: "11px", letterSpacing: "0.2em" }}
-                  >
-                    Interested?
-                  </p>
+                  <p className="eyebrow-editorial mb-4 inline-block">Inquire</p>
                   <h2
                     className="mb-3 font-serif font-medium text-foreground text-balance"
                     style={{
@@ -67,14 +62,14 @@ export function ConciergeInquiryForm() {
                       letterSpacing: "-0.005em",
                     }}
                   >
-                    Reach out &mdash; we&rsquo;d love to hear from you.
+                    Reach out. We&rsquo;d love to hear from you.
                   </h2>
                   <p
                     className="mx-auto mb-8 max-w-[40ch] text-foreground-secondary"
                     style={{ fontSize: "1rem", lineHeight: 1.55 }}
                   >
-                    Leave your name and email. We&rsquo;ll be in touch within 2 business days
-                    &mdash; no pressure, no lists, no forwarding your info anywhere.
+                    Leave your name and email. We&rsquo;ll be in touch within 2 business days.
+                    No pressure, no lists, no forwarding your info anywhere.
                   </p>
                 </div>
 
@@ -97,7 +92,7 @@ export function ConciergeInquiryForm() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="First and last"
                       disabled={status === "submitting"}
-                      className="h-[52px] w-full rounded-lg border border-border bg-card px-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-[3px] focus:ring-brand-primary/12 disabled:opacity-50"
+                      className="h-12 w-full rounded-md border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-[3px] focus:ring-brand-primary/20 disabled:opacity-50"
                     />
                   </div>
 
@@ -118,12 +113,12 @@ export function ConciergeInquiryForm() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
                       disabled={status === "submitting"}
-                      className="h-[52px] w-full rounded-lg border border-border bg-card px-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-[3px] focus:ring-brand-primary/12 disabled:opacity-50"
+                      className="h-12 w-full rounded-md border border-border bg-background px-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-[3px] focus:ring-brand-primary/20 disabled:opacity-50"
                     />
                   </div>
 
                   {status === "error" && errorMessage && (
-                    <p role="alert" className="text-sm text-destructive">
+                    <p role="alert" className="text-sm text-error">
                       {errorMessage}
                     </p>
                   )}
@@ -133,11 +128,11 @@ export function ConciergeInquiryForm() {
                     disabled={status === "submitting" || !name.trim() || !email.trim()}
                     className="mt-2 inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-[13px] font-semibold uppercase tracking-[0.1em] text-white shadow-[var(--shadow-elevated)] transition-colors hover:bg-brand-primary/90 active:scale-[0.98] disabled:opacity-60"
                   >
-                    {status === "submitting" ? "Sending\u2026" : "Send my info"}
+                    {status === "submitting" ? "Sending…" : "Send my info"}
                   </button>
                 </form>
 
-                <p className="mt-5 text-center text-xs text-muted-foreground">
+                <p className="mt-5 text-center text-xs text-foreground-secondary">
                   We read every inquiry personally. No spam, no newsletter, no third parties.
                 </p>
               </>
@@ -168,17 +163,12 @@ function SuccessState() {
           />
         </svg>
       </div>
-      <p
-        className="mb-3 inline-block font-sans font-medium uppercase text-foreground-secondary"
-        style={{ fontSize: "11px", letterSpacing: "0.2em" }}
-      >
-        Received
-      </p>
+      <p className="eyebrow-editorial mb-3 inline-block">Received</p>
       <h3
         className="mb-3 font-serif font-medium text-foreground text-balance"
         style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", lineHeight: 1.15, letterSpacing: "-0.005em" }}
       >
-        Thanks &mdash; we&rsquo;ll be in touch.
+        Thanks. We&rsquo;ll be in touch.
       </h3>
       <p
         className="mx-auto max-w-[40ch] text-foreground-secondary"

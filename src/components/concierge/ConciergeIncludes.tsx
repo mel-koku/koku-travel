@@ -6,7 +6,7 @@ const items = [
   {
     number: "01",
     title: "Full Yuku app access",
-    body: "Trip Pass included for every traveler in your party. Use it before you leave to preview your itinerary, and during the trip for maps, timings, and transit.",
+    body: "Trip Pass included. Use it to preview your itinerary before you leave, and for maps, timings, and transit while you travel.",
   },
   {
     number: "02",
@@ -16,7 +16,7 @@ const items = [
   {
     number: "03",
     title: "Japanese-native coordinator",
-    body: "A coordinator on the ground in Japan — fluent in the language, the seasons, and the people. The difference between \u201Cwe tried\u201D and \u201Cdone.\u201D",
+    body: "A coordinator on the ground in Japan, fluent in the language, the seasons, and the people. The difference between “we tried” and “done.”",
   },
   {
     number: "04",
@@ -26,7 +26,7 @@ const items = [
   {
     number: "05",
     title: "Priority support during your trip",
-    body: "Daily check-ins and rapid responses while you travel. Weather shifts, missed trains, last-minute reservation changes — we pick up.",
+    body: "Daily check-ins and rapid responses while you travel. Weather shifts, missed trains, last-minute reservation changes. We pick up.",
   },
   {
     number: "06",
@@ -40,16 +40,11 @@ export function ConciergeIncludes() {
     <section
       id="includes"
       aria-label="What's included"
-      className="bg-secondary px-6 py-16 sm:py-24 lg:py-28"
+      className="bg-canvas px-6 py-12 sm:py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[720px] text-center">
         <ScrollReveal>
-          <p
-            className="mb-4 inline-block font-sans font-medium uppercase text-foreground-secondary"
-            style={{ fontSize: "11px", letterSpacing: "0.2em" }}
-          >
-            What&rsquo;s Included
-          </p>
+          <p className="eyebrow-editorial mb-4 inline-block">What&rsquo;s Included</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
           <h2
@@ -64,10 +59,10 @@ export function ConciergeIncludes() {
           </h2>
         </ScrollReveal>
       </div>
-      <div className="mx-auto grid max-w-[1200px] gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-[1200px] gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
         {items.map((item, i) => (
           <ScrollReveal key={item.number} delay={0.08 + i * 0.05}>
-            <article className="h-full rounded-xl border border-border bg-card p-7 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]">
+            <article className="h-full rounded-lg border border-border bg-background p-7 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]">
               <p
                 className="font-mono font-medium text-brand-primary"
                 style={{ fontSize: "11px", letterSpacing: "0.15em" }}
