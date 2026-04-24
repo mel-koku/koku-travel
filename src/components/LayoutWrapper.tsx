@@ -39,7 +39,7 @@ export function LayoutWrapper({
   }
 
   return (
-    <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
+    <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} forcedTheme="light">
       {/*
        * reducedMotion="user" tells framer-motion to respect the OS-level
        * prefers-reduced-motion setting across every motion.* component

@@ -14,7 +14,6 @@ import { cn } from "@/lib/cn";
 import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -29,10 +28,12 @@ function UserMenu({
   isSignedIn,
   supabase,
   router,
+  onDark = false,
 }: {
   isSignedIn: boolean;
   supabase: SupabaseClient;
   router: AppRouterInstance;
+  onDark?: boolean;
 }) {
   const { clearAllLocalData, trips } = useAppState();
   const hasLocalTrip = !isSignedIn && trips.length > 0;
@@ -113,7 +114,7 @@ function UserMenu({
 
   return (
     <Dropdown
-      label={<IdentityBadge compact />}
+      label={<IdentityBadge compact onDark={onDark} />}
       align="end"
       hideChevron={true}
       ariaLabel="Account menu"
@@ -134,6 +135,7 @@ export default function Header() {
   const prefersReducedMotion = useReducedMotion();
 
   const isLandingPage = pathname === "/";
+  const isOverHero = isLandingPage && scrollProgress < 0.08;
 
   // Track scroll progress and direction refs for stable access
   const scrollProgressRef = useRef(scrollProgress);
@@ -207,7 +209,10 @@ export default function Header() {
       </a>
 
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/95 backdrop-blur-xl"
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
+          isOverHero ? "bg-transparent" : "bg-background/95 backdrop-blur-xl"
+        )}
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
@@ -222,10 +227,20 @@ export default function Header() {
             className="flex items-center gap-2"
           >
             <span className="flex items-baseline gap-1.5">
-              <span className="font-serif text-2xl tracking-[-0.03em] text-foreground sm:text-3xl">
+              <span
+                className={cn(
+                  "font-serif text-2xl tracking-[-0.03em] transition-colors duration-300 sm:text-3xl",
+                  isOverHero ? "text-white" : "text-foreground"
+                )}
+              >
                 Yuku
               </span>
-              <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+              <span
+                className={cn(
+                  "text-sm font-light uppercase tracking-wide transition-colors duration-300",
+                  isOverHero ? "text-white/70" : "text-foreground-secondary"
+                )}
+              >
                 Japan
               </span>
             </span>
@@ -240,17 +255,21 @@ export default function Header() {
                   key={item.label}
                   href={item.href}
                   className={cn(
-                    "group relative py-1 transition-colors",
-                    isActive
-                      ? "text-brand-primary"
-                      : "text-foreground-secondary hover:text-foreground"
+                    "group relative py-1 transition-colors duration-300",
+                    isOverHero
+                      ? isActive
+                        ? "text-white"
+                        : "text-white/80 hover:text-white"
+                      : isActive
+                        ? "text-brand-primary"
+                        : "text-foreground-secondary hover:text-foreground"
                   )}
                 >
                   {item.label}
                   <span
                     className={cn(
                       "absolute -bottom-0.5 left-0 h-[2px] w-full origin-left transition-transform duration-300 ease-out",
-                      "bg-brand-primary",
+                      isOverHero ? "bg-white" : "bg-brand-primary",
                       isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                     aria-hidden="true"
@@ -272,27 +291,22 @@ export default function Header() {
             </Link>
 
 
-            {/* Theme toggle (desktop) */}
-            <div className="hidden lg:block">
-              <ThemeToggle />
-            </div>
-
             {/* Desktop user menu (lg+) */}
             <div className="hidden lg:block">
               <UserMenu
                 isSignedIn={isSignedIn}
                 supabase={supabase}
                 router={router}
+                onDark={isOverHero}
               />
             </div>
 
-            {/* Theme toggle + menu trigger (mobile) */}
-            <div className="flex items-center gap-1 lg:hidden">
-              <ThemeToggle />
+            {/* Menu trigger (mobile) */}
+            <div className="flex items-center lg:hidden">
               <MenuTrigger
                 isOpen={isMenuOpen}
                 onToggle={handleMenuToggle}
-                color="foreground"
+                color={isOverHero ? "white" : "foreground"}
               />
             </div>
           </div>

@@ -33,7 +33,7 @@ export default function PrintLayout({
     <div
       className={`${plusJakarta.variable} ${geistMono.variable} ${cormorant.variable} font-sans text-foreground`}
     >
-      <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
+      <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} forcedTheme="light">
         <SharedProviders>{children}</SharedProviders>
       </ThemeProvider>
     </div>
