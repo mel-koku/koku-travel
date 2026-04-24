@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
@@ -54,19 +56,14 @@ export function ConciergeInquiryForm() {
               <>
                 <div className="text-center">
                   <p className="eyebrow-editorial mb-4 inline-block">Inquire</p>
-                  <h2
-                    className="mb-3 font-serif font-medium text-foreground text-balance"
-                    style={{
-                      fontSize: "clamp(1.75rem, 3.5vw, 3rem)",
-                      lineHeight: 1.1,
-                      letterSpacing: "-0.005em",
-                    }}
-                  >
+                  <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-3")}>
                     Reach out. We&rsquo;d love to hear from you.
                   </h2>
                   <p
-                    className="mx-auto mb-8 max-w-[40ch] text-foreground-secondary"
-                    style={{ fontSize: "1rem", lineHeight: 1.55 }}
+                    className={cn(
+                      typography({ intent: "utility-body-muted" }),
+                      "mx-auto mb-8 max-w-[40ch]",
+                    )}
                   >
                     Leave your name and email. We&rsquo;ll be in touch within 2 business days.
                     No pressure, no lists, no forwarding your info anywhere.
@@ -77,8 +74,7 @@ export function ConciergeInquiryForm() {
                   <div>
                     <label
                       htmlFor="concierge-name"
-                      className="block font-sans font-medium uppercase text-foreground-secondary"
-                      style={{ fontSize: "12px", letterSpacing: "0.1em", marginBottom: "0.4rem" }}
+                      className={cn(typography({ intent: "utility-label" }), "mb-1.5 block")}
                     >
                       Your name
                     </label>
@@ -99,8 +95,7 @@ export function ConciergeInquiryForm() {
                   <div>
                     <label
                       htmlFor="concierge-email"
-                      className="block font-sans font-medium uppercase text-foreground-secondary"
-                      style={{ fontSize: "12px", letterSpacing: "0.1em", marginBottom: "0.4rem" }}
+                      className={cn(typography({ intent: "utility-label" }), "mb-1.5 block")}
                     >
                       Email
                     </label>
@@ -118,7 +113,7 @@ export function ConciergeInquiryForm() {
                   </div>
 
                   {status === "error" && errorMessage && (
-                    <p role="alert" className="text-sm text-error">
+                    <p role="alert" className={cn(typography({ intent: "utility-meta" }), "text-error")}>
                       {errorMessage}
                     </p>
                   )}
@@ -126,13 +121,13 @@ export function ConciergeInquiryForm() {
                   <button
                     type="submit"
                     disabled={status === "submitting" || !name.trim() || !email.trim()}
-                    className="mt-2 inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-[13px] font-semibold uppercase tracking-[0.1em] text-white shadow-[var(--shadow-elevated)] transition-colors hover:bg-brand-primary/90 active:scale-[0.98] disabled:opacity-60"
+                    className="btn-yuku mt-2 inline-flex h-12 w-full items-center justify-center rounded-lg bg-brand-primary px-6 font-sans text-sm font-medium text-white active:scale-[0.98] disabled:opacity-60"
                   >
                     {status === "submitting" ? "Sending…" : "Send my info"}
                   </button>
                 </form>
 
-                <p className="mt-5 text-center text-xs text-foreground-secondary">
+                <p className={cn(typography({ intent: "utility-meta" }), "mt-5 text-center")}>
                   We read every inquiry personally. No spam, no newsletter, no third parties.
                 </p>
               </>
@@ -164,15 +159,14 @@ function SuccessState() {
         </svg>
       </div>
       <p className="eyebrow-editorial mb-3 inline-block">Received</p>
-      <h3
-        className="mb-3 font-serif font-medium text-foreground text-balance"
-        style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", lineHeight: 1.15, letterSpacing: "-0.005em" }}
-      >
+      <h3 className={cn(typography({ intent: "editorial-h3" }), "mb-3")}>
         Thanks. We&rsquo;ll be in touch.
       </h3>
       <p
-        className="mx-auto max-w-[40ch] text-foreground-secondary"
-        style={{ fontSize: "1rem", lineHeight: 1.55 }}
+        className={cn(
+          typography({ intent: "utility-body-muted" }),
+          "mx-auto max-w-[40ch]",
+        )}
       >
         We read every inquiry personally and typically reply within 2 business days. Keep an
         eye on your inbox.

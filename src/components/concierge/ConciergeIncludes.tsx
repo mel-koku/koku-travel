@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const items = [
@@ -47,14 +49,7 @@ export function ConciergeIncludes() {
           <p className="eyebrow-editorial mb-4 inline-block">What&rsquo;s Included</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <h2
-            className="mb-14 font-serif font-medium text-foreground text-balance"
-            style={{
-              fontSize: "clamp(1.75rem, 3.5vw, 3rem)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.005em",
-            }}
-          >
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-14")}>
             Six things you don&rsquo;t have to worry about.
           </h2>
         </ScrollReveal>
@@ -63,22 +58,11 @@ export function ConciergeIncludes() {
         {items.map((item, i) => (
           <ScrollReveal key={item.number} delay={0.08 + i * 0.05}>
             <article className="h-full rounded-lg border border-border bg-background p-7 shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]">
-              <p
-                className="font-mono font-medium text-brand-primary"
-                style={{ fontSize: "11px", letterSpacing: "0.15em" }}
-              >
-                {item.number}
-              </p>
-              <h3
-                className="mt-4 font-serif font-semibold text-foreground"
-                style={{ fontSize: "1.35rem", lineHeight: 1.2, letterSpacing: "-0.005em" }}
-              >
+              <p className="eyebrow-mono text-brand-primary">{item.number}</p>
+              <h3 className={cn(typography({ intent: "editorial-h3" }), "mt-4")}>
                 {item.title}
               </h3>
-              <p
-                className="mt-2 text-foreground-secondary"
-                style={{ fontSize: "0.95rem", lineHeight: 1.55 }}
-              >
+              <p className={cn(typography({ intent: "utility-body-muted" }), "mt-2")}>
                 {item.body}
               </p>
             </article>
