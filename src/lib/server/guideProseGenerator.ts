@@ -601,6 +601,7 @@ export async function generateGuideProse(
 // ---------------------------------------------------------------------------
 
 const DENY_LIST_PATTERNS = [
+  /--|—/, // em-dashes: use a period or two sentences instead
   /\bamazing\b/i, /\bincredible\b/i, /\bunforgettable\b/i, /\bbustling\b/i,
   /\bvibrant\b/i, /\bhidden gem\b/i, /\bdelve\b/i, /\bimmerse\b/i,
   /\bsoak in\b/i, /\bmust-see\b/i, /\bcan't-miss\b/i, /\btucked away\b/i,
