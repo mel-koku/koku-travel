@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import type { EarthquakeAlert } from "@/lib/alerts/usgs";
 import type { KnownRegionId } from "@/types/trip";
 import { logTipEvent } from "@/lib/telemetry/tipEvents";
@@ -70,7 +71,7 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
       <div className="flex gap-3">
         {/* Warning icon */}
         <div className="shrink-0 pt-0.5">
-          <span className="text-xl" aria-hidden="true">⚠️</span>
+          <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
         </div>
 
         {/* Content */}

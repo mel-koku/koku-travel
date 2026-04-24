@@ -6,6 +6,23 @@
  * helpful context about potential issues or opportunities.
  */
 
+import type { LucideIcon } from "lucide-react";
+import {
+  Clock,
+  Train,
+  MapPin,
+  Luggage,
+  Lightbulb,
+  Flag,
+  CloudRain,
+  Flower2,
+  Leaf,
+  Sun,
+  Snowflake,
+  Plane,
+  Map,
+  Sparkles,
+} from "lucide-react";
 import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
@@ -50,7 +67,7 @@ export type PlanningWarning = {
   severity: WarningSeverity;
   title: string;
   message: string;
-  icon: string;
+  icon: LucideIcon;
   action?: string;
   actionData?: Record<string, unknown>;
 };
@@ -164,7 +181,7 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
       severity: "caution",
       title: "Very Tight Pacing",
       message: `${cityCount} cities in ${duration} days gives you roughly ${daysPerCity.toFixed(1)} days per city. Between shinkansen rides, hotel check-ins, and finding your bearings in each new place, most of your time will go to logistics. Consider cutting ${Math.ceil(cityCount - duration / 2)} ${Math.ceil(cityCount - duration / 2) === 1 ? "city" : "cities"} for a trip you'll actually enjoy.`,
-      icon: "⏱️",
+      icon: Clock,
     });
   } else if (daysPerCity < 2 && cityCount >= 3) {
     warnings.push({
@@ -173,7 +190,7 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
       severity: "warning",
       title: "Fast-Paced Trip",
       message: `${cityCount} cities in ${duration} days is doable but brisk. Each city move costs 2-4 hours of travel plus settling in. You'll want to be strategic about what you prioritize in each stop.`,
-      icon: "🚄",
+      icon: Train,
     });
   } else if (daysPerCity < 2.5 && cityCount >= 4) {
     warnings.push({
@@ -182,7 +199,7 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
       severity: "info",
       title: "Active Itinerary",
       message: `Your pacing is manageable but leaves limited downtime. Some of the best Japan moments come from unplanned wandering, so give yourself room to slow down if a place captures you.`,
-      icon: "📍",
+      icon: MapPin,
     });
   }
 
@@ -197,7 +214,7 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
       severity: "info",
       title: "Luggage Logistics",
       message: `Changing cities ${cityCount} times means hauling bags through stations each time. Consider using takkyubin (luggage forwarding) or picking a hub city and doing day trips from there.`,
-      icon: "🧳",
+      icon: Luggage,
     });
   }
 
@@ -210,7 +227,7 @@ function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
       severity: "info",
       title: "Short Trip Tip",
       message: `With just ${duration} days, one city explored well often beats two cities rushed. Consider picking your favorite and going deeper.`,
-      icon: "💡",
+      icon: Lightbulb,
     });
   }
 
@@ -240,7 +257,7 @@ function detectHolidayWarnings(data: TripBuilderData): PlanningWarning[] {
     severity: "warning" as const,
     title: `${holiday.name} Travel Period`,
     message: HOLIDAY_WARNING_COPY[holiday.id] ?? holiday.description,
-    icon: "🎌",
+    icon: Flag,
   }));
 }
 
@@ -259,13 +276,13 @@ function detectSeasonalWarnings(data: TripBuilderData): PlanningWarning[] {
     id: string;
     type: PlanningWarning["type"];
     severity: PlanningWarning["severity"];
-    icon: string;
+    icon: LucideIcon;
   }> = [
-    { season: "rainy", id: "seasonal-rainy", type: "seasonal_rainy", severity: "info", icon: "🌧️" },
-    { season: "cherryBlossom", id: "seasonal-cherry-blossom", type: "seasonal_cherry_blossom", severity: "info", icon: "🌸" },
-    { season: "autumnLeaves", id: "seasonal-autumn", type: "seasonal_autumn", severity: "info", icon: "🍁" },
-    { season: "summer", id: "seasonal-summer", type: "weather", severity: "info", icon: "☀️" },
-    { season: "winter", id: "seasonal-winter", type: "weather", severity: "info", icon: "❄️" },
+    { season: "rainy", id: "seasonal-rainy", type: "seasonal_rainy", severity: "info", icon: CloudRain },
+    { season: "cherryBlossom", id: "seasonal-cherry-blossom", type: "seasonal_cherry_blossom", severity: "info", icon: Flower2 },
+    { season: "autumnLeaves", id: "seasonal-autumn", type: "seasonal_autumn", severity: "info", icon: Leaf },
+    { season: "summer", id: "seasonal-summer", type: "weather", severity: "info", icon: Sun },
+    { season: "winter", id: "seasonal-winter", type: "weather", severity: "info", icon: Snowflake },
   ];
 
   const warnings: PlanningWarning[] = [];
@@ -343,7 +360,7 @@ function detectDistanceWarnings(data: TripBuilderData): PlanningWarning | null {
       severity: "warning",
       title: "Long Distance Between Regions",
       message: "Hokkaido and southern Japan (Kyushu/Okinawa) are over 2,000km apart. Consider domestic flights or focusing on one area to maximize your time.",
-      icon: "✈️",
+      icon: Plane,
     };
   }
 
@@ -358,7 +375,7 @@ function detectDistanceWarnings(data: TripBuilderData): PlanningWarning | null {
       severity: "caution",
       title: "Significant Travel Distance",
       message: `${region1} and ${region2} are about ${Math.round(maxDistance)}km apart. Plan for travel time between these regions, or consider a domestic flight.`,
-      icon: "🗾",
+      icon: Map,
     };
   }
 
@@ -400,7 +417,7 @@ function detectReturnToAirportWarning(data: TripBuilderData): PlanningWarning | 
     severity: "caution",
     title: "Long Trip to Your Departure Airport",
     message: `Your last city is ~${timeStr} from your departure airport. Consider adding a return day in ${nearestCityName} so you're not rushing on your final day.`,
-    icon: "✈️",
+    icon: Plane,
     action: `Add return day in ${nearestCityName}`,
     actionData: {
       returnCityId: nearestCity,
@@ -597,7 +614,7 @@ function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
     severity: (f.crowdImpact >= 4 ? "caution" : "info") as WarningSeverity,
     title: `${f.name} (${f.nameJa})`,
     message: f.description,
-    icon: "🎆",
+    icon: Sparkles,
   }));
 }
 
@@ -642,7 +659,7 @@ export function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningW
     severity: "info",
     title: buildNearMissTitle(top),
     message: buildNearMissMessage(top, wouldExceedCap),
-    icon: "🎆",
+    icon: Sparkles,
     action: isActionable ? "extend_trip" : undefined,
     actionData: isActionable && newEndDate ? {
       festivalId: festival.id,

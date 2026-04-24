@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Accessibility } from "lucide-react";
 import type { StoredTrip } from "@/services/trip/types";
 import { logTipEvent } from "@/lib/telemetry/tipEvents";
 import { useTipEventContext } from "@/lib/telemetry/useTipEventContext";
@@ -47,9 +48,7 @@ export function AccessibilityBanner({ trip }: Props) {
     <section className="rounded-md bg-surface px-4 py-3">
       <div className="flex gap-3">
         <div className="shrink-0 pt-0.5">
-          <span className="text-xl" aria-hidden="true">
-            ♿
-          </span>
+          <Accessibility className="h-4 w-4 shrink-0" aria-hidden />
         </div>
 
         <div className="flex-1 min-w-0">
