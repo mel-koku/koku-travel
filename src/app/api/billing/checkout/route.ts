@@ -24,7 +24,7 @@ export const POST = withApiHandler(
       return forbidden("Sign in to unlock your trip.", { requestId: context.requestId });
     }
 
-    if (await isFullAccessEnabled()) {
+    if (await isFullAccessEnabled(user.id)) {
       return conflict(
         "Trip Pass is free right now. Head back to your itinerary.",
         { requestId: context.requestId },

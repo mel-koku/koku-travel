@@ -53,10 +53,17 @@ describe("billing/access", () => {
   });
 
   describe("isFullAccessEnabled", () => {
-    it("returns true when FREE_FULL_ACCESS env is true", async () => {
+    it("returns true when FREE_FULL_ACCESS env is true and user is authenticated", async () => {
       vi.stubEnv("FREE_FULL_ACCESS", "true");
       const mod = await import("@/lib/billing/accessServer");
-      expect(await mod.isFullAccessEnabled()).toBe(true);
+      expect(await mod.isFullAccessEnabled("user-123")).toBe(true);
+    });
+
+    it("returns false for guests even when FREE_FULL_ACCESS env is true", async () => {
+      vi.stubEnv("FREE_FULL_ACCESS", "true");
+      const mod = await import("@/lib/billing/accessServer");
+      expect(await mod.isFullAccessEnabled(null)).toBe(false);
+      expect(await mod.isFullAccessEnabled(undefined)).toBe(false);
     });
 
     it("returns false when no override is set", async () => {
@@ -66,7 +73,7 @@ describe("billing/access", () => {
         getTripBuilderConfig: vi.fn().mockResolvedValue(null),
       }));
       const mod = await import("@/lib/billing/accessServer");
-      expect(await mod.isFullAccessEnabled()).toBe(false);
+      expect(await mod.isFullAccessEnabled("user-123")).toBe(false);
     });
   });
 

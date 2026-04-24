@@ -149,7 +149,7 @@ export const ItineraryShell = ({
   launchPricing,
   launchSlotsRemaining,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo, deleteActivity } = useAppState();
+  const { user, reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo, deleteActivity } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -194,7 +194,7 @@ export const ItineraryShell = ({
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
 
-  const fullAccessEnabled = process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
+  const fullAccessEnabled = !!user && process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
   const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
   const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);

@@ -114,11 +114,20 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                   transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
                   className="mt-2 w-full max-w-xs space-y-3 rounded-lg border border-border bg-surface p-5"
                 >
-                  <p className="text-center text-xs text-foreground-secondary">
-                    This trip is only on this device.
-                  </p>
+                  {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? (
+                    <>
+                      <p className="eyebrow-editorial text-center text-brand-primary">Limited Launch Offer</p>
+                      <p className="text-center text-xs text-foreground-secondary">
+                        Sign in to unlock all days free. First 300 trips only.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-center text-xs text-foreground-secondary">
+                      This trip is only on this device.
+                    </p>
+                  )}
                   <GoogleSignInButton
-                    label="Sign in to save it everywhere"
+                    label={process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? "Sign in to unlock all days free" : "Sign in to save it everywhere"}
                     redirectTo={successData?.tripId ? `/itinerary?trip=${successData.tripId}` : undefined}
                   />
                   <button
@@ -126,7 +135,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                     onClick={onSkipSignIn}
                     className="block w-full text-center text-xs text-stone transition-colors hover:text-foreground-secondary"
                   >
-                    Continue without saving
+                    {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? "Continue with Day 1 only" : "Continue without saving"}
                   </button>
                 </motion.div>
               )}

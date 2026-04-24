@@ -117,7 +117,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
     }
 
     // Check if full access is enabled (free window or env override)
-    const fullAccess = await isFullAccessEnabled();
+    const fullAccess = await isFullAccessEnabled(user?.id);
 
     // Generate trip (returns both domain model and raw itinerary)
     // Include savedIds if provided (user's saved locations from Places page)
