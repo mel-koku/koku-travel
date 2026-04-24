@@ -18,7 +18,6 @@ export type GuideSegment = {
   id: string;
   type: GuideContentType;
   content: string;
-  icon?: string;
   dayId?: string;
   /** null or undefined = before first activity */
   afterActivityId?: string | null;

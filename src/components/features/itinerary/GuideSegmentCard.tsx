@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Sun, ArrowRight, Landmark, Lightbulb, Moon, MapPin, Footprints, Map } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { GuideContentType, GuideSegment } from "@/types/itineraryGuide";
 
 const DISMISSED_GUIDE_KEY = "yuku-dismissed-guide-segments";
@@ -43,15 +45,15 @@ const STYLE_MAP: Record<
   neighborhood_walk: { label: "Neighborhood Walk", dismissible: true },
 };
 
-const DEFAULT_ICONS: Record<GuideContentType, string> = {
-  trip_overview: "🗾",
-  day_intro: "☀️",
-  activity_context: "→",
-  cultural_moment: "🏮",
-  practical_tip: "💡",
-  day_summary: "🌙",
-  neighborhood_narrative: "🏘️",
-  neighborhood_walk: "🚶",
+const SEGMENT_ICONS: Record<GuideContentType, LucideIcon> = {
+  trip_overview: Map,
+  day_intro: Sun,
+  activity_context: ArrowRight,
+  cultural_moment: Landmark,
+  practical_tip: Lightbulb,
+  day_summary: Moon,
+  neighborhood_narrative: MapPin,
+  neighborhood_walk: Footprints,
 };
 
 export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardProps) {
@@ -59,7 +61,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [isDismissed, setIsDismissed] = useState(() => getDismissedSegments().has(segment.id));
   const style = STYLE_MAP[segment.type];
-  const icon = segment.icon ?? DEFAULT_ICONS[segment.type];
+  const Icon = SEGMENT_ICONS[segment.type];
 
   const handleDismiss = useCallback(() => {
     setIsDismissed(true);
@@ -79,7 +81,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="flex min-w-0 flex-1 items-start gap-2 text-left"
         >
-          <span className="mt-0.5 shrink-0 text-xs">{icon}</span>
+          <Icon className="mt-0.5 h-3 w-3 shrink-0 text-stone" aria-hidden />
           <div className="min-w-0 flex-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-stone">
               {style.label}

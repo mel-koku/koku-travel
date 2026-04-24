@@ -44,11 +44,11 @@ export function PlanningWarningCard({ warning, className, onAction }: PlanningWa
       <div className="flex gap-3">
         <div
           className={cn(
-            "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-lg",
+            "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
             styles.icon
           )}
         >
-          {warning.icon}
+          <warning.icon className="h-4 w-4" aria-hidden />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className={cn("font-semibold", styles.title)}>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Search, Pencil } from "lucide-react";
 import { createSessionToken } from "@/lib/addressSearch/sessionToken";
 import type { AddressResult, AddressSuggestion } from "@/lib/addressSearch/types";
 import { trackGoogleFallbackTapped } from "@/lib/analytics/customLocations";
@@ -118,7 +119,7 @@ export function AddressAutocomplete({ onSelect, onUseAsIs, initialValue = "" }: 
               onClick={() => selectSuggestion(s, "google")}
               className="block w-full px-3 py-2 text-left hover:bg-gray-50"
             >
-              <div className="font-medium">🔵 {s.title}</div>
+              <div className="font-medium">{s.title}</div>
               {s.subtitle && <div className="text-sm text-gray-500">{s.subtitle}</div>}
             </button>
           ))}
@@ -128,14 +129,14 @@ export function AddressAutocomplete({ onSelect, onUseAsIs, initialValue = "" }: 
               onClick={searchGoogle}
               className="block w-full px-3 py-2 text-left text-sm text-blue-600 hover:bg-gray-50"
             >
-              🔍 Search Google instead
+              <Search className="mr-1.5 inline h-3 w-3" aria-hidden />Search Google instead
             </button>
             <button
               type="button"
               onClick={() => onUseAsIs(value)}
               className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
             >
-              ✏️ Use &quot;{value}&quot; as-is
+              <Pencil className="mr-1.5 inline h-3 w-3" aria-hidden />Use &quot;{value}&quot; as-is
             </button>
           </div>
         </div>
