@@ -23,12 +23,13 @@ import type { LandingPageContent } from "@/types/sanitySiteContent";
 type HeroOpeningProps = {
   locationCount: number;
   content?: LandingPageContent;
+  isFreePromo?: boolean;
 };
 
 const FALLBACK_IMAGE = "/images/fallback.jpg";
 const FALLBACK_ALT = "A scene from Japan";
 
-export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
+export function HeroOpening({ locationCount, content, isFreePromo = false }: HeroOpeningProps) {
   const headline =
     content?.heroHeadline ?? "Your Japan trip, planned day by day.";
   const description = (
@@ -36,7 +37,9 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
     "Tell us your dates and vibe. We build a routed itinerary with real transit times across {locationCount}+ places in all 47 prefectures."
   ).replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
-  const freePreviewNote = "Day 1 is free. See your trip before you decide.";
+  const freePreviewNote = isFreePromo
+    ? "Free during our launch. See your trip before you decide."
+    : "Day 1 is free. See your trip before you decide.";
 
   // Sanity image with hotspot support
   const heroImage = content?.heroImage;

@@ -16,8 +16,24 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount, getPrefectureCount, getTipCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
+import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { urlFor } from "@/sanity/image";
 import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
+
+async function getIsFreePromo(): Promise<boolean> {
+  if (process.env.NEXT_PUBLIC_FREE_FULL_ACCESS !== "true") return false;
+  try {
+    const supabase = getServiceRoleClient();
+    const { data } = await supabase
+      .from("launch_pricing")
+      .select("remaining_slots")
+      .eq("id", "default")
+      .single();
+    return !!data && data.remaining_slots > 0;
+  } catch {
+    return false;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Yuku Japan | Routed Japan Itineraries, Day by Day",
@@ -42,7 +58,7 @@ export default async function Home() {
   const currentMonth = getCurrentMonth();
   const sanitySeason = seasonToSanityBestSeason(currentSeason);
 
-  const [featuredLocations, locationCount, prefectureCount, tipCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations] =
+  const [featuredLocations, locationCount, prefectureCount, tipCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations, isFreePromo] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
@@ -52,6 +68,7 @@ export default async function Home() {
       getLandingPageContent(),
       getGuidesBySeason(sanitySeason, 3),
       fetchSeasonalLocations(currentMonth, 6),
+      getIsFreePromo(),
     ]);
 
   // Preload LCP hero image — browser starts fetching before parsing full DOM
@@ -67,6 +84,7 @@ export default async function Home() {
         <HeroOpening
           locationCount={locationCount}
           content={landingContent ?? undefined}
+          isFreePromo={isFreePromo}
         />
         <Philosophy
           locationCount={locationCount}
@@ -105,7 +123,7 @@ export default async function Home() {
           <AskYukuPreview />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
-          <FinalCTA content={landingContent ?? undefined} />
+          <FinalCTA content={landingContent ?? undefined} isFreePromo={isFreePromo} />
         </ErrorBoundary>
       </main>
     </>
