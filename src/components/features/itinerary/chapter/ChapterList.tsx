@@ -13,7 +13,6 @@ import type { BeatChip } from "./Beat";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { getGtag } from "@/lib/analytics/customLocations";
-import { env } from "@/lib/env";
 import { useFocusDay } from "@/lib/itinerary/useFocusDay";
 import { easeEditorialMut, durationBase } from "@/lib/motion";
 
@@ -163,18 +162,17 @@ export function ChapterList({
   const visibleDays = isPaged ? trip.days.slice(activeIdx, activeIdx + 1) : trip.days;
 
   const { index: focusDayIdx, isDayOfMode } = useFocusDay(trip.days);
-  const dayOfEnabled = env.itineraryV2DayOf;
   const prefersReducedMotion = useReducedMotion();
 
   const currentBeatIndexByDay = useMemo(() => {
     const out = new Map<string, number>();
-    if (!dayOfEnabled || !isDayOfMode) return out;
+    if (!isDayOfMode) return out;
     const focusDay = trip.days[focusDayIdx];
     if (!focusDay) return out;
     const now = new Date();
     out.set(focusDay.id, resolveCurrentBeatIdx(focusDay.beats, focusDay.date, now));
     return out;
-  }, [dayOfEnabled, isDayOfMode, focusDayIdx, trip.days]);
+  }, [isDayOfMode, focusDayIdx, trip.days]);
 
   useEffect(() => {
     const el = day1LastBeatRef.current;
