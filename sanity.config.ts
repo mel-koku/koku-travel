@@ -32,7 +32,7 @@ export default defineConfig({
     newDocumentOptions: (prev) =>
       prev.filter(
         (item) =>
-          !["siteSettings", "landingPage", "tripBuilderConfig", "pagesContent", "aboutPage", "commerceDisclosure"].includes(
+          !["siteSettings", "landingPage", "tripBuilderConfig", "pagesContent", "aboutPage", "conciergePage", "commerceDisclosure"].includes(
             item.templateId
           )
       ),
