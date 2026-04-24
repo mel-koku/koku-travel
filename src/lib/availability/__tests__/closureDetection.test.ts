@@ -20,13 +20,13 @@ const hours = (periods: Array<{ day: string; open?: string; close?: string; isOv
 describe("getClosuresForTripDate", () => {
   it("returns empty array when operatingHours is undefined (hours-unknown fallback)", () => {
     const stops = [stop("a")];
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toEqual([]);
   });
 
   it("returns empty array when periods array is empty (hours-unknown fallback)", () => {
     const stops = [stop("a", hours([]))];
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toEqual([]);
   });
 
@@ -42,7 +42,7 @@ describe("getClosuresForTripDate", () => {
         { day: "sunday" },
       ])),
     ];
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toEqual([{ stopId: "a", reason: "weekly-closure" }]);
   });
 
@@ -50,7 +50,7 @@ describe("getClosuresForTripDate", () => {
     const stops = [
       stop("a", hours([{ day: "thursday", open: "09:00", close: "17:00" }])),
     ];
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toEqual([]);
   });
 
@@ -59,7 +59,7 @@ describe("getClosuresForTripDate", () => {
       stop("a", hours([{ day: "monday" }])),
       stop("b", hours([{ day: "monday" }])),
     ];
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toHaveLength(2);
     expect(result.map((r) => r.stopId).sort()).toEqual(["a", "b"]);
   });
@@ -71,7 +71,7 @@ describe("getClosuresForTripDate", () => {
     // This test locks the rule.
     const stops = [stop("a", hours([{ day: "sunday" }]))];
     // 2026-04-23 is Thursday; Sunday-only hours → closed on Thursday.
-    const result = getClosuresForTripDate(stops, new Date("2026-04-23T00:00:00+09:00"));
+    const result = getClosuresForTripDate(stops, new Date("2026-04-23T12:00:00Z"));
     expect(result).toEqual([{ stopId: "a", reason: "weekly-closure" }]);
   });
 });
