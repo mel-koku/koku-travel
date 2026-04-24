@@ -98,6 +98,54 @@ export async function sendInquiryConfirmation(
   }
 }
 
+type ConciergeInquiryEmailData = {
+  name: string;
+  email: string;
+  createdAt: string;
+};
+
+/**
+ * Send admin notification about a new Yuku Concierge lead.
+ * Gracefully degrades if RESEND_API_KEY is not set.
+ */
+export async function sendConciergeInquiryNotification(
+  data: ConciergeInquiryEmailData
+): Promise<void> {
+  const apiKey = env.resendApiKey;
+  if (!apiKey) {
+    logger.warn(
+      "RESEND_API_KEY not set — skipping concierge inquiry notification email"
+    );
+    return;
+  }
+
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
+
+    await resend.emails.send({
+      from: "Yuku Japan <noreply@yukujapan.com>",
+      to: "concierge@yukujapan.com",
+      replyTo: data.email,
+      subject: `[Concierge] New inquiry — ${data.name}`,
+      text: [
+        `New Yuku Concierge inquiry received.`,
+        ``,
+        `Name: ${data.name}`,
+        `Email: ${data.email}`,
+        `Submitted: ${data.createdAt}`,
+        ``,
+        `Reply to this email to contact them directly.`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    logger.error(
+      "Failed to send concierge inquiry notification email",
+      err instanceof Error ? err : new Error(String(err))
+    );
+  }
+}
+
 type ContactEmailData = {
   name: string;
   email: string;
