@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
@@ -177,6 +177,10 @@ async function handleSingletonRevalidation(
   type: string,
   paths: string[]
 ) {
+  // Bust the Next.js data cache for this content type so ISR rebuilds
+  // fetch fresh data rather than serving the cached Sanity response.
+  revalidateTag(`sanity-${type}`);
+
   for (const path of paths) {
     revalidatePath(path);
   }
