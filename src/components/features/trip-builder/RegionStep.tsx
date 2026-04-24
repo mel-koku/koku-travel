@@ -360,7 +360,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   );
 
   return (
-    <div className="relative min-h-[calc(100dvh-5rem)] bg-background">
+    <div className="relative min-h-[calc(100dvh-3.5rem)] bg-background">
       <div aria-live="polite" className="sr-only">
         {autoSelectMessage}
       </div>
@@ -382,7 +382,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       {/* Layer 1: Scrollable content — flows over the fixed map */}
       <div className="relative z-10">
         {/* Heading */}
-        <div className="px-6 pt-24 lg:max-w-[45%] lg:px-10 lg:pt-28">
+        <div className="px-6 pt-8 lg:max-w-[45%] lg:px-10 lg:pt-10">
           <p className="eyebrow-editorial text-brand-primary">
             STEP 04
           </p>

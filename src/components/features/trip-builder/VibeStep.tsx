@@ -80,7 +80,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
   return (
     <div className="flex flex-1 flex-col bg-background">
       {/* Header */}
-      <div className="px-6 pt-20 text-center sm:pt-20 lg:pt-20">
+      <div className="px-6 pt-8 text-center lg:pt-10">
         <p className="eyebrow-editorial text-brand-primary">
           STEP 03
         </p>

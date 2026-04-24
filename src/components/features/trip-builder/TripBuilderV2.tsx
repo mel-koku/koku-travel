@@ -17,6 +17,7 @@ import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import { easePageTransition, durationSlow } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
+import { WizardChrome } from "./WizardChrome";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 export type TripBuilderV2Props = {
@@ -80,7 +81,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
 
   return (
     <div className="relative bg-background">
-      {/* Progress dots are now rendered inside StepShell's bottom nav */}
+      <WizardChrome />
 
       {/* Step Content */}
       <AnimatePresence mode="wait" custom={direction}>
@@ -91,7 +92,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
           initial={currentStep === 0 ? false : "enter"}
           animate="center"
           exit="exit"
-          className="min-h-[calc(100dvh-5rem)]"
+          className="min-h-[100dvh]"
         >
           {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} onQuickStart={quickStart} sanityConfig={sanityConfig} />}
 
@@ -323,12 +324,12 @@ function StepShell({
   }, []);
 
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
+    <div className="flex min-h-[100dvh] flex-col pt-14 pb-20">
       {/* Content area — grows to fill, page scrolls naturally */}
       <div
         className={cn(
           "flex flex-1 flex-col",
-          !fullBleed && "mx-auto w-full max-w-7xl px-4 pt-24 sm:px-6 lg:px-8"
+          !fullBleed && "mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8"
         )}
       >
         {children}
