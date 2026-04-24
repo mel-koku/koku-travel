@@ -296,7 +296,7 @@ export const POST = withApiHandler(
       // unlocked trips cap at MAX_PAID_REFINEMENTS to prevent abuse. Eliminates the
       // read-check-then-increment race that previously let concurrent requests both
       // pass the cap gate. Decrement on LLM failure or no-op stub below.
-      const fullAccessStub = await isFullAccessEnabled();
+      const fullAccessStub = await isFullAccessEnabled(user?.id);
       let reservedSlot = false;
       let isUnlockedTrip = false;
 
@@ -453,7 +453,7 @@ export const POST = withApiHandler(
     }
 
     // Check refinement limits for free users
-    const fullAccess = await isFullAccessEnabled();
+    const fullAccess = await isFullAccessEnabled(user?.id);
     if (!fullAccess && user) {
       const serviceClient = getServiceRoleClient();
       const { data: tripRow } = await serviceClient

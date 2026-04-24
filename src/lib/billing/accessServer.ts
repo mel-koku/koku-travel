@@ -5,7 +5,8 @@ import "server-only";
  * For client-side access checks, use isDayAccessible() from ./access.ts
  * with a pre-computed fullAccessEnabled boolean passed from the server.
  */
-export async function isFullAccessEnabled(): Promise<boolean> {
+export async function isFullAccessEnabled(userId?: string | null): Promise<boolean> {
+  if (!userId) return false;
   if (process.env.FREE_FULL_ACCESS === "true") return true;
 
   try {

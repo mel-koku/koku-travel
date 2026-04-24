@@ -178,7 +178,7 @@ export const POST = withApiHandler(
     const days = result.data?.itinerary?.days;
     const hasGeneratedItinerary = Array.isArray(days) && days.length > 0;
 
-    if (hasGeneratedItinerary && (await isFullAccessEnabled())) {
+    if (hasGeneratedItinerary && (await isFullAccessEnabled(user!.id))) {
       try {
         // stampFreeUnlockedAt swallows its own errors; the outer try/catch here
         // guards against unexpected rejections so the response is never
