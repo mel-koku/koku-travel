@@ -50,11 +50,13 @@ export function LayoutWrapper({
       <MotionConfig reducedMotion="user">
       <SharedProviders>
         <LenisProvider>
-          <ScrollProgressBar />
+          {!isTripBuilder && <ScrollProgressBar />}
           <div className="flex min-h-[100dvh] flex-col">
-            <ErrorBoundary fallback={<></>}>
-              <Header />
-            </ErrorBoundary>
+            {!isTripBuilder && (
+              <ErrorBoundary fallback={<></>}>
+                <Header />
+              </ErrorBoundary>
+            )}
             <ErrorBoundary>
               <main id="main-content" className="flex-1">
                 <PageTransition>{children}</PageTransition>
@@ -66,7 +68,7 @@ export function LayoutWrapper({
               </ErrorBoundary>
             )}
           </div>
-          <AskYukuButton />
+          {!isTripBuilder && <AskYukuButton />}
         </LenisProvider>
       </SharedProviders>
       </MotionConfig>

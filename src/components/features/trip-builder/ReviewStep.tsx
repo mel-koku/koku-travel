@@ -199,7 +199,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
   const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
   return (
-    <div className="flex flex-col gap-8 pb-32 lg:pb-8">
+    <div className="flex flex-col gap-8 pt-4 pb-32 lg:pb-8">
       {/* Step heading — centered, spans both columns */}
       <div className="text-center">
         <p className="eyebrow-editorial text-brand-primary">STEP 05</p>

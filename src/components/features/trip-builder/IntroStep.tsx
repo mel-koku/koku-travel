@@ -93,7 +93,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
         };
 
   return (
-    <div className="relative -mt-20 flex min-h-[100dvh] items-center overflow-hidden bg-background pt-20">
+    <div className="relative flex min-h-[100dvh] items-center overflow-hidden bg-background pt-14">
 
       {/* Main grid content */}
       <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-6 py-20 sm:py-28 lg:grid-cols-[1fr_0.82fr] lg:gap-16 lg:px-10">
@@ -272,7 +272,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
         </div>
 
         {/* ── RIGHT COLUMN — Image Panel ── */}
-        <div className="flex w-full items-start lg:sticky lg:top-24 lg:self-start">
+        <div className="flex w-full items-start lg:sticky lg:top-16 lg:self-start">
           <IntroImagePanel
             src={accentImage}
             caption={imageCaption}
