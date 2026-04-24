@@ -262,6 +262,25 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         </div>
       )}
 
+      {/* Yuku Concierge — off-ramp to the separate bespoke service */}
+      <div className="space-y-2">
+        <h3 className="eyebrow-editorial">
+          Yuku Concierge
+        </h3>
+        <div className="rounded-lg border border-border bg-canvas p-4">
+          <p className="text-sm text-foreground leading-relaxed">
+            Prefer we handle it end to end? Our concierge designs bespoke trips with a native Japanese coordinator on the ground. Reservations, logistics, and real-time support while you travel.
+          </p>
+          <a
+            href="/concierge"
+            className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline"
+          >
+            Learn about Concierge
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
       {/* Export Actions */}
       <div className="space-y-2">
         <h3 className="eyebrow-editorial">
