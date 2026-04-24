@@ -190,6 +190,9 @@ const nextConfig: NextConfig = {
     remotePatterns,
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 604800, // 7 days — location/guide images are static
+    // Sanity CDN images are routed through Sanity's own transformation pipeline
+    // by the custom loader. Non-Sanity images continue through /_next/image.
+    loaderFile: "./src/lib/imageLoader.ts",
     // Skip image optimization proxy in dev — avoids timeout cascade when
     // Turbopack compilation blocks the event loop for 10-30s
     unoptimized: !isProduction,
