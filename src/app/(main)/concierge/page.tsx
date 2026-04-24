@@ -7,7 +7,6 @@ import {
   ConciergeIncludes,
   ConciergeInquiryForm,
   ConciergeFAQ,
-  ConciergeFinalCTA,
 } from "@/components/concierge";
 
 export const metadata: Metadata = {
@@ -38,7 +37,6 @@ export default function ConciergePage() {
       <ConciergeIncludes />
       <ConciergeInquiryForm />
       <ConciergeFAQ />
-      <ConciergeFinalCTA />
     </main>
   );
 }

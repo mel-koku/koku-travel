@@ -36,7 +36,6 @@ export function ConciergeHero() {
           >
             The app plans the route. Our team plans the rest, down to the ryokan room,
             the train seat, and the phone call in Japanese when something needs sorting.
-            Everything short of boarding the plane with you.
           </p>
         </ScrollReveal>
 

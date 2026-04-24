@@ -21,15 +21,9 @@ export function ConciergeIntro() {
         </ScrollReveal>
         <ScrollReveal delay={0.16}>
           <p className={typography({ intent: "editorial-prose" })}>
-            Guidebooks get you a list. Apps get you a route. Neither one will call the
-            ryokan in Hakone when there&rsquo;s a typhoon rolling in, or hold a table at
-            a counter kaiseki that doesn&rsquo;t take email.
-          </p>
-        </ScrollReveal>
-        <ScrollReveal delay={0.22}>
-          <p className={cn(typography({ intent: "editorial-prose" }), "mt-5")}>
-            Yuku Concierge does. You bring the dates, the vibe, and the people you&rsquo;re
-            bringing with you. We handle the rest.
+            We call the ryokan in Hakone when there&rsquo;s a typhoon rolling in. We hold
+            the table at a counter kaiseki that doesn&rsquo;t take email. You bring the
+            dates and the group. We handle the rest.
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.3}>
