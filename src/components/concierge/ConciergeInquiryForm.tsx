@@ -66,7 +66,6 @@ export function ConciergeInquiryForm() {
                     )}
                   >
                     Leave your name and email. We&rsquo;ll be in touch within 2 business days.
-                    No pressure, no lists, no forwarding your info anywhere.
                   </p>
                 </div>
 
@@ -128,7 +127,7 @@ export function ConciergeInquiryForm() {
                 </form>
 
                 <p className={cn(typography({ intent: "utility-meta" }), "mt-5 text-center")}>
-                  We read every inquiry personally. No spam, no newsletter, no third parties.
+                  Read by a human. Replied to by the same team who&rsquo;ll plan your trip.
                 </p>
               </>
             )}
@@ -168,8 +167,7 @@ function SuccessState() {
           "mx-auto max-w-[40ch]",
         )}
       >
-        We read every inquiry personally and typically reply within 2 business days. Keep an
-        eye on your inbox.
+        We read every inquiry personally and typically reply within 2 business days.
       </p>
     </div>
   );
