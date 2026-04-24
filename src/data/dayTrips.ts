@@ -45,6 +45,18 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 5,
       description: "Vibrant food scene and modern attractions",
     },
+    {
+      cityId: "otsu",
+      travelMinutes: 15,
+      minDaysBeforeSuggesting: 3,
+      description: "Enryakuji temple complex on Mt. Hiei and Lake Biwa shoreline, 15 minutes from central Kyoto",
+    },
+    {
+      cityId: "himeji",
+      travelMinutes: 75,
+      minDaysBeforeSuggesting: 4,
+      description: "One of 12 surviving original castle keeps in Japan, significantly less visited than Kyoto",
+    },
   ],
   osaka: [
     {
@@ -65,6 +77,18 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 4,
       description: "Ancient capital with deer park",
     },
+    {
+      cityId: "himeji",
+      travelMinutes: 45,
+      minDaysBeforeSuggesting: 3,
+      description: "Japan's most complete original castle keep, 45 minutes from Osaka by Shinkansen",
+    },
+    {
+      cityId: "wakayama",
+      travelMinutes: 90,
+      minDaysBeforeSuggesting: 4,
+      description: "Koyasan mountain monastery and Kumano pilgrimage routes, 90 minutes south of Osaka",
+    },
   ],
   nara: [
     {
@@ -78,6 +102,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       travelMinutes: 50,
       minDaysBeforeSuggesting: 3,
       description: "Japan's kitchen and entertainment hub",
+    },
+    {
+      cityId: "wakayama",
+      travelMinutes: 110,
+      minDaysBeforeSuggesting: 3,
+      description: "Koyasan mountain monastery and Kumano pilgrimage coast, accessible from Nara",
     },
   ],
   // Kanto region
@@ -696,7 +726,21 @@ export function shouldSuggestDayTrip(
   // The threshold is generous because the generator's filtering (geographic
   // validation, name dedup, interest matching) reduces effective availability
   // well below the raw unused count.
-  const locationsNeeded = activitiesPerDay * 5;
+  //
+  // Golden Route cities have hundreds of locations so the default threshold is
+  // almost never reached, suppressing variety suggestions. A higher multiplier
+  // fires the day-trip check earlier so dispersal destinations surface for
+  // travelers spending 3+ days in high-density cities.
+  const CROWDED_CITIES = new Set([
+    "kyoto",
+    "tokyo",
+    "osaka",
+    "nara",
+    "hakone",
+    "kamakura",
+  ]);
+  const pressureMultiplier = CROWDED_CITIES.has(baseCityId) ? 8 : 5;
+  const locationsNeeded = activitiesPerDay * pressureMultiplier;
   const isRunningLow = remainingLocationsInCity < locationsNeeded;
 
   if (!isRunningLow) return undefined;

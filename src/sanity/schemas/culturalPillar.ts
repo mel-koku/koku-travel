@@ -45,7 +45,15 @@ export const culturalPillar = defineType({
       title: "Tagline",
       type: "string",
       description: "One-line hook",
-      validation: (rule) => rule.required().max(100),
+      validation: (rule) =>
+        rule
+          .required()
+          .max(100)
+          .custom((val) => {
+            if (typeof val === "string" && /--|—/.test(val))
+              return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+            return true;
+          }),
     }),
     defineField({
       name: "concept",
@@ -53,7 +61,15 @@ export const culturalPillar = defineType({
       type: "text",
       rows: 3,
       description: "What this principle means (max 300 chars)",
-      validation: (rule) => rule.required().max(300),
+      validation: (rule) =>
+        rule
+          .required()
+          .max(300)
+          .custom((val) => {
+            if (typeof val === "string" && /--|—/.test(val))
+              return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+            return true;
+          }),
     }),
     defineField({
       name: "inPractice",
@@ -61,7 +77,15 @@ export const culturalPillar = defineType({
       type: "text",
       rows: 3,
       description: "How it shows up in daily Japanese life (max 400 chars)",
-      validation: (rule) => rule.required().max(400),
+      validation: (rule) =>
+        rule
+          .required()
+          .max(400)
+          .custom((val) => {
+            if (typeof val === "string" && /--|—/.test(val))
+              return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+            return true;
+          }),
     }),
     defineField({
       name: "forTravelers",
@@ -69,7 +93,15 @@ export const culturalPillar = defineType({
       type: "text",
       rows: 3,
       description: "What this means for visitors (max 400 chars)",
-      validation: (rule) => rule.required().max(400),
+      validation: (rule) =>
+        rule
+          .required()
+          .max(400)
+          .custom((val) => {
+            if (typeof val === "string" && /--|—/.test(val))
+              return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+            return true;
+          }),
     }),
     defineField({
       name: "briefIntro",
@@ -77,7 +109,15 @@ export const culturalPillar = defineType({
       type: "text",
       rows: 2,
       description: "Card collapsed state (max 200 chars)",
-      validation: (rule) => rule.required().max(200),
+      validation: (rule) =>
+        rule
+          .required()
+          .max(200)
+          .custom((val) => {
+            if (typeof val === "string" && /--|—/.test(val))
+              return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+            return true;
+          }),
     }),
     defineField({
       name: "icon",
@@ -122,21 +162,45 @@ export const culturalPillar = defineType({
               name: "situation",
               title: "Situation",
               type: "string",
-              validation: (rule) => rule.required().max(100),
+              validation: (rule) =>
+                rule
+                  .required()
+                  .max(100)
+                  .custom((val) => {
+                    if (typeof val === "string" && /--|—/.test(val))
+                      return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+                    return true;
+                  }),
             }),
             defineField({
               name: "action",
               title: "Action",
               type: "text",
               rows: 2,
-              validation: (rule) => rule.required().max(300),
+              validation: (rule) =>
+                rule
+                  .required()
+                  .max(300)
+                  .custom((val) => {
+                    if (typeof val === "string" && /--|—/.test(val))
+                      return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+                    return true;
+                  }),
             }),
             defineField({
               name: "why",
               title: "Why",
               type: "text",
               rows: 2,
-              validation: (rule) => rule.required().max(300),
+              validation: (rule) =>
+                rule
+                  .required()
+                  .max(300)
+                  .custom((val) => {
+                    if (typeof val === "string" && /--|—/.test(val))
+                      return 'Remove em-dashes ("--" or "—"). Use a period or two sentences instead.';
+                    return true;
+                  }),
             }),
             defineField({
               name: "categories",
