@@ -34,6 +34,12 @@ export default function ContactPage() {
         <p className="text-foreground-secondary leading-relaxed">
           Have feedback or a question? Reach us at hello@yukujapan.com.
         </p>
+        <p className="mt-4 text-foreground-secondary leading-relaxed">
+          Planning a bespoke trip? Our concierge handles end-to-end coordination.{" "}
+          <a href="/concierge" className="font-medium text-brand-primary hover:underline">
+            Learn about Concierge →
+          </a>
+        </p>
       </div>
     </main>
   );

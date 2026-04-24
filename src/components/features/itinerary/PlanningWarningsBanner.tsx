@@ -44,6 +44,10 @@ export function PlanningWarningsBanner({ warnings }: Props) {
 
   if (relevant.length === 0) return null;
 
+  const hasLogisticsWarning = relevant.some(
+    (w) => w.type === "distance" || w.type === "return_to_airport",
+  );
+
   return (
     <section className="rounded-md bg-surface px-4 py-3">
       <button
@@ -76,6 +80,21 @@ export function PlanningWarningsBanner({ warnings }: Props) {
             </li>
           ))}
         </ul>
+      )}
+
+      {isOpen && hasLogisticsWarning && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-sm text-foreground-secondary">
+            If managing this feels like a lot, our{" "}
+            <a
+              href="/concierge"
+              className="font-medium text-brand-primary hover:underline"
+            >
+              concierge
+            </a>
+            {" "}can handle the logistics.
+          </p>
+        </div>
       )}
     </section>
   );
