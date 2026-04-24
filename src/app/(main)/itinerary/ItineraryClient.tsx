@@ -142,7 +142,6 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
     setGenerationPromise(runGeneration());
   }, [runGeneration]);
 
-  // Unlock button handler (passed down to UnlockCard via ItineraryShell)
   const handleStartUnlock = useCallback(async () => {
     if (!selectedTrip) return;
 

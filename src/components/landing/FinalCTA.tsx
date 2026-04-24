@@ -8,9 +8,10 @@ import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FinalCTAProps = {
   content?: LandingPageContent;
+  isFreePromo?: boolean;
 };
 
-export function FinalCTA({ content }: FinalCTAProps) {
+export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
   return (
     <section
       aria-label="Get started"
@@ -63,7 +64,11 @@ export function FinalCTA({ content }: FinalCTAProps) {
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
-            <p className="mt-4 text-xs text-white/60">Free to preview. $19 to unlock your full trip.</p>
+            <p className="mt-4 text-xs text-white/60">
+              {isFreePromo
+                ? "Free during our launch. No payment required."
+                : "Free to preview. $19 to unlock your full trip."}
+            </p>
           </motion.div>
         </div>
       </div>
