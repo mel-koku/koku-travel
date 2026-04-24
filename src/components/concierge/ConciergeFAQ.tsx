@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const items = [
@@ -36,14 +38,7 @@ export function ConciergeFAQ() {
           <p className="eyebrow-editorial mb-4 inline-block">Questions</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <h2
-            className="mb-12 font-serif font-medium text-foreground text-balance"
-            style={{
-              fontSize: "clamp(1.75rem, 3.5vw, 3rem)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.005em",
-            }}
-          >
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-12")}>
             A few things people ask first.
           </h2>
         </ScrollReveal>
@@ -55,23 +50,16 @@ export function ConciergeFAQ() {
             {items.map((item) => (
               <li key={item.q} className="border-t border-border">
                 <details className="group py-6">
-                  <summary
-                    className="flex cursor-pointer list-none items-center justify-between gap-4 font-serif font-semibold text-foreground transition-colors hover:text-brand-primary [&amp;::-webkit-details-marker]:hidden"
-                    style={{ fontSize: "1.2rem", lineHeight: 1.3 }}
-                  >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-lg font-semibold text-foreground transition-colors hover:text-brand-primary [&amp;::-webkit-details-marker]:hidden">
                     <span>{item.q}</span>
                     <span
                       aria-hidden="true"
-                      className="font-serif text-brand-primary transition-transform duration-200 group-open:rotate-45"
-                      style={{ fontSize: "1.5rem", fontWeight: 400, lineHeight: 1 }}
+                      className="font-serif text-2xl font-normal leading-none text-brand-primary transition-transform duration-200 group-open:rotate-45"
                     >
                       +
                     </span>
                   </summary>
-                  <p
-                    className="mt-3 text-foreground-secondary"
-                    style={{ fontSize: "1rem", lineHeight: 1.6 }}
-                  >
+                  <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3")}>
                     {item.a}
                   </p>
                 </details>

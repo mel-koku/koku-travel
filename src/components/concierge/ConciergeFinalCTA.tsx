@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { durationBase, easeReveal } from "@/lib/motion";
 
 export function ConciergeFinalCTA() {
@@ -28,8 +30,7 @@ export function ConciergeFinalCTA() {
               duration: durationBase,
               ease: [...easeReveal] as [number, number, number, number],
             }}
-            className="mb-4 inline-block font-sans font-medium uppercase text-white/60"
-            style={{ fontSize: "11px", letterSpacing: "0.2em" }}
+            className="eyebrow-editorial mb-4 inline-block text-white/60"
           >
             One trip, done right
           </motion.p>
@@ -42,12 +43,7 @@ export function ConciergeFinalCTA() {
               delay: 0.08,
               ease: [...easeReveal] as [number, number, number, number],
             }}
-            className="font-serif font-medium text-white text-balance"
-            style={{
-              fontSize: "clamp(1.75rem, 3.5vw, 3rem)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.005em",
-            }}
+            className={cn(typography({ intent: "editorial-h2" }), "text-white")}
           >
             Your Japan is waiting. We&rsquo;d love to plan it.
           </motion.h2>
@@ -60,8 +56,7 @@ export function ConciergeFinalCTA() {
               delay: 0.15,
               ease: [...easeReveal] as [number, number, number, number],
             }}
-            className="mt-4 text-white/72"
-            style={{ fontSize: "1.05rem", lineHeight: 1.55 }}
+            className={cn(typography({ intent: "utility-body" }), "mt-4 text-white/75")}
           >
             A short note is all we need to get started.
           </motion.p>
@@ -78,7 +73,7 @@ export function ConciergeFinalCTA() {
           >
             <Link
               href="#inquire"
-              className="inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-8 text-[13px] font-semibold uppercase tracking-[0.1em] text-white shadow-[var(--shadow-elevated)] transition-colors hover:bg-brand-primary/90 active:scale-[0.98]"
+              className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
             >
               Start my inquiry
             </Link>

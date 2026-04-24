@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function ConciergeIntro() {
@@ -13,32 +15,19 @@ export function ConciergeIntro() {
           <p className="eyebrow-editorial mb-4 inline-block">Why Concierge</p>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <h2
-            className="mb-8 font-serif font-medium text-foreground text-balance"
-            style={{
-              fontSize: "clamp(1.75rem, 3.5vw, 3rem)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.005em",
-            }}
-          >
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mb-8")}>
             Built for travelers who want the trip, not the logistics.
           </h2>
         </ScrollReveal>
         <ScrollReveal delay={0.16}>
-          <p
-            className="font-serif text-foreground-body"
-            style={{ fontSize: "clamp(1.125rem, 1.6vw, 1.375rem)", lineHeight: 1.55 }}
-          >
+          <p className={typography({ intent: "editorial-prose" })}>
             Guidebooks get you a list. Apps get you a route. Neither one will call the
             ryokan in Hakone when there&rsquo;s a typhoon rolling in, or hold a table at
             a counter kaiseki that doesn&rsquo;t take email.
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.22}>
-          <p
-            className="mt-5 font-serif text-foreground-body"
-            style={{ fontSize: "clamp(1.125rem, 1.6vw, 1.375rem)", lineHeight: 1.55 }}
-          >
+          <p className={cn(typography({ intent: "editorial-prose" }), "mt-5")}>
             Yuku Concierge does. You bring the dates, the vibe, and the people you&rsquo;re
             bringing with you. We handle the rest.
           </p>
