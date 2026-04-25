@@ -482,6 +482,7 @@ export async function fetchTopRatedLocations(
     .from("locations")
     .select(LOCATION_LISTING_COLUMNS)
     .eq("is_active", true)
+    .is("parent_id", null)
     .not("place_id", "is", null)
     .neq("place_id", "")
     .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
