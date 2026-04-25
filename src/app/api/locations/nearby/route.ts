@@ -7,6 +7,8 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
+import type { LocationListingDbRow } from "@/lib/supabase/projections";
 
 const NEARBY_COLUMNS = `
   id,
@@ -159,31 +161,15 @@ export const GET = withApiHandler(
       return a.distance - b.distance;
     });
 
+    // Transform via canonical mapper. Override image with bandwidth
+    // optimization (primary_photo_url present → empty image), and tag each
+    // row with the computed distance (meters).
     const locations: (Location & { distance: number })[] = filtered
       .slice(0, limit)
       .map(({ row, distance }) => ({
-        id: row.id,
-        name: row.name,
-        region: row.region,
-        city: row.city,
-        prefecture: row.prefecture ?? undefined,
-        category: row.category,
+        ...transformDbRowToLocation(row as unknown as LocationListingDbRow),
         image: row.primary_photo_url ? "" : row.image,
-        estimatedDuration: row.estimated_duration ?? undefined,
-        rating: row.rating ?? undefined,
-        reviewCount: row.review_count ?? undefined,
-        primaryPhotoUrl: row.primary_photo_url ?? undefined,
-        googlePrimaryType: row.google_primary_type ?? undefined,
-        priceLevel: row.price_level as Location["priceLevel"] ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        isHiddenGem: row.is_hidden_gem ?? undefined,
-        nameJapanese: row.name_japanese ?? undefined,
-        nearestStation: row.nearest_station ?? undefined,
-        cashOnly: row.cash_only ?? undefined,
-        reservationInfo: row.reservation_info ?? undefined,
-        operatingHours: normalizeOperatingHours(row.operating_hours),
-        shortDescription: row.short_description ?? undefined,
-        distance: Math.round(distance * 1000), // meters
+        distance: Math.round(distance * 1000),
       }));
 
     return NextResponse.json(
