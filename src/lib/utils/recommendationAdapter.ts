@@ -1,12 +1,12 @@
 /**
- * Adapter utilities for converting between RecommendationReason formats.
+ * Adapter utility for reading legacy `TripActivity.reasoning` (structured object form
+ * from `tripDomain.ts`) and projecting it into the canonical
+ * `ItineraryRecommendationReason` (array form from `itinerary.ts`).
  *
- * Two RecommendationReason types exist in the codebase:
- * 1. itinerary.ts - Flexible array format (canonical, used in itinerary data)
- * 2. tripDomain.ts - Structured object format (legacy, used in domain model)
- *
- * This adapter provides conversion between formats to maintain compatibility
- * while allowing gradual migration to the canonical array format.
+ * No current code produces the structured form — the itinerary engine writes the
+ * canonical shape directly. This adapter exists for defensive read of legacy Trip
+ * JSON that may still be persisted in Supabase / cache from an earlier engine
+ * version. New code should use the canonical form from `@/types/itinerary` directly.
  */
 
 import type { RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
@@ -62,54 +62,3 @@ export function convertTripReasonToItineraryReason(
   };
 }
 
-/**
- * Converts an itinerary RecommendationReason (flexible factors array)
- * to a tripDomain RecommendationReason (structured factors object).
- *
- * Note: This conversion may lose information if the array contains
- * factors that don't map to the structured format's known keys.
- *
- * @param reason - The flexible recommendation reason from itinerary
- * @returns The structured object format used in tripDomain types
- */
-export function convertItineraryReasonToTripReason(
-  reason: ItineraryRecommendationReason | undefined,
-): TripRecommendationReason | undefined {
-  if (!reason) {
-    return undefined;
-  }
-
-  const factors: TripRecommendationReason["factors"] = {};
-
-  if (reason.factors) {
-    const labelToKey: Record<string, keyof typeof factors> = {
-      "Interest Match": "interest",
-      "interest": "interest",
-      "Proximity": "proximity",
-      "proximity": "proximity",
-      "Budget Fit": "budget",
-      "budget": "budget",
-      "Accessibility": "accessibility",
-      "accessibility": "accessibility",
-      "Time Fit": "time",
-      "time": "time",
-      "Weather": "weather",
-      "weather": "weather",
-      "Group Fit": "groupFit",
-      "groupFit": "groupFit",
-    };
-
-    for (const item of reason.factors) {
-      const key = labelToKey[item.factor] ?? labelToKey[item.factor.toLowerCase()];
-      if (key) {
-        factors[key] = item.score;
-      }
-    }
-  }
-
-  return {
-    primaryReason: reason.primaryReason,
-    factors,
-    alternativesConsidered: reason.alternativesConsidered,
-  };
-}
