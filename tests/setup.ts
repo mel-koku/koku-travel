@@ -74,6 +74,8 @@ vi.mock("next/headers", () => ({
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
   revalidateTag: vi.fn(),
+  // unstable_cache: identity wrapper so cached fns run directly in tests
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
 }));
 
 // Mock Next.js server (NextRequest, NextResponse)
