@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Minus, Plane, Star } from "lucide-react";
+import { Check, Minus, Plane, PlaneTakeoff, Repeat, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut, durationBase } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -19,6 +19,7 @@ type RegionRowProps = {
   isHovered: boolean;
   isRecommended: boolean;
   isEntryPointRegion: boolean;
+  isExitPointRegion: boolean;
   regionSelectionState: RegionSelectionState;
   onClick: () => void;
   onHover: () => void;
@@ -37,6 +38,7 @@ export function RegionRow({
   isHovered,
   isRecommended,
   isEntryPointRegion,
+  isExitPointRegion,
   regionSelectionState,
   onClick,
   onHover,
@@ -121,12 +123,22 @@ export function RegionRow({
 
       {/* Badges */}
       <div className="flex items-center gap-2">
-        {isEntryPointRegion && (
+        {isEntryPointRegion && isExitPointRegion ? (
+          <span className="hidden items-center gap-1 rounded-full bg-accent/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-accent sm:flex">
+            <Repeat className="h-3 w-3" />
+            Round Trip
+          </span>
+        ) : isEntryPointRegion ? (
           <span className="hidden items-center gap-1 rounded-full bg-accent/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-accent sm:flex">
             <Plane className="h-3 w-3" />
             Arrival
           </span>
-        )}
+        ) : isExitPointRegion ? (
+          <span className="hidden items-center gap-1 rounded-full bg-accent/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-accent sm:flex">
+            <PlaneTakeoff className="h-3 w-3" />
+            Departure
+          </span>
+        ) : null}
         {isRecommended && (
           <span className="hidden items-center gap-1 rounded-full bg-brand-primary/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-brand-primary sm:flex">
             <Star className="h-3 w-3 fill-current" />
