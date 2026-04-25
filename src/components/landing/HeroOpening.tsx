@@ -77,6 +77,8 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
             priority
             sizes="100vw"
           />
+          {/* Top scrim for header contrast */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 scrim-50 scrim-to-b" />
           {/* Bottom gradient */}
           <div
             className="absolute inset-0"
@@ -148,6 +150,8 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
             priority
             sizes="100vw"
           />
+          {/* Top scrim for header contrast */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 scrim-50 scrim-to-b" />
           {/* Bottom gradient */}
           <div
             className="absolute inset-0"
