@@ -92,38 +92,6 @@ export function calculateTotalMatchingLocations(
 }
 
 /**
- * Calculate the relevance percentage of a city based on selected interests.
- *
- * @deprecated Use getCitiesByRelevance() which calculates relevance relative to max matching count.
- * This function is kept for backwards compatibility but returns a simple binary relevance.
- *
- * @param city - The city name
- * @param selectedInterests - Array of selected interest IDs
- * @returns Relevance percentage (0-100)
- */
-export function calculateCityRelevance(city: string, selectedInterests: InterestId[]): number {
-  if (selectedInterests.length === 0) {
-    return 0;
-  }
-
-  const data = getCityInterestsData();
-  const cityData = data.cities[city];
-  if (!cityData) {
-    return 0;
-  }
-
-  let matchingInterests = 0;
-  for (const interest of selectedInterests) {
-    const count = cityData[interest as keyof typeof cityData];
-    if (count && count > 0) {
-      matchingInterests++;
-    }
-  }
-
-  return Math.round((matchingInterests / selectedInterests.length) * 100);
-}
-
-/**
  * Get all cities sorted by relevance to selected interests.
  *
  * Relevance is calculated as a percentage relative to the city with the most

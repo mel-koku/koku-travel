@@ -92,8 +92,6 @@ export type ChapterListProps = {
   selectedDayIndex?: number;
   /** Called when prev/next arrows change the active day. */
   onDayChange?: (dayIndex: number) => void;
-  /** @deprecated — scroll-based day tracking, unused when selectedDayIndex is set */
-  onVisibleDayChange?: (dayIndex: number) => void;
   onReorderBeats?: (dayIndex: number, activityIds: string[]) => void;
   onReplaceBeat?: (dayIndex: number, beatId: string) => void;
   onNoteChange?: (dayIndex: number, beatId: string, note: string) => void;

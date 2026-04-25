@@ -3,18 +3,6 @@ import { REGIONS } from "./regions";
 import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
 /**
- * Calculate distance between two coordinates using Haversine formula.
- * Returns distance in meters.
- * @deprecated Use `calculateDistanceMeters` from `@/lib/utils/geoUtils` directly.
- */
-export function calculateDistance(
-  coord1: { lat: number; lng: number },
-  coord2: { lat: number; lng: number },
-): number {
-  return calculateDistanceMeters(coord1, coord2);
-}
-
-/**
  * Approximate city center coordinates
  */
 export function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } {
@@ -96,7 +84,7 @@ export function getNearestCity(coordinates: { lat: number; lng: number }): CityI
   for (const region of REGIONS) {
     for (const city of region.cities) {
       const cityCoords = getCityCenterCoordinates(city.id);
-      const distance = calculateDistance(coordinates, cityCoords);
+      const distance = calculateDistanceMeters(coordinates, cityCoords);
       if (distance < minDistance) {
         minDistance = distance;
         nearestCity = city.id;
