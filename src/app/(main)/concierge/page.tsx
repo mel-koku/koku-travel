@@ -77,8 +77,8 @@ export default async function ConciergePage() {
       )}
 
       <ConciergeIncludes content={content} />
-      <ConciergeFAQ content={content} />
       <ConciergeInquiryForm content={content} />
+      <ConciergeFAQ content={content} />
     </main>
   );
 }
