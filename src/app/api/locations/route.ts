@@ -10,6 +10,7 @@ import {
   createPaginatedResponse,
 } from "@/lib/api/pagination";
 import { LOCATION_LISTING_COLUMNS, type LocationListingDbRow } from "@/lib/supabase/projections";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { applySearchFilter } from "@/lib/supabase/searchFilters";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 
@@ -118,37 +119,12 @@ export const GET = withApiHandler(
       }
     }
 
-    // Transform Supabase data to Location type
+    // Transform Supabase data to Location type via canonical mapper.
+    // parentName is denormalized from a separate query and overlaid here.
     const locations: Location[] = rows.map((row) => ({
-        id: row.id,
-        name: row.name,
-        region: row.region,
-        city: row.city,
-        prefecture: row.prefecture ?? undefined,
-        category: row.category,
-        image: row.image,
-        minBudget: row.min_budget ?? undefined,
-        estimatedDuration: row.estimated_duration ?? undefined,
-        shortDescription: row.short_description ?? undefined,
-        rating: row.rating ?? undefined,
-        reviewCount: row.review_count ?? undefined,
-        placeId: row.place_id ?? undefined,
-        primaryPhotoUrl: row.primary_photo_url ?? undefined,
-        // Google Places enrichment fields
-        googlePrimaryType: row.google_primary_type ?? undefined,
-        googleTypes: row.google_types ?? undefined,
-        businessStatus: row.business_status as Location['businessStatus'] ?? undefined,
-        priceLevel: row.price_level as Location['priceLevel'] ?? undefined,
-        accessibilityOptions: row.accessibility_options ?? undefined,
-        dietaryOptions: row.dietary_options ?? undefined,
-        serviceOptions: row.service_options ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        isFeatured: row.is_featured ?? undefined,
-        jtaApproved: row.jta_approved ?? undefined,
-        isUnescoSite: row.is_unesco_site ?? undefined,
-        parentId: row.parent_id ?? undefined,
-        parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
-      }));
+      ...transformDbRowToLocation(row),
+      parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
+    }));
 
     // Create paginated response
     const response = createPaginatedResponse(locations, total, pagination);
