@@ -8,6 +8,7 @@ import {
 } from "@/lib/email/emailService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest, internalError } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 
 const inquirySchema = z.object({
@@ -26,22 +27,19 @@ const inquirySchema = z.object({
  * Creates a booking inquiry and sends email notifications.
  */
 export const POST = withApiHandler(
-  async (request: NextRequest, { user }) => {
+  async (request: NextRequest, { context, user }) => {
+    const requestId = context.requestId;
     // Parse and validate body
     let body: z.infer<typeof inquirySchema>;
     try {
       const raw = await request.json();
       body = inquirySchema.parse(raw);
     } catch (err) {
-      return NextResponse.json(
-        {
-          error:
-            err instanceof z.ZodError
-              ? err.errors.map((e) => e.message).join(", ")
-              : "Invalid request body",
-        },
-        { status: 400 },
-      );
+      const message =
+        err instanceof z.ZodError
+          ? err.errors.map((e) => e.message).join(", ")
+          : "Invalid request body";
+      return badRequest(message, undefined, { requestId });
     }
 
     // Create the inquiry
@@ -56,10 +54,7 @@ export const POST = withApiHandler(
     });
 
     if (!result) {
-      return NextResponse.json(
-        { error: "Failed to create inquiry" },
-        { status: 500 },
-      );
+      return internalError("Failed to create inquiry", undefined, { requestId });
     }
 
     // Fire emails async (non-blocking)

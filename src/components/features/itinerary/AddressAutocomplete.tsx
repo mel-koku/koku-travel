@@ -96,20 +96,20 @@ export function AddressAutocomplete({ onSelect, onUseAsIs, initialValue = "" }: 
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Address or place name"
-        className="w-full rounded border px-3 py-2"
+        className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
       />
       {value.length >= 3 && (
-        <div className="mt-1 rounded border bg-white shadow">
-          {loading && <div className="px-3 py-2 text-sm text-gray-500">Searching…</div>}
+        <div className="mt-1 rounded-md border border-border bg-surface shadow-[var(--shadow-card)]">
+          {loading && <div className="px-3 py-2 text-sm text-foreground-secondary">Searching…</div>}
           {mapboxSuggestions.map((s) => (
             <button
               key={s.id}
               type="button"
               onClick={() => selectSuggestion(s, "mapbox")}
-              className="block w-full px-3 py-2 text-left hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left hover:bg-canvas"
             >
-              <div className="font-medium">{s.title}</div>
-              {s.subtitle && <div className="text-sm text-gray-500">{s.subtitle}</div>}
+              <div className="font-medium text-foreground">{s.title}</div>
+              {s.subtitle && <div className="text-sm text-foreground-secondary">{s.subtitle}</div>}
             </button>
           ))}
           {googleSuggestions?.map((s) => (
@@ -117,24 +117,24 @@ export function AddressAutocomplete({ onSelect, onUseAsIs, initialValue = "" }: 
               key={`g-${s.id}`}
               type="button"
               onClick={() => selectSuggestion(s, "google")}
-              className="block w-full px-3 py-2 text-left hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left hover:bg-canvas"
             >
-              <div className="font-medium">{s.title}</div>
-              {s.subtitle && <div className="text-sm text-gray-500">{s.subtitle}</div>}
+              <div className="font-medium text-foreground">{s.title}</div>
+              {s.subtitle && <div className="text-sm text-foreground-secondary">{s.subtitle}</div>}
             </button>
           ))}
-          <div className="border-t">
+          <div className="border-t border-border">
             <button
               type="button"
               onClick={searchGoogle}
-              className="block w-full px-3 py-2 text-left text-sm text-blue-600 hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left text-sm text-accent hover:bg-canvas"
             >
               <Search className="mr-1.5 inline h-3 w-3" aria-hidden />Search Google instead
             </button>
             <button
               type="button"
               onClick={() => onUseAsIs(value)}
-              className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-canvas"
             >
               <Pencil className="mr-1.5 inline h-3 w-3" aria-hidden />Use &quot;{value}&quot; as-is
             </button>

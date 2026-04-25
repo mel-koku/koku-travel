@@ -99,7 +99,7 @@ export function formatTripContextBlock(json: string): string {
     }
 
     for (const day of ctx.days) {
-      lines.push(`### Day ${day.dayIndex + 1} — ${day.cityId}`);
+      lines.push(`### Day ${day.dayIndex + 1}: ${day.cityId}`);
       if (day.activities.length === 0) {
         lines.push("- (no activities)");
       }

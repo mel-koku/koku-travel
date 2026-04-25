@@ -224,7 +224,10 @@ export function useToggleSavedMutation() {
           context.previousSaved,
         );
       }
-      logger.error("Failed to toggle saved place, rolling back", { error: _error });
+      logger.error(
+        "Failed to toggle saved place, rolling back",
+        _error instanceof Error ? _error : new Error(String(_error)),
+      );
     },
     // Only refetch after success to confirm server state (skip on error — already rolled back)
     onSuccess: (_data, variables) => {

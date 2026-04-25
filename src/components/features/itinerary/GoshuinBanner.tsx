@@ -112,7 +112,7 @@ export function GoshuinBanner({ trip }: Props) {
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(sessionKey);
       }
-      showToast("Couldn't save — try again", { variant: "error" });
+      showToast("Couldn't save. Try again.", { variant: "error" });
     }
   }, [trip.id, sessionKey, showToast, tripsActions, tipContext]);
 

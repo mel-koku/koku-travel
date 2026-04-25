@@ -1,9 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createMockRequest } from "../utils/mocks";
 
-const { mockGetUser, mockSupabase } = vi.hoisted(() => {
+const { mockGetUser, mockSupabase, mockRequireAuth } = vi.hoisted(() => {
   const mockGetUser = vi.fn().mockResolvedValue({ data: { user: { id: "user-1" } } });
   const mockSupabase = { auth: { getUser: mockGetUser } };
-  return { mockGetUser, mockSupabase };
+  const mockRequireAuth = vi.fn();
+  return { mockGetUser, mockSupabase, mockRequireAuth };
+});
+
+vi.mock("@/lib/api/rateLimit", () => ({
+  checkRateLimit: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@/lib/api/middleware", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/api/middleware")>();
+  return {
+    ...actual,
+    requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
+  };
 });
 
 vi.mock("@/lib/addressSearch/mapbox", () => ({
@@ -25,8 +39,8 @@ import { POST } from "@/app/api/address-search/route";
 import { mapboxSuggest } from "@/lib/addressSearch/mapbox";
 import { checkAndIncrement } from "@/lib/addressSearch/rateLimit";
 
-function makeRequest(body: unknown): Request {
-  return new Request("http://test/api/address-search", {
+function makeRequest(body: unknown) {
+  return createMockRequest("http://test/api/address-search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -36,6 +50,10 @@ function makeRequest(body: unknown): Request {
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } } });
+  mockRequireAuth.mockResolvedValue({
+    user: { id: "user-1" },
+    context: { requestId: "req-test", ip: "127.0.0.1" },
+  });
   process.env.ROUTING_MAPBOX_ACCESS_TOKEN = "mbox-key";
   process.env.GOOGLE_PLACES_API_KEY = "gkey";
 });

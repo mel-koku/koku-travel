@@ -107,12 +107,12 @@ export function RegionCard({
           </motion.div>
         )}
 
-        {/* Region Name & Tagline Overlay - Bottom */}
+        {/* Region Name & Tagline Overlay - Bottom (scrim-80 above provides contrast) */}
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white drop-shadow-lg")}>
+          <h3 className={cn(typography({ intent: "editorial-h3" }), "text-white")}>
             {region.name}
           </h3>
-          <p className="mt-0.5 text-sm text-white/90 drop-shadow-md">
+          <p className="mt-0.5 text-sm text-white/90">
             {region.tagline}
           </p>
         </div>
