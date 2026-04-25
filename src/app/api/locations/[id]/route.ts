@@ -8,9 +8,9 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 import { getBestSummary } from "@/lib/utils/editorialSummary";
-import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
 
-import { LOCATION_DETAIL_COLUMNS } from "@/lib/supabase/projections";
+import { LOCATION_DETAIL_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 
 /**
  * GET /api/locations/[id]
@@ -68,67 +68,13 @@ export async function GET(
         return notFound("Location not found");
       }
 
-      // Transform database row to Location type.
-      // Must populate every enrichment field the UI reads — PlaceDetail
-      // hydrates the server-rendered location with this response, and any
-      // field we omit here gets wiped from the DOM after hydration.
-      const row = locationData as unknown as Record<string, unknown>;
-      const location: Location = {
-        id: row.id as string,
-        name: row.name as string,
-        nameJapanese: (row.name_japanese as string | null) ?? undefined,
-        region: row.region as string,
-        city: row.city as string,
-        prefecture: (row.prefecture as string | null) ?? undefined,
-        planningCity: (row.planning_city as string | null) ?? undefined,
-        neighborhood: (row.neighborhood as string | null) ?? undefined,
-        category: row.category as string,
-        image: row.image as string,
-        description: (row.description as string | null) ?? undefined,
-        shortDescription: (row.short_description as string | null) ?? undefined,
-        editorialSummary: (row.editorial_summary as string | null) ?? undefined,
-        insiderTip: (row.insider_tip as string | null) ?? undefined,
-        minBudget: (row.min_budget as string | null) ?? undefined,
-        estimatedDuration: (row.estimated_duration as string | null) ?? undefined,
-        operatingHours: normalizeOperatingHours(row.operating_hours),
-        recommendedVisit: (row.recommended_visit as Location["recommendedVisit"]) ?? undefined,
-        preferredTransitModes: (row.preferred_transit_modes as Location["preferredTransitModes"]) ?? undefined,
-        coordinates: (row.coordinates as Location["coordinates"]) ?? undefined,
-        timezone: (row.timezone as string | null) ?? undefined,
-        rating: (row.rating as number | null) ?? undefined,
-        reviewCount: (row.review_count as number | null) ?? undefined,
-        placeId: (row.place_id as string | null) ?? undefined,
-        primaryPhotoUrl: (row.primary_photo_url as string | null) ?? undefined,
-        websiteUri: (row.website_uri as string | null) ?? undefined,
-        phoneNumber: (row.phone_number as string | null) ?? undefined,
-        googleMapsUri: (row.google_maps_uri as string | null) ?? undefined,
-        googlePrimaryType: (row.google_primary_type as string | null) ?? undefined,
-        googleTypes: (row.google_types as string[] | null) ?? undefined,
-        businessStatus: (row.business_status as Location["businessStatus"]) ?? undefined,
-        nearestStation: (row.nearest_station as string | null) ?? undefined,
-        cashOnly: (row.cash_only as boolean | null) ?? undefined,
-        reservationInfo: (row.reservation_info as Location["reservationInfo"]) ?? undefined,
-        tags: (row.tags as string[] | null) ?? undefined,
-        accessibilityOptions: (row.accessibility_options as Location["accessibilityOptions"]) ?? undefined,
-        mealOptions: (row.meal_options as Location["mealOptions"]) ?? undefined,
-        serviceOptions: (row.service_options as Location["serviceOptions"]) ?? undefined,
-        dietaryOptions: (row.dietary_options as Location["dietaryOptions"]) ?? undefined,
-        cuisineType: (row.cuisine_type as string | null) ?? undefined,
-        priceLevel: (row.price_level as Location["priceLevel"]) ?? undefined,
-        goodForChildren: (row.good_for_children as boolean | null) ?? undefined,
-        goodForGroups: (row.good_for_groups as boolean | null) ?? undefined,
-        outdoorSeating: (row.outdoor_seating as boolean | null) ?? undefined,
-        reservable: (row.reservable as boolean | null) ?? undefined,
-        isHiddenGem: (row.is_hidden_gem as boolean | null) ?? undefined,
-        isSeasonal: (row.is_seasonal as boolean | null) ?? undefined,
-        seasonalType: (row.seasonal_type as Location["seasonalType"]) ?? undefined,
-        validMonths: (row.valid_months as number[] | null) ?? undefined,
-        tattooPolicy: (row.tattoo_policy as Location["tattooPolicy"]) ?? undefined,
-        jtaApproved: (row.jta_approved as boolean | null) ?? undefined,
-        isUnescoSite: (row.is_unesco_site as boolean | null) ?? undefined,
-        parentId: (row.parent_id as string | null) ?? undefined,
-        parentMode: (row.parent_mode as Location["parentMode"]) ?? undefined,
-      };
+      // Transform database row to Location type via canonical mapper.
+      // PlaceDetail hydrates the server-rendered location with this response,
+      // so every enrichment field the UI reads must flow through. Canonical
+      // covers the LOCATION_DETAIL_COLUMNS projection via "key in r" guards.
+      const location: Location = transformDbRowToLocation(
+        locationData as unknown as LocationDbRow,
+      );
 
       // Gallery photos — prefer harvested location_photos rows (with
       // attribution), fall back to the primary hero when the table is empty.
