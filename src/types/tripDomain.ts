@@ -13,15 +13,13 @@ export type TripStatus = "draft" | "planning" | "planned" | "active" | "complete
 export type TimeSlot = "morning" | "afternoon" | "evening";
 
 /**
- * Recommendation reason explaining why an activity was selected.
+ * Legacy structured form of a TripActivity recommendation reason.
  *
- * @deprecated Prefer using RecommendationReason from @/types/itinerary instead.
- * This structured format is maintained for backwards compatibility.
- * Use convertTripReasonToItineraryReason() from @/lib/utils/recommendationAdapter
- * to convert to the canonical array format.
- *
- * The itinerary.ts version is more flexible and is the canonical format used
- * throughout the codebase for itinerary data storage.
+ * No current producer — the itinerary engine writes the canonical array form
+ * (`RecommendationReason` from `@/types/itinerary`). This shape is kept for
+ * backwards-compatibility with Trip JSON persisted by earlier engine versions.
+ * Read defensively via `convertTripReasonToItineraryReason()`; new code should
+ * use the canonical form directly.
  */
 export type RecommendationReason = {
   /**
