@@ -23,25 +23,25 @@ export function AddActivitySheet({ open, onClose, dayActivities, onSubmit, initi
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/40 sm:items-center"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-t-lg bg-white p-4 shadow-lg sm:rounded-lg"
+        className="w-full max-w-lg rounded-t-lg bg-background p-4 shadow-[var(--shadow-elevated)] sm:rounded-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-3 flex border-b">
+        <div className="mb-3 flex border-b border-border">
           <button
             type="button"
             onClick={() => setTab("catalog")}
-            className={`flex-1 py-2 text-sm ${tab === "catalog" ? "border-b-2 border-blue-600 font-medium" : "text-gray-500"}`}
+            className={`flex-1 py-2 text-sm ${tab === "catalog" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
           >
             Search catalog
           </button>
           <button
             type="button"
             onClick={() => setTab("custom")}
-            className={`flex-1 py-2 text-sm ${tab === "custom" ? "border-b-2 border-blue-600 font-medium" : "text-gray-500"}`}
+            className={`flex-1 py-2 text-sm ${tab === "custom" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
           >
             Add custom
           </button>

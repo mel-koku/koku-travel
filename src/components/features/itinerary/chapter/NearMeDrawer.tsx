@@ -333,7 +333,7 @@ export function NearMeDrawer({
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-foreground-secondary mb-3">
-                  {items.length} place{items.length !== 1 ? "s" : ""} within 1.5 km — tap a pin or row
+                  {items.length} place{items.length !== 1 ? "s" : ""} within 1.5 km. Tap a pin or row.
                 </p>
                 {items.map((loc) => (
                   <NearMeListRow

@@ -5,6 +5,7 @@ import { getPersonBookedSlots } from "@/lib/bookings/bookingService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { badRequest, notFound } from "@/lib/api/errors";
+import { isValidSlug } from "@/lib/api/validation";
 
 /**
  * GET /api/people/[slug]/availability?month=YYYY-MM&includeBooked=true
@@ -20,6 +21,10 @@ export async function GET(
   const { slug } = await props.params;
   return withApiHandler(
     async (req) => {
+      if (!isValidSlug(slug)) {
+        return badRequest("Invalid slug");
+      }
+
       const monthParam = req.nextUrl.searchParams.get("month");
       const includeBooked = req.nextUrl.searchParams.get("includeBooked") === "true";
 

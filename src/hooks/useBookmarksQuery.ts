@@ -171,7 +171,10 @@ export function useToggleBookmarkMutation() {
           context.previousBookmarks,
         );
       }
-      logger.error("Failed to toggle bookmark, rolling back", { error: _error });
+      logger.error(
+        "Failed to toggle bookmark, rolling back",
+        _error instanceof Error ? _error : new Error(String(_error)),
+      );
     },
     // Always refetch after error or success
     onSettled: (_data, _error, variables) => {

@@ -207,7 +207,7 @@ export function PlacesMapLayout({
             {/* Fade edge hint: more cards to the right */}
             <div
               className={cn(
-                "pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-charcoal/20 to-transparent transition-opacity duration-300",
+                "pointer-events-none absolute right-0 top-0 bottom-0 w-10 scrim-20 scrim-to-l transition-opacity duration-300",
                 canScrollRight ? "opacity-100" : "opacity-0",
               )}
               aria-hidden="true"

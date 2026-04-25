@@ -118,7 +118,7 @@ export function UnlockCeremony({
       {costLimited && (
         <div className="mt-8 text-center">
           <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
-            Your trip is unlocked! Your written guide hit today&apos;s generation limit — it&apos;ll be ready tomorrow.
+            Your trip is unlocked. Your written guide hit today&apos;s generation limit. It&apos;ll be ready tomorrow.
           </p>
         </div>
       )}

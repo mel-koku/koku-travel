@@ -63,6 +63,28 @@ export function isValidLocationId(id: string): boolean {
 }
 
 /**
+ * Validates a URL-style slug. Used for path params like `/api/people/[slug]`
+ * where the slug maps to a `text unique` column with no CHECK constraint,
+ * so the validator must accept the full set of common slug shapes:
+ * lowercase-with-hyphens, snake_case, dotted-names, mixed-case handles.
+ *
+ * Rejects path traversal (`..`, `/`) and oversized inputs.
+ *
+ * @param slug - The slug to validate
+ * @returns true if valid, false otherwise
+ */
+export function isValidSlug(slug: unknown): slug is string {
+  if (typeof slug !== "string") return false;
+  const trimmed = slug.trim();
+  if (trimmed.length === 0 || trimmed.length > 100) return false;
+  // Letters (any case), digits, hyphens, underscores, dots.
+  if (!/^[A-Za-z0-9._-]+$/.test(trimmed)) return false;
+  // Reject path-traversal patterns even though the regex above already excludes "/".
+  if (trimmed.includes("..") || trimmed.includes("//")) return false;
+  return true;
+}
+
+/**
  * Validates and parses a positive integer from a query parameter.
  *
  * @param value - The string value to parse

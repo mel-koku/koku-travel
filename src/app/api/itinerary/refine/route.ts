@@ -446,7 +446,7 @@ export const POST = withApiHandler(
     }
     if (missing.length > 0) {
       return badRequest(
-        `Refinement is stateless — POST the trip data alongside tripId. Missing: ${missing.join(", ")}.`,
+        `Refinement is stateless. POST the trip data alongside tripId. Missing: ${missing.join(", ")}.`,
         undefined,
         { requestId: context.requestId },
       );

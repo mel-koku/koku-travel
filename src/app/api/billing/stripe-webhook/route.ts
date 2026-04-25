@@ -4,13 +4,18 @@ import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
 import { isUuid } from "@/lib/api/validation";
 import { sendUnlockConfirmationEmail } from "@/lib/billing/email";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { badRequest, internalError } from "@/lib/api/errors";
 
-export async function POST(request: NextRequest) {
+export const maxDuration = 60;
+
+export const POST = withApiHandler(async (request: NextRequest, { context }) => {
+  const requestId = context.requestId;
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json({ error: "Missing stripe-signature" }, { status: 400 });
+    return badRequest("Missing stripe-signature", undefined, { requestId });
   }
 
   let event;
@@ -20,8 +25,9 @@ export async function POST(request: NextRequest) {
     logger.error(
       "Stripe webhook signature verification failed",
       err instanceof Error ? err : new Error(String(err)),
+      { requestId },
     );
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+    return badRequest("Invalid signature", undefined, { requestId });
   }
 
   const supabase = getServiceRoleClient();
@@ -35,6 +41,7 @@ export async function POST(request: NextRequest) {
           sessionId: session.id,
           hasTripId: !!tripId,
           hasUserId: !!userId,
+          requestId,
         });
         break;
       }
@@ -60,17 +67,20 @@ export async function POST(request: NextRequest) {
         logger.error(
           "process_webhook_event RPC failed",
           rpcError instanceof Error ? rpcError : new Error(JSON.stringify(rpcError)),
-          { eventId: event.id, tripId },
+          { eventId: event.id, tripId, requestId },
         );
-        return NextResponse.json({ error: "Internal error" }, { status: 500 });
+        return internalError("Internal error", undefined, { requestId });
       }
 
       if (!wasProcessed) {
-        logger.info("Webhook event already processed, skipping", { eventId: event.id });
+        logger.info("Webhook event already processed, skipping", {
+          eventId: event.id,
+          requestId,
+        });
         break;
       }
 
-      logger.info("Trip unlocked via webhook", { tripId, userId, tier });
+      logger.info("Trip unlocked via webhook", { tripId, userId, tier, requestId });
 
       if (session.customer_details?.email) {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yukujapan.com";
@@ -98,7 +108,7 @@ export async function POST(request: NextRequest) {
           logger.error(
             "Failed to send unlock confirmation email",
             emailError instanceof Error ? emailError : new Error(message),
-            { tripId, userId, sessionId: session.id },
+            { tripId, userId, sessionId: session.id, requestId },
           );
           await supabase
             .from("trips")
@@ -116,13 +126,16 @@ export async function POST(request: NextRequest) {
 
     case "charge.dispute.created": {
       const dispute = event.data.object;
-      logger.warn("Charge dispute received", { chargeId: String(dispute.charge) });
+      logger.warn("Charge dispute received", {
+        chargeId: String(dispute.charge),
+        requestId,
+      });
       break;
     }
 
     case "charge.refunded": {
       const charge = event.data.object;
-      logger.warn("Charge refunded", { chargeId: charge.id });
+      logger.warn("Charge refunded", { chargeId: charge.id, requestId });
       break;
     }
 
@@ -131,4 +144,4 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ received: true });
-}
+});

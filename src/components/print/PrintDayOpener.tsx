@@ -89,10 +89,10 @@ function fallbackDayIntro(day: ItineraryDay, cityName: string | null): string {
   const count = day.activities.filter((a) => a.kind === "place").length;
   const city = cityName ?? "the city";
   if (count === 0) {
-    return `A quiet day in ${city}. Use the hours however suits you — nothing on the page is fixed.`;
+    return `A quiet day in ${city}. Use the hours however suits you. Nothing on the page is fixed.`;
   }
   if (count <= 3) {
     return `A measured day in ${city}. Three moments, generous spacing between them. Take your time.`;
   }
-  return `A full day in ${city}. The sequence moves with the hours — morning energy, afternoon depth, evening quiet.`;
+  return `A full day in ${city}. The sequence moves with the hours: morning energy, afternoon depth, evening quiet.`;
 }
