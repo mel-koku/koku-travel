@@ -22,11 +22,18 @@ jobs:
         id: find-pr
         with:
           script: |
-            // Find the PR associated with this workflow run
+            // Find the PR associated with this workflow run.
+            // Inside github-script, the event payload is on `context.payload`,
+            // not `github.event` (which is a workflow-expression-only namespace).
+            const headBranch = context.payload.workflow_run?.head_branch;
+            if (!headBranch) {
+              core.setOutput('found', 'false');
+              return;
+            }
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: `${context.repo.owner}:${github.event.workflow_run.head_branch}`,
+              head: `${context.repo.owner}:${headBranch}`,
               state: 'open',
             });
             
