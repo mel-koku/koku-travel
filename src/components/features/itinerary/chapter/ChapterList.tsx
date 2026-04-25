@@ -84,6 +84,8 @@ export type ChapterListProps = {
     onUnlock: () => void;
     cities: string[];
     totalDays: number;
+    /** Promo + guest variant: render a login CTA instead of the priced one. */
+    loginRequired?: boolean;
   };
   isReadOnly?: boolean;
   /** Active day index (0-based). When provided, only that day is rendered. */
@@ -251,6 +253,7 @@ export function ChapterList({
                   totalDays={unlockProps.totalDays}
                   priceLabel={unlockProps.priceLabel}
                   launchSlotsRemaining={unlockProps.launchSlotsRemaining}
+                  loginRequired={unlockProps.loginRequired}
                   onUnlock={unlockProps.onUnlock}
                 />
               </div>

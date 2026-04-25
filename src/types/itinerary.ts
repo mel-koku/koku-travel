@@ -286,6 +286,13 @@ export type ItineraryDay = {
   paceLabel?: "light" | "moderate" | "packed";
   /** True when the traveler arrives late (effective arrival >= 19:00) and Day 1 activities are stripped. */
   isLateArrival?: boolean;
+  /**
+   * True when this day's full content was withheld from the API response
+   * because the caller doesn't have access (e.g., unauthenticated guest).
+   * Activities and per-day prose/briefings are stripped server-side; the
+   * day shell (id/dateLabel/cityId) remains so the UI can render the lock.
+   */
+  isLocked?: boolean;
 };
 
 export type Itinerary = {

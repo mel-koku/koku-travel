@@ -374,4 +374,124 @@ describe("POST /api/itinerary/plan", () => {
       expect(response.headers.get("Cache-Control")).toContain("no-store");
     });
   });
+
+  describe("Day 2-N redaction for guests", () => {
+    function makeMultiDayResult() {
+      return {
+        trip: {
+          ...createMockTrip("trip-redact"),
+          days: [
+            { id: "day-1", date: "2027-03-01", cityId: "tokyo", activities: [{ id: "a1" }] },
+            { id: "day-2", date: "2027-03-02", cityId: "kyoto", activities: [{ id: "a2" }] },
+            { id: "day-3", date: "2027-03-03", cityId: "kyoto", activities: [{ id: "a3" }] },
+          ],
+        },
+        itinerary: {
+          days: [
+            { id: "day-1", cityId: "tokyo", activities: [{ kind: "place", id: "a1", title: "Senso-ji" }] },
+            { id: "day-2", cityId: "kyoto", activities: [{ kind: "place", id: "a2", title: "Kinkaku-ji" }] },
+            { id: "day-3", cityId: "kyoto", activities: [{ kind: "place", id: "a3", title: "Fushimi" }] },
+          ],
+        },
+        dayIntros: { "day-1": "Tokyo intro", "day-2": "Kyoto intro", "day-3": "Temples east" },
+        guideProse: {
+          tripOverview: "A whirlwind tour.",
+          days: [
+            { dayId: "day-1", intro: "i1", transitions: [], summary: "s1" },
+            { dayId: "day-2", intro: "i2", transitions: [], summary: "s2" },
+            { dayId: "day-3", intro: "i3", transitions: [], summary: "s3" },
+          ],
+        },
+        dailyBriefings: {
+          days: [
+            { dayId: "day-1", briefing: "b1" },
+            { dayId: "day-2", briefing: "b2" },
+            { dayId: "day-3", briefing: "b3" },
+          ],
+        },
+      };
+    }
+
+    it("strips Day 2-N for unauthenticated guests", async () => {
+      mockGenerateTripFromBuilderData.mockResolvedValueOnce(makeMultiDayResult());
+      const request = createMockRequest("https://example.com/api/itinerary/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ builderData: createValidBuilderData() }),
+      });
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      // Day 1 fully populated
+      expect(data.itinerary.days[0].activities).toHaveLength(1);
+      // Day 2 + 3 stripped — no titles, no activities
+      expect(data.itinerary.days[1].activities).toEqual([]);
+      expect(data.itinerary.days[1].isLocked).toBe(true);
+      expect(data.itinerary.days[2].activities).toEqual([]);
+      expect(data.itinerary.days[2].isLocked).toBe(true);
+      // Per-day prose + briefings stripped for locked days
+      expect(data.dayIntros).toEqual({ "day-1": "Tokyo intro" });
+      expect(data.guideProse.days).toHaveLength(1);
+      expect(data.dailyBriefings.days).toHaveLength(1);
+      // Trip mirrors the redaction
+      expect(data.trip.days[1].activities).toEqual([]);
+      expect(data.trip.days[1].isLocked).toBe(true);
+    });
+
+    it("strips Day 2-N for guests on cache HIT (matches fresh-generation path)", async () => {
+      const cached = makeMultiDayResult();
+      const { getCachedItinerary } = await import("@/lib/cache/itineraryCache");
+      vi.mocked(getCachedItinerary).mockResolvedValueOnce({
+        trip: cached.trip,
+        itinerary: cached.itinerary,
+        dayIntros: cached.dayIntros,
+        guideProse: cached.guideProse,
+        dailyBriefings: cached.dailyBriefings,
+        culturalBriefing: undefined,
+      } as never);
+
+      const request = createMockRequest("https://example.com/api/itinerary/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ builderData: createValidBuilderData() }),
+      });
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("X-Cache")).toBe("HIT");
+      expect(data.itinerary.days[1].activities).toEqual([]);
+      expect(data.itinerary.days[1].isLocked).toBe(true);
+      expect(data.itinerary.days[2].isLocked).toBe(true);
+      expect(data.dayIntros).toEqual({ "day-1": "Tokyo intro" });
+    });
+
+    it("returns full Day 2-N data to authenticated users", async () => {
+      mockGenerateTripFromBuilderData.mockResolvedValueOnce(makeMultiDayResult());
+      const { getOptionalAuth } = await import("@/lib/api/middleware");
+      vi.mocked(getOptionalAuth).mockResolvedValueOnce({
+        user: { id: "auth-user-1", email: "user@example.com" } as never,
+        context: { requestId: "test-request-id" } as never,
+      });
+
+      const request = createMockRequest("https://example.com/api/itinerary/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ builderData: createValidBuilderData() }),
+      });
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.itinerary.days[1].activities).toHaveLength(1);
+      expect(data.itinerary.days[1].activities[0].title).toBe("Kinkaku-ji");
+      expect(data.itinerary.days[1].isLocked).toBeUndefined();
+      expect(data.dayIntros["day-2"]).toBe("Kyoto intro");
+      expect(data.guideProse.days).toHaveLength(3);
+      expect(data.dailyBriefings.days).toHaveLength(3);
+    });
+  });
 });

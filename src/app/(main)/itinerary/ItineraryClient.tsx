@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
@@ -52,7 +52,7 @@ const formatDateLabel = (iso: string | undefined) => {
 function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: { content?: PagesContent; launchPricing?: boolean; launchSlotsRemaining?: number }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
-  const { trips, updateTripItinerary, user, refreshFromSupabase } = useAppState();
+  const { trips, updateTripItinerary, rehydrateTripContent, user, refreshFromSupabase } = useAppState();
   const { showToast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
   const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
@@ -141,6 +141,64 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
   const handleRetryGeneration = useCallback(() => {
     setGenerationPromise(runGeneration());
   }, [runGeneration]);
+
+  // ── Post-signin claim flow ───────────────────────────────────────────
+  // When a guest generates a trip, the server redacts Day 2-N (activities,
+  // prose, briefings) so the response itself doesn't leak the full plan.
+  // The redacted trip lives in localStorage. After they sign in (typically
+  // via "Log in to see full itinerary" during the launch promo), this
+  // effect re-fetches the trip — the server now sees an authenticated
+  // caller and returns the unredacted data. We swap the local trip's
+  // server-generated content while preserving local edits via
+  // rehydrateTripContent.
+  const claimedTripIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!user.email) return;
+    if (!selectedTrip) return;
+    if (!selectedTrip.builderData) return;
+    const hasLockedDays = selectedTrip.itinerary.days.some((d) => d.isLocked);
+    if (!hasLockedDays) return;
+    if (claimedTripIdsRef.current.has(selectedTrip.id)) return;
+    claimedTripIdsRef.current.add(selectedTrip.id);
+
+    const tripId = selectedTrip.id;
+    const builderData = selectedTrip.builderData;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/itinerary/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ builderData, tripId }),
+        });
+        if (!res.ok) {
+          // Permit retry on next mount if the network blips.
+          claimedTripIdsRef.current.delete(tripId);
+          return;
+        }
+        const data = await res.json();
+        // Defensive: only swap when the response actually unlocks the days.
+        // A logged-in user with the promo flag off would still get redacted
+        // data; keeping the redacted view is correct in that case.
+        const stillLocked = (data.itinerary?.days ?? []).some(
+          (d: { isLocked?: boolean }) => d.isLocked,
+        );
+        if (stillLocked) return;
+        rehydrateTripContent(tripId, {
+          itinerary: data.itinerary,
+          dayIntros: data.dayIntros ?? undefined,
+          guideProse: data.guideProse ?? undefined,
+          dailyBriefings: data.dailyBriefings ?? undefined,
+          culturalBriefing: data.culturalBriefing ?? undefined,
+        });
+      } catch (err) {
+        logger.error("Itinerary claim re-fetch failed", err instanceof Error ? err : new Error(String(err)), {
+          tripId,
+        });
+        claimedTripIdsRef.current.delete(tripId);
+      }
+    })();
+  }, [user.email, selectedTrip, rehydrateTripContent]);
 
   const handleStartUnlock = useCallback(async () => {
     if (!selectedTrip) return;

@@ -9,6 +9,7 @@ import { sliceRegistry } from "../sync/syncRegistry";
 import {
   createTripRecord,
   updateTripItinerary as updateTripItineraryOp,
+  rehydrateTripContent as rehydrateTripContentOp,
   renameTrip as renameTripOp,
   deleteTrip as deleteTripOp,
   restoreTrip as restoreTripOp,
@@ -17,6 +18,8 @@ import {
   type StoredTrip,
   type CreateTripInput,
 } from "@/services/trip";
+import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
+import type { CulturalBriefing } from "@/types/culturalBriefing";
 import type { Itinerary } from "@/types/itinerary";
 import type { CityAccommodation, DayEntryPoint } from "@/types/trip";
 import type { PrepState, PlanningWarnings } from "@/services/trip/types";
@@ -38,6 +41,16 @@ export type TripsState = {
 export type TripsActions = {
   createTrip: (input: CreateTripInput) => string;
   updateTripItinerary: (tripId: string, itinerary: Itinerary) => void;
+  rehydrateTripContent: (
+    tripId: string,
+    content: {
+      itinerary: Itinerary;
+      dayIntros?: Record<string, string>;
+      guideProse?: GeneratedGuide;
+      dailyBriefings?: GeneratedBriefings;
+      culturalBriefing?: CulturalBriefing;
+    },
+  ) => void;
   updateTripPrepState: (tripId: string, prepState: PrepState) => void;
   updateTripPlanningWarnings: (tripId: string, planningWarnings: PlanningWarnings) => void;
   renameTrip: (tripId: string, name: string) => void;
@@ -116,6 +129,17 @@ sliceRegistry.register<TripsState>({
 type Action =
   | { type: "CREATE_TRIP"; trip: StoredTrip }
   | { type: "UPDATE_TRIP_ITINERARY"; tripId: string; itinerary: Itinerary }
+  | {
+      type: "REHYDRATE_TRIP_CONTENT";
+      tripId: string;
+      content: {
+        itinerary: Itinerary;
+        dayIntros?: Record<string, string>;
+        guideProse?: GeneratedGuide;
+        dailyBriefings?: GeneratedBriefings;
+        culturalBriefing?: CulturalBriefing;
+      };
+    }
   | { type: "UPDATE_TRIP_PREP_STATE"; tripId: string; prepState: PrepState }
   | { type: "UPDATE_TRIP_PLANNING_WARNINGS"; tripId: string; planningWarnings: PlanningWarnings }
   | { type: "RENAME_TRIP"; tripId: string; name: string }
@@ -151,6 +175,15 @@ function reducer(state: TripsState, action: Action): TripsState {
     }
     case "UPDATE_TRIP_ITINERARY": {
       const next = updateTripItineraryOp(state.trips, action.tripId, action.itinerary);
+      if (!next) return state;
+      return {
+        ...state,
+        trips: next,
+        localTripUpdatedAt: stampAt(state, action.tripId),
+      };
+    }
+    case "REHYDRATE_TRIP_CONTENT": {
+      const next = rehydrateTripContentOp(state.trips, action.tripId, action.content);
       if (!next) return state;
       return {
         ...state,
@@ -277,6 +310,8 @@ export function TripsProvider({ children }: { children: ReactNode }) {
       },
       updateTripItinerary: (tripId: string, itinerary: Itinerary) =>
         dispatch({ type: "UPDATE_TRIP_ITINERARY", tripId, itinerary }),
+      rehydrateTripContent: (tripId, content) =>
+        dispatch({ type: "REHYDRATE_TRIP_CONTENT", tripId, content }),
       updateTripPrepState: (tripId: string, prepState: PrepState) =>
         dispatch({ type: "UPDATE_TRIP_PREP_STATE", tripId, prepState }),
       updateTripPlanningWarnings: (tripId: string, planningWarnings: PlanningWarnings) =>

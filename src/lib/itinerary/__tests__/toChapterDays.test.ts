@@ -156,4 +156,39 @@ describe("toChapterDays", () => {
     expect(result[0].inlineNotes[0].kind).toBe("closure");
     expect(result[0].inlineNotes[0].label).toBe("2 stops closed on this date");
   });
+
+  describe("server-set isLocked takes precedence over client gate", () => {
+    // Pins the post-signin claim-window fix. After a guest signs in, the
+    // client gate (`fullAccessEnabled`) flips to true before the rehydrate
+    // re-fetch returns. Without this composition, ChapterList would render
+    // empty Day 2-N (activities are still []). The server `day.isLocked`
+    // flag must override the client gate until the rehydrate ships data.
+    it("renders day as locked when day.isLocked=true even when predicate says accessible", () => {
+      const itineraryWithLocked: Itinerary = {
+        days: [
+          { id: "d0", dateLabel: "Day 1", cityId: "tokyo", activities: [] },
+          {
+            id: "d1",
+            dateLabel: "Day 2",
+            cityId: "kyoto",
+            isLocked: true,
+            activities: [],
+          },
+        ],
+      } as unknown as Itinerary;
+
+      // Mirror the predicate composition used by ItineraryShell. The first
+      // term is the client gate (fullAccessEnabled, here forced to true to
+      // simulate the post-signin claim window); the second is the server flag.
+      const fullAccessEnabled = true as boolean;
+      const predicate = (dayIdx: number): boolean =>
+        fullAccessEnabled && !itineraryWithLocked.days[dayIdx]?.isLocked;
+
+      const result = toChapterDays(itineraryWithLocked, undefined, new Map(), undefined, predicate);
+
+      expect(result[0].isLocked).toBe(false);
+      expect(result[1].isLocked).toBe(true);
+      expect(result[1].beats).toEqual([]);
+    });
+  });
 });
