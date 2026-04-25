@@ -69,6 +69,41 @@ export function updateTripItinerary(
 }
 
 /**
+ * Replaces the server-generated content fields on a trip while preserving
+ * local-only state (prepState, planningWarnings, freeRefinementsUsed, etc.).
+ *
+ * Used by the post-signin claim flow: a guest's locally-stored trip has
+ * Day 2-N redacted by the server; once they sign in we re-fetch the full
+ * plan and swap it in without touching the user's local edits.
+ *
+ * Returns null if no trip with `tripId` exists so the caller can no-op.
+ */
+export function rehydrateTripContent(
+  trips: StoredTrip[],
+  tripId: string,
+  content: Pick<
+    StoredTrip,
+    "itinerary" | "dayIntros" | "guideProse" | "dailyBriefings" | "culturalBriefing"
+  >,
+): StoredTrip[] | null {
+  let found = false;
+  const nextTrips = trips.map((trip) => {
+    if (trip.id !== tripId) return trip;
+    found = true;
+    return {
+      ...trip,
+      itinerary: content.itinerary,
+      dayIntros: content.dayIntros,
+      guideProse: content.guideProse,
+      dailyBriefings: content.dailyBriefings,
+      culturalBriefing: content.culturalBriefing,
+      updatedAt: new Date().toISOString(),
+    };
+  });
+  return found ? nextTrips : null;
+}
+
+/**
  * Renames a trip
  * Returns null if no changes were made or name is empty
  */

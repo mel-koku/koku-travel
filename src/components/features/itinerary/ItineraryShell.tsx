@@ -194,9 +194,22 @@ export const ItineraryShell = ({
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
 
-  const fullAccessEnabled = !!user && process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
+  // Guard: the AppState `user` is always present (seeded as a Guest profile),
+  // so `!!user` was a true-no-op. Authentication is signalled by the user's
+  // email being set after Supabase sign-in. Without this, guests would see
+  // every day unlocked during the promo.
+  const isAuthenticated = Boolean(user?.email);
+  const isFreePromoActive = process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true";
+  // Read-only mode covers shared-trip viewers (`/shared/{token}`): the token
+  // is the access grant, so the viewer's auth state is irrelevant. Without
+  // this, post-bug-fix shared-link guests would see Days 2-N locked.
+  const fullAccessEnabled = !!isReadOnly || (isAuthenticated && isFreePromoActive);
   const isTripLocked = !(tripUnlocked ?? false) && !fullAccessEnabled;
-  const isFreePromoUnlock = fullAccessEnabled && !(tripUnlocked ?? false);
+  const isFreePromoUnlock = !isReadOnly && isAuthenticated && isFreePromoActive && !(tripUnlocked ?? false);
+  // When the promo is on but the visitor isn't signed in, the unlock CTAs
+  // should drive them to log in (free) rather than to checkout. Shared-trip
+  // viewers never see unlock CTAs (read-only path is fully unlocked above).
+  const showLoginToUnlock = !isReadOnly && !isAuthenticated && isFreePromoActive;
   const [unlockPromptCtx, setUnlockPromptCtx] = useState<UnlockPromptContext | null>(null);
 
   const [overviewDrawerOpen, setOverviewDrawerOpen] = useState(false);
@@ -232,7 +245,15 @@ export const ItineraryShell = ({
       guideProse,
       locationsById,
       tripStartDate,
-      (dayIdx) => isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled),
+      // Server-set `day.isLocked` takes precedence over the client gate.
+      // Without this, the post-signin claim window (where fullAccessEnabled
+      // flips to true before the rehydrate fetch returns) would render an
+      // empty Day 2-N — the activities are still `[]` from the guest-side
+      // redaction. Treat the server flag as authoritative until rehydrate
+      // ships fresh data.
+      (dayIdx) =>
+        isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled)
+        && !model.days[dayIdx]?.isLocked,
       dayIntros,
     );
   }, [model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
@@ -1058,6 +1079,7 @@ export const ItineraryShell = ({
                     onUnlock: onUnlockClick ?? (() => {}),
                     cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
                     totalDays: model.days.length,
+                    loginRequired: showLoginToUnlock,
                   }}
                   selectedDayIndex={safeSelectedDay}
                   onDayChange={handleSelectDayChange}
@@ -1085,6 +1107,7 @@ export const ItineraryShell = ({
                   totalDays={model.days.length}
                   priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
                   launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
+                  loginRequired={showLoginToUnlock}
                   onUnlock={onUnlockClick ?? (() => {})}
                 />
               )}
@@ -1203,6 +1226,7 @@ export const ItineraryShell = ({
       isOpen={unlockPromptCtx !== null}
       context={unlockPromptCtx ?? "locked_day"}
       tier={getTripTier(model.days.length)}
+      loginRequired={showLoginToUnlock}
       onUnlock={() => {
         setUnlockPromptCtx(null);
         onUnlockClick?.();

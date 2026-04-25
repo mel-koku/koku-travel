@@ -94,6 +94,19 @@ export type AppStateShape = {
   isGuideBookmarked: (id: string) => boolean;
   createTrip: (input: CreateTripInput) => string;
   updateTripItinerary: (tripId: string, itinerary: Itinerary) => void;
+  /** Replace server-generated content (itinerary + LLM passes) on a trip
+   *  while preserving local-only state. Used by the post-signin claim flow
+   *  when a guest's redacted trip is rehydrated with the full plan. */
+  rehydrateTripContent: (
+    tripId: string,
+    content: {
+      itinerary: Itinerary;
+      dayIntros?: Record<string, string>;
+      guideProse?: import("@/types/llmConstraints").GeneratedGuide;
+      dailyBriefings?: import("@/types/llmConstraints").GeneratedBriefings;
+      culturalBriefing?: import("@/types/culturalBriefing").CulturalBriefing;
+    },
+  ) => void;
   renameTrip: (tripId: string, name: string) => void;
   deleteTrip: (tripId: string) => void;
   restoreTrip: (trip: StoredTrip) => void;
@@ -142,6 +155,7 @@ const defaultState: AppStateShape = {
   isGuideBookmarked: () => false,
   createTrip: () => "",
   updateTripItinerary: () => {},
+  rehydrateTripContent: () => {},
   renameTrip: () => {},
   deleteTrip: () => {},
   restoreTrip: () => {},
@@ -571,6 +585,14 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
     [trips.actions, scheduleTripSync],
   );
 
+  const rehydrateTripContent = useCallback<AppStateShape["rehydrateTripContent"]>(
+    (tripId, content) => {
+      trips.actions.rehydrateTripContent(tripId, content);
+      scheduleTripSync(tripId);
+    },
+    [trips.actions, scheduleTripSync],
+  );
+
   const renameTrip = useCallback(
     (tripId: string, name: string) => {
       trips.actions.renameTrip(tripId, name);
@@ -917,6 +939,7 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
         // Trip actions (composed with sync)
         createTrip,
         updateTripItinerary,
+        rehydrateTripContent,
         renameTrip,
         deleteTrip,
         restoreTrip,
@@ -957,6 +980,7 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
       toggleGuideBookmark,
       createTrip,
       updateTripItinerary,
+      rehydrateTripContent,
       renameTrip,
       deleteTrip,
       restoreTrip,

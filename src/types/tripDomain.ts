@@ -175,6 +175,10 @@ export type TripActivity = {
 
 /**
  * A single day in a trip
+ *
+ * `isLocked` is set when the API caller doesn't have access to the day's
+ * detailed content (e.g., unauthenticated guest viewing Day 2-N). When true,
+ * `activities` is empty and any per-day prose/briefings are stripped.
  */
 export type TripDay = {
   /**
@@ -205,6 +209,8 @@ export type TripDay = {
    * Message when refinement made no changes (e.g., no candidates available, day fully scheduled)
    */
   message?: string;
+  /** Mirrors `ItineraryDay.isLocked` — see Itinerary docs. */
+  isLocked?: boolean;
 };
 
 /**

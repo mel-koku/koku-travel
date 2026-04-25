@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/server/itineraryEngine";
 import { isFullAccessEnabled } from "@/lib/billing/accessServer";
+import { redactItineraryForLockedDays } from "@/lib/billing/redactItinerary";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
@@ -81,18 +82,37 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
         requestId: context.requestId,
       });
 
-      // Validate cached itinerary
+      // Validate cached itinerary (validation runs against unredacted data —
+      // the cache + DB always store the full trip; redaction only shapes the
+      // response to non-authorized callers).
       const itineraryValidation = validateItinerary(cachedResult.itinerary, {
         vibeCount: builderData.vibes?.length,
       });
       const tripValidation = validateTripConstraints(cachedResult.trip);
 
+      const cacheFullAccess = await isFullAccessEnabled(user?.id);
+      const cacheResponse = user
+        ? {
+            trip: cachedResult.trip,
+            itinerary: cachedResult.itinerary,
+            dayIntros: cachedResult.dayIntros,
+            guideProse: cachedResult.guideProse,
+            dailyBriefings: cachedResult.dailyBriefings,
+          }
+        : redactItineraryForLockedDays({
+            itinerary: cachedResult.itinerary,
+            trip: cachedResult.trip,
+            dayIntros: cachedResult.dayIntros,
+            guideProse: cachedResult.guideProse,
+            dailyBriefings: cachedResult.dailyBriefings,
+          });
+
       return NextResponse.json({
-        trip: cachedResult.trip,
-        itinerary: cachedResult.itinerary,
-        dayIntros: cachedResult.dayIntros,
-        guideProse: cachedResult.guideProse,
-        dailyBriefings: cachedResult.dailyBriefings,
+        trip: cacheResponse.trip,
+        itinerary: cacheResponse.itinerary,
+        dayIntros: cacheResponse.dayIntros,
+        guideProse: cacheResponse.guideProse,
+        dailyBriefings: cacheResponse.dailyBriefings,
         culturalBriefing: cachedResult.culturalBriefing,
         validation: tripValidation,
         itineraryValidation: {
@@ -104,6 +124,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate",
           "X-Cache": "HIT",
+          "X-Full-Access": cacheFullAccess ? "1" : "0",
         },
       });
     }
@@ -186,12 +207,25 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       });
     }
 
+    // Redact Day 2-N for guests so the response itself doesn't leak the
+    // full plan. Logged-in users see the full preview as before; the UI
+    // gate / billing flow handles their unlock state.
+    const freshResponse = user
+      ? { trip, itinerary, dayIntros, guideProse, dailyBriefings }
+      : redactItineraryForLockedDays({
+          itinerary,
+          trip,
+          dayIntros,
+          guideProse,
+          dailyBriefings,
+        });
+
     return NextResponse.json({
-      trip,
-      itinerary,
-      dayIntros,
-      guideProse,
-      dailyBriefings,
+      trip: freshResponse.trip,
+      itinerary: freshResponse.itinerary,
+      dayIntros: freshResponse.dayIntros,
+      guideProse: freshResponse.guideProse,
+      dailyBriefings: freshResponse.dailyBriefings,
       culturalBriefing,
       validation: tripValidation,
       itineraryValidation: {
@@ -203,6 +237,7 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",
         "X-Cache": "MISS",
+        "X-Full-Access": fullAccess ? "1" : "0",
       },
     });
   } catch (error) {

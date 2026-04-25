@@ -22,6 +22,9 @@ type ContextualUnlockPromptProps = {
   onUnlock: () => void;
   tier: UnlockTier;
   context: UnlockPromptContext;
+  /** When true, render a login CTA instead of the priced unlock CTA. Used
+   *  during the free launch promo for guests who must sign in to claim. */
+  loginRequired?: boolean;
 };
 
 const CONTEXT_COPY: Record<UnlockPromptContext, { heading: string; body: string }> = {
@@ -61,9 +64,11 @@ export function ContextualUnlockPrompt({
   onUnlock,
   tier,
   context,
+  loginRequired,
 }: ContextualUnlockPromptProps) {
   const copy = CONTEXT_COPY[context];
   const price = getTierPriceDollars(tier);
+  const ctaLabel = loginRequired ? "Log in to see full itinerary" : `Unlock for $${price}`;
 
   return (
     <AnimatePresence>
@@ -96,7 +101,7 @@ export function ContextualUnlockPrompt({
                 onClick={onUnlock}
                 className="btn-yuku flex-1 rounded-lg bg-brand-primary px-6 py-3 text-sm font-medium text-white active:scale-[0.98]"
               >
-                Unlock for ${price}
+                {ctaLabel}
               </button>
               <button
                 onClick={onClose}

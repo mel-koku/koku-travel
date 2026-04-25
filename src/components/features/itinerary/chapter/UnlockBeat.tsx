@@ -8,6 +8,9 @@ export type UnlockBeatProps = {
   totalDays: number;
   priceLabel: string;
   launchSlotsRemaining?: number;
+  /** When true, render a login CTA instead of the priced unlock CTA. Used
+   *  during the free launch promo for guests who must sign in to claim. */
+  loginRequired?: boolean;
   onUnlock: () => void;
 };
 
@@ -16,6 +19,7 @@ export function UnlockBeat({
   totalDays,
   priceLabel,
   launchSlotsRemaining,
+  loginRequired,
   onUnlock,
 }: UnlockBeatProps) {
   const cityList = cities.slice(0, 3).join(", ");
@@ -49,9 +53,9 @@ export function UnlockBeat({
               onClick={onUnlock}
               className="btn-yuku px-6 py-3 rounded-md text-sm font-medium"
             >
-              Unlock full trip · {priceLabel}
+              {loginRequired ? "Log in to see full itinerary" : `Unlock full trip · ${priceLabel}`}
             </button>
-            {typeof launchSlotsRemaining === "number" && launchSlotsRemaining > 0 && (
+            {!loginRequired && typeof launchSlotsRemaining === "number" && launchSlotsRemaining > 0 && (
               <span className="text-xs text-foreground-secondary">
                 {launchSlotsRemaining} launch slots remaining
               </span>
