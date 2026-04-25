@@ -6,8 +6,8 @@ import { buildPlaceJsonLd } from "@/lib/places/placeJsonLd";
 import { buildBreadcrumbList, buildJsonLdGraph } from "@/lib/seo/breadcrumbs";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import type { Location } from "@/types/location";
-import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
-import { LOCATION_DETAIL_COLUMNS } from "@/lib/supabase/projections";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
+import { LOCATION_DETAIL_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 
 export const revalidate = 3600;
 
@@ -25,63 +25,7 @@ async function fetchLocation(id: string): Promise<Location | null> {
 
   if (error || !data) return null;
 
-  const row = data as unknown as Record<string, unknown>;
-  return {
-    id: row.id,
-    name: row.name,
-    nameJapanese: row.name_japanese ?? undefined,
-    region: row.region,
-    city: row.city,
-    prefecture: row.prefecture ?? undefined,
-    planningCity: row.planning_city ?? undefined,
-    neighborhood: row.neighborhood ?? undefined,
-    category: row.category,
-    image: row.image,
-    description: row.description ?? undefined,
-    shortDescription: row.short_description ?? undefined,
-    editorialSummary: row.editorial_summary ?? undefined,
-    insiderTip: row.insider_tip ?? undefined,
-    rating: row.rating ?? undefined,
-    reviewCount: row.review_count ?? undefined,
-    estimatedDuration: row.estimated_duration ?? undefined,
-    minBudget: row.min_budget ?? undefined,
-    operatingHours: normalizeOperatingHours(row.operating_hours),
-    recommendedVisit: row.recommended_visit ?? undefined,
-    coordinates: row.coordinates ?? undefined,
-    timezone: row.timezone ?? undefined,
-    placeId: row.place_id ?? undefined,
-    primaryPhotoUrl: row.primary_photo_url ?? undefined,
-    websiteUri: row.website_uri ?? undefined,
-    phoneNumber: row.phone_number ?? undefined,
-    googleMapsUri: row.google_maps_uri ?? undefined,
-    googlePrimaryType: row.google_primary_type ?? undefined,
-    googleTypes: row.google_types ?? undefined,
-    businessStatus: row.business_status ?? undefined,
-    preferredTransitModes: row.preferred_transit_modes ?? undefined,
-    nearestStation: row.nearest_station ?? undefined,
-    cashOnly: row.cash_only ?? undefined,
-    reservationInfo: row.reservation_info ?? undefined,
-    tags: row.tags ?? undefined,
-    accessibilityOptions: row.accessibility_options ?? undefined,
-    mealOptions: row.meal_options ?? undefined,
-    serviceOptions: row.service_options ?? undefined,
-    dietaryOptions: row.dietary_options ?? undefined,
-    cuisineType: row.cuisine_type ?? undefined,
-    priceLevel: row.price_level ?? undefined,
-    goodForChildren: row.good_for_children ?? undefined,
-    goodForGroups: row.good_for_groups ?? undefined,
-    outdoorSeating: row.outdoor_seating ?? undefined,
-    reservable: row.reservable ?? undefined,
-    isHiddenGem: row.is_hidden_gem ?? undefined,
-    isSeasonal: row.is_seasonal ?? undefined,
-    seasonalType: row.seasonal_type ?? undefined,
-    validMonths: row.valid_months ?? undefined,
-    tattooPolicy: row.tattoo_policy ?? undefined,
-    jtaApproved: row.jta_approved ?? undefined,
-    isUnescoSite: row.is_unesco_site ?? undefined,
-    parentId: row.parent_id ?? undefined,
-    parentMode: row.parent_mode ?? undefined,
-  } as Location;
+  return transformDbRowToLocation(data as unknown as LocationDbRow);
 }
 
 export async function generateMetadata({ params }: RouteProps): Promise<Metadata> {
