@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 import type { InterestId } from "@/types/trip";
 import { vibesToInterests } from "@/data/vibes";
 import { Input } from "@/components/ui/Input";
-import { calculateDistance } from "@/data/entryPoints";
+import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
 type CityWithRelevance = {
   city: string;
@@ -77,7 +77,7 @@ export function CityList({ onCitySelect }: CityListProps) {
 
     for (const city of allCities) {
       if (!city.coordinates) continue;
-      const distance = calculateDistance(entryPoint.coordinates, city.coordinates);
+      const distance = calculateDistanceMeters(entryPoint.coordinates, city.coordinates);
       if (distance < minDistance) {
         minDistance = distance;
         nearestCity = city;
@@ -99,7 +99,7 @@ export function CityList({ onCitySelect }: CityListProps) {
 
       // Check distance threshold
       if (cityCoordinates) {
-        const distanceMeters = calculateDistance(entryPoint.coordinates, cityCoordinates);
+        const distanceMeters = calculateDistanceMeters(entryPoint.coordinates, cityCoordinates);
         return distanceMeters <= NEAR_ARRIVAL_THRESHOLD_KM * 1000;
       }
 
@@ -168,8 +168,8 @@ export function CityList({ onCitySelect }: CityListProps) {
 
         // Tertiary sort: by distance from entry point (if available)
         if (entryPoint && a.coordinates && b.coordinates) {
-          const distA = calculateDistance(entryPoint.coordinates, a.coordinates);
-          const distB = calculateDistance(entryPoint.coordinates, b.coordinates);
+          const distA = calculateDistanceMeters(entryPoint.coordinates, a.coordinates);
+          const distB = calculateDistanceMeters(entryPoint.coordinates, b.coordinates);
           return distA - distB;
         }
 
