@@ -35,6 +35,13 @@ export function useTripBuilderNavigation({
     return 0;
   });
   const [direction, setDirection] = useState(1);
+  const [maxStepReached, setMaxStepReached] = useState<Step>(() =>
+    initialStep === "5" ? 5 : 0,
+  );
+
+  useEffect(() => {
+    setMaxStepReached((prev) => (currentStep > prev ? currentStep : prev));
+  }, [currentStep]);
 
   // Detect when trip builder data is cleared externally (e.g. "Clear local data")
   // by tracking whether we've ever seen non-empty data in this session.
@@ -100,12 +107,12 @@ export function useTripBuilderNavigation({
     const set = new Set<number>();
     if (currentStep > 0) set.add(0);
     if (datesValid) set.add(1);
-    if (currentStep > 2 || (currentStep === 2 && !!data.entryPoint)) set.add(2);
+    if (!!data.entryPoint) set.add(2);
     if (vibesValid) set.add(3);
     if (regionsValid) set.add(4);
-    if (reviewValid && currentStep === 5) set.add(5);
+    if (reviewValid && maxStepReached >= 5) set.add(5);
     return set;
-  }, [currentStep, datesValid, data.entryPoint, vibesValid, regionsValid, reviewValid]);
+  }, [currentStep, datesValid, data.entryPoint, vibesValid, regionsValid, reviewValid, maxStepReached]);
 
   const goToStep = useCallback(
     (step: Step) => {
