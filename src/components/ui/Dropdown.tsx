@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useId, useMemo, useRef, useState, isValidElement, cloneElement } from "react";
+import { Fragment, ReactNode, useEffect, useId, useMemo, useRef, useState, isValidElement, cloneElement } from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/cn";
@@ -10,6 +10,8 @@ type DropdownItem = {
   icon?: ReactNode;
   onSelect?: () => void;
   disabled?: boolean;
+  /** Render a divider above this item to group it visually */
+  separated?: boolean;
 };
 
 type DropdownProps = {
@@ -407,31 +409,35 @@ export function Dropdown({
           onKeyDown={handleMenuKeyDown}
         >
           <div className="py-1">
-            {items.map(({ id, label: itemLabel, description, icon, disabled }, index) => (
-              <button
-                key={id}
-                ref={(node) => {
-                  itemsRef.current[index] = node;
-                }}
-                type="button"
-                role="menuitem"
-                aria-disabled={disabled}
-                disabled={disabled}
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm text-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
-                  activeIndex === index && "bg-brand-primary/10 text-brand-primary",
-                  disabled
-                    ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-surface focus:bg-surface focus:text-brand-primary",
-                )}
-                onClick={() => selectItem(index)}
-              >
-                {icon ? <span className="mt-0.5 text-stone">{icon}</span> : null}
-                <span className="flex flex-col">
-                  <span className="font-medium">{itemLabel}</span>
-                  {description ? <span className="text-xs text-stone">{description}</span> : null}
-                </span>
-              </button>
+            {items.map(({ id, label: itemLabel, description, icon, disabled, separated }, index) => (
+              <Fragment key={id}>
+                {separated && index > 0 ? (
+                  <div role="separator" aria-hidden="true" className="my-1 border-t border-border" />
+                ) : null}
+                <button
+                  ref={(node) => {
+                    itemsRef.current[index] = node;
+                  }}
+                  type="button"
+                  role="menuitem"
+                  aria-disabled={disabled}
+                  disabled={disabled}
+                  className={cn(
+                    "flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm text-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                    activeIndex === index && "bg-brand-primary/10 text-brand-primary",
+                    disabled
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:bg-surface focus:bg-surface focus:text-brand-primary",
+                  )}
+                  onClick={() => selectItem(index)}
+                >
+                  {icon ? <span className="mt-0.5 text-stone">{icon}</span> : null}
+                  <span className="flex flex-col">
+                    <span className="font-medium">{itemLabel}</span>
+                    {description ? <span className="text-xs text-stone">{description}</span> : null}
+                  </span>
+                </button>
+              </Fragment>
             ))}
           </div>
         </div>,
