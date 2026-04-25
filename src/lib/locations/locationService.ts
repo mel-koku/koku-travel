@@ -157,6 +157,10 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     isHiddenGem: "is_hidden_gem" in r ? (r.is_hidden_gem as boolean | null) ?? undefined : undefined,
     jtaApproved: "jta_approved" in r ? (r.jta_approved as boolean | null) ?? undefined : undefined,
     isUnescoSite: "is_unesco_site" in r ? (r.is_unesco_site as boolean | null) ?? undefined : undefined,
+    websiteUri: "website_uri" in r ? (r.website_uri as string | null) ?? undefined : undefined,
+    phoneNumber: "phone_number" in r ? (r.phone_number as string | null) ?? undefined : undefined,
+    googleMapsUri: "google_maps_uri" in r ? (r.google_maps_uri as string | null) ?? undefined : undefined,
+    craftType: "craft_type" in r ? (r.craft_type as string | null) ?? undefined : undefined,
   };
 
   // Fields that only exist on the full LocationDbRow projection.
