@@ -215,8 +215,10 @@ export const POST = withApiHandler(
     const baseCityCoords = getCityCenterCoordinates(baseCityId);
     const distanceKm = calculateDistance(baseCityCoords, targetCoords);
 
-    const outbound = await getRoutedTravelMinutes(baseCityCoords, targetCoords, distanceKm);
-    const inbound = await getRoutedTravelMinutes(targetCoords, baseCityCoords, distanceKm);
+    const [outbound, inbound] = await Promise.all([
+      getRoutedTravelMinutes(baseCityCoords, targetCoords, distanceKm),
+      getRoutedTravelMinutes(targetCoords, baseCityCoords, distanceKm),
+    ]);
 
     const travelTo = buildTravelSegment(baseCityName, targetRow.city || targetRow.name, outbound.minutes, outbound.isEstimated);
     const travelFrom = buildTravelSegment(targetRow.city || targetRow.name, baseCityName, inbound.minutes, inbound.isEstimated);
