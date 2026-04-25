@@ -9,6 +9,7 @@ import type { Guide, GuideRow, GuideSummary } from "@/types/guide";
 import { rowToGuide } from "@/types/guide";
 import { fetchLocationsByIds } from "@/lib/locations/locationService";
 import {
+  attachGuideFallbackImage,
   attachLocationFallbackImages,
   patchLocationHeroPhotos,
 } from "@/services/guides/fallbackImages";
@@ -168,7 +169,7 @@ export async function getGuideBySlug(slug: string): Promise<Guide | null> {
     return null;
   }
 
-  return rowToGuide(data as GuideRow);
+  return attachGuideFallbackImage(rowToGuide(data as GuideRow));
 }
 
 /**
