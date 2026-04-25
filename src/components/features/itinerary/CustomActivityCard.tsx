@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Phone, Link as LinkIcon, Banknote } from "lucide-react";
 import type { ItineraryActivity } from "@/types/itinerary";
+import { isSafeUrl } from "@/lib/utils/urlSafety";
 
 type Props = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
@@ -31,7 +33,7 @@ export function CustomActivityCard({ activity, onEdit, onDelete }: Props) {
   const addressless = !activity.coordinates;
 
   return (
-    <div className="rounded border p-3">
+    <div className="rounded-md border border-border p-3">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
@@ -39,74 +41,77 @@ export function CustomActivityCard({ activity, onEdit, onDelete }: Props) {
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <div className="font-semibold">{activity.title}</div>
-            <div className="text-xs text-gray-500">
+            <div className="font-semibold text-foreground">{activity.title}</div>
+            <div className="text-xs text-foreground-secondary">
               {activity.schedule?.arrivalTime && <>{activity.schedule.arrivalTime} · </>}
               {formatDuration(activity.durationMin ?? 60)}
               {" · "}
-              <span className="inline-block rounded bg-gray-200 px-1 text-[10px] font-medium uppercase">
+              <span className="inline-block rounded bg-sand px-1 text-[10px] font-medium uppercase text-foreground-secondary">
                 Custom
               </span>
             </div>
             {activity.address && (
-              <div className="mt-1 truncate text-xs text-gray-600">{activity.address}</div>
+              <div className="mt-1 truncate text-xs text-foreground-secondary">{activity.address}</div>
             )}
             {addressless && (
-              <div className="mt-1 text-xs text-amber-600">
-                No address — times approximate
+              <div className="mt-1 text-xs text-warning">
+                No address. Times approximate.
               </div>
             )}
             {activity.notes && !expanded && (
-              <div className="mt-1 line-clamp-2 text-xs text-gray-700">{activity.notes}</div>
+              <div className="mt-1 line-clamp-2 text-xs text-foreground/80">{activity.notes}</div>
             )}
           </div>
           <div className="flex items-center gap-1">
-            {hasPhone && <span aria-label="phone">📞</span>}
-            {hasWebsite && <span aria-label="website">🔗</span>}
-            {hasCost && <span aria-label="cost">💴</span>}
-            {overflow > 0 && <span className="text-xs text-gray-500">+{overflow}</span>}
+            {hasPhone && <Phone className="h-3.5 w-3.5 text-foreground-secondary" aria-label="phone" />}
+            {hasWebsite && <LinkIcon className="h-3.5 w-3.5 text-foreground-secondary" aria-label="website" />}
+            {hasCost && <Banknote className="h-3.5 w-3.5 text-foreground-secondary" aria-label="cost" />}
+            {overflow > 0 && <span className="text-xs text-foreground-secondary">+{overflow}</span>}
           </div>
         </div>
       </button>
 
       {expanded && (
-        <div className="mt-3 space-y-2 border-t pt-3 text-sm">
-          {activity.notes && <div>{activity.notes}</div>}
+        <div className="mt-3 space-y-2 border-t border-border pt-3 text-sm">
+          {activity.notes && <div className="text-foreground">{activity.notes}</div>}
           {activity.phone && (
-            <a href={`tel:${activity.phone}`} className="block text-blue-600">
-              📞 {activity.phone}
+            <a href={`tel:${activity.phone}`} className="flex items-center gap-2 text-accent">
+              <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+              {activity.phone}
             </a>
           )}
-          {activity.website && (
+          {activity.website && isSafeUrl(activity.website) && (
             <a
               href={activity.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-blue-600"
+              className="flex items-center gap-2 text-accent"
             >
-              🔗 {activity.website}
+              <LinkIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              {activity.website}
             </a>
           )}
           {activity.costEstimate && (
-            <div>
-              💴 {activity.costEstimate.amount} {activity.costEstimate.currency}
+            <div className="flex items-center gap-2 text-foreground">
+              <Banknote className="h-3.5 w-3.5 text-foreground-secondary" aria-hidden="true" />
+              {activity.costEstimate.amount} {activity.costEstimate.currency}
             </div>
           )}
           {activity.confirmationNumber && (
-            <div>Confirmation: {activity.confirmationNumber}</div>
+            <div className="text-foreground">Confirmation: {activity.confirmationNumber}</div>
           )}
           <div className="flex gap-2 pt-2">
             <button
               type="button"
               onClick={onEdit}
-              className="rounded border px-3 py-1 text-sm"
+              className="rounded-md border border-border px-3 py-1 text-sm text-foreground hover:bg-canvas"
             >
               Edit
             </button>
             <button
               type="button"
               onClick={onDelete}
-              className="rounded border border-red-300 px-3 py-1 text-sm text-red-600"
+              className="rounded-md border border-error/40 px-3 py-1 text-sm text-error hover:bg-nasu-tint"
             >
               Delete
             </button>

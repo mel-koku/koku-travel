@@ -260,7 +260,7 @@ export const landingPage = defineType({
       rows: 2,
       fieldset: "featuredExperiences",
       initialValue:
-        "Workshops, cruises, and adventures that connect you with the culture — not just the scenery.",
+        "Workshops, cruises, and adventures that connect you with the culture, not just the scenery.",
     }),
 
     defineField({

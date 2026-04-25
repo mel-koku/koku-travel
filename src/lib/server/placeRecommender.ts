@@ -146,7 +146,7 @@ export async function extractPlaceIntent(
 
   const activityListText = dayActivities?.length
     ? dayActivities
-        .map((a, i) => `${i + 1}. ${a.name} (${a.category ?? "unknown"})${a.isAnchor ? " [anchor — cannot be moved/removed]" : ""}`)
+        .map((a, i) => `${i + 1}. ${a.name} (${a.category ?? "unknown"})${a.isAnchor ? " [anchor: cannot be moved/removed]" : ""}`)
         .join("\n")
     : "none yet";
 
@@ -207,8 +207,8 @@ First, determine the **commandType**:
 ## Important Rules
 - Default to "search" if the query is ambiguous or doesn't clearly reference existing activities
 - Activity names must closely match the current day's activities listed above
-- Activities marked [anchor] cannot be moved, swapped, or removed — use "search" instead
-- Be generous with categories for search — include all that could match
+- Activities marked [anchor] cannot be moved, swapped, or removed. Use "search" instead.
+- Be generous with categories for search. Include all that could match.
 - If the query mentions a specific food type, include "restaurant" in categories and the food type in searchQuery
 - Empty arrays are fine for categories/tags if nothing specific applies`;
 

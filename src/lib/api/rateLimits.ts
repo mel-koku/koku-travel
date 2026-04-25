@@ -35,6 +35,7 @@ export const RATE_LIMITS = {
   BILLING_WEBHOOK: { maxRequests: 50, windowMs: 60_000 },
   BILLING_COMPLETE: { maxRequests: 5, windowMs: 60_000 },
   CONTACT: { maxRequests: 5, windowMs: 15 * 60_000 },
+  ADDRESS_SEARCH: { maxRequests: 30, windowMs: 60_000 },
   /** Server-side PDF generation — expensive (~200MB RAM + 3–15s CPU per call) */
   PDF: { maxRequests: 5, windowMs: 60_000 },
 } as const;

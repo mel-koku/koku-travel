@@ -70,72 +70,75 @@ export function CustomActivityForm({ onSubmit, onCancel, initial = {} }: Props) 
     onSubmit(activity, { addressSource: addressSource ?? "none" });
   }
 
+  const inputClass =
+    "mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <label className="block">
-        <span className="text-sm font-medium">Title*</span>
+        <span className="text-sm font-medium text-foreground">Title*</span>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="mt-1 w-full rounded border px-3 py-2"
+          className={inputClass}
         />
       </label>
 
       <div>
-        <span className="text-sm font-medium">Address</span>
+        <span className="text-sm font-medium text-foreground">Address</span>
         <AddressAutocomplete
           onSelect={handleAddressSelect}
           onUseAsIs={handleUseAsIs}
           initialValue={address}
         />
         {addressSource === "as-is" && (
-          <p className="mt-1 text-xs text-amber-600">
-            No coordinates — travel times to/from this stop will be estimated.
+          <p className="mt-1 text-xs text-warning">
+            No coordinates. Travel times to and from this stop will be estimated.
           </p>
         )}
       </div>
 
       <label className="block">
-        <span className="text-sm font-medium">Duration (minutes)</span>
+        <span className="text-sm font-medium text-foreground">Duration (minutes)</span>
         <input
           type="number"
           value={duration}
           min={5}
           step={5}
           onChange={(e) => setDuration(parseInt(e.target.value, 10) || 60)}
-          className="mt-1 w-full rounded border px-3 py-2"
+          className={inputClass}
         />
       </label>
 
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="text-sm text-blue-600"
+        className="text-sm text-accent hover:underline"
       >
         {expanded ? "Hide details" : "Add more details"}
       </button>
 
       {expanded && (
-        <div className="space-y-3 border-l-2 pl-3">
+        <div className="space-y-3 border-l-2 border-border pl-3">
           <label className="block">
-            <span className="text-sm font-medium">Start time</span>
+            <span className="text-sm font-medium text-foreground">Start time</span>
             <input
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium">Category</span>
+            <span className="text-sm font-medium text-foreground">Category</span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             >
-              <option value="">—</option>
+              <option value="">Select category</option>
               <option value="food">Food</option>
               <option value="sightseeing">Sightseeing</option>
               <option value="shopping">Shopping</option>
@@ -144,40 +147,40 @@ export function CustomActivityForm({ onSubmit, onCancel, initial = {} }: Props) 
             </select>
           </label>
           <label className="block">
-            <span className="text-sm font-medium">Phone</span>
+            <span className="text-sm font-medium text-foreground">Phone</span>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium">Website</span>
+            <span className="text-sm font-medium text-foreground">Website</span>
             <input
               type="url"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             />
           </label>
           <div className="flex gap-2">
             <label className="flex-1">
-              <span className="text-sm font-medium">Cost</span>
+              <span className="text-sm font-medium text-foreground">Cost</span>
               <input
                 type="number"
                 value={costAmount}
                 min={0}
                 onChange={(e) => setCostAmount(parseInt(e.target.value, 10) || 0)}
-                className="mt-1 w-full rounded border px-3 py-2"
+                className={inputClass}
               />
             </label>
             <label>
-              <span className="text-sm font-medium">Currency</span>
+              <span className="text-sm font-medium text-foreground">Currency</span>
               <select
                 value={costCurrency}
                 onChange={(e) => setCostCurrency(e.target.value)}
-                className="mt-1 rounded border px-3 py-2"
+                className={inputClass}
               >
                 <option value="JPY">JPY</option>
                 <option value="USD">USD</option>
@@ -187,34 +190,38 @@ export function CustomActivityForm({ onSubmit, onCancel, initial = {} }: Props) 
             </label>
           </div>
           <label className="block">
-            <span className="text-sm font-medium">Notes</span>
+            <span className="text-sm font-medium text-foreground">Notes</span>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium">Confirmation number</span>
+            <span className="text-sm font-medium text-foreground">Confirmation number</span>
             <input
               type="text"
               value={confirmationNumber}
               onChange={(e) => setConfirmationNumber(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              className={inputClass}
             />
           </label>
         </div>
       )}
 
       <div className="flex justify-end gap-2">
-        <button type="button" onClick={onCancel} className="rounded border px-4 py-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-md border border-border px-4 py-2 text-foreground hover:bg-canvas"
+        >
           Cancel
         </button>
         <button
           type="submit"
           disabled={!title.trim()}
-          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+          className="rounded-md bg-brand-primary px-4 py-2 text-white hover:bg-brand-secondary disabled:opacity-50"
         >
           Save
         </button>

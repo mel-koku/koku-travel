@@ -283,7 +283,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           </div>
 
           {activePhoto?.attribution && (
-            <p className="absolute top-2 left-3 text-[10px] text-white/75 drop-shadow-sm">
+            <p className="absolute top-2 left-3 text-[10px] text-white/75 filter-[drop-shadow(0_1px_2px_rgb(0_0_0/0.6))]">
               Photo:{" "}
               {activePhoto.attributionUri && isSafeUrl(activePhoto.attributionUri) ? (
                 <a

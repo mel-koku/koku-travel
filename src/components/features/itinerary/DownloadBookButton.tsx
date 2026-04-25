@@ -50,7 +50,7 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
   const handleClick = useCallback(async () => {
     getGtag()?.("event", "trip_pass.pdf_download_rate", { trip_id: tripId });
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      fallbackToPrintTab("You're offline — opening print view instead");
+      fallbackToPrintTab("You're offline. Opening print view instead.");
       return;
     }
 
@@ -96,8 +96,8 @@ export function DownloadBookButton({ tripId, locked, onLockedClick }: DownloadBo
       const aborted = err instanceof Error && err.name === "AbortError";
       fallbackToPrintTab(
         aborted
-          ? "Taking longer than expected — opening print view instead"
-          : "Couldn't generate PDF — opening print view instead",
+          ? "Taking longer than expected. Opening print view instead."
+          : "Couldn't generate PDF. Opening print view instead.",
       );
     } finally {
       clearTimeout(timeoutId);

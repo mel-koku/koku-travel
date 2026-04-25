@@ -45,7 +45,7 @@ export function PrintBeforeYouGo({ trip }: PrintBeforeYouGoProps) {
     essentials.push({
       title: "Dietary notes",
       body:
-        "Show your restrictions written in Japanese at the start of each meal. Dashi (bonito broth) appears in most 'vegetarian' dishes — ask specifically. Strict preferences narrow the field significantly; plan your larger meals rather than improvising.",
+        "Show your restrictions written in Japanese at the start of each meal. Dashi (bonito broth) appears in most 'vegetarian' dishes, so ask specifically. Strict preferences narrow the field significantly; plan your larger meals rather than improvising.",
     });
   }
 

@@ -291,7 +291,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         />
         <div className="absolute inset-0 scrim-70" />
         {activePhoto?.attribution && (
-          <p className="absolute bottom-2 right-3 text-[11px] text-white/80 drop-shadow-sm">
+          <p className="absolute bottom-2 right-3 text-[11px] text-white/80">
             Photo:{" "}
             {activePhoto.attributionUri && isSafeUrl(activePhoto.attributionUri) ? (
               <a

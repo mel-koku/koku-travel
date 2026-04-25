@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPersonWithExperiences } from "@/lib/people/peopleService";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { notFound } from "@/lib/api/errors";
+import { badRequest, notFound } from "@/lib/api/errors";
+import { isValidSlug } from "@/lib/api/validation";
 
 /**
  * GET /api/people/:slug
@@ -15,11 +16,15 @@ export async function GET(
 ) {
   const { slug } = await props.params;
   return withApiHandler(
-    async () => {
+    async (_req, { context }) => {
+      if (!isValidSlug(slug)) {
+        return badRequest("Invalid slug", undefined, { requestId: context.requestId });
+      }
+
       const person = await getPersonWithExperiences(slug);
 
       if (!person) {
-        return notFound("Person not found");
+        return notFound("Person not found", { requestId: context.requestId });
       }
 
       return NextResponse.json(

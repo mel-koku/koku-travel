@@ -128,7 +128,7 @@ export function PrepBanner({ trip }: Props) {
     } catch {
       // Roll back
       setState((s) => ({ ...s, [itemId]: prev }));
-      showToast("Couldn't save — try again", { variant: "error" });
+      showToast("Couldn't save. Try again.", { variant: "error" });
     }
   }
 
@@ -144,7 +144,7 @@ export function PrepBanner({ trip }: Props) {
         >
           <span className="flex items-center gap-2 text-sm text-foreground">
             {!allDone && <Plane className="h-3.5 w-3.5 shrink-0 text-foreground-secondary" aria-hidden="true" />}
-            {allDone ? `Prep complete — ${done} of ${total} done` : `${label}`}
+            {allDone ? `Prep complete. ${done} of ${total} done` : `${label}`}
             <span className="text-foreground-secondary">· {done} of {total} done</span>
           </span>
           <span aria-hidden="true" className="text-foreground-secondary">+</span>

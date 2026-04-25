@@ -89,7 +89,7 @@ function WalkStep({ step }: { step: BeatTransitStep }) {
       <span className="text-foreground-secondary/60 mr-1">↳</span>
       Walk {step.walkMinutes} min
       {step.walkInstruction && (
-        <span className="text-foreground-secondary/80"> — {step.walkInstruction}</span>
+        <span className="text-foreground-secondary/80"> · {step.walkInstruction}</span>
       )}
     </div>
   );

@@ -39,7 +39,7 @@ export function PillarSection({ pillar, index, total }: PillarSectionProps) {
 
       {/* Chapter number */}
       <div className="relative font-mono text-[11px] uppercase tracking-[0.22em] text-foreground-secondary mb-6">
-        {numberLabel} <span className="opacity-30 mx-2">—</span>{" "}
+        {numberLabel} <span className="opacity-30 mx-2" aria-hidden="true">·</span>{" "}
         <span className="text-foreground-secondary">{pillar.name}</span>
       </div>
 

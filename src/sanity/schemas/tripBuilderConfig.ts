@@ -424,7 +424,7 @@ export const tripBuilderConfig = defineType({
       title: "Notes Tooltip",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "Anything we should know — a birthday, an allergy, a must-visit spot.",
+      initialValue: "Anything we should know: a birthday, an allergy, a must-visit spot.",
     }),
     defineField({
       name: "reviewNotesPlaceholder",
