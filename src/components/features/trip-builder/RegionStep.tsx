@@ -417,20 +417,16 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
-                    className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm text-foreground-secondary transition-colors ${
-                      cityDayValidation.severity === "error"
-                        ? "border-brand-primary/30 bg-nasu-tint"
-                        : "border-border bg-surface"
-                    }`}
+                    className="flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-sm text-white transition-colors"
                   >
                     {name}
                     <button
                       type="button"
                       onClick={() => toggleCity(cityId!)}
-                      className="flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-sand"
+                      className="flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-white/20"
                       aria-label={`Remove ${name}`}
                     >
-                      <X className="h-3 w-3 text-stone hover:text-foreground" />
+                      <X className="h-3 w-3 text-white/80 hover:text-white" />
                     </button>
                   </motion.span>
                 );
