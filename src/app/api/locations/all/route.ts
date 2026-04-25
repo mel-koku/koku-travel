@@ -5,10 +5,10 @@ import { logger } from "@/lib/logger";
 import { internalError } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { LOCATION_EXPLORE_COLUMNS, type LocationExploreDbRow } from "@/lib/supabase/projections";
+import { LOCATION_EXPLORE_COLUMNS, type LocationExploreDbRow, type LocationListingDbRow } from "@/lib/supabase/projections";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
-import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
 
 /**
  * Two-tier cache: globalThis (survives Turbopack module re-eval) +
@@ -119,43 +119,12 @@ export const GET = withApiHandler(
       allRows = allRows.concat(rows);
     }
 
+    // Transform via canonical mapper. Override image with bandwidth
+    // optimization: when primary_photo_url is present the client uses that,
+    // so we send an empty image string to save ~500KB across a full grid.
     const locations: Location[] = allRows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      region: row.region,
-      city: row.city,
-      prefecture: row.prefecture ?? undefined,
-      category: row.category,
-      // Only include image when primaryPhotoUrl is absent (saves ~500KB)
+      ...transformDbRowToLocation(row as unknown as LocationListingDbRow),
       image: row.primary_photo_url ? "" : row.image,
-      shortDescription: row.short_description ?? undefined,
-      estimatedDuration: row.estimated_duration ?? undefined,
-      rating: row.rating ?? undefined,
-      reviewCount: row.review_count ?? undefined,
-      primaryPhotoUrl: row.primary_photo_url ?? undefined,
-      googlePrimaryType: row.google_primary_type ?? undefined,
-      priceLevel: row.price_level as Location['priceLevel'] ?? undefined,
-      accessibilityOptions: row.accessibility_options ?? undefined,
-      dietaryOptions: row.dietary_options ?? undefined,
-      coordinates: row.coordinates ?? undefined,
-      isHiddenGem: row.is_hidden_gem ?? undefined,
-      isFeatured: row.is_featured ?? undefined,
-      jtaApproved: row.jta_approved ?? undefined,
-      nameJapanese: row.name_japanese ?? undefined,
-      nearestStation: row.nearest_station ?? undefined,
-      cashOnly: row.cash_only ?? undefined,
-      paymentTypes: (row.payment_types as Location["paymentTypes"]) ?? undefined,
-      dietaryFlags: (row.dietary_flags as Location["dietaryFlags"]) ?? undefined,
-      reservationInfo: row.reservation_info ?? undefined,
-      operatingHours: normalizeOperatingHours(row.operating_hours),
-      goodForChildren: row.good_for_children ?? undefined,
-      goodForGroups: row.good_for_groups ?? undefined,
-      mealOptions: row.meal_options ?? undefined,
-      serviceOptions: row.service_options ?? undefined,
-      tags: row.tags ?? undefined,
-      cuisineType: row.cuisine_type ?? undefined,
-      craftType: row.craft_type ?? undefined,
-      isUnescoSite: row.is_unesco_site ?? undefined,
     }));
 
     // Cache the result in-memory
