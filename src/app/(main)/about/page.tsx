@@ -280,8 +280,11 @@ export default async function AboutPage() {
                       ? "grid gap-8 md:grid-cols-2 md:items-center"
                       : "mx-auto max-w-2xl text-center"
                   )}>
-                    {hasImage && isEven && (
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
+                    {hasImage && (
+                      <div className={cn(
+                        "relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]",
+                        !isEven && "md:order-2",
+                      )}>
                         <Image
                           src={imageUrl}
                           alt=""
@@ -292,24 +295,12 @@ export default async function AboutPage() {
                       </div>
                     )}
 
-                    <div className={hasImage ? "" : ""}>
+                    <div className={cn(hasImage && !isEven && "md:order-1")}>
                       <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
                         <strong className="text-foreground">{value.title}</strong>{" "}
                         {value.description}
                       </p>
                     </div>
-
-                    {hasImage && !isEven && (
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[var(--shadow-card)]">
-                        <Image
-                          src={imageUrl}
-                          alt=""
-                          fill
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
                   </div>
                 </ScrollReveal>
               );

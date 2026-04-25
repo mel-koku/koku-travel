@@ -93,10 +93,10 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
         };
 
   return (
-    <div className="relative flex min-h-[100dvh] items-center overflow-hidden bg-background pt-14">
+    <div className="relative flex min-h-[100dvh] items-start overflow-hidden bg-background pt-14 lg:items-center">
 
       {/* Main grid content */}
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-6 py-20 sm:py-28 lg:grid-cols-[1fr_0.82fr] lg:gap-16 lg:px-10">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-6 py-8 sm:py-12 lg:grid-cols-[1fr_0.82fr] lg:gap-16 lg:px-10 lg:py-28">
         {/* ── LEFT COLUMN — Typography + CTA ── */}
         <div className="flex flex-col justify-center">
           {/* Eyebrow */}
@@ -110,7 +110,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
           {/* Heading — lead-in */}
           <SplitText
             as="p"
-            className="mt-4 font-serif text-[clamp(1.5rem,5vw,3.5rem)] leading-[1.1] text-foreground-secondary"
+            className="mt-4 font-serif text-[clamp(2rem,6vw,3.5rem)] leading-[1.1] text-foreground-secondary"
             splitBy="word"
             animation="fadeUp"
             staggerDelay={staggerWord}
@@ -271,8 +271,9 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
           )}
         </div>
 
-        {/* ── RIGHT COLUMN — Image Panel ── */}
-        <div className="flex w-full items-start lg:sticky lg:top-16 lg:self-start">
+        {/* ── RIGHT COLUMN — Image Panel (renders first on mobile so the image
+             anchors the screen instead of peeking awkwardly below the CTAs) ── */}
+        <div className="order-first flex w-full items-start lg:order-0 lg:sticky lg:top-16 lg:self-start">
           <IntroImagePanel
             src={accentImage}
             caption={imageCaption}

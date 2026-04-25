@@ -23,6 +23,11 @@ const RESIZE_CACHE_MAX = 500;
 
 export function resizePhotoUrl(url: string | undefined, maxWidthPx: number): string | undefined {
   if (!url) return url;
+  // The `location-photos` Supabase Storage bucket was made private 2026-04-14
+  // for Google TOS remediation. Old `getPublicUrl()` URLs (still in many rows'
+  // `image` column) now 403/404. Treat as no-image so callers fall through to
+  // their placeholder. Real fix is data backfill of `primary_photo_url`.
+  if (url.includes("/storage/v1/object/public/location-photos/")) return undefined;
   if (!url.includes("/api/places/photo")) return url;
 
   const key = `${url}|${maxWidthPx}`;

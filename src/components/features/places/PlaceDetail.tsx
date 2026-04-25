@@ -309,6 +309,38 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         )}
       </div>
 
+      {/* Photo gallery — sits directly under the hero so the thumbnails are visually
+          paired with the active photo they control. py-1.5 gives the active ring
+          breathing room inside the overflow-x clip region. */}
+      {allPhotos.length > 1 && (
+        <div className="mx-auto max-w-4xl px-6 pt-2 pb-3">
+          <div className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-1.5">
+            {allPhotos.map((photo, i) => (
+              <button
+                key={photo.url}
+                type="button"
+                onClick={() => setActivePhotoIndex(i)}
+                aria-label={`View photo ${i + 1} of ${allPhotos.length}`}
+                className={cn(
+                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
+                  i === activePhotoIndex
+                    ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
+                    : "opacity-60 hover:opacity-100"
+                )}
+              >
+                <Image
+                  src={resizePhotoUrl(photo.url, 128) || photo.url}
+                  alt={`${displayName} photo ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Sticky back bar */}
       <div className="sticky z-30 border-b border-border bg-background/95 backdrop-blur-sm" style={{ top: 0 }}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6 flex items-center gap-3 h-12">
@@ -433,35 +465,6 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         </motion.div>
       </motion.div>
 
-      {/* Photo gallery */}
-      {allPhotos.length > 1 && (
-        <div className="mx-auto max-w-4xl px-6 pb-6">
-          <div className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide">
-            {allPhotos.map((photo, i) => (
-              <button
-                key={photo.url}
-                type="button"
-                onClick={() => setActivePhotoIndex(i)}
-                aria-label={`View photo ${i + 1} of ${allPhotos.length}`}
-                className={cn(
-                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
-                  i === activePhotoIndex
-                    ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
-                    : "opacity-60 hover:opacity-100"
-                )}
-              >
-                <Image
-                  src={resizePhotoUrl(photo.url, 128) || photo.url}
-                  alt={`${displayName} photo ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="64px"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Content sections */}
       <div className="mx-auto max-w-3xl px-6 space-y-8 pb-8">
