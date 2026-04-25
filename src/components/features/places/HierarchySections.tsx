@@ -98,7 +98,7 @@ export function SubExperienceTeaser({
       </svg>
       <span className="text-foreground-secondary">
         <span className="font-medium text-foreground">
-          {hasRoute && highlights.length === 0 ? "Walking route" : "Don\u2019t miss"}:
+          {hasRoute && highlights.length === 0 ? "Walking route" : "Highlights"}:
         </span>{" "}
         {shown.map((s) => s.name).join(", ")}
         {remaining > 0 && (
@@ -182,10 +182,10 @@ export function SubExperiencesSection({
       {highlights.length > 0 && (
         <div className="space-y-3">
           <h3 className={cn(typography({ intent: "utility-h2" }), "px-1")}>
-            Don&apos;t miss
+            Highlights
           </h3>
           <p className="px-1 text-sm text-foreground-secondary">
-            The highlights worth your time once you&apos;re here.
+            What stands out once you&apos;re here.
           </p>
           <div className="space-y-3">
             {highlights.map((item) => (
