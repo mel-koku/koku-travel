@@ -212,7 +212,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={handleClearData}
           className="flex items-center gap-2 py-2.5 text-left text-sm text-stone transition-colors hover:text-warning"
         >
-          <span>Clear local data</span>
+          <span>Start fresh</span>
           <svg
             className="h-[1em] w-[1em] flex-shrink-0"
             xmlns="http://www.w3.org/2000/svg"

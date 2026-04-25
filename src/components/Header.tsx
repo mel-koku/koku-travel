@@ -35,8 +35,9 @@ function UserMenu({
   router: AppRouterInstance;
   onDark?: boolean;
 }) {
-  const { clearAllLocalData, trips } = useAppState();
+  const { clearAllLocalData, trips, saved } = useAppState();
   const hasLocalTrip = !isSignedIn && trips.length > 0;
+  const hasLocalSaves = !isSignedIn && saved.length > 0;
 
   const handleClearData = () => {
     const body = isSignedIn
@@ -87,12 +88,15 @@ function UserMenu({
                 onSelect: () => router.push("/dashboard"),
               },
             ]
+          : hasLocalSaves
+          ? [
+              {
+                id: "dashboard",
+                label: "Dashboard",
+                onSelect: () => router.push("/dashboard"),
+              },
+            ]
           : []),
-        {
-          id: "dashboard",
-          label: "Dashboard",
-          onSelect: () => router.push("/dashboard"),
-        },
         {
           id: "saved",
           label: "Saved Places",
@@ -100,14 +104,18 @@ function UserMenu({
         },
         {
           id: "signin",
-          label: "Sign in",
+          label: (
+            <span className="font-semibold text-brand-primary">Sign in</span>
+          ),
+          separated: true,
           onSelect: () => router.push("/signin"),
         },
         {
           id: "cleardata",
           label: (
-            <span className="text-foreground-secondary">Clear local data</span>
+            <span className="text-foreground-secondary">Start fresh</span>
           ),
+          separated: true,
           onSelect: handleClearData,
         },
       ];
