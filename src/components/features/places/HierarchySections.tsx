@@ -113,12 +113,20 @@ export function SubExperienceTeaser({
 // Sub-experiences Section
 // ============================================
 
-function SubExperienceCard({ item }: { item: SubExperience }) {
+function SubExperienceCard({
+  item,
+  stopNumber,
+}: {
+  item: SubExperience;
+  stopNumber?: number;
+}) {
   const typeLabel =
     item.subType === "highlight"
       ? null
       : item.subType === "route_stop"
-        ? `Stop ${item.sortOrder}`
+        ? stopNumber != null
+          ? `Stop ${stopNumber}`
+          : null
         : item.timeContext
           ? item.timeContext.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
           : null;
@@ -195,8 +203,8 @@ export function SubExperiencesSection({
             A suggested path through the grounds.
           </p>
           <div className="space-y-3">
-            {routeStops.map((item) => (
-              <SubExperienceCard key={item.id} item={item} />
+            {routeStops.map((item, idx) => (
+              <SubExperienceCard key={item.id} item={item} stopNumber={idx + 1} />
             ))}
           </div>
         </div>
