@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { GuideSummary } from "@/types/guide";
+import type { Guide, GuideSummary } from "@/types/guide";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 
@@ -171,6 +171,32 @@ export async function attachLocationFallbackImages(
         : s.thumbnailImage,
     };
   });
+}
+
+/**
+ * Single-guide variant of {@link attachLocationFallbackImages}. Patches a
+ * full {@link Guide} so the detail-page hero matches the listing card image
+ * exactly (same deterministic hash → same picked photo).
+ */
+export async function attachGuideFallbackImage(guide: Guide): Promise<Guide> {
+  const featMissing = isMissingImage(guide.featuredImage);
+  const thumbMissing = isMissingImage(guide.thumbnailImage);
+  if (!featMissing && !thumbMissing) return guide;
+  if (!guide.locationIds || guide.locationIds.length === 0) return guide;
+
+  const photosByLocation = await fetchHeroPhotoListByLocationIds(
+    guide.locationIds
+  );
+  if (photosByLocation.size === 0) return guide;
+
+  const url = pickLocationImage(guide.id, guide.locationIds, photosByLocation);
+  if (!url) return guide;
+
+  return {
+    ...guide,
+    featuredImage: featMissing ? url : guide.featuredImage,
+    thumbnailImage: thumbMissing ? url : guide.thumbnailImage,
+  };
 }
 
 /**
