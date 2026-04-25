@@ -5,6 +5,12 @@ import { getAllCitySlugs } from "@/lib/cities/cityData";
 import { getSitemapLocationIds } from "@/lib/locations/locationService";
 import { logger } from "@/lib/logger";
 
+// Fetchers call the SSR Supabase client which reads cookies; Next 16 won't
+// statically render a route that touches cookies. Mark dynamic so the build
+// stops erroring. A future refactor could switch sitemap fetchers to a
+// cookie-free client (e.g. anon-keyed) and re-enable ISR via `revalidate`.
+export const dynamic = "force-dynamic";
+
 // Strip any trailing slash so `${BASE_URL}/path` never produces `//path`.
 // A misconfigured env var with a trailing slash (e.g. set to a Vercel preview
 // URL through the dashboard) would otherwise emit malformed sitemap entries.
