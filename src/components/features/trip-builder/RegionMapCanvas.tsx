@@ -36,7 +36,7 @@ export function RegionMapCanvas({
   const palette = resolvedTheme === "light" ? COLORS.light : COLORS.dark;
 
   return (
-    <div className="flex h-full w-full items-center justify-center opacity-20 lg:opacity-100">
+    <div className="flex h-full w-full items-center justify-center opacity-20 lg:opacity-60">
       <svg
         viewBox={JAPAN_MAP_VIEWBOX}
         className="h-full w-full"
