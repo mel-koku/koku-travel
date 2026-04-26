@@ -151,7 +151,7 @@ function AuthErrorContent() {
           >
             <a
               href="/"
-              className="relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)]"
+              className="relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)]"
             >
               <span className="absolute inset-0 rounded-lg bg-brand-primary/20 blur-xl" />
               <span className="relative">Go Home</span>
@@ -159,7 +159,7 @@ function AuthErrorContent() {
             {error.action && (
               <a
                 href="/signin"
-                className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/70 transition-colors hover:text-white/90"
+                className="link-reveal mt-6 text-sm font-medium text-white/70 transition-colors hover:text-white/90"
               >
                 {error.action}
               </a>

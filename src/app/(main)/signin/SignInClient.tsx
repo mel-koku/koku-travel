@@ -225,7 +225,7 @@ export function SignInClient({ content }: SignInClientProps) {
             </p>
             <a
               href="/places"
-              className="link-reveal text-sm font-medium uppercase tracking-wide text-foreground-secondary transition-colors hover:text-foreground"
+              className="link-reveal text-sm font-medium text-foreground-secondary transition-colors hover:text-foreground"
             >
               {content?.signInGuestText ?? "Continue as guest"}
             </a>

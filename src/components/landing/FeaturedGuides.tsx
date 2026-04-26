@@ -69,7 +69,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
         <div className="mt-10 text-center">
           <Link
             href="/guides"
-            className="link-reveal group inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+            className="link-reveal group inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-foreground transition-colors hover:text-brand-primary"
           >
             {content?.featuredGuidesCtaText ?? "Browse guides"}
             <ArrowRightIcon />

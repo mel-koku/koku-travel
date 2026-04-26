@@ -156,7 +156,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             <button
               type="button"
               onClick={onStart}
-              className="h-14 w-full cursor-pointer rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-card)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] sm:w-auto"
+              className="h-14 w-full cursor-pointer rounded-lg bg-brand-primary px-10 text-sm font-semibold text-white shadow-[var(--shadow-card)] transition-all hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] sm:w-auto"
             >
               {ctaText}
             </button>

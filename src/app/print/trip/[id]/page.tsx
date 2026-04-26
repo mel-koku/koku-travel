@@ -64,13 +64,13 @@ function PrintToolbar({ isLoading }: { isLoading: boolean }) {
         type="button"
         onClick={() => window.print()}
         disabled={isLoading}
-        className="inline-flex h-9 items-center justify-center rounded-md bg-brand-primary px-4 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-brand-secondary disabled:opacity-50"
+        className="inline-flex h-9 items-center justify-center rounded-md bg-brand-primary px-4 text-xs font-semibold text-white transition hover:bg-brand-secondary disabled:opacity-50"
       >
         {isLoading ? "Loading..." : "Download PDF"}
       </button>
       <Link
         href="/itinerary"
-        className="inline-flex h-9 items-center justify-center rounded-md px-3 text-xs font-semibold uppercase tracking-wide text-foreground-secondary hover:text-foreground"
+        className="inline-flex h-9 items-center justify-center rounded-md px-3 text-xs font-semibold text-foreground-secondary hover:text-foreground"
       >
         Close
       </Link>

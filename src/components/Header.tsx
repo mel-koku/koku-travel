@@ -334,7 +334,7 @@ export default function Header() {
             <Link
               href="/trip-builder"
 
-              className="hidden h-10 items-center rounded-lg bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
+              className="hidden h-10 items-center rounded-lg bg-brand-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
             >
               Build My Trip
             </Link>
