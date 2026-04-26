@@ -24,32 +24,32 @@ const FALLBACK = {
   heroEyebrow: "Our Story",
   heroHeading: "Built for the trips guidebooks can\u2019t plan",
   heroSubtext:
-    "Yuku (\u884C\u304F) means \u201Cto go\u201D in Japanese. We built this trip planner because going to Japan should feel as good as being there.",
+    "Going to Japan should feel as good as being there. Yuku (\u884C\u304F) means \u201Cto go.\u201D We built this for the going.",
   storyHeading: "Why Yuku exists",
   storyParagraphs: [
     "Japan rewards the traveler who goes deeper. A tonkatsu shop three blocks from the station. A mountain shrine that empties out by mid-afternoon. The quiet prefecture most itineraries skip.",
-    "These moments take planning, not luck. Yuku pulls from Japan\u2019s official tourism boards and DMOs, then does the hard part: routing your days, timing the trains, and handing you cultural context so you show up knowing when to bow, where to stay quiet, and how to move through a neighborhood without adding to the crowd.",
+    "These moments take planning, not luck. Yuku does the planning, with the depth and care of a concierge who already knows the country.",
   ],
   storyImageUrl: "/placeholders/about-story.svg",
   photoBreakUrl: "/placeholders/about-photo-break.svg",
   valuesHeading: "What we believe",
   values: [
     {
-      title: "Depth over breadth.",
+      title: "A trip, not a research project.",
       description:
-        "A great trip isn\u2019t about checking off landmarks. It\u2019s about spending enough time in one place to feel the rhythm of it.",
+        "Planning Japan can eat weeks of evenings and fifty open tabs. Yuku handles the routing, the train timing, and the sequencing in one place, so you can spend those evenings looking forward to it instead.",
       imageUrl: "/placeholders/about-value-1.svg",
     },
     {
-      title: "Official sources, curated with care.",
+      title: "Beyond the algorithm.",
       description:
-        "Every location is drawn from Japan\u2019s tourism boards and DMOs, not scraped from someone else\u2019s list. We layer our own editorial picks on top.",
+        "Most itineraries circle the same four cities. Yuku draws from official tourism boards across every region, so the quiet prefectures earn their place too.",
       imageUrl: "/placeholders/about-value-2.svg",
     },
     {
-      title: "Planning should feel good.",
+      title: "Travel with the grain.",
       description:
-        "Trip planning is part of the journey. Yuku is designed to make that process feel exciting, not exhausting.",
+        "Most friction between visitors and locals comes from missing context, not bad intent. Yuku briefs you on the etiquette, the timing, and the unspoken rules of a place, so you arrive ready.",
       imageUrl: "/placeholders/about-value-3.svg",
     },
   ],
@@ -59,7 +59,7 @@ const FALLBACK = {
     {
       name: "Meljun Picardal",
       role: "Founder",
-      bio: "Solo founder building Yuku for travelers who want more than a guidebook. Years of planning trips for friends turned into a product worth shipping.",
+      bio: "Solo founder. Started Yuku after years of planning Japan trips for friends and watching the same pain pattern repeat: scattered tabs, lost links, spreadsheets that never quite worked. Yuku is the planner those trips needed.",
       github: "https://github.com/mel-koku",
       linkedin: "https://www.linkedin.com/in/meljunpicardal/",
     },
@@ -153,6 +153,18 @@ function SocialLink({ href, platform, name }: { href: string; platform: SocialKe
   );
 }
 
+// ── Japanese-text screen reader helper ─────────────
+
+const JAPANESE_RANGE = /([぀-ゟ゠-ヿ一-鿿]+)/g;
+
+function wrapJapanese(text: string) {
+  return text.split(JAPANESE_RANGE).map((part, i) =>
+    /[぀-ゟ゠-ヿ一-鿿]/.test(part)
+      ? <span key={i} lang="ja">{part}</span>
+      : part
+  );
+}
+
 // ── Page ────────────────────────────────────────────
 
 export default async function AboutPage() {
@@ -190,7 +202,7 @@ export default async function AboutPage() {
           </ScrollReveal>
           <ScrollReveal delay={0.16}>
             <p className={cn(typography({ intent: "utility-body" }), "mx-auto max-w-2xl text-foreground-secondary")}>
-              {heroSubtext}
+              {wrapJapanese(heroSubtext)}
             </p>
           </ScrollReveal>
         </div>
@@ -250,7 +262,6 @@ export default async function AboutPage() {
               fill
               sizes="100vw"
               className="object-cover"
-              priority
             />
             <div className="absolute inset-0 scrim-20" />
           </section>
@@ -297,10 +308,12 @@ export default async function AboutPage() {
                     )}
 
                     <div className={cn(hasImage && !isEven && "md:order-1")}>
-                      <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
-                        <strong className="text-foreground">{value.title}</strong>{" "}
+                      <div className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
+                        <h3 className="inline font-bold text-foreground [font-size:inherit] [line-height:inherit] [margin:0]">
+                          {value.title}
+                        </h3>{" "}
                         {value.description}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </ScrollReveal>

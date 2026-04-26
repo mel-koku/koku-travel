@@ -35,7 +35,7 @@ export const aboutPage = defineType({
       rows: 3,
       fieldset: "hero",
       initialValue:
-        "Yuku (\u884C\u304F) means \u201Cto go\u201D in Japanese. We built this trip planner because going to Japan should feel as good as being there.",
+        "Going to Japan should feel as good as being there. Yuku (\u884C\u304F) means \u201Cto go.\u201D We built this for the going.",
     }),
 
     // ── Story ─────────────────────────────────────
@@ -53,8 +53,8 @@ export const aboutPage = defineType({
       fieldset: "story",
       of: [{ type: "text", rows: 4 }],
       initialValue: [
-        "Japan rewards the traveler who goes deeper. The tonkatsu shop three blocks from the station. The mountain shrine that empties out by mid-afternoon. The neighborhood onsen where regulars nod hello.",
-        "These moments take planning, not luck. Yuku handles the logistics: local knowledge, smart routing, and cultural context built into every trip so you show up knowing when to bow, where to stay quiet, and how to move through a neighborhood without adding to the crowd.",
+        "Japan rewards the traveler who goes deeper. A tonkatsu shop three blocks from the station. A mountain shrine that empties out by mid-afternoon. The quiet prefecture most itineraries skip.",
+        "These moments take planning, not luck. Yuku does the planning, with the depth and care of a concierge who already knows the country.",
       ],
     }),
     defineField({
@@ -118,21 +118,21 @@ export const aboutPage = defineType({
       initialValue: [
         {
           _type: "object",
-          title: "Depth over breadth.",
+          title: "A trip, not a research project.",
           description:
-            "A great trip isn't about checking off landmarks. It's about spending enough time in one place to feel the rhythm of it.",
+            "Planning Japan can eat weeks of evenings and fifty open tabs. Yuku handles the routing, the train timing, and the sequencing in one place, so you can spend those evenings looking forward to it instead.",
         },
         {
           _type: "object",
-          title: "Local knowledge first.",
+          title: "Beyond the algorithm.",
           description:
-            "Every location in Yuku is sourced and vetted with care. We don't scrape lists. We talk to people who live there.",
+            "Most itineraries circle the same four cities. Yuku draws from official tourism boards across every region, so the quiet prefectures earn their place too.",
         },
         {
           _type: "object",
-          title: "Planning should feel good.",
+          title: "Travel with the grain.",
           description:
-            "Trip planning is part of the journey. Yuku is designed to make that process feel exciting, not exhausting.",
+            "Most friction between visitors and locals comes from missing context, not bad intent. Yuku briefs you on the etiquette, the timing, and the unspoken rules of a place, so you arrive ready.",
         },
       ],
     }),
