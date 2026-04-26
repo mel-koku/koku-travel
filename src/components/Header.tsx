@@ -260,7 +260,7 @@ export default function Header() {
       <m.header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
-          isOverHero ? "bg-transparent backdrop-blur-xl" : "bg-background/100"
+          isOverHero ? "bg-transparent" : "bg-background/100"
         )}
         initial={{ y: 0, opacity: 1 }}
         animate={{
