@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { detectPlanningWarnings } from "../tripWarnings";
 import { _testables } from "../tripWarnings";
 import type { TripBuilderData } from "@/types/trip";
@@ -122,10 +122,22 @@ describe("near-miss copy builders", () => {
     );
   });
 
-  it("backward fixed-date singular-day copy uses 'the day'", () => {
+  it("backward fixed-date actionable singular-day copy uses 'the day' and offers add-at-start", () => {
     const back = { ...fakeFixed, direction: "backward" as const, gapDays: 1 };
     const msg = _testables.buildNearMissMessage(back, false);
+    expect(msg).toBe("It ended the day before you arrive. We'd add 1 day at the start so you catch the float procession.");
+  });
+
+  it("backward fixed-date suppressed copy falls back to passive 'shift your start date'", () => {
+    const back = { ...fakeFixed, direction: "backward" as const, gapDays: 1 };
+    const msg = _testables.buildNearMissMessage(back, true);
     expect(msg).toBe("It ended the day before you arrive. Worth knowing if you can still shift your start date.");
+  });
+
+  it("backward fixed-date actionable plural-day copy uses 'N days' and names centerpiece", () => {
+    const back = { ...fakeFixed, direction: "backward" as const, gapDays: 2 };
+    const msg = _testables.buildNearMissMessage(back, false);
+    expect(msg).toBe("It ended 2 days before you arrive. We'd add 2 days at the start so you catch the float procession.");
   });
 
   it("approximate forward title uses 'happens around this time'", () => {
@@ -162,6 +174,16 @@ describe("near-miss copy builders", () => {
 });
 
 describe("detectPlanningWarnings — festival near-miss (C10)", () => {
+  // Backward-extension actionability depends on a today guard, so freeze the
+  // clock to a date well before any 2026 trip dates these tests use.
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-01T12:00:00Z"));
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("returns no near-miss warnings when no near-miss festival exists", () => {
     const data = makeTripData({
       cities: ["tokyo"],
@@ -216,8 +238,30 @@ describe("detectPlanningWarnings — festival near-miss (C10)", () => {
     expect(nm?.message).toContain("Worth knowing if you can shift dates");
   });
 
-  it("backward fixed-date returns warning with no action", () => {
+  it("backward fixed-date within cap and after today sets action='extend_trip' with newStartDate", () => {
     // Aoi Matsuri (kyoto) May 15. Trip May 17-22 → backward gap 2.
+    // Today is mocked to 2026-01-01, so candidate start 2026-05-15 is in the future.
+    const data = makeTripData({
+      cities: ["kyoto"],
+      regions: ["kansai"],
+      dates: { start: "2026-05-17", end: "2026-05-22" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBe("extend_trip");
+    expect(nm?.actionData?.direction).toBe("backward");
+    expect(nm?.actionData?.extendDays).toBe(2);
+    expect(nm?.actionData?.newStartDate).toBe("2026-05-15");
+    expect(nm?.actionData?.festivalId).toBe("aoi-matsuri");
+    expect(nm?.title).toContain("wraps just before you arrive");
+    expect(nm?.message).toContain("We'd add 2 days at the start");
+  });
+
+  it("backward extension blocked when candidate start is in the past", () => {
+    // Freeze "today" to a date AFTER the candidate start (2026-05-15) so the
+    // past-date guard kicks in.
+    vi.setSystemTime(new Date("2026-05-16T12:00:00Z"));
     const data = makeTripData({
       cities: ["kyoto"],
       regions: ["kansai"],
@@ -227,7 +271,25 @@ describe("detectPlanningWarnings — festival near-miss (C10)", () => {
     const nm = warnings.find((w) => w.type === "festival_near_miss");
     expect(nm).toBeDefined();
     expect(nm?.action).toBeUndefined();
-    expect(nm?.title).toContain("wraps just before you arrive");
+    expect(nm?.actionData).toBeUndefined();
+    // Falls back to passive backward copy.
+    expect(nm?.message).toContain("Worth knowing if you can still shift your start date");
+  });
+
+  it("backward extension blocked when adding days would exceed the 21-day cap", () => {
+    // Aoi Matsuri (kyoto) May 15. Trip May 17 - Jun 5 = 20 days. Backward gap 2
+    // → 22 days, over cap.
+    const data = makeTripData({
+      cities: ["kyoto"],
+      regions: ["kansai"],
+      duration: 20,
+      dates: { start: "2026-05-17", end: "2026-06-05" },
+    });
+    const warnings = detectPlanningWarnings(data);
+    const nm = warnings.find((w) => w.type === "festival_near_miss");
+    expect(nm).toBeDefined();
+    expect(nm?.action).toBeUndefined();
+    expect(nm?.actionData).toBeUndefined();
   });
 
   it("approximate festival returns warning with no action and rough window in message", () => {

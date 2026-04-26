@@ -594,7 +594,7 @@ function buildNearMissTitle(nm: FestivalNearMiss): string {
     : `${festival.name} wraps just before you arrive`;
 }
 
-function buildNearMissMessage(nm: FestivalNearMiss, overCap: boolean): string {
+function buildNearMissMessage(nm: FestivalNearMiss, suppressAction: boolean): string {
   const { festival, direction, gapDays } = nm;
   const isApprox = !!festival.isApproximate;
 
@@ -602,7 +602,7 @@ function buildNearMissMessage(nm: FestivalNearMiss, overCap: boolean): string {
     if (isApprox) {
       return `${festival.name} typically falls in ${roughWindow(festival.startMonth, festival.startDay)}. Exact dates vary year to year, so check forecasts closer to your trip.`;
     }
-    if (overCap) {
+    if (suppressAction) {
       return `It begins ${pluralDays(gapDays)} after your trip ends. Worth knowing if you can shift dates.`;
     }
     const piece = festivalCenterpiece(festival.id, festival.category);
@@ -614,7 +614,11 @@ function buildNearMissMessage(nm: FestivalNearMiss, overCap: boolean): string {
     return "Peak typically wraps around this time. Worth checking forecasts if you can still shift your start date.";
   }
   const dayPhrase = gapDays === 1 ? "the day" : `${gapDays} days`;
-  return `It ended ${dayPhrase} before you arrive. Worth knowing if you can still shift your start date.`;
+  if (suppressAction) {
+    return `It ended ${dayPhrase} before you arrive. Worth knowing if you can still shift your start date.`;
+  }
+  const piece = festivalCenterpiece(festival.id, festival.category);
+  return `It ended ${dayPhrase} before you arrive. We'd add ${pluralDays(gapDays)} at the start so you catch the ${piece}.`;
 }
 
 export const _testables = {
@@ -686,27 +690,61 @@ export function detectFestivalNearMissWarnings(data: TripBuilderData): PlanningW
   if (!tripStart || !tripEnd) return [];
   const tripDurationDays = Math.round((tripEnd.getTime() - tripStart.getTime()) / 86_400_000) + 1;
 
-  const wouldExceedCap = direction === "forward" && tripDurationDays + gapDays > TRIP_DURATION_CAP;
-  const isActionable = direction === "forward" && !festival.isApproximate && !wouldExceedCap;
+  // Cap applies in both directions — extending the trip by gapDays in either
+  // direction grows the total duration the same way.
+  const wouldExceedCap = tripDurationDays + gapDays > TRIP_DURATION_CAP;
 
-  const newEndDate = isActionable
+  // Backward extensions move the start date earlier. Block when the candidate
+  // start would land before today (lexicographic compare on YYYY-MM-DD strings
+  // sorts correctly).
+  const candidateStart = direction === "backward"
+    ? addDaysToIsoDate(data.dates.start, -gapDays)
+    : undefined;
+  const todayIso = formatLocalDateISO(new Date());
+  const wouldStartInPast = !!candidateStart && candidateStart < todayIso;
+
+  const isActionable =
+    !festival.isApproximate && !wouldExceedCap && !wouldStartInPast;
+
+  const newEndDate = isActionable && direction === "forward"
     ? addDaysToIsoDate(data.dates.end, gapDays)
     : undefined;
+  const newStartDate = isActionable && direction === "backward"
+    ? candidateStart
+    : undefined;
+
+  const buildActionData = (): Record<string, unknown> | undefined => {
+    if (!isActionable) return undefined;
+    if (direction === "forward" && newEndDate) {
+      return {
+        festivalId: festival.id,
+        festivalName: festival.name,
+        direction,
+        extendDays: gapDays,
+        newEndDate,
+      };
+    }
+    if (direction === "backward" && newStartDate) {
+      return {
+        festivalId: festival.id,
+        festivalName: festival.name,
+        direction,
+        extendDays: gapDays,
+        newStartDate,
+      };
+    }
+    return undefined;
+  };
 
   return [{
     id: `festival-near-miss-${festival.id}`,
     type: "festival_near_miss",
     severity: "info",
     title: buildNearMissTitle(top),
-    message: buildNearMissMessage(top, wouldExceedCap),
+    message: buildNearMissMessage(top, !isActionable),
     icon: Sparkles,
     action: isActionable ? "extend_trip" : undefined,
-    actionData: isActionable && newEndDate ? {
-      festivalId: festival.id,
-      festivalName: festival.name,
-      extendDays: gapDays,
-      newEndDate,
-    } : undefined,
+    actionData: buildActionData(),
   }];
 }
 
