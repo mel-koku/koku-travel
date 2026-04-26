@@ -152,5 +152,50 @@ describe("regionScoring", () => {
       const cities = autoSelectCities(["temples_tradition"]);
       expect(cities.length).toBeGreaterThanOrEqual(2);
     });
+
+    it("forces the exit region for open-jaw KIX → HND trips", () => {
+      // Vibes that don't favour Kanto, so without the open-jaw rule the
+      // exit region would never be auto-picked.
+      const haneda: EntryPoint = {
+        type: "airport",
+        id: "hnd",
+        name: "Haneda",
+        coordinates: { lat: 35.5494, lng: 139.7798 },
+        cityId: "tokyo",
+        region: "kanto",
+      };
+      const cities = autoSelectCities(
+        ["temples_tradition"],
+        kansaiEntryPoint,
+        14,
+        haneda,
+      );
+      const kantoCities = new Set(["tokyo", "yokohama"]);
+      const hasKantoCity = cities.some((c) => kantoCities.has(c));
+      expect(hasKantoCity).toBe(true);
+      // Entry region cities still present.
+      const kansaiCities = new Set(["kyoto", "osaka", "nara", "kobe"]);
+      expect(cities.some((c) => kansaiCities.has(c))).toBe(true);
+    });
+
+    it("does not change behaviour when exit region matches entry region", () => {
+      // Both KIX and ITM live in Kansai; treat as round-trip.
+      const itami: EntryPoint = {
+        type: "airport",
+        id: "itm",
+        name: "Itami",
+        coordinates: { lat: 34.7855, lng: 135.4382 },
+        cityId: "osaka",
+        region: "kansai",
+      };
+      const withoutExit = autoSelectCities(["temples_tradition"], kansaiEntryPoint, 14);
+      const withSameRegionExit = autoSelectCities(
+        ["temples_tradition"],
+        kansaiEntryPoint,
+        14,
+        itami,
+      );
+      expect(withSameRegionExit).toEqual(withoutExit);
+    });
   });
 });
