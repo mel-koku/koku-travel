@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-// The schema is co-located in the route file but exported for testing
-import { chatRequestSchema } from "@/app/api/chat/route";
+// The schema lives in a sibling helper so route.ts only exports HTTP methods (Next 16 router-typing).
+import { chatRequestSchema } from "@/app/api/chat/_schema";
 
 const textMessage = (text: string, role: "user" | "assistant" | "system" = "user") => ({
   role,

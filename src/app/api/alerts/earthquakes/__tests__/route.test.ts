@@ -16,7 +16,8 @@ vi.mock("@/lib/api/withApiHandler", () => ({
   ) => (req: NextRequest) => handler(req, { context: { requestId: "test-req" }, user: { id: "test-user" } }),
 }));
 
-import { GET, __resetFeedCacheForTests } from "../route";
+import { GET } from "../route";
+import { __resetFeedCacheForTests } from "../_feedCache";
 import { fetchTripById } from "@/services/sync/tripSync";
 
 const TOKYO_QUAKE = {
