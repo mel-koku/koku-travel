@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { EXPERIENCE_TYPES } from "@/data/experienceTypes";
@@ -86,7 +86,7 @@ export function ExperienceFilterPanel({
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -95,7 +95,7 @@ export function ExperienceFilterPanel({
             onClick={onClose}
           />
 
-          <motion.div
+          <m.div
             ref={panelRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -207,7 +207,7 @@ export function ExperienceFilterPanel({
                 Show {resultsCount} {resultsCount === 1 ? "experience" : "experiences"}
               </button>
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

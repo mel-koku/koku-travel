@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { easeReveal } from "@/lib/motion";
 import {
   resolvePersonCategoryId,
@@ -48,7 +48,7 @@ export function PersonCard({ person, index, onClick }: Props) {
   const hasPhoto = !!person.photo_url;
 
   return (
-    <motion.button
+    <m.button
       type="button"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -158,6 +158,6 @@ export function PersonCard({ person, index, onClick }: Props) {
           )}
         </div>
       </div>
-    </motion.button>
+    </m.button>
   );
 }

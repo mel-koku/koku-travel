@@ -19,7 +19,7 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X, Minus, Plus, Copy } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 import { REGIONS } from "@/data/regions";
 import { getRegionForCity } from "@/data/regions";
@@ -464,7 +464,7 @@ export function SortableCityList({
 
                 if (pendingRemoves.has(city.index)) {
                   return (
-                    <motion.div
+                    <m.div
                       key={cId}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
@@ -476,7 +476,7 @@ export function SortableCityList({
                         onUndo={() => handleUndo(city.index)}
                         variant={variant}
                       />
-                    </motion.div>
+                    </m.div>
                   );
                 }
 
@@ -491,7 +491,7 @@ export function SortableCityList({
                 const adjacentDays = adjacentDisplayIdx >= 0 && daysSource ? daysSource[adjacentDisplayIdx] : undefined;
 
                 return (
-                  <motion.div
+                  <m.div
                     key={cId}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -520,7 +520,7 @@ export function SortableCityList({
                       }
                     />
                     {renderAfterCity?.(city.id, city.index)}
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </AnimatePresence>

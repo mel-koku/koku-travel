@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   getActiveSeasonalHighlight,
   locationHasSeasonalTag,
@@ -31,7 +31,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
 
   return (
     <AnimatePresence>
-      <motion.p
+      <m.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -45,7 +45,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
         >
           View
         </button>
-      </motion.p>
+      </m.p>
     </AnimatePresence>
   );
 }

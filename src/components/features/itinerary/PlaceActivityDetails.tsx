@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import type { ActivityTip } from "@/lib/tips/tipGenerator";
@@ -34,7 +34,7 @@ export function PlaceActivityDetails({
   return (
     <AnimatePresence>
       {isExpanded && (
-        <motion.div
+        <m.div
           initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
@@ -93,7 +93,7 @@ export function PlaceActivityDetails({
               <span>{locationDetails.formattedAddress}</span>
             </div>
           )}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

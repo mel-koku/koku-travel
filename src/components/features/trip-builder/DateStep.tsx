@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -107,7 +107,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left half — Visual (hidden on mobile, shown on lg+) */}
       <div className="relative hidden w-1/2 overflow-hidden rounded-lg lg:block">
-        <motion.div
+        <m.div
           className="absolute inset-0"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
@@ -119,7 +119,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             className="object-cover"
             sizes="50vw"
           />
-        </motion.div>
+        </m.div>
         <div className="absolute inset-0 scrim-90 scrim-to-l" />
       </div>
 
@@ -130,14 +130,14 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             STEP 01
           </p>
 
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
             className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
           >
             {sanityConfig?.dateStepHeading ?? "When are you going?"}
-          </motion.h2>
+          </m.h2>
 
           <p className="mt-2 text-sm text-stone">
             {sanityConfig?.dateStepDescription ?? "Season shapes the trip. Cherry blossoms, fall color, rainy season. Up to 21 days."}
@@ -203,7 +203,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
           {calculatedDuration !== null &&
             calculatedDuration >= MIN_DURATION &&
             calculatedDuration <= MAX_DURATION && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: durationFast, ease: easeReveal }}
@@ -215,7 +215,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                     ? "Day trip"
                     : `${calculatedDuration} days \u00B7 ${calculatedDuration - 1} night${calculatedDuration - 1 !== 1 ? "s" : ""}`}
                 </p>
-              </motion.div>
+              </m.div>
             )}
         </div>
       </div>

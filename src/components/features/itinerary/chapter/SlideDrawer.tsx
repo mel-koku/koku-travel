@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
@@ -40,7 +40,7 @@ export function SlideDrawer({
       {open && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 z-[60] bg-charcoal/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -53,7 +53,7 @@ export function SlideDrawer({
             role="presentation"
           />
           {/* Drawer */}
-          <motion.aside
+          <m.aside
             role="dialog"
             aria-label={ariaLabel ?? title}
             className={cn(
@@ -82,7 +82,7 @@ export function SlideDrawer({
             <div className={noPadding ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-y-auto px-6 py-6"}>
               {children}
             </div>
-          </motion.aside>
+          </m.aside>
         </>
       )}
     </AnimatePresence>

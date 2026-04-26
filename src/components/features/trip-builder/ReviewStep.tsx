@@ -10,7 +10,7 @@ import { OptionsSection, type OptionsFormValues } from "./OptionsSection";
 import { type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
@@ -167,14 +167,14 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       {/* Step heading */}
       <div className="text-center">
         <p className="eyebrow-editorial text-brand-primary">STEP 05</p>
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
           className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
           {headline}
-        </motion.h2>
+        </m.h2>
         {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? (
           <p className={cn(typography({ intent: "utility-body-muted" }), "mt-3 text-center")}>
             Your full itinerary is free during our launch.

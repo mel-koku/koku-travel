@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskYukuPanel } from "./AskYukuPanel";
@@ -78,7 +78,7 @@ export function AskYukuButton() {
       >
         <AnimatePresence mode="wait" initial={false}>
           {open ? (
-            <motion.div
+            <m.div
               key="close"
               initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
@@ -86,9 +86,9 @@ export function AskYukuButton() {
               transition={{ duration: 0.15, ease: easeReveal }}
             >
               <X className="h-5 w-5" />
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div
+            <m.div
               key="chat"
               initial={{ rotate: 90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
@@ -96,7 +96,7 @@ export function AskYukuButton() {
               transition={{ duration: 0.15, ease: easeReveal }}
             >
               <span className="text-sm font-medium">Ask Yuku</span>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </button>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { easeReveal } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
@@ -130,7 +130,7 @@ export function LocalExpertsShell() {
       {/* Hero */}
       <section className="px-6 py-12 sm:py-20 lg:py-28">
         <div className="mx-auto max-w-4xl text-center">
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -140,8 +140,8 @@ export function LocalExpertsShell() {
             className="eyebrow-editorial"
           >
             {total} local experts across Japan
-          </motion.p>
-          <motion.h1
+          </m.p>
+          <m.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -152,8 +152,8 @@ export function LocalExpertsShell() {
             className={`mt-4 ${cn(typography({ intent: "editorial-hero" }), "text-4xl sm:text-5xl lg:text-6xl")}`}
           >
             Learn Japan from the people who live it
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -164,7 +164,7 @@ export function LocalExpertsShell() {
             className="mx-auto mt-4 max-w-2xl text-base text-foreground-secondary"
           >
             Pick what you want to do. We&apos;ll show you the right person.
-          </motion.p>
+          </m.p>
         </div>
       </section>
 
@@ -208,7 +208,7 @@ export function LocalExpertsShell() {
               const isActive = filters.activity === cat.id;
               const count = activityCounts[cat.id] ?? 0;
               return (
-                <motion.button
+                <m.button
                   key={cat.id}
                   type="button"
                   onClick={() => handleActivitySelect(cat.id)}
@@ -246,7 +246,7 @@ export function LocalExpertsShell() {
                       <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-xl bg-brand-primary" />
                     )}
                   </div>
-                </motion.button>
+                </m.button>
               );
             })}
           </div>

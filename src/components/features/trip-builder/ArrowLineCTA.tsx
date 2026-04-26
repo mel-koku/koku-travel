@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { easeReveal, durationFast } from "@/lib/motion";
 
@@ -38,7 +38,7 @@ export function ArrowLineCTA({
       </span>
       {/* Extending arrow line */}
       <div className="relative flex items-center">
-        <motion.div
+        <m.div
           className="h-px bg-foreground-secondary transition-colors group-hover:bg-foreground"
           initial={false}
           animate={

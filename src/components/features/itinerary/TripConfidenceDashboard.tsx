@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { Itinerary } from "@/types/itinerary";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
@@ -146,7 +146,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
 
   return (
     <>
-    <motion.div
+    <m.div
       data-confidence-dashboard
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -328,7 +328,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </button>
         </div>
       </div>
-    </motion.div>
+    </m.div>
     </>
   );
 });

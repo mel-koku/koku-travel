@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 
 const REGION_IMAGES = [
@@ -38,7 +38,7 @@ export function MenuPanel() {
   }, []);
 
   return (
-    <motion.div
+    <m.div
       className="relative hidden h-full overflow-hidden lg:block"
       initial={prefersReducedMotion ? undefined : { opacity: 0 }}
       animate={prefersReducedMotion ? undefined : { opacity: 1 }}
@@ -69,6 +69,6 @@ export function MenuPanel() {
           {image.label} Region
         </p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

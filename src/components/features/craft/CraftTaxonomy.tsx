@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CRAFT_TYPES, getCraftTypeColor, type CraftTypeId } from "@/data/craftTypes";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 
@@ -20,14 +20,14 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-6">
-      <motion.p
+      <m.p
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: easeReveal }}
         className="eyebrow-mono mb-4"
       >
         Browse by technique
-      </motion.p>
+      </m.p>
 
       {/* Desktop: grid */}
       <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -35,7 +35,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
           const photoUrl = images.get(ct.id);
           const color = getCraftTypeColor(ct.id);
           return (
-            <motion.button
+            <m.button
               key={ct.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -92,7 +92,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
 
               {/* Hover accent line */}
               <div className="h-[2px] bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-            </motion.button>
+            </m.button>
           );
         })}
       </div>
@@ -103,7 +103,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
           const photoUrl = images.get(ct.id);
           const color = getCraftTypeColor(ct.id);
           return (
-            <motion.button
+            <m.button
               key={ct.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -157,7 +157,7 @@ export function CraftTaxonomy({ counts, onSelect, images }: CraftTaxonomyProps) 
               </div>
 
               <div className="h-[2px] bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-            </motion.button>
+            </m.button>
           );
         })}
       </div>

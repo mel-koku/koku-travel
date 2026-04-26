@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
 import { easeReveal } from "@/lib/motion";
@@ -22,7 +22,7 @@ export function GuestSignInPrompt({ onDismiss }: GuestSignInPromptProps) {
   return (
     <AnimatePresence>
       {!isDismissed && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
@@ -59,7 +59,7 @@ export function GuestSignInPrompt({ onDismiss }: GuestSignInPromptProps) {
               <X className="h-4 w-4" />
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

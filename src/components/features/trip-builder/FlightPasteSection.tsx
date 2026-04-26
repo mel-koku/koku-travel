@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { ClipboardPaste, Check } from "lucide-react";
 
 import { cn } from "@/lib/cn";
@@ -38,7 +38,7 @@ export function FlightPasteSection({
 
       <AnimatePresence>
         {showFlightPaste && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -65,14 +65,14 @@ export function FlightPasteSection({
                 Auto-fill
               </button>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* Parse result message */}
       <AnimatePresence>
         {flightParseMessage && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -85,7 +85,7 @@ export function FlightPasteSection({
           >
             {flightParseMessage.type === "success" && <Check className="h-3.5 w-3.5" />}
             {flightParseMessage.text}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
     </div>

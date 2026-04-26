@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Check, Minus, Pin, Plane, PlaneTakeoff, Repeat, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut, durationBase } from "@/lib/motion";
@@ -49,7 +49,7 @@ export function RegionRow({
   const hasSelection = selectedCityCount > 0;
 
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onClick}
       onMouseEnter={onHover}
@@ -159,6 +159,6 @@ export function RegionRow({
         {matchScore}%
       </span>
 
-    </motion.button>
+    </m.button>
   );
 }

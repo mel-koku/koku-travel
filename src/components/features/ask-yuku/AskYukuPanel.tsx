@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
@@ -16,7 +16,7 @@ type AskYukuPanelProps = {
 
 export function AskYukuPanel({ onClose, context, tripData }: AskYukuPanelProps) {
   return (
-    <motion.div
+    <m.div
       data-ask-yuku
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -41,6 +41,6 @@ export function AskYukuPanel({ onClose, context, tripData }: AskYukuPanelProps) 
 
       {/* Chat area */}
       <AskYukuChat onClose={onClose} context={context} tripData={tripData} />
-    </motion.div>
+    </m.div>
   );
 }

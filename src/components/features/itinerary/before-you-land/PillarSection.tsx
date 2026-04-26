@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
 import type { AssembledPillar } from "@/types/culturalBriefing";
@@ -26,7 +26,7 @@ export function PillarSection({ pillar, index, total }: PillarSectionProps) {
       className="relative scroll-mt-24 border-t border-border pt-12 pb-16"
     >
       {/* Decorative oversized kanji — bleeds left, sits behind content */}
-      <motion.div
+      <m.div
         aria-hidden
         initial={prefersReducedMotion ? undefined : { opacity: 0, x: -40 }}
         whileInView={prefersReducedMotion ? undefined : { opacity: 0.08, x: 0 }}
@@ -35,7 +35,7 @@ export function PillarSection({ pillar, index, total }: PillarSectionProps) {
         className="pointer-events-none absolute left-[-6px] top-8 select-none font-serif text-[180px] sm:text-[220px] leading-none text-foreground opacity-[0.08]"
       >
         {pillar.japanese.split("/")[0]}
-      </motion.div>
+      </m.div>
 
       {/* Chapter number */}
       <div className="relative font-mono text-[11px] uppercase tracking-[0.22em] text-foreground-secondary mb-6">

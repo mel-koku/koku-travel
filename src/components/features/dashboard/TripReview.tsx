@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { motion, useInView } from "framer-motion";
+import { m, useInView } from "framer-motion";
 import { MapPin, Star, Calendar, Compass, ArrowLeft } from "lucide-react";
 import { REGIONS } from "@/data/regions";
 import { easeReveal } from "@/lib/motion";
@@ -145,7 +145,7 @@ export function TripReview({ tripId }: { tripId: string }) {
       </Link>
 
       {/* Header */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease }}
@@ -161,10 +161,10 @@ export function TripReview({ tripId }: { tripId: string }) {
             {cityNames.join(" · ")}
           </p>
         )}
-      </motion.div>
+      </m.div>
 
       {/* Stats grid */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.15, ease }}
@@ -180,11 +180,11 @@ export function TripReview({ tripId }: { tripId: string }) {
             <p className="mt-1 text-xs text-stone">Avg rating</p>
           </div>
         )}
-      </motion.div>
+      </m.div>
 
       {/* Top rated highlights */}
       {data.topRated.length > 0 && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3, ease }}
@@ -194,7 +194,7 @@ export function TripReview({ tripId }: { tripId: string }) {
           <p className="mt-1 text-sm text-foreground-secondary">Your top-rated experiences</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             {data.topRated.map((item, i) => (
-              <motion.div
+              <m.div
                 key={item.activityId}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -206,15 +206,15 @@ export function TripReview({ tripId }: { tripId: string }) {
                   <StarRating rating={item.rating} />
                 </div>
                 <p className="mt-3 text-sm font-semibold text-foreground">{item.title}</p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       )}
 
       {/* City breakdown */}
       {data.perCity.length > 1 && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45, ease }}
@@ -242,18 +242,18 @@ export function TripReview({ tripId }: { tripId: string }) {
               </div>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       )}
 
       {/* Map */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6, ease }}
         className="mt-10"
       >
         <TripReviewMap tripId={tripId} />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

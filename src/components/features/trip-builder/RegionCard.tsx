@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Check, MapPin, Plane, Star } from "lucide-react";
 
 import { cn } from "@/lib/cn";
@@ -38,7 +38,7 @@ export function RegionCard({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onToggle}
       whileHover={prefersReducedMotion ? {} : { y: -4, transition: { duration: durationFast } }}
@@ -97,14 +97,14 @@ export function RegionCard({
 
         {/* Selected stamp ring effect + checkmark */}
         {isSelected && (
-          <motion.div
+          <m.div
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", ...springInteraction }}
             className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-brand-primary text-white shadow-[var(--shadow-elevated)]"
           >
             <Check className="h-5 w-5" strokeWidth={3} />
-          </motion.div>
+          </m.div>
         )}
 
         {/* Region Name & Tagline Overlay - Bottom (scrim-80 above provides contrast) */}
@@ -152,6 +152,6 @@ export function RegionCard({
           )}
         </div>
       </div>
-    </motion.button>
+    </m.button>
   );
 }

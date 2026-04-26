@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Image from "next/image";
 import { X } from "lucide-react";
 
@@ -392,14 +392,14 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
             STEP 04
           </p>
 
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
             className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
           >
             {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
-          </motion.h2>
+          </m.h2>
 
           <p className="mt-3 text-sm text-stone lg:text-base">
             {sanityConfig?.regionStepDescription ?? "Highlighted cities match your vibes."}
@@ -416,7 +416,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
               {selectedCityNames.map((name, i) => {
                 const cityId = Array.from(selectedCities)[i];
                 return (
-                  <motion.span
+                  <m.span
                     key={cityId}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -437,7 +437,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     >
                       <X className="h-3 w-3 text-white/80 hover:text-white" />
                     </button>
-                  </motion.span>
+                  </m.span>
                 );
               })}
             </div>
@@ -449,7 +449,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
           {/* City/day ratio feedback */}
           {cityDayValidation.message && (
-            <motion.p
+            <m.p
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
@@ -461,7 +461,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
               role="alert"
             >
               {cityDayValidation.message}
-            </motion.p>
+            </m.p>
           )}
         </div>
 
@@ -530,7 +530,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                   {/* Mobile inline detail */}
                   <AnimatePresence>
                     {expandedRegion === scored.region.id && (
-                      <motion.div
+                      <m.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -545,7 +545,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                           selectedCities={selectedCities}
                           onToggleCity={toggleCity}
                         />
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 </div>

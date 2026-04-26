@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { easeCinematic, durationCinematic, durationFast, easeCinematicCSS } from "@/lib/motion";
 
 type IntroImagePanelProps = {
@@ -20,7 +20,7 @@ export function IntroImagePanel({
   return (
     <div className="flex w-full flex-col gap-3">
       {/* Image container with clip-path reveal */}
-      <motion.div
+      <m.div
         className="relative overflow-hidden rounded-lg aspect-[4/3] lg:aspect-[3/4] lg:max-h-[70vh]"
         initial={
           prefersReducedMotion
@@ -59,18 +59,18 @@ export function IntroImagePanel({
 
         {/* Bottom-edge vignette for blending */}
         <div className="absolute inset-x-0 bottom-0 h-1/3 scrim-50" />
-      </motion.div>
+      </m.div>
 
       {/* Caption */}
       {caption && (
-        <motion.p
+        <m.p
           className="font-mono text-[10px] uppercase tracking-widest text-stone"
           initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: durationFast, delay: 1.6 }}
         >
           {caption}
-        </motion.p>
+        </m.p>
       )}
     </div>
   );

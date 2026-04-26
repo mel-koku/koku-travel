@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { parallaxSection } from "@/lib/motion";
@@ -46,7 +46,7 @@ export function StatsSection({
       className="relative min-h-[40vh] overflow-hidden"
     >
       {/* Parallax background */}
-      <motion.div
+      <m.div
         className="absolute inset-0"
         style={prefersReducedMotion ? {} : { scale: imageScale }}
       >
@@ -59,7 +59,7 @@ export function StatsSection({
           loading="lazy"
         />
         <div className="absolute inset-0 bg-charcoal/65" />
-      </motion.div>
+      </m.div>
 
       {/* Grain */}
       <div className="texture-grain pointer-events-none absolute inset-0" />

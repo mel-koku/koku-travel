@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Suspense, useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -92,7 +92,7 @@ function AuthErrorContent() {
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
 
       {/* Parallax background */}
-      <motion.div
+      <m.div
         className="absolute inset-0"
         style={prefersReducedMotion ? {} : { scale: imageScale }}
       >
@@ -105,7 +105,7 @@ function AuthErrorContent() {
           priority
         />
         <div className="absolute inset-0 bg-charcoal/55" />
-      </motion.div>
+      </m.div>
 
       {/* Giant watermark */}
       <div
@@ -142,7 +142,7 @@ function AuthErrorContent() {
             </p>
           </ScrollReveal>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -164,7 +164,7 @@ function AuthErrorContent() {
                 {error.action}
               </a>
             )}
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

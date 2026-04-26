@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
 import { easeEditorial, easeReveal, durationBase } from "@/lib/motion";
@@ -79,23 +79,23 @@ export function UnlockCeremony({
   const stepText = CEREMONY_STEPS[stepIndex]?.(cities, topActivityName) ?? "Finishing up";
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-lg"
     >
-      <motion.h2
+      <m.h2
         className={cn(typography({ intent: "editorial-h2" }), "mb-8 text-center")}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
       >
         Unlocking the rest of your journey.
-      </motion.h2>
+      </m.h2>
 
       <AnimatePresence mode="wait">
-        <motion.p
+        <m.p
           key={stepIndex}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 0.7, y: 0 }}
@@ -104,11 +104,11 @@ export function UnlockCeremony({
           className={cn(typography({ intent: "utility-body-muted" }), "text-center italic")}
         >
           {stepText}...
-        </motion.p>
+        </m.p>
       </AnimatePresence>
 
       <div className="mt-10 h-0.5 w-48 overflow-hidden rounded-full bg-sand">
-        <motion.div
+        <m.div
           className="h-full bg-brand-primary"
           initial={{ width: "0%" }}
           animate={{ width: generationDone && minTimePassed ? "100%" : "85%" }}
@@ -139,6 +139,6 @@ export function UnlockCeremony({
           </Button>
         </div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

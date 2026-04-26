@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
 import { easeReveal, durationFast } from "@/lib/motion";
 import type { Location } from "@/types/location";
@@ -230,7 +230,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   return (
     <>
       {/* Backdrop */}
-      <motion.div
+      <m.div
         className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -240,7 +240,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
       />
 
       {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay */}
-      <motion.div
+      <m.div
         data-lenis-prevent
         className="fixed z-50 bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
           inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[95vw] sm:border-l sm:border-border"
@@ -735,7 +735,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             </div>
           )}
         </div>
-      </motion.div>
+      </m.div>
 
     </>
   );

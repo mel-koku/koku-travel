@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView, type Variants, type TargetAndTransition } from "framer-motion";
+import { m, useInView, type Variants, type TargetAndTransition } from "framer-motion";
 import { useRef, useMemo } from "react";
 import { easeReveal, durationBase } from "@/lib/motion";
 
@@ -21,13 +21,13 @@ type AnimDef = { hidden: TargetAndTransition; visible: TargetAndTransition };
 
 // Pre-create motion components outside render to satisfy react-hooks/static-components
 const motionTags = {
-  h1: motion.h1,
-  h2: motion.h2,
-  h3: motion.h3,
-  h4: motion.h4,
-  p: motion.p,
-  span: motion.span,
-  div: motion.div,
+  h1: m.h1,
+  h2: m.h2,
+  h3: m.h3,
+  h4: m.h4,
+  p: m.p,
+  span: m.span,
+  div: m.div,
 } as const;
 
 const animations: Record<string, AnimDef> = {
@@ -128,7 +128,7 @@ export function SplitText({
             (word, wordIdx, arr) => (
               <span key={word.wordKey} className="inline-flex" aria-hidden>
                 {word.chars.map((char) => (
-                  <motion.span
+                  <m.span
                     key={char.key}
                     initial={anim!.hidden}
                     animate={shouldAnimate ? {
@@ -138,10 +138,10 @@ export function SplitText({
                     className="inline-block"
                   >
                     {char.content}
-                  </motion.span>
+                  </m.span>
                 ))}
                 {wordIdx < arr.length - 1 && (
-                  <motion.span
+                  <m.span
                     key={`space-${wordIdx}`}
                     initial={anim!.hidden}
                     animate={shouldAnimate ? {
@@ -151,20 +151,20 @@ export function SplitText({
                     className="inline-block"
                   >
                     {"\u00A0"}
-                  </motion.span>
+                  </m.span>
                 )}
               </span>
             )
           )
         : (items as { key: string; content: string }[]).map((item) => (
-            <motion.span
+            <m.span
               key={item.key}
               variants={itemVariants}
               className="mr-[0.3em] inline-block"
               aria-hidden
             >
               {item.content}
-            </motion.span>
+            </m.span>
           ))}
     </MotionTag>
   );

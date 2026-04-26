@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CATEGORY_CHIPS } from "@/lib/constants/discoverCategories";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 import type { DiscoverCategoryId } from "@/lib/constants/discoverCategories";
@@ -155,7 +155,7 @@ export function ItineraryDiscoverPanel({
               const isUsed = usedLocationIds.has(loc.id);
               const isHighlighted = highlightedLocationId === loc.id;
               return (
-                <motion.div
+                <m.div
                   key={loc.id}
                   layout
                   onMouseEnter={() => onHighlightChange(loc.id)}
@@ -233,7 +233,7 @@ export function ItineraryDiscoverPanel({
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>

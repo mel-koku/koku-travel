@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 export type PreferenceCardProps = {
@@ -90,7 +90,7 @@ export function PreferenceCard({
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -100,7 +100,7 @@ export function PreferenceCard({
             <div className="flex flex-col gap-3 px-4 pt-1 pb-4">
               {children}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

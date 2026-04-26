@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { VIBES, type VibeId } from "@/data/vibes";
@@ -40,7 +40,7 @@ export function RegionDetailPanel({
     >
       <AnimatePresence>
         {region && (
-          <motion.div
+          <m.div
             key={region.id}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -131,7 +131,7 @@ export function RegionDetailPanel({
 
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

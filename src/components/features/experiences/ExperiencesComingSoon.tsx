@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -28,7 +28,7 @@ export function ExperiencesComingSoon({ content }: Props) {
   return (
     <div className="relative min-h-dvh overflow-hidden bg-charcoal">
       {/* Background image with slow Ken Burns */}
-      <motion.div
+      <m.div
         className="absolute inset-0"
         initial={prefersReducedMotion ? false : { scale: 1.08 }}
         animate={{ scale: 1 }}
@@ -42,7 +42,7 @@ export function ExperiencesComingSoon({ content }: Props) {
           sizes="100vw"
           className="object-cover"
         />
-      </motion.div>
+      </m.div>
 
       {/* Dark overlay for text contrast */}
       <div className="absolute inset-0 bg-charcoal/65" />
@@ -62,7 +62,7 @@ export function ExperiencesComingSoon({ content }: Props) {
       {/* Content */}
       <div className="relative z-30 flex min-h-dvh flex-col items-center justify-center px-6 text-center">
         {/* Rotating word ticker */}
-        <motion.div
+        <m.div
           className="mb-6 overflow-hidden"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -70,7 +70,7 @@ export function ExperiencesComingSoon({ content }: Props) {
         >
           <div className="flex items-center gap-3 text-white/60">
             {WORDS.map((word, i) => (
-              <motion.span
+              <m.span
                 key={word}
                 className="font-mono text-xs uppercase tracking-[0.25em]"
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
@@ -82,14 +82,14 @@ export function ExperiencesComingSoon({ content }: Props) {
                 }}
               >
                 {word}
-              </motion.span>
+              </m.span>
             ))}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Main heading: big, typographic, Obys-style */}
         <div className="overflow-hidden">
-          <motion.h1
+          <m.h1
             className={cn(
               typography({ intent: "editorial-hero" }),
               "text-white !text-[clamp(3rem,8vw,7rem)] !leading-[0.95] tracking-tight"
@@ -99,11 +99,11 @@ export function ExperiencesComingSoon({ content }: Props) {
             transition={{ duration: durationSlow * 1.4, ease: easeRevealMut, delay: 0.2 }}
           >
             Experiences
-          </motion.h1>
+          </m.h1>
         </div>
 
         {/* Thin rule */}
-        <motion.div
+        <m.div
           className="mt-6 mb-6 h-px w-16 bg-white/50"
           initial={prefersReducedMotion ? false : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -111,17 +111,17 @@ export function ExperiencesComingSoon({ content }: Props) {
         />
 
         {/* Subtext */}
-        <motion.p
+        <m.p
           className="max-w-sm font-sans text-base leading-relaxed text-white/85"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: durationBase, delay: 0.6, ease: easeRevealMut }}
         >
           Hands-on workshops, private tastings, artisan studios. We&apos;re curating something worth the wait.
-        </motion.p>
+        </m.p>
 
         {/* CTA row */}
-        <motion.div
+        <m.div
           className="mt-10 flex flex-col sm:flex-row items-center gap-4"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,17 +136,17 @@ export function ExperiencesComingSoon({ content }: Props) {
           >
             Read Guides
           </Link>
-        </motion.div>
+        </m.div>
 
         {/* Launch date */}
-        <motion.p
+        <m.p
           className="mt-8 text-[11px] uppercase tracking-[0.2em] text-white/60"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: durationBase, delay: 1.2 }}
         >
           Launching Fall 2026
-        </motion.p>
+        </m.p>
       </div>
     </div>
   );

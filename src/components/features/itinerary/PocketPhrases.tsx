@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { MessageSquare } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { selectPocketPhrases } from "@/lib/phrases/phraseSelector";
 import { easeReveal } from "@/lib/motion";
 
@@ -49,7 +49,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -72,7 +72,7 @@ export function PocketPhrases({ locationCategory, tags, seed }: PocketPhrasesPro
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

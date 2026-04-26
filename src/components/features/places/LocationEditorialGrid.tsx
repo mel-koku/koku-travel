@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
@@ -90,7 +90,7 @@ export function LocationEditorialGrid({
       </h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
       {locations.map((location, i) => (
-        <motion.div
+        <m.div
           key={location.id}
           className="h-full"
           initial={{ opacity: 0, y: 10 }}
@@ -102,7 +102,7 @@ export function LocationEditorialGrid({
             onSelect={onSelect}
             eager={i < 8}
           />
-        </motion.div>
+        </m.div>
       ))}
     </div>
     </>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { memo, useRef, useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
@@ -56,7 +56,7 @@ export const EditorialCard = memo(function EditorialCard({
   const isFeature = variant === "feature";
 
   return (
-    <motion.article
+    <m.article
       className="group relative text-foreground"
       initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
@@ -149,6 +149,6 @@ export const EditorialCard = memo(function EditorialCard({
           </div>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   );
 });

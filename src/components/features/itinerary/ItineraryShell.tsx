@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from "react";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
@@ -819,7 +819,7 @@ export const ItineraryShell = ({
     <section className="mx-auto min-h-[calc(100dvh-var(--header-h))] max-w-screen-2xl md:h-[calc(100dvh-var(--header-h))] md:overflow-hidden">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative md:hidden">
-        <motion.div
+        <m.div
           animate={{ height: viewMode === "discover" ? "50dvh" : mapExpanded ? "100dvh" : "30dvh" }}
           transition={{
             duration: durationSlow,
@@ -872,7 +872,7 @@ export const ItineraryShell = ({
           {/* Collapse button (when expanded) */}
           <AnimatePresence>
             {mapExpanded && (
-              <motion.button
+              <m.button
                 type="button"
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -885,10 +885,10 @@ export const ItineraryShell = ({
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </motion.button>
+              </m.button>
             )}
           </AnimatePresence>
-        </motion.div>
+        </m.div>
       </div>
 
       <div className="flex flex-col md:h-full md:flex-row md:gap-4 md:p-4">
@@ -1082,7 +1082,7 @@ export const ItineraryShell = ({
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
@@ -1092,7 +1092,7 @@ export const ItineraryShell = ({
                   <h2 className={cn(typography({ intent: "editorial-h2" }), "text-3xl sm:text-4xl")}>
                     {dayTransitionLabel}
                   </h2>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
 

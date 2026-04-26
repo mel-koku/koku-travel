@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import type { DayTripSuggestion } from "@/types/dayTrips";
 import type { ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
@@ -213,7 +213,7 @@ export function DayTripSection({
               {/* Inline confirmation with day picker */}
               <AnimatePresence>
                 {confirmingId === s.id && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
@@ -271,7 +271,7 @@ export function DayTripSection({
                         </button>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>

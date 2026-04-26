@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLenis } from "@/providers/LenisProvider";
 import { easePageTransitionMut } from "@/lib/motion";
 
@@ -107,7 +107,7 @@ export function PageTransition({ children }: PageTransitionProps) {
       {children}
       <AnimatePresence>
         {phase === "covering" && (
-          <motion.div
+          <m.div
             key="cover"
             className="fixed inset-0 z-[90] bg-background"
             initial={{ opacity: 0 }}
@@ -120,7 +120,7 @@ export function PageTransition({ children }: PageTransitionProps) {
       </AnimatePresence>
       <AnimatePresence>
         {phase === "revealing" && (
-          <motion.div
+          <m.div
             key="reveal"
             className="fixed inset-0 z-[90] bg-background"
             initial={{ clipPath: "circle(150% at 50% 50%)" }}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { FormEvent } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
 import { parallaxSection, durationBase } from "@/lib/motion";
@@ -90,7 +90,7 @@ export function SignInClient({ content }: SignInClientProps) {
     >
       {/* Left panel — atmospheric image */}
       <div className="relative w-full overflow-hidden lg:w-1/2 min-h-[40vh] lg:min-h-[100dvh]">
-        <motion.div
+        <m.div
           className="absolute inset-0"
           style={prefersReducedMotion ? {} : { scale: imageScale }}
         >
@@ -103,7 +103,7 @@ export function SignInClient({ content }: SignInClientProps) {
             priority
           />
           <div className="absolute inset-0 bg-charcoal/70" />
-        </motion.div>
+        </m.div>
         <div className="texture-grain pointer-events-none absolute inset-0" />
 
         {/* Text over image */}
@@ -154,16 +154,16 @@ export function SignInClient({ content }: SignInClientProps) {
             </ScrollReveal>
           )}
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durationBase, delay: 0.5 }}
             className="mt-8"
           >
             <GoogleSignInButton />
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: durationBase, delay: 0.6 }}
@@ -172,9 +172,9 @@ export function SignInClient({ content }: SignInClientProps) {
             <span className="h-px flex-1 bg-border" />
             <span className="text-xs text-stone">or sign in with email</span>
             <span className="h-px flex-1 bg-border" />
-          </motion.div>
+          </m.div>
 
-          <motion.form
+          <m.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durationBase, delay: 0.7 }}
@@ -212,9 +212,9 @@ export function SignInClient({ content }: SignInClientProps) {
                 {status.message}
               </p>
             )}
-          </motion.form>
+          </m.form>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: durationBase, delay: 0.9 }}
@@ -229,7 +229,7 @@ export function SignInClient({ content }: SignInClientProps) {
             >
               {content?.signInGuestText ?? "Continue as guest"}
             </a>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </div>

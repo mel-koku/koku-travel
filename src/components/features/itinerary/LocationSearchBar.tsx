@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Plus, Search, Loader2, X, Star } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
@@ -115,7 +115,7 @@ export function LocationSearchBar({
     <div ref={containerRef} className="relative">
       <AnimatePresence mode="wait">
         {!isExpanded ? (
-          <motion.button
+          <m.button
             key="collapsed"
             type="button"
             initial={{ opacity: 0 }}
@@ -127,9 +127,9 @@ export function LocationSearchBar({
           >
             <Plus className="h-4 w-4" />
             <span>Add a place</span>
-          </motion.button>
+          </m.button>
         ) : (
-          <motion.div
+          <m.div
             key="expanded"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -165,7 +165,7 @@ export function LocationSearchBar({
             {/* Dropdown results */}
             <AnimatePresence>
               {showDropdown && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
@@ -238,10 +238,10 @@ export function LocationSearchBar({
                       </button>
                     );
                   })}
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

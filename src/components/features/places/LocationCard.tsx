@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { memo, useRef, useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 import { useSaved } from "@/context/SavedContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
@@ -46,7 +46,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
   if (variant === "compact") {
     return (
-      <motion.article
+      <m.article
         className="group relative text-foreground"
         initial={prefersReducedMotion ? {} : { y: 12, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
@@ -107,12 +107,12 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
             </button>
           )}
         </div>
-      </motion.article>
+      </m.article>
     );
   }
 
   return (
-    <motion.article
+    <m.article
       className="group relative text-foreground"
       initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
@@ -219,7 +219,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
           </div>
         </button>
       </div>
-    </motion.article>
+    </m.article>
   );
 });
 
