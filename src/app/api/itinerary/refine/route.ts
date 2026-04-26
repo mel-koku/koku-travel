@@ -186,6 +186,7 @@ const mapTripDayToItineraryDay = (
         dayTripTravelMinutes: originalDay.dayTripTravelMinutes,
         paceLabel: originalDay.paceLabel,
         isLateArrival: originalDay.isLateArrival,
+        isEarlyArrival: originalDay.isEarlyArrival,
       }
     : {}),
   id: day.id,

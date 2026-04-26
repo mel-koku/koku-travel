@@ -19,8 +19,9 @@ import { generateDailyBriefings } from "./dailyBriefingGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
 import { pickDayIntroOpener } from "@/lib/guide/templateMatcher";
-import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, EARLY_ARRIVAL_THRESHOLD, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
 import { applyLateArrivalStrip } from "@/lib/itinerary/lateArrival";
+import { applyEarlyArrivalStrip } from "@/lib/itinerary/earlyArrival";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide, GeneratedBriefings } from "@/types/llmConstraints";
@@ -580,8 +581,11 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // ── Late arrival: strip Day 1 activities when effective arrival >= 19:00 ──
-  // After reaching the hotel at 20:00+, less than 1 usable hour remains.
+  // ── Late / early arrival: strip Day 1 activities when effective arrival is
+  // outside the usable window. Late (>= 19:00) leaves <1h before default day
+  // end. Early (< 08:00) lands before shrines/museums/shops open. The two
+  // strips are mutually exclusive — late takes precedence if both somehow
+  // qualified, and `applyEarlyArrivalStrip` no-ops when `isLateArrival` is set.
   if (builderData.arrivalTime && optimizedItinerary.days[0]) {
     const entryIata = builderData.entryPoint?.iataCode;
     const rawEffective = computeRawEffectiveArrival(builderData.arrivalTime, entryIata);
@@ -590,6 +594,12 @@ export async function generateTripFromBuilderData(
       logger.info("[engine] Late arrival detected — Day 1 activities stripped", {
         rawEffective,
         threshold: LATE_ARRIVAL_THRESHOLD,
+      });
+    } else if (rawEffective !== null && rawEffective < EARLY_ARRIVAL_THRESHOLD) {
+      applyEarlyArrivalStrip(optimizedItinerary.days[0]);
+      logger.info("[engine] Pre-dawn arrival detected — Day 1 activities stripped", {
+        rawEffective,
+        threshold: EARLY_ARRIVAL_THRESHOLD,
       });
     }
   }

@@ -24,6 +24,7 @@ import { SortableActivity } from "./SortableActivity";
 import { AccommodationBookend } from "./AccommodationBookend";
 import { AccommodationPicker } from "./AccommodationPicker";
 import { LateArrivalCard } from "./LateArrivalCard";
+import { EarlyArrivalCard } from "./EarlyArrivalCard";
 import { AvailabilityAlert } from "./AvailabilityAlert";
 import {
   trackCustomLocationAdded,
@@ -169,6 +170,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
   onCityAccommodationChange,
 }: TimelineActivityListProps) {
   const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
+  const [earlyArrivalDismissed, setEarlyArrivalDismissed] = useState(false);
   const [accommodationExpanded, setAccommodationExpanded] = useState(false);
 
   const customEnabled = featureFlags.isCustomActivitiesEnabled;
@@ -493,6 +495,14 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     <LateArrivalCard
                       city={day.cityId ?? "your destination"}
                       onDismiss={() => setLateArrivalDismissed(true)}
+                    />
+                  </li>
+                )}
+                {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isEarlyArrival && !day.isLateArrival && !earlyArrivalDismissed && (
+                  <li className="list-none mt-3">
+                    <EarlyArrivalCard
+                      city={day.cityId ?? "your destination"}
+                      onDismiss={() => setEarlyArrivalDismissed(true)}
                     />
                   </li>
                 )}
