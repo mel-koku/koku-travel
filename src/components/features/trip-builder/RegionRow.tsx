@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Minus, Plane, PlaneTakeoff, Repeat, Star } from "lucide-react";
+import { Check, Minus, Pin, Plane, PlaneTakeoff, Repeat, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut, durationBase } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -139,9 +139,13 @@ export function RegionRow({
             Departure
           </span>
         ) : null}
-        {isRecommended && (
+        {(isRecommended || isEntryPointRegion || isExitPointRegion) && (
           <span className="hidden items-center gap-1 rounded-full bg-brand-primary/20 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-brand-primary sm:flex">
-            <Star className="h-3 w-3 fill-current" />
+            {isEntryPointRegion || isExitPointRegion ? (
+              <Pin className="h-3 w-3 fill-current" />
+            ) : (
+              <Sparkles className="h-3 w-3" />
+            )}
             Recommended
           </span>
         )}
