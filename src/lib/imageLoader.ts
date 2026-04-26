@@ -2,14 +2,15 @@
  * Custom Next.js image loader.
  *
  * Routes images around Vercel's /_next/image optimizer when the upstream
- * already handles resizing (saves against the plan's monthly transformation
- * quota):
+ * already handles resizing or the asset is small enough to serve as-is
+ * (saves against the plan's monthly transformation quota):
  *   - cdn.sanity.io: served via Sanity's own ?w/?q/?auto=format pipeline
  *   - /api/places/photo: served via Google Places maxWidthPx (proxy already
  *     forwards the resize request to Google server-side)
+ *   - /images/**: pre-sized static assets in /public, served direct
  *
- * All other sources (local files, other remote hosts) still flow through
- * /_next/image so Vercel can optimize them.
+ * All other sources (other remote hosts) still flow through /_next/image
+ * so Vercel can optimize them.
  */
 export default function imageLoader({
   src,
@@ -36,6 +37,10 @@ export default function imageLoader({
     const params = new URLSearchParams(queryStart >= 0 ? src.slice(queryStart + 1) : "");
     params.set("maxWidthPx", String(width));
     return `${path}?${params.toString()}`;
+  }
+
+  if (src.startsWith("/images/")) {
+    return src;
   }
 
   return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=${quality ?? 75}`;
