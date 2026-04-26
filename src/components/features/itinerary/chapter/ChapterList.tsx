@@ -5,6 +5,7 @@ import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { ChapterHeader } from "./ChapterHeader";
 import { Spine } from "./Spine";
 import { Beat } from "./Beat";
+import { BeatAnchor } from "./BeatAnchor";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
 import { UnlockBeat } from "./UnlockBeat";
@@ -12,6 +13,7 @@ import { AccommodationPicker } from "../AccommodationPicker";
 import type { BeatChip } from "./Beat";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { EntryPoint } from "@/types/trip";
 import { getGtag } from "@/lib/analytics/customLocations";
 import { useFocusDay } from "@/lib/itinerary/useFocusDay";
 import { easeEditorialMut, durationBase } from "@/lib/motion";
@@ -62,6 +64,15 @@ export type ChapterBeat = {
   } | null;
 };
 
+export type ChapterAnchor = {
+  point: EntryPoint;
+  /**
+   * When true, the start anchor is the trip arrival airport on Day 1.
+   * Triggers PlaneLanding icon + "Arrived at …" copy in BeatAnchor.
+   */
+  isArrivalAirport?: boolean;
+};
+
 export type ChapterDay = {
   id: string;
   date: string;
@@ -72,6 +83,17 @@ export type ChapterDay = {
   inlineNotes: InlineDayNoteEntry[];
   isLocked: boolean;
   dayActivities: ItineraryActivity[];
+  /**
+   * Day-opening anchor. Rendered as the first item in the spine.
+   * Only set when the resolver returns an airport or lodging EntryPoint
+   * (city-center fallbacks are filtered upstream).
+   */
+  startAnchor?: ChapterAnchor;
+  /**
+   * Day-closing anchor. Rendered as the last item in the spine.
+   * Lodging only; on arrival days where no lodging is set this is undefined.
+   */
+  endAnchor?: ChapterAnchor;
 };
 
 export type ChapterListProps = {
@@ -257,8 +279,15 @@ export function ChapterList({
               </div>
             )
           ) : (
-            day.beats.length > 0 && (
+            (day.beats.length > 0 || day.startAnchor || day.endAnchor) && (
               <Spine>
+                {day.startAnchor && (
+                  <BeatAnchor
+                    role="start"
+                    point={day.startAnchor.point}
+                    isArrivalAirport={day.startAnchor.isArrivalAirport}
+                  />
+                )}
                 <LayoutGroup id={`day-${day.id}-beats`}>
                 {day.beats.map((beat, beatIdx) => {
                   const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
@@ -297,6 +326,9 @@ export function ChapterList({
                   );
                 })}
                 </LayoutGroup>
+                {day.endAnchor && (
+                  <BeatAnchor role="end" point={day.endAnchor.point} />
+                )}
               </Spine>
             )
           )}

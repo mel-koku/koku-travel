@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { toChapterDays } from "@/lib/itinerary/toChapterDays";
+import { resolveEffectiveDayEntryPoints } from "@/lib/itinerary/accommodationDefaults";
 import type { Itinerary } from "@/types/itinerary";
 import type { Location } from "@/types/location";
+import type { CityAccommodation, DayEntryPoint, EntryPoint } from "@/types/trip";
 
 const stubLocation = (overrides: Partial<Location>): Location =>
   ({
@@ -155,6 +157,181 @@ describe("toChapterDays", () => {
     expect(result[0].inlineNotes).toHaveLength(1);
     expect(result[0].inlineNotes[0].kind).toBe("closure");
     expect(result[0].inlineNotes[0].label).toBe("2 stops closed on this date");
+  });
+
+  describe("start/end anchors (KOK-29)", () => {
+    it("emits a startAnchor with isArrivalAirport=true when Day 1 entry is the trip airport", () => {
+      const locations = new Map<string, Location>([["loc-a", stubLocation({})]]);
+      const dayEntryPoints = {
+        d0: {
+          startPoint: {
+            type: "airport" as const,
+            id: "kix",
+            name: "Kansai Intl.",
+            iataCode: "KIX",
+            coordinates: { lat: 34.43, lng: 135.24 },
+          },
+          endPoint: undefined,
+        },
+      };
+      const result = toChapterDays(
+        stubItinerary(),
+        undefined,
+        locations,
+        undefined,
+        undefined,
+        undefined,
+        dayEntryPoints,
+      );
+      expect(result[0].startAnchor?.point.iataCode).toBe("KIX");
+      expect(result[0].startAnchor?.isArrivalAirport).toBe(true);
+      expect(result[0].endAnchor).toBeUndefined();
+    });
+
+    it("emits start + end anchors for an accommodation on a mid-trip day", () => {
+      const itinerary = {
+        days: [
+          { id: "d0", dateLabel: "Day 1", cityId: "tokyo", activities: [] },
+          { id: "d1", dateLabel: "Day 2", cityId: "kyoto", activities: [] },
+        ],
+      } as unknown as Itinerary;
+      const accom = {
+        type: "accommodation" as const,
+        id: "ryokan-1",
+        name: "Tawaraya Ryokan",
+        coordinates: { lat: 35.01, lng: 135.76 },
+      };
+      const dayEntryPoints = {
+        d1: { startPoint: accom, endPoint: accom },
+      };
+      const result = toChapterDays(
+        itinerary,
+        undefined,
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        dayEntryPoints,
+      );
+      expect(result[1].startAnchor?.point.name).toBe("Tawaraya Ryokan");
+      expect(result[1].startAnchor?.isArrivalAirport).toBe(false);
+      expect(result[1].endAnchor?.point.name).toBe("Tawaraya Ryokan");
+    });
+
+    it("filters out city-center synthetic fallbacks (only airport + accommodation render anchors)", () => {
+      const dayEntryPoints = {
+        d0: {
+          startPoint: {
+            type: "custom" as const,
+            id: "city-center-tokyo",
+            name: "Tokyo city center",
+            coordinates: { lat: 35.68, lng: 139.76 },
+          },
+          endPoint: undefined,
+        },
+      };
+      const result = toChapterDays(
+        stubItinerary(),
+        undefined,
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        dayEntryPoints,
+      );
+      expect(result[0].startAnchor).toBeUndefined();
+      expect(result[0].endAnchor).toBeUndefined();
+    });
+
+    it("renders no anchors when the day's entry-point map entry is absent", () => {
+      // toChapterDays must not invent anchors when no resolved entry exists.
+      const result = toChapterDays(
+        stubItinerary(),
+        undefined,
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        {},
+      );
+      expect(result[0].startAnchor).toBeUndefined();
+      expect(result[0].endAnchor).toBeUndefined();
+    });
+
+    it("end-to-end: clearedStart + clearedEnd suppresses both anchors despite city accommodation", () => {
+      // Pins the integration with KOK-27's clear flags: even when a city-level
+      // accommodation is set, an explicit X-clear on a day must produce no
+      // start AND no end anchor in the timeline.
+      const itinerary = {
+        days: [
+          { id: "d0", dateLabel: "Day 1", cityId: "osaka", activities: [] },
+          { id: "d1", dateLabel: "Day 2", cityId: "osaka", activities: [] },
+        ],
+      } as unknown as Itinerary;
+      const sheraton: EntryPoint = {
+        type: "accommodation",
+        id: "sheraton-osaka",
+        name: "Sheraton Miyako Osaka",
+        coordinates: { lat: 34.65, lng: 135.52 },
+      };
+      const cityAccommodations: Record<string, CityAccommodation> = {
+        "trip-1-osaka": { cityId: "osaka", entryPoint: sheraton },
+      };
+      const dayEntryPoints: Record<string, DayEntryPoint> = {
+        "trip-1-d1": { clearedStart: true, clearedEnd: true },
+      };
+      const resolved = resolveEffectiveDayEntryPoints(
+        itinerary,
+        "trip-1",
+        dayEntryPoints,
+        cityAccommodations,
+      );
+      const chapters = toChapterDays(
+        itinerary,
+        undefined,
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        resolved,
+      );
+      // Day 1 (no clear) gets the city accommodation as both anchors.
+      expect(chapters[0].startAnchor?.point.name).toBe("Sheraton Miyako Osaka");
+      expect(chapters[0].endAnchor?.point.name).toBe("Sheraton Miyako Osaka");
+      // Day 2 (cleared both sides) renders no anchors.
+      expect(chapters[1].startAnchor).toBeUndefined();
+      expect(chapters[1].endAnchor).toBeUndefined();
+    });
+
+    it("does not render anchors on locked days", () => {
+      const itinerary = {
+        days: [
+          { id: "d0", dateLabel: "Day 1", cityId: "tokyo", activities: [] },
+          { id: "d1", dateLabel: "Day 2", cityId: "kyoto", activities: [] },
+        ],
+      } as unknown as Itinerary;
+      const accom = {
+        type: "accommodation" as const,
+        id: "h",
+        name: "Hotel",
+        coordinates: { lat: 35.01, lng: 135.76 },
+      };
+      const dayEntryPoints = {
+        d1: { startPoint: accom, endPoint: accom },
+      };
+      const result = toChapterDays(
+        itinerary,
+        undefined,
+        new Map(),
+        undefined,
+        (idx) => idx === 0,
+        undefined,
+        dayEntryPoints,
+      );
+      expect(result[1].isLocked).toBe(true);
+      expect(result[1].startAnchor).toBeUndefined();
+      expect(result[1].endAnchor).toBeUndefined();
+    });
   });
 
   describe("server-set isLocked takes precedence over client gate", () => {
