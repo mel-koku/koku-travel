@@ -26,6 +26,10 @@ type PlacesMapLayoutProps = {
   /** When set, the map flies to this location. */
   flyToLocation?: Location | null;
   useCraftTypeColors?: boolean;
+  /** When set, drops a "you are here" marker and re-centers on first activation. */
+  userLocation?: { lat: number; lng: number } | null;
+  /** Distance in km, keyed by location id. Rendered on cards when present. */
+  locationDistanceKm?: Map<string, number> | null;
 };
 
 export function PlacesMapLayout({
@@ -36,6 +40,8 @@ export function PlacesMapLayout({
   onChatClose,
   flyToLocation: externalFlyTo,
   useCraftTypeColors,
+  userLocation,
+  locationDistanceKm,
 }: PlacesMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -182,6 +188,7 @@ export function PlacesMapLayout({
               showResetButton={showResetButton}
               flyToLocation={flyToLocation}
               useCraftTypeColors={useCraftTypeColors}
+              userLocation={userLocation ?? null}
             />
           </ErrorBoundary>
 
@@ -200,6 +207,7 @@ export function PlacesMapLayout({
                     isHighlighted={hoveredLocationId === location.id}
                     onHover={handleCardHoverChange}
                     onSelect={handleCardSelect}
+                    distanceKm={locationDistanceKm?.get(location.id)}
                   />
                 </div>
               ))}
@@ -238,6 +246,7 @@ export function PlacesMapLayout({
                   isHighlighted={hoveredLocationId === location.id}
                   onHover={handleCardHoverChange}
                   onSelect={handleCardSelect}
+                  distanceKm={locationDistanceKm?.get(location.id)}
                 />
               ))}
 

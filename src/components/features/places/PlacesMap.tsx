@@ -59,7 +59,23 @@ type PlacesMapProps = {
   /** When set, the map flies to this location's coordinates. */
   flyToLocation?: Location | null;
   useCraftTypeColors?: boolean;
+  /** When set, drops a "you are here" marker and re-centers on first activation. */
+  userLocation?: { lat: number; lng: number } | null;
 };
+
+function ensureUserLocationPulseStyle() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("places-map-user-pulse-style")) return;
+  const style = document.createElement("style");
+  style.id = "places-map-user-pulse-style";
+  style.textContent = `
+    @keyframes placesMapUserPulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(59,130,246,0.05); }
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 function buildFeatureCollection(locations: Location[], craftTypeColors?: boolean): GeoJSON.FeatureCollection {
   return {
@@ -110,6 +126,7 @@ export function PlacesMap({
   showResetButton,
   flyToLocation,
   useCraftTypeColors,
+  userLocation,
 }: PlacesMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -122,6 +139,12 @@ export function PlacesMap({
   const locationLookupRef = useRef<Map<number, Location>>(new Map());
   const featureCollectionRef = useRef<GeoJSON.FeatureCollection>({ type: "FeatureCollection", features: [] });
   const popupRef = useRef<InstanceType<MapboxModule["Popup"]> | null>(null);
+  const userMarkerRef = useRef<InstanceType<MapboxModule["Marker"]> | null>(null);
+  const hasFlownToUserRef = useRef(false);
+
+  useEffect(() => {
+    ensureUserLocationPulseStyle();
+  }, []);
 
   const mapboxEnabled = useMemo(
     () => featureFlags.enableMapbox && mapboxService.isEnabled(),
@@ -397,6 +420,9 @@ export function PlacesMap({
     return () => {
       popupRef.current?.remove();
       popupRef.current = null;
+      userMarkerRef.current?.remove();
+      userMarkerRef.current = null;
+      hasFlownToUserRef.current = false;
       map.remove();
       mapInstanceRef.current = null;
       setMapReady(false);
@@ -496,6 +522,49 @@ export function PlacesMap({
     const { lat, lng } = flyToLocation.coordinates;
     map.flyTo({ center: [lng, lat], zoom: 14, duration: 1400 });
   }, [flyToLocation, mapReady]);
+
+  // "You are here" marker — drops a pulsing dot and re-centers on first activation.
+  // When userLocation clears, removes the marker but does not move the map.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const mapboxModule = mapboxModuleRef.current;
+    if (!map || !mapboxModule || !mapReady) return;
+
+    if (!userLocation) {
+      userMarkerRef.current?.remove();
+      userMarkerRef.current = null;
+      hasFlownToUserRef.current = false;
+      return;
+    }
+
+    const { lat, lng } = userLocation;
+
+    if (!userMarkerRef.current) {
+      const el = document.createElement("div");
+      Object.assign(el.style, {
+        width: "16px",
+        height: "16px",
+        borderRadius: "50%",
+        backgroundColor: "#3B82F6",
+        border: "3px solid white",
+        animation: "placesMapUserPulse 2s ease-in-out infinite",
+      });
+      el.setAttribute("aria-label", "Your location");
+      userMarkerRef.current = new mapboxModule.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .addTo(map);
+    } else {
+      userMarkerRef.current.setLngLat([lng, lat]);
+    }
+
+    // Re-center the map to the user on first activation. Mark bounds as fitted
+    // so the locations-load effect doesn't race and override the position.
+    if (!hasFlownToUserRef.current) {
+      hasFlownToUserRef.current = true;
+      hasFittedBounds.current = true;
+      map.flyTo({ center: [lng, lat], zoom: 14, duration: 1200 });
+    }
+  }, [userLocation, mapReady]);
 
   // Fly back to Japan bounds
   const resetToJapan = useCallback(() => {
