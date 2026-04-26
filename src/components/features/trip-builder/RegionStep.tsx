@@ -173,13 +173,14 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
   // Score regions and merge Sanity overrides
   const scoredRegions = useMemo(() => {
-    const scored = scoreRegionsForTrip(vibes, data.entryPoint);
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const scored = scoreRegionsForTrip(vibes, data.entryPoint, effectiveExit);
     if (!sanityRegionMap) return scored;
     return scored.map((s) => ({
       ...s,
       region: mergeRegionOverride(s.region, sanityRegionMap),
     }));
-  }, [vibes, data.entryPoint, sanityRegionMap]);
+  }, [vibes, data.entryPoint, data.exitPoint, data.sameAsEntry, sanityRegionMap]);
 
   // Default-open the first region's detail panel until user hovers another
   useEffect(() => {
@@ -487,6 +488,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     isHovered={hoveredRegion === scored.region.id}
                     isRecommended={scored.isRecommended}
                     isEntryPointRegion={scored.isEntryPointRegion}
+                    isExitPointRegion={scored.isExitPointRegion}
                     regionSelectionState={getRegionSelectionState(scored.region.id)}
                     onClick={() => toggleRegion(scored.region.id)}
                     onHover={() => handleHoverRegion(scored.region.id)}
@@ -508,6 +510,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     isHovered={expandedRegion === scored.region.id}
                     isRecommended={scored.isRecommended}
                     isEntryPointRegion={scored.isEntryPointRegion}
+                    isExitPointRegion={scored.isExitPointRegion}
                     regionSelectionState={getRegionSelectionState(scored.region.id)}
                     onClick={() => handleMobileToggle(scored.region.id)}
                     onKeyDown={(e) => {
