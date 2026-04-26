@@ -400,6 +400,8 @@ export const ItineraryShell = ({
     // Priority 1: Explicit per-day start
     const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
     if (dayEP?.startPoint?.type === "accommodation") return dayEP.startPoint;
+    // Explicit clear on this day suppresses the city-level fallback
+    if (dayEP?.clearedStart) return undefined;
     // Priority 2: City-level accommodation
     const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
     if (effectiveCityId) {
@@ -414,6 +416,8 @@ export const ItineraryShell = ({
     // Priority 1: Explicit per-day end
     const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
     if (dayEP?.endPoint?.type === "accommodation") return dayEP.endPoint;
+    // Explicit clear on this day suppresses the city-level fallback
+    if (dayEP?.clearedEnd) return undefined;
     // Priority 2: City-level accommodation (same as start)
     const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
     if (effectiveCityId) {
