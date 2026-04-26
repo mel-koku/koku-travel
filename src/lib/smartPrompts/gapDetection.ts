@@ -31,6 +31,7 @@ import {
   detectLateStart,
   detectLunchRush,
   detectLateArrival,
+  detectEarlyArrival,
 } from "./detectors/timingGapDetector";
 import {
   detectRainContingency,
@@ -124,6 +125,15 @@ export function detectGaps(
       return;
     }
 
+    // Early arrival: same early-return — Day 1 is stripped to anchors + a
+    // settle-in note, so meal/timing/category detectors would only generate
+    // noise.
+    const earlyArrivalGaps = detectEarlyArrival(day, dayIndex);
+    if (earlyArrivalGaps.length > 0) {
+      allGaps.push(...earlyArrivalGaps);
+      return;
+    }
+
     if (includeMeals) {
       let mealGaps = detectMealGaps(day, dayIndex);
       // Ryokan: dinner and breakfast are included with the stay
@@ -192,6 +202,7 @@ export function detectGaps(
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
         late_arrival: -2,
+        early_arrival: -2,
         reservation_alert: -1,
         festival_alert: -0.5,
         meal: 0,

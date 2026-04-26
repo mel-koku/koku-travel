@@ -286,6 +286,8 @@ export type ItineraryDay = {
   paceLabel?: "light" | "moderate" | "packed";
   /** True when the traveler arrives late (effective arrival >= 19:00) and Day 1 activities are stripped. */
   isLateArrival?: boolean;
+  /** True when the traveler arrives before 08:00 effective (pre-dawn) and Day 1 activities are stripped. */
+  isEarlyArrival?: boolean;
   /**
    * True when this day's full content was withheld from the API response
    * because the caller doesn't have access (e.g., unauthenticated guest).
