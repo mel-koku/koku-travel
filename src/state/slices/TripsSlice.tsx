@@ -244,7 +244,12 @@ function reducer(state: TripsState, action: Action): TripsState {
     }
     case "SET_DAY_ENTRY_POINT": {
       const existing = state.dayEntryPoints[action.key] ?? {};
-      const updated: DayEntryPoint = { ...existing, [action.field]: action.ep };
+      const clearedField = action.field === "startPoint" ? "clearedStart" : "clearedEnd";
+      const updated: DayEntryPoint = {
+        ...existing,
+        [action.field]: action.ep,
+        [clearedField]: action.ep === undefined,
+      };
       return {
         ...state,
         dayEntryPoints: { ...state.dayEntryPoints, [action.key]: updated },
