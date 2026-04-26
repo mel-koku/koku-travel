@@ -380,6 +380,88 @@ describe("tripWarnings", () => {
         expect(returnWarning).toBeUndefined();
       });
     });
+
+    describe("open-jaw thin trip warnings", () => {
+      const KIX_KANSAI: EntryPoint = {
+        type: "airport",
+        id: "KIX",
+        name: "Kansai International",
+        coordinates: { lat: 34.4347, lng: 135.244 },
+        cityId: "osaka",
+        iataCode: "KIX",
+        region: "kansai",
+      };
+
+      const HND_KANTO: EntryPoint = {
+        type: "airport",
+        id: "HND",
+        name: "Haneda Airport",
+        coordinates: { lat: 35.5494, lng: 139.7798 },
+        cityId: "tokyo",
+        iataCode: "HND",
+        region: "kanto",
+      };
+
+      const ITM_KANSAI: EntryPoint = {
+        type: "airport",
+        id: "ITM",
+        name: "Itami Airport",
+        coordinates: { lat: 34.7855, lng: 135.4382 },
+        cityId: "osaka",
+        iataCode: "ITM",
+        region: "kansai",
+      };
+
+      it("warns when open-jaw spans two regions in 5 days or fewer", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["osaka", "tokyo"],
+          duration: 5,
+          entryPoint: KIX_KANSAI,
+          exitPoint: HND_KANTO,
+          sameAsEntry: false,
+        }));
+        const thinWarning = warnings.find((w) => w.type === "open_jaw_thin");
+        expect(thinWarning).toBeDefined();
+        expect(thinWarning!.severity).toBe("caution");
+        expect(thinWarning!.message).toContain("Kansai");
+        expect(thinWarning!.message).toContain("Kanto");
+      });
+
+      it("no warning for open-jaw with comfortable duration", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["osaka", "kyoto", "tokyo"],
+          duration: 10,
+          entryPoint: KIX_KANSAI,
+          exitPoint: HND_KANTO,
+          sameAsEntry: false,
+        }));
+        const thinWarning = warnings.find((w) => w.type === "open_jaw_thin");
+        expect(thinWarning).toBeUndefined();
+      });
+
+      it("no warning when entry and exit share the same region", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["osaka", "kyoto"],
+          duration: 4,
+          entryPoint: KIX_KANSAI,
+          exitPoint: ITM_KANSAI,
+          sameAsEntry: false,
+        }));
+        const thinWarning = warnings.find((w) => w.type === "open_jaw_thin");
+        expect(thinWarning).toBeUndefined();
+      });
+
+      it("no warning for round-trip flights (sameAsEntry true)", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["osaka", "kyoto"],
+          duration: 4,
+          entryPoint: KIX_KANSAI,
+          sameAsEntry: true,
+        }));
+        const thinWarning = warnings.find((w) => w.type === "open_jaw_thin");
+        expect(thinWarning).toBeUndefined();
+      });
+    });
   });
 
   describe("getWarningsSummary", () => {

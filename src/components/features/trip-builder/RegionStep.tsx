@@ -197,9 +197,14 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       return;
     }
 
-    const autoCities = autoSelectCities(vibes, data.entryPoint, data.duration);
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const autoCities = autoSelectCities(
+      vibes,
+      data.entryPoint,
+      data.duration,
+      effectiveExit,
+    );
     if (autoCities.length > 0) {
-      const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
       const optimized = autoCities.length >= 2 && data.entryPoint
         ? optimizeCitySequence(data.entryPoint, autoCities, effectiveExit, data.duration)
         : autoCities;
@@ -214,11 +219,10 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       hasAutoSelected.current = true;
       setAutoSelectMessage("Regions suggested based on your travel style");
     }
-    // data.exitPoint / data.sameAsEntry are read as snapshots for optimization;
-    // including them would re-run auto-selection when the user picks an exit
-    // airport and overwrite their manual city selections.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
+    // exitPoint / sameAsEntry are deps so open-jaw trips re-run auto-select
+    // when the exit airport arrives. Manual selections are preserved by the
+    // hasAutoSelected ref + selectedCities.size > 0 early returns above.
+  }, [vibes, data.entryPoint, data.exitPoint, data.sameAsEntry, data.duration, selectedCities.size, setData]);
 
   // City/day ratio validation
   const cityDayValidation = useMemo(

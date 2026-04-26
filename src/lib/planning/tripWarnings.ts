@@ -56,7 +56,8 @@ export type WarningType =
   | "weather"
   | "festival"
   | "festival_near_miss"
-  | "return_to_airport";
+  | "return_to_airport"
+  | "open_jaw_thin";
 
 /**
  * A single planning warning
@@ -383,6 +384,39 @@ function detectDistanceWarnings(data: TripBuilderData): PlanningWarning | null {
 }
 
 /**
+ * Detect open-jaw trips that are too short to comfortably span both regions.
+ * Open-jaw flights anchor the traveler's start and end at different regions,
+ * so we keep both regions in the auto-selection (see autoSelectCities) and
+ * surface a thin-trip warning when there aren't enough days to do them
+ * justice. Threshold matches the locked decision: 5 days or fewer.
+ */
+function detectOpenJawThinWarning(data: TripBuilderData): PlanningWarning | null {
+  if (data.sameAsEntry !== false) return null;
+
+  const entryRegionId = data.entryPoint?.region;
+  const exitRegionId = data.exitPoint?.region;
+  if (!entryRegionId || !exitRegionId) return null;
+  if (entryRegionId === exitRegionId) return null;
+
+  const duration = data.duration ?? 0;
+  if (duration <= 0 || duration > 5) return null;
+
+  const entryRegionName =
+    REGION_DESCRIPTIONS.find((r) => r.id === entryRegionId)?.name ?? entryRegionId;
+  const exitRegionName =
+    REGION_DESCRIPTIONS.find((r) => r.id === exitRegionId)?.name ?? exitRegionId;
+
+  return {
+    id: "open-jaw-thin",
+    type: "open_jaw_thin",
+    severity: "caution",
+    title: "Tight Open-Jaw Window",
+    message: `Your flights land in ${entryRegionName} and leave from ${exitRegionName}, so the trip has to cross both ends in ${duration} ${duration === 1 ? "day" : "days"}. The shinkansen between them eats most of a day on its own. Consider adding 2 to 3 days, or matching your departure airport to your arrival region.`,
+    icon: Plane,
+  };
+}
+
+/**
  * Detect when the last city is far from the departure airport.
  * Fires when travel time exceeds 120 minutes.
  */
@@ -463,6 +497,12 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
   const returnWarning = detectReturnToAirportWarning(data);
   if (returnWarning) {
     warnings.push(returnWarning);
+  }
+
+  // Detect thin open-jaw trips (entry region != exit region, ≤5 days)
+  const openJawWarning = detectOpenJawThinWarning(data);
+  if (openJawWarning) {
+    warnings.push(openJawWarning);
   }
 
   return warnings;

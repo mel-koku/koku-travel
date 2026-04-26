@@ -180,7 +180,12 @@ export function getRegionsByScore(
  * Auto-select cities from exactly 2 regions, capped at the recommended
  * city count for the trip duration.
  *
- * Regions: entry point region + highest-scoring vibe region.
+ * Regions: entry point region + (exit point region for open-jaw trips, or
+ * highest-scoring vibe region otherwise). Open-jaw flights commit the
+ * traveler to ending near the departure airport — ignoring that turns the
+ * suggestion into a routing trap, so the exit region wins over the vibes
+ * pick when they differ.
+ *
  * Cities within those regions are ranked by: entry point city first,
  * then by content density (location count). Only the top N cities are
  * returned, where N = getCityLimits(duration).recommended.
@@ -190,9 +195,10 @@ export function getRegionsByScore(
 export function autoSelectCities(
   vibes: VibeId[],
   entryPoint?: EntryPoint,
-  duration?: number
+  duration?: number,
+  exitPoint?: EntryPoint
 ): KnownCityId[] {
-  const scored = scoreRegionsForTrip(vibes, entryPoint);
+  const scored = scoreRegionsForTrip(vibes, entryPoint, exitPoint);
   const picked = new Set<KnownRegionId>();
 
   // 1. Entry point region (closest to arrival)
@@ -201,11 +207,22 @@ export function autoSelectCities(
     picked.add(entryRegion.region.id);
   }
 
-  // 2. Highest-scoring region that isn't already picked
-  for (const s of scored) {
-    if (!picked.has(s.region.id)) {
-      picked.add(s.region.id);
-      break;
+  // 2. Open-jaw: force the exit point's region so the traveler isn't routed
+  //    away from their departure airport. Falls through to the vibes pick
+  //    when the exit region matches the entry region (round-trip or same-
+  //    region open-jaw, e.g. KIX → ITM).
+  const exitRegionId = exitPoint?.region;
+  if (exitRegionId && !picked.has(exitRegionId)) {
+    picked.add(exitRegionId);
+  }
+
+  // 3. Highest-scoring region that isn't already picked (vibes-driven fill)
+  if (picked.size < 2) {
+    for (const s of scored) {
+      if (!picked.has(s.region.id)) {
+        picked.add(s.region.id);
+        break;
+      }
     }
   }
 
