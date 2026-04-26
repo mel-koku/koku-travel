@@ -31,7 +31,7 @@ export function AskYukuLocationCard({
 
   return (
     <Link
-      href={`/places?location=${id}`}
+      href={`/places/${id}`}
       className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-2 transition-colors hover:border-brand-primary/30"
     >
       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
