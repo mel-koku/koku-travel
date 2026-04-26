@@ -3,7 +3,16 @@ import { LOCATION_LISTING_COLUMNS } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "./locationService";
 import type { Location, SubExperience, LocationRelationship } from "@/types/location";
 import type { LocationListingDbRow } from "@/lib/supabase/projections";
+import { applyActiveLocationFilters } from "@/lib/supabase/filters";
+import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { logger } from "@/lib/logger";
+
+/** Radius in km used to fetch coord-proximity fallback for "In this area". */
+const NEARBY_AREA_RADIUS_KM = 1;
+/** Cap of cards rendered in the "In this area" coord-proximity fallback. */
+const NEARBY_AREA_LIMIT = 6;
+/** Pre-haversine bounding-box pre-filter reads more rows so haversine has slack. */
+const NEARBY_BBOX_CANDIDATE_LIMIT = 60;
 
 /**
  * Fetches child locations of a parent.
@@ -145,14 +154,109 @@ export async function fetchLocationRelationships(
 }
 
 /**
+ * A nearby location with derived walk-time metadata, surfaced in
+ * "In this area" when no curated cluster relationships exist.
+ */
+export type NearbyLocation = Location & { walkMinutes: number };
+
+/**
+ * Fetches schedulable locations within ~1km of a coordinate, sorted by
+ * distance. Used as a fallback for "In this area" when curated
+ * cluster relationships are absent (which is the common case — only ~70
+ * locations have curated clusters today).
+ *
+ * Excludes:
+ *   - the location itself
+ *   - the location's parent (if any)
+ *   - any container parents (they're grouping rows, not visitable places)
+ *   - any locations whose `parent_id` points back at the current location
+ *     (children — they have their own "Things to do here" treatment)
+ *   - inactive / permanently closed rows
+ */
+export async function fetchNearbyLocations(
+  location: Location,
+  radiusKm: number = NEARBY_AREA_RADIUS_KM,
+  limit: number = NEARBY_AREA_LIMIT,
+): Promise<NearbyLocation[]> {
+  const coords = location.coordinates;
+  if (!coords || typeof coords.lat !== "number" || typeof coords.lng !== "number") {
+    return [];
+  }
+
+  const supabase = await createClient();
+
+  // Bounding box for cheap pre-filter; haversine narrows below.
+  const latDelta = radiusKm / 111.0;
+  const lngDelta = radiusKm / (111.0 * Math.cos((coords.lat * Math.PI) / 180));
+
+  // Cheap, safe SQL filters only: bbox + active + non-container.
+  // Self / parent / children exclusion happens in JS on the candidate set
+  // (mirrors /api/locations/nearby — PostgREST .not(...in) and .or()
+  // composition is fragile and the bbox already keeps the set small).
+  const query = applyActiveLocationFilters(
+    supabase.from("locations").select(LOCATION_LISTING_COLUMNS),
+  )
+    .gte("coordinates->lat", coords.lat - latDelta)
+    .lte("coordinates->lat", coords.lat + latDelta)
+    .gte("coordinates->lng", coords.lng - lngDelta)
+    .lte("coordinates->lng", coords.lng + lngDelta);
+
+  const { data, error } = await query.limit(NEARBY_BBOX_CANDIDATE_LIMIT);
+
+  if (error || !data) {
+    if (error) {
+      logger.error("[fetchNearbyLocations] query failed", error, {
+        locationId: location.id,
+      });
+    }
+    return [];
+  }
+
+  const rows = data as unknown as LocationListingDbRow[];
+  const parentId = location.parentId;
+
+  const withDistance = rows
+    .map((row) => {
+      // Exclude self
+      if (row.id === location.id) return null;
+      // Exclude this location's parent — it has its own breadcrumb treatment
+      if (parentId && row.id === parentId) return null;
+      // Exclude this location's children — they appear in "Things to do here"
+      if (row.parent_id && row.parent_id === location.id) return null;
+      // Exclude container parents — they're grouping rows, not visitable
+      if (row.parent_mode === "container") return null;
+      if (!row.coordinates) return null;
+
+      const distanceKm = calculateDistance(coords, row.coordinates);
+      if (distanceKm > radiusKm) return null;
+      return { row, distanceKm };
+    })
+    .filter((r): r is { row: LocationListingDbRow; distanceKm: number } => r !== null)
+    .sort((a, b) => a.distanceKm - b.distanceKm)
+    .slice(0, limit);
+
+  return withDistance.map(({ row, distanceKm }) => ({
+    ...transformDbRowToLocation(row),
+    walkMinutes: estimateTravelTime(distanceKm, "walk"),
+  }));
+}
+
+/**
  * Fetches full hierarchy context for a location detail page.
  * Returns children, sub-experiences, and relationships in parallel.
+ *
+ * `nearby` is a coord-proximity fallback for "In this area" — only
+ * populated when there are no curated cluster relationships. This keeps
+ * the section confident on the ~98% of places that aren't seeded with
+ * curated clusters.
  */
 export async function fetchHierarchyContext(location: Location) {
   const isParent = !!location.parentMode;
   const hasId = !!location.id;
 
-  if (!hasId) return { children: [], subExperiences: [], relationships: [] };
+  if (!hasId) {
+    return { children: [], subExperiences: [], relationships: [], nearby: [] };
+  }
 
   const [children, subExperiences, relationships] = await Promise.all([
     isParent ? fetchChildLocations(location.id) : Promise.resolve([]),
@@ -160,5 +264,14 @@ export async function fetchHierarchyContext(location: Location) {
     fetchLocationRelationships(location.id, ["cluster", "alternative"]),
   ]);
 
-  return { children, subExperiences, relationships };
+  // Curated clusters win when present. Otherwise fall back to coord-prox
+  // so the section always populates when the place has coordinates.
+  const hasCuratedClusters = relationships.some(
+    (r) => r.relationshipType === "cluster",
+  );
+  const nearby = hasCuratedClusters
+    ? []
+    : await fetchNearbyLocations(location);
+
+  return { children, subExperiences, relationships, nearby };
 }
