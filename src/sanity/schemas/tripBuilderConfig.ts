@@ -176,13 +176,6 @@ export const tripBuilderConfig = defineType({
       initialValue: "Start Planning",
     }),
     defineField({
-      name: "introBackgroundImage",
-      title: "Background Image",
-      type: "image",
-      options: { hotspot: true },
-      fieldset: "introStep",
-    }),
-    defineField({
       name: "introEyebrow",
       title: "Eyebrow Text",
       type: "string",

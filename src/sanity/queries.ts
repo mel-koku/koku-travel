@@ -241,10 +241,6 @@ export const tripBuilderConfigQuery = groq`
     introSubheading,
     introDescription,
     introCtaText,
-    "introBackgroundImage": introBackgroundImage {
-      ...,
-      "url": asset->url
-    },
     introEyebrow,
     "introAccentImage": introAccentImage {
       ...,
