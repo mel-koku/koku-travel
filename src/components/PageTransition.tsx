@@ -13,14 +13,50 @@ type PageTransitionProps = {
 const COVER_DURATION = 0.4;
 const REVEAL_DURATION = 0.5;
 
+type RitualFamily = "trip-builder" | "itinerary" | null;
+
 /**
- * Page transition wrapper — two-phase overlay.
+ * Classify a pathname into a "ritual" route family. The editorial reveal
+ * is reserved for entry into one of these families — everything else
+ * (guides, places, landing, account, etc.) bypasses the curtain.
+ *
+ * Strict prefix match guards against false positives like
+ * `/trip-builder-faq` accidentally matching `/trip-builder`.
+ */
+function ritualFamily(pathname: string): RitualFamily {
+  if (pathname === "/trip-builder" || pathname.startsWith("/trip-builder/")) {
+    return "trip-builder";
+  }
+  if (pathname === "/itinerary" || pathname.startsWith("/itinerary/")) {
+    return "itinerary";
+  }
+  return null;
+}
+
+/**
+ * The curtain animates only on entry into a ritual route family (i.e. the
+ * incoming path is in a ritual family AND the previous path was not in the
+ * same family). Cross-family ritual moves (e.g. trip-builder → itinerary)
+ * still count as entry to the new family. Internal nav within a family,
+ * exits, and routine moves between non-ritual pages bypass.
+ */
+function shouldAnimateTransition(from: string, to: string): boolean {
+  const toFamily = ritualFamily(to);
+  if (!toFamily) return false;
+  return ritualFamily(from) !== toFamily;
+}
+
+/**
+ * Page transition wrapper — scoped two-phase overlay.
  *
  * On route change:
- * 1. Overlay instantly covers the screen (full circle, no animation gap)
- * 2. Scroll resets to top while covered
- * 3. Overlay circle shrinks away to reveal the new page
- * 4. Reduced motion: simple scroll-to-top
+ * 1. If the transition is a ritual entry (into `/trip-builder` or
+ *    `/itinerary/*`), play the cover/reveal sequence and reset scroll
+ *    while covered.
+ * 2. Otherwise (routine nav, ritual internal nav, ritual exits),
+ *    bypass the curtain — scroll-to-top still fires so users don't
+ *    land mid-scroll on the new page.
+ * 3. Reduced motion: always bypass with a scroll-to-top.
  */
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
@@ -31,9 +67,15 @@ export function PageTransition({ children }: PageTransitionProps) {
 
   useEffect(() => {
     if (pathname === prevPathname.current) return;
+    const previousPath = prevPathname.current;
     prevPathname.current = pathname;
 
-    if (prefersReducedMotion) {
+    const animate =
+      !prefersReducedMotion && shouldAnimateTransition(previousPath, pathname);
+
+    if (!animate) {
+      // Bypass: scroll-to-top so users don't land mid-scroll on the new page,
+      // but no curtain, no Lenis pause/resume.
       lenis?.scrollTo(0, { immediate: true });
       return;
     }
