@@ -231,7 +231,7 @@ function StepDots({
 }) {
   return (
     <>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-6">
         {/* Skip step 0 (Intro) — only show steps 1-5 */}
         {Array.from({ length: totalSteps - 1 }).map((_, idx) => {
           const step = idx + 1;
@@ -246,7 +246,7 @@ function StepDots({
                 onClick={() => canClick && onStepClick(step)}
                 disabled={!canClick}
                 className={cn(
-                  "relative rounded-full transition-all duration-300 before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+                  "relative rounded-full transition-all duration-300 before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
                   isActive &&
                     "h-2.5 w-2.5 bg-brand-primary shadow-[0_0_12px_rgba(196,80,79,0.4)]",
                   isCompleted &&
