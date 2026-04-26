@@ -745,17 +745,22 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         </section>
       )}
 
-      {/* Hierarchy: Relationships (In this area / Consider instead) */}
-      {hierarchy && hierarchy.relationships.length > 0 && (
-        <section className="py-12 sm:py-16 lg:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <RelationshipsSection
-              relationships={hierarchy.relationships}
-              onSelect={(loc) => router.push(`/places/${loc.id}`)}
-            />
-          </div>
-        </section>
-      )}
+      {/* Hierarchy: Relationships (In this area / Consider instead).
+          "In this area" falls back to coord-proximity (≤1km, ~6 places)
+          when no curated clusters exist, so any place with coordinates
+          gets a populated area section. */}
+      {hierarchy &&
+        (hierarchy.relationships.length > 0 || hierarchy.nearby.length > 0) && (
+          <section className="py-12 sm:py-16 lg:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <RelationshipsSection
+                relationships={hierarchy.relationships}
+                nearby={hierarchy.nearby}
+                onSelect={(loc) => router.push(`/places/${loc.id}`)}
+              />
+            </div>
+          </section>
+        )}
 
       {/* Explore Nearby */}
       {nearbyLocations.length > 0 && (

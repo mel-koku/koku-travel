@@ -232,21 +232,44 @@ export function SubExperiencesSection({
 // Relationships Section
 // ============================================
 
+type NearbyLocation = Location & { walkMinutes: number };
+
 export function RelationshipsSection({
   relationships,
+  nearby = [],
   onSelect,
 }: {
   relationships: (LocationRelationship & { relatedLocation?: Location })[];
+  /**
+   * Coord-proximity fallback for "In this area". Used only when
+   * `relationships` has no curated clusters. Server-side gating happens
+   * in `fetchHierarchyContext` — this component just renders what it gets.
+   */
+  nearby?: NearbyLocation[];
   onSelect?: (location: Location) => void;
 }) {
-  if (relationships.length === 0) return null;
-
   const clusters = relationships.filter((r) => r.relationshipType === "cluster" && r.relatedLocation);
   const alternatives = relationships.filter((r) => r.relationshipType === "alternative" && r.relatedLocation);
 
+  // Curated clusters win. Coord-prox fills in only when curated is empty.
+  const inThisArea: { id: string; location: Location; walkMinutes?: number }[] =
+    clusters.length > 0
+      ? clusters.slice(0, 6).map((rel) => ({
+          id: rel.id,
+          location: rel.relatedLocation!,
+          walkMinutes: rel.walkMinutes,
+        }))
+      : nearby.map((loc) => ({
+          id: loc.id,
+          location: loc,
+          walkMinutes: loc.walkMinutes,
+        }));
+
+  if (inThisArea.length === 0 && alternatives.length === 0) return null;
+
   return (
     <>
-      {clusters.length > 0 && (
+      {inThisArea.length > 0 && (
         <motion.section
           variants={fadeUp}
           initial="hidden"
@@ -257,12 +280,12 @@ export function RelationshipsSection({
             In this area
           </h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {clusters.slice(0, 6).map((rel) => (
+            {inThisArea.map((entry) => (
               <LocationCard
-                key={rel.id}
-                location={rel.relatedLocation!}
+                key={entry.id}
+                location={entry.location}
                 variant="compact"
-                meta={rel.walkMinutes ? `${rel.walkMinutes} min walk` : undefined}
+                meta={entry.walkMinutes ? `${entry.walkMinutes} min walk` : undefined}
                 onSelect={onSelect}
               />
             ))}
