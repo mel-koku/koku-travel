@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
 import { easeEditorial, durationBase } from "@/lib/motion";
@@ -97,18 +98,17 @@ export function ContextualUnlockPrompt({
             </p>
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={onUnlock}
-                className="btn-yuku flex-1 rounded-lg bg-brand-primary px-6 py-3 text-sm font-medium text-white active:scale-[0.98]"
+                variant="primary"
+                size="lg"
+                fullWidth
               >
                 {ctaLabel}
-              </button>
-              <button
-                onClick={onClose}
-                className="rounded-lg border border-border px-4 py-3 text-sm text-foreground-secondary hover:bg-canvas"
-              >
+              </Button>
+              <Button onClick={onClose} variant="outline" size="lg">
                 Not now
-              </button>
+              </Button>
             </div>
           </motion.div>
         </>

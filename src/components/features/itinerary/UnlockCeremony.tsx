@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
 import { easeEditorial, easeReveal, durationBase } from "@/lib/motion";
 import { UNLOCK_CEREMONY_MIN_MS } from "@/lib/billing/access";
+import { Button } from "@/components/ui/Button";
 
 type UnlockCeremonyProps = {
   cities: string[];
@@ -127,13 +128,15 @@ export function UnlockCeremony({
           <p className={cn(typography({ intent: "utility-body" }), "text-foreground-secondary")}>
             Your trip is unlocked. We&apos;re still assembling your written guide.
           </p>
-          <button
+          <Button
             type="button"
-            className="mt-4 btn-yuku"
+            variant="primary"
+            size="lg"
             onClick={onRetry}
+            className="mt-4"
           >
             Retry
-          </button>
+          </Button>
         </div>
       )}
     </motion.div>

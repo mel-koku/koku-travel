@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import {
@@ -16,16 +17,13 @@ import {
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type Props = {
-  variant: "a" | "b";
   content?: PagesContent;
 };
 
 const WORDS = ["Tea", "Craft", "Kintsukuroi", "Calligraphy", "Indigo", "Fermentation"];
 
-export function ExperiencesComingSoon({ variant, content }: Props) {
+export function ExperiencesComingSoon({ content }: Props) {
   const prefersReducedMotion = useReducedMotion();
-  const isA = variant === "a";
-  const basePath = isA ? "" : "/b";
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-charcoal">
@@ -74,10 +72,7 @@ export function ExperiencesComingSoon({ variant, content }: Props) {
             {WORDS.map((word, i) => (
               <motion.span
                 key={word}
-                className={cn(
-                  "text-xs uppercase tracking-[0.25em]",
-                  isA ? "font-mono" : "font-sans"
-                )}
+                className="font-mono text-xs uppercase tracking-[0.25em]"
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -96,9 +91,7 @@ export function ExperiencesComingSoon({ variant, content }: Props) {
         <div className="overflow-hidden">
           <motion.h1
             className={cn(
-              isA
-                ? typography({ intent: "editorial-hero" })
-                : "text-5xl sm:text-6xl lg:text-7xl font-bold",
+              typography({ intent: "editorial-hero" }),
               "text-white !text-[clamp(3rem,8vw,7rem)] !leading-[0.95] tracking-tight"
             )}
             initial={prefersReducedMotion ? false : { y: "100%" }}
@@ -119,10 +112,7 @@ export function ExperiencesComingSoon({ variant, content }: Props) {
 
         {/* Subtext */}
         <motion.p
-          className={cn(
-            "max-w-sm text-white/85 text-base leading-relaxed",
-            isA ? "font-sans" : "font-sans"
-          )}
+          className="max-w-sm font-sans text-base leading-relaxed text-white/85"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: durationBase, delay: 0.6, ease: easeRevealMut }}
@@ -137,23 +127,12 @@ export function ExperiencesComingSoon({ variant, content }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: durationBase, delay: 0.8, ease: easeRevealMut }}
         >
-          <Link
-            href={`${basePath}/places`}
-            className={cn(
-              "inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white active:scale-[0.98] transition-all",
-              isA
-                ? "btn-yuku rounded-lg bg-brand-primary shadow-[var(--shadow-glow)] hover:bg-brand-secondary"
-                : "rounded-lg bg-[var(--primary)] hover:brightness-110"
-            )}
-          >
+          <Button asChild href="/places" variant="primary" size="lg">
             Browse Places
-          </Link>
+          </Button>
           <Link
-            href={`${basePath}/guides`}
-            className={cn(
-              "inline-flex h-12 items-center justify-center px-8 text-sm font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all",
-              isA ? "rounded-lg" : "rounded-lg"
-            )}
+            href="/guides"
+            className="inline-flex h-12 items-center justify-center rounded-lg border border-white/20 px-8 text-sm font-medium text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
           >
             Read Guides
           </Link>

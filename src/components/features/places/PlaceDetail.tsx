@@ -26,6 +26,8 @@ import {
 } from "./HierarchySections";
 import { SimilarPlaces } from "./SimilarPlaces";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { Button } from "@/components/ui/Button";
+import { ArrowRight } from "lucide-react";
 
 const staggerContainer = {
   hidden: {},
@@ -709,15 +711,15 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           <p className="text-foreground-secondary text-sm mb-4">
             Want to visit {location.name}?
           </p>
-          <a
+          <Button
+            asChild
             href={`/trip-builder?city=${encodeURIComponent(location.city)}`}
-            className="btn-yuku inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
+            variant="primary"
+            size="lg"
+            rightIcon={<ArrowRight aria-hidden="true" />}
           >
             Build a trip to {location.city}
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
+          </Button>
         </div>
       </section>
 

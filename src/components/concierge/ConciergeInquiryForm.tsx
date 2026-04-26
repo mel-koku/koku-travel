@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
+import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { ConciergePageContent } from "@/types/sanitySiteContent";
 
@@ -140,14 +141,14 @@ export function ConciergeInquiryForm({ content }: Props) {
                 )}
 
                 <div className="mt-4 text-center">
-                  <button
+                  <Button
                     type="submit"
-                    disabled={status === "submitting"}
-                    aria-busy={status === "submitting"}
-                    className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98] disabled:cursor-wait"
+                    variant="primary"
+                    size="lg"
+                    isLoading={status === "submitting"}
                   >
                     {status === "submitting" ? "Sending…" : ctaText}
-                  </button>
+                  </Button>
                 </div>
 
                 <p className={cn(typography({ intent: "utility-meta" }), "mt-2 text-center")}>

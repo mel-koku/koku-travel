@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import {
@@ -122,12 +123,9 @@ export function LocalExpertsComingSoon({ content }: { content?: PagesContent }) 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: durationBase, delay: 0.8, ease: easeRevealMut }}
         >
-          <Link
-            href="/places"
-            className="btn-yuku inline-flex h-12 items-center justify-center rounded-lg bg-brand-primary px-8 text-sm font-medium text-white shadow-[var(--shadow-glow)] transition-all hover:bg-brand-secondary active:scale-[0.98]"
-          >
+          <Button asChild href="/places" variant="primary" size="lg">
             Browse Places
-          </Link>
+          </Button>
           <Link
             href="/guides"
             className="inline-flex h-12 items-center justify-center rounded-lg border border-white/20 px-8 text-sm font-medium text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"

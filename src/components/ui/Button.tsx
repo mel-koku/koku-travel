@@ -29,6 +29,7 @@ const buttonVariants = cva(
         sm: "min-h-[44px] h-9 rounded-lg px-3 text-sm",
         md: "min-h-[44px] h-10 px-4 py-2",
         lg: "min-h-[44px] h-12 rounded-lg px-6",
+        hero: "min-h-[44px] h-14 rounded-lg px-10 shadow-[var(--shadow-glow)]",
         icon: "h-11 w-11",
         chip: "min-h-0 h-auto rounded-full px-3 py-1.5 text-xs font-medium",
         chipTiny: "min-h-0 h-auto rounded-full px-2 py-0.5 text-[10px] font-semibold",

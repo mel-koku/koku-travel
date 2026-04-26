@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
+import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { TIER_PRICES, type UnlockTier } from "@/lib/billing/types";
@@ -233,12 +234,9 @@ export default async function PricingPage() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.16}>
-            <Link
-              href="/trip-builder"
-              className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
-            >
+            <Button asChild href="/trip-builder" variant="primary" size="hero">
               Build My Trip
-            </Link>
+            </Button>
           </ScrollReveal>
           <ScrollReveal delay={0.24}>
             <p className="mt-6">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
@@ -301,12 +302,9 @@ export default function ContactPage() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.24}>
-            <Link
-              href="/concierge"
-              className="btn-yuku relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] transition-colors hover:bg-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:scale-[0.98]"
-            >
+            <Button asChild href="/concierge" variant="primary" size="hero">
               Start a concierge request
-            </Link>
+            </Button>
           </ScrollReveal>
         </div>
       </section>

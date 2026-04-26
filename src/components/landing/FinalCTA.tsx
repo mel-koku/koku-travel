@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { durationBase, easeReveal } from "@/lib/motion";
@@ -58,12 +59,9 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.2, ease: [...easeReveal] as [number, number, number, number] }}
             className="mt-10"
           >
-            <a
-              href="/trip-builder"
-              className="btn-yuku relative inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
-            >
-              <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
-            </a>
+            <Button asChild href="/trip-builder" variant="primary" size="hero">
+              {content?.finalCtaPrimaryText ?? "Build My Trip"}
+            </Button>
             <p className="mt-4 text-xs text-white/60">
               {isFreePromo
                 ? "Free during our launch. No payment required."
