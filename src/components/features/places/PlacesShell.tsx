@@ -11,6 +11,8 @@ import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePla
 import { PlacesPagination } from "./PlacesPagination";
 import { PLACES_PAGE_SIZE } from "@/lib/filters/filterUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 
 import { SeasonalBanner } from "./SeasonalBanner";
 import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
@@ -252,6 +254,82 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewParam === "map" && mapAvailable ? "map" : "grid",
   );
 
+  // Near-me state — owned alongside viewMode. Active only in map view.
+  const {
+    position: userPosition,
+    error: geoError,
+    isLoading: geoLoading,
+    request: requestGeolocation,
+  } = useCurrentLocation();
+  const [nearMeActive, setNearMeActive] = useState(false);
+  const [nearMeErrorVisible, setNearMeErrorVisible] = useState(false);
+
+  const handleNearMeClick = useCallback(() => {
+    if (nearMeActive) {
+      // Toggle off — keep cached coords for the next click within 5 min.
+      setNearMeActive(false);
+      setNearMeErrorVisible(false);
+      return;
+    }
+    setNearMeErrorVisible(false);
+    requestGeolocation();
+    setNearMeActive(true);
+  }, [nearMeActive, requestGeolocation]);
+
+  // Surface geolocation errors when active
+  useEffect(() => {
+    if (nearMeActive && geoError) {
+      setNearMeErrorVisible(true);
+      setNearMeActive(false);
+    }
+  }, [nearMeActive, geoError]);
+
+  const dismissNearMeError = useCallback(() => {
+    setNearMeErrorVisible(false);
+  }, []);
+
+  // Distance-sorted view of sortedLocations when near-me is active and we have coords
+  const userCoords = useMemo(
+    () => (userPosition ? { lat: userPosition.lat, lng: userPosition.lng } : null),
+    [userPosition],
+  );
+
+  const nearMeApplied = nearMeActive && userCoords !== null && viewMode === "map";
+
+  const distanceById = useMemo(() => {
+    if (!nearMeApplied || !userCoords) return null;
+    const map = new Map<string, number>();
+    for (const loc of sortedLocations) {
+      if (loc.coordinates?.lat != null && loc.coordinates?.lng != null) {
+        map.set(
+          loc.id,
+          calculateDistance(userCoords, {
+            lat: loc.coordinates.lat,
+            lng: loc.coordinates.lng,
+          }),
+        );
+      }
+    }
+    return map;
+  }, [nearMeApplied, userCoords, sortedLocations]);
+
+  const distanceSortedLocations = useMemo(() => {
+    if (!distanceById) return sortedLocations;
+    // Locations with coords sorted by distance ascending; coordless tail at end
+    const withCoords: Location[] = [];
+    const withoutCoords: Location[] = [];
+    for (const loc of sortedLocations) {
+      if (distanceById.has(loc.id)) withCoords.push(loc);
+      else withoutCoords.push(loc);
+    }
+    withCoords.sort((a, b) => {
+      const da = distanceById.get(a.id) ?? Infinity;
+      const db = distanceById.get(b.id) ?? Infinity;
+      return da - db;
+    });
+    return [...withCoords, ...withoutCoords];
+  }, [distanceById, sortedLocations]);
+
   // Scroll to top when filters change (skip initial mount)
   const didMountRef = useRef(false);
   useEffect(() => {
@@ -356,7 +434,31 @@ export function PlacesShell({ content }: PlacesShellProps) {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         mapAvailable={mapAvailable}
+        onNearMeClick={handleNearMeClick}
+        nearMeActive={nearMeApplied}
+        nearMeLoading={nearMeActive && geoLoading}
       />
+
+      {/* Near Me geolocation error */}
+      {nearMeErrorVisible && geoError && (
+        <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-start justify-between gap-3 rounded-md bg-yuzu-tint px-4 py-3 text-sm">
+            <p className="text-foreground-body">
+              {geoError === "Location permission denied."
+                ? "Location access denied. Enable it in your browser to find places near you."
+                : geoError}
+            </p>
+            <button
+              type="button"
+              onClick={dismissNearMeError}
+              className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-foreground-secondary hover:text-foreground transition"
+              aria-label="Dismiss location error"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Yuku filter banner */}
       {yukuIds.length > 0 && (
@@ -391,7 +493,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {viewMode === "map" && mapAvailable ? (
         <PlacesMapLayout
           filteredLocations={filteredLocations}
-          sortedLocations={sortedLocations}
+          sortedLocations={distanceSortedLocations}
           totalCount={total}
           onSelectLocation={handleSelectLocation}
           isLoading={isLoading}
@@ -399,6 +501,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
           onChatClose={() => setIsChatOpen(false)}
           hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
           flyToLocation={flyToLocation}
+          userLocation={nearMeApplied ? userCoords : null}
+          locationDistanceKm={distanceById}
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">

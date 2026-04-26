@@ -17,6 +17,10 @@ type CategoryBarProps = {
   viewMode?: "grid" | "map";
   onViewModeChange?: (mode: "grid" | "map") => void;
   mapAvailable?: boolean;
+  /** Map view only: shown next to Refine to find nearby places. */
+  onNearMeClick?: () => void;
+  nearMeActive?: boolean;
+  nearMeLoading?: boolean;
 };
 
 export function CategoryBar({
@@ -32,6 +36,9 @@ export function CategoryBar({
   viewMode,
   onViewModeChange,
   mapAvailable = false,
+  onNearMeClick,
+  nearMeActive = false,
+  nearMeLoading = false,
 }: CategoryBarProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -168,6 +175,49 @@ export function CategoryBar({
                   <span className="hidden sm:inline">Map</span>
                 </button>
               </div>
+            )}
+
+            {/* Near Me pill — map view only */}
+            {viewMode === "map" && onNearMeClick && (
+              <button
+                type="button"
+                onClick={onNearMeClick}
+                disabled={nearMeLoading}
+                aria-label={nearMeActive ? "Clear near-me filter" : "Show places near me"}
+                aria-pressed={nearMeActive}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-lg border h-12 px-3 text-sm font-medium transition shrink-0 disabled:opacity-60 disabled:cursor-wait",
+                  nearMeActive
+                    ? "border-brand-primary text-brand-primary"
+                    : "border-border text-stone hover:border-brand-primary hover:text-foreground"
+                )}
+              >
+                {nearMeLoading ? (
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" d="M12 3a9 9 0 1 0 9 9" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-7-6.5-7-12a7 7 0 1 1 14 0c0 5.5-7 12-7 12z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                )}
+                <span className="hidden sm:inline">Near Me</span>
+              </button>
             )}
 
             {/* Refine button */}
