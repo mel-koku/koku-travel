@@ -25,6 +25,7 @@ import {
   RelationshipsSection,
 } from "./HierarchySections";
 import { SimilarPlaces } from "./SimilarPlaces";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 const staggerContainer = {
   hidden: {},
@@ -418,19 +419,34 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         {/* JTA + Hidden Gem badges */}
         <motion.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
           {location.jtaApproved && (
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
-              JTA Approved
-            </span>
+            <Tooltip content="Japan Tourism Agency (JTA) certified destination">
+              <span
+                tabIndex={0}
+                className="inline-flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/40"
+              >
+                JTA Approved
+              </span>
+            </Tooltip>
           )}
           {location.isHiddenGem && (
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
-              Local Pick
-            </span>
+            <Tooltip content="A place chosen for distinctive character">
+              <span
+                tabIndex={0}
+                className="inline-flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/40"
+              >
+                Local Pick
+              </span>
+            </Tooltip>
           )}
           {location.isUnescoSite && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent border border-accent/30 px-3 py-1 rounded-md">
-              UNESCO World Heritage Site
-            </span>
+            <Tooltip content="Designated by UNESCO for global cultural or natural value">
+              <span
+                tabIndex={0}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-accent border border-accent/30 px-3 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+              >
+                UNESCO World Heritage Site
+              </span>
+            </Tooltip>
           )}
         </motion.div>
 
