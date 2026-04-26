@@ -66,29 +66,29 @@ export function RegionRow({
         ease: easeCinematicMut,
       }}
       className={cn(
-        "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left backdrop-blur-sm transition-colors duration-300 lg:px-5 lg:py-5",
+        "group flex w-full cursor-pointer items-center gap-4 border-b border-l-[3px] px-4 py-4 text-left backdrop-blur-sm transition-colors duration-300 lg:px-5 lg:py-5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         hasSelection
-          ? "border-border bg-brand-primary/10"
-          : "border-border/50 bg-canvas/80 hover:border-border hover:bg-canvas/90",
+          ? "border-b-border border-l-brand-primary bg-surface/60"
+          : "border-b-border/50 border-l-transparent bg-canvas/80 hover:border-b-border hover:bg-canvas/90",
       )}
     >
-      {/* Selection checkbox */}
+      {/* Selection indicator */}
       <span
         className={cn(
-          "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors duration-300",
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-colors duration-300",
           regionSelectionState === "full"
-            ? "border-brand-primary bg-brand-primary"
+            ? "border-brand-primary bg-brand-primary text-white"
             : regionSelectionState === "partial"
               ? "border-brand-primary bg-brand-primary/20"
-              : "border-border",
+              : "border-border/80 group-hover:border-foreground/30",
         )}
       >
         {regionSelectionState === "full" && (
-          <Check className="h-2.5 w-2.5 text-white" />
+          <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
         )}
         {regionSelectionState === "partial" && (
-          <Minus className="h-2.5 w-2.5 text-brand-primary" />
+          <Minus className="h-3.5 w-3.5 text-brand-primary" strokeWidth={2.5} />
         )}
       </span>
 

@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import {
   Accessibility,
   ChevronDown,
   Gauge,
-  Maximize2,
   StickyNote,
   Sun,
   Users,
@@ -20,7 +19,6 @@ import {
   type UseFormSetValue,
 } from "react-hook-form";
 
-import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { cn } from "@/lib/cn";
@@ -82,14 +80,7 @@ export type OptionsSectionProps = {
 
 /**
  * Single Options section that bundles all preferences (Pace, Group, Mobility,
- * Dietary, First-time, Budget, Notes).
- *
- * Two ways to open:
- *  - Inline disclosure (chevron)
- *  - Popout modal (Maximize2 icon)
- *
- * Single source of truth: the form body is rendered in EXACTLY one location at
- * a time (modal OR inline OR neither). Opening one mode closes the other.
+ * Dietary, First-time, Budget, Notes). Inline disclosure only.
  */
 export function OptionsSection(props: OptionsSectionProps) {
   const {
@@ -111,7 +102,6 @@ export function OptionsSection(props: OptionsSectionProps) {
   } = props;
 
   const [isInlineOpen, setIsInlineOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Derive a heterogeneous "X of 7 set" count.
   const setCount = useMemo(() => {
@@ -126,25 +116,7 @@ export function OptionsSection(props: OptionsSectionProps) {
     return count;
   }, [formValues, isFirstTimeVisitor, budgetValue]);
 
-  const openInline = useCallback(() => {
-    setIsModalOpen(false);
-    setIsInlineOpen(true);
-  }, []);
-
-  const closeInline = useCallback(() => setIsInlineOpen(false), []);
-
-  const openModal = useCallback((event?: React.MouseEvent | React.KeyboardEvent) => {
-    event?.stopPropagation();
-    setIsInlineOpen(false);
-    setIsModalOpen(true);
-  }, []);
-
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
-
-  const toggleHeader = () => {
-    if (isInlineOpen) closeInline();
-    else openInline();
-  };
+  const toggleHeader = () => setIsInlineOpen((v) => !v);
 
   const body = (
     <OptionsBody
@@ -169,36 +141,26 @@ export function OptionsSection(props: OptionsSectionProps) {
   return (
     <>
       <div className="overflow-hidden rounded-lg border border-border bg-surface">
-        <div className="flex items-center gap-2 pr-2 transition-colors hover:bg-brand-primary/5">
-          <button
-            type="button"
-            onClick={toggleHeader}
-            aria-expanded={isInlineOpen}
-            className="flex flex-1 cursor-pointer items-center gap-3 px-4 py-3 text-left"
-          >
-            <h4 className="flex-1 text-sm font-medium text-foreground">Options</h4>
-            <span className="text-xs text-stone">
-              {setCount} of 7 set
-            </span>
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 shrink-0 text-stone transition-transform duration-200",
-                isInlineOpen && "rotate-180"
-              )}
-            />
-          </button>
-          <button
-            type="button"
-            onClick={openModal}
-            aria-label="Open options in dialog"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-stone transition-colors hover:bg-background hover:text-foreground-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-          >
-            <Maximize2 className="h-4 w-4" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={toggleHeader}
+          aria-expanded={isInlineOpen}
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-brand-primary/5"
+        >
+          <h4 className="flex-1 text-sm font-medium text-foreground">Options</h4>
+          <span className="text-xs text-stone">
+            {setCount} of 7 set
+          </span>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-stone transition-transform duration-200",
+              isInlineOpen && "rotate-180"
+            )}
+          />
+        </button>
 
         <AnimatePresence initial={false}>
-          {isInlineOpen && !isModalOpen && (
+          {isInlineOpen && (
             <m.div
               key="inline-body"
               initial={{ height: 0, opacity: 0 }}
@@ -212,17 +174,6 @@ export function OptionsSection(props: OptionsSectionProps) {
           )}
         </AnimatePresence>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="Options"
-        description="Pace, group, accessibility, dietary, budget, and notes."
-        panelClassName="w-full sm:max-w-2xl h-[100dvh] sm:h-auto rounded-none sm:rounded-lg max-h-[100dvh] sm:max-h-[calc(100dvh-6rem)]"
-        className="px-0 py-0 sm:px-4 sm:py-8 md:py-12"
-      >
-        {body}
-      </Modal>
     </>
   );
 }

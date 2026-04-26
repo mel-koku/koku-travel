@@ -3,7 +3,6 @@
 import { AnimatePresence, m } from "framer-motion";
 import { Search, X } from "lucide-react";
 
-import { cn } from "@/lib/cn";
 import { durationFast, easeReveal } from "@/lib/motion";
 import type { Airport } from "@/app/api/airports/route";
 
@@ -16,7 +15,6 @@ export type AirportSearchProps = {
   placeholder?: string;
   popularLabel?: string;
   noResultsText?: string;
-  accentColor?: "sage" | "brand-primary";
   popularLabelClassName?: string;
 };
 
@@ -29,7 +27,6 @@ export function AirportSearch({
   placeholder = "Search by name, city, or code...",
   popularLabel = "Popular airports",
   noResultsText = "No airports found",
-  accentColor = "sage",
   popularLabelClassName = "mb-2 mt-3",
 }: AirportSearchProps) {
   return (
@@ -105,14 +102,9 @@ export function AirportSearch({
                 key={airport.id}
                 type="button"
                 onClick={() => onSelectAirport(airport)}
-                className={cn(
-                  "group flex cursor-pointer flex-col rounded-lg border p-3 text-left transition-all",
-                  accentColor === "sage"
-                    ? "border-border bg-background hover:border-sage/30 hover:bg-sage/5"
-                    : "border-border bg-background hover:border-brand-primary/20 hover:bg-brand-primary/5",
-                )}
+                className="group flex cursor-pointer flex-col rounded-lg border border-border bg-background p-3 text-left transition-all hover:border-accent/30 hover:bg-accent/5"
               >
-                <span className="font-mono text-lg font-bold text-brand-primary">
+                <span className="font-mono text-lg font-bold text-accent">
                   {airport.iataCode}
                 </span>
                 <span className="mt-0.5 text-sm font-medium text-foreground">

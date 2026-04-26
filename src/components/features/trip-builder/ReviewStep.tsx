@@ -11,6 +11,7 @@ import { type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 
 import { m } from "framer-motion";
+import { AlertTriangle, Info } from "lucide-react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
@@ -186,70 +187,72 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         )}
       </div>
 
-      {/* Single centered column — plan-forward */}
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <TripSummaryEditorial
-          onEditDates={handleEditDates}
-          onEditEntryPoint={handleEditEntryPoint}
-          onEditVibes={handleEditVibes}
-          onEditRegions={handleEditRegions}
-          sanityConfig={sanityConfig}
-          accommodations={data.accommodations}
-          onAccommodationChange={(cityId, accom) => {
-            setData((prev) => {
-              const next = { ...prev.accommodations };
-              if (accom) {
-                next[cityId] = accom;
-              } else {
-                delete next[cityId];
-              }
-              return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
-            });
-          }}
-        />
+      {/* Two-zone layout: "Your Trip" (review) + "Make it yours" (configure) */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
+        {/* Zone A — Your Trip */}
+        <section className="flex flex-col gap-3">
+          <p className="eyebrow-editorial">Your Trip</p>
 
-        {/* Festival near-miss stays inline directly under Route & Stays */}
-        <FestivalNearMissCard />
+          <TripSummaryEditorial
+            onEditDates={handleEditDates}
+            onEditEntryPoint={handleEditEntryPoint}
+            onEditVibes={handleEditVibes}
+            onEditRegions={handleEditRegions}
+            sanityConfig={sanityConfig}
+            accommodations={data.accommodations}
+            onAccommodationChange={(cityId, accom) => {
+              setData((prev) => {
+                const next = { ...prev.accommodations };
+                if (accom) {
+                  next[cityId] = accom;
+                } else {
+                  delete next[cityId];
+                }
+                return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
+              });
+            }}
+          />
 
-        {/* Festival overlap auto-include CTA (KOK-32) */}
-        <FestivalIncludeCard />
+          <FestivalNearMissCard />
+          <FestivalIncludeCard />
 
-        {/* Duration warning */}
-        {durationWarning && (
-          <div
-            role="alert"
-            className={cn(
-              "flex items-start gap-3 rounded-lg border px-4 py-3",
-              durationWarning.severity === "warning"
-                ? "border-warning/30 bg-warning/5"
-                : "border-sage/30 bg-sage/5"
-            )}
-          >
-            <span className="mt-0.5 shrink-0 text-sm">
-              {durationWarning.severity === "warning" ? "⚠️" : "ℹ️"}
-            </span>
-            <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
-          </div>
-        )}
+          {durationWarning && (
+            <div
+              role="alert"
+              className="flex items-start gap-2.5 rounded-md bg-surface px-3 py-2.5 text-sm text-foreground-secondary"
+            >
+              {durationWarning.severity === "warning" ? (
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+              ) : (
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+              )}
+              <p>{durationWarning.message}</p>
+            </div>
+          )}
+        </section>
 
-        {/* Single Options section — bundles all 7 preferences. */}
-        <OptionsSection
-          control={control}
-          register={register}
-          setValue={setValue}
-          formValues={formValues}
-          isFirstTimeVisitor={Boolean(data.isFirstTimeVisitor)}
-          onToggleFirstTime={handleToggleFirstTime}
-          budgetValue={budgetValue}
-          budgetMode={budgetMode}
-          onBudgetModeChange={setBudgetMode}
-          onBudgetChange={handleBudgetChange}
-          duration={data.duration}
-          showProfileHint={hasProfileDefaults}
-          budgetTitle={sanityConfig?.reviewBudgetTitle}
-          notesTitle={sanityConfig?.reviewNotesTitle}
-          notesPlaceholder={sanityConfig?.reviewNotesPlaceholder}
-        />
+        {/* Zone B — Make it yours */}
+        <section className="flex flex-col gap-3">
+          <p className="eyebrow-editorial">Make it yours</p>
+
+          <OptionsSection
+            control={control}
+            register={register}
+            setValue={setValue}
+            formValues={formValues}
+            isFirstTimeVisitor={Boolean(data.isFirstTimeVisitor)}
+            onToggleFirstTime={handleToggleFirstTime}
+            budgetValue={budgetValue}
+            budgetMode={budgetMode}
+            onBudgetModeChange={setBudgetMode}
+            onBudgetChange={handleBudgetChange}
+            duration={data.duration}
+            showProfileHint={hasProfileDefaults}
+            budgetTitle={sanityConfig?.reviewBudgetTitle}
+            notesTitle={sanityConfig?.reviewNotesTitle}
+            notesPlaceholder={sanityConfig?.reviewNotesPlaceholder}
+          />
+        </section>
       </div>
     </div>
   );

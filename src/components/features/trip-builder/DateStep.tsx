@@ -120,7 +120,6 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             sizes="50vw"
           />
         </m.div>
-        <div className="absolute inset-0 scrim-90 scrim-to-l" />
       </div>
 
       {/* Right half — Form */}

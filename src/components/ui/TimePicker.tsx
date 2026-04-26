@@ -7,7 +7,6 @@ import { cn } from "@/lib/cn";
 type TimePickerProps = {
   value?: string; // "HH:MM" format
   onChange: (time: string | undefined) => void;
-  accent?: "sage" | "brand-primary";
   placeholder?: string;
 };
 
@@ -21,7 +20,6 @@ const MINUTES = Array.from({ length: 12 }, (_, i) =>
 export function TimePicker({
   value,
   onChange,
-  accent = "sage",
   placeholder = "Set time",
 }: TimePickerProps) {
   const [open, setOpen] = useState(false);
@@ -129,8 +127,6 @@ export function TimePicker({
     [hour, onChange],
   );
 
-  const isSage = accent === "sage";
-
   return (
     <>
       <button
@@ -139,11 +135,8 @@ export function TimePicker({
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
           "h-9 w-[7rem] rounded-lg border border-border bg-background px-3 text-left font-mono text-sm transition-colors",
-          "focus:outline-none focus:ring-1",
+          "focus:outline-none focus:ring-1 focus:border-accent focus:ring-accent",
           value ? "text-foreground" : "text-stone",
-          isSage
-            ? "focus:border-sage focus:ring-sage"
-            : "focus:border-brand-primary focus:ring-brand-primary",
         )}
       >
         {value || placeholder}
@@ -175,12 +168,8 @@ export function TimePicker({
                   className={cn(
                     "mx-1 flex h-9 min-h-[36px] shrink-0 items-center justify-center rounded-lg font-mono text-sm transition-colors",
                     h === hour
-                      ? isSage
-                        ? "bg-sage/20 text-sage"
-                        : "bg-brand-primary/20 text-brand-primary"
-                      : isSage
-                        ? "text-foreground-secondary hover:bg-sage/10"
-                        : "text-foreground-secondary hover:bg-brand-primary/10",
+                      ? "bg-accent/20 text-accent"
+                      : "text-foreground-secondary hover:bg-accent/10",
                   )}
                 >
                   {h}
@@ -205,12 +194,8 @@ export function TimePicker({
                   className={cn(
                     "mx-1 flex h-9 min-h-[36px] shrink-0 items-center justify-center rounded-lg font-mono text-sm transition-colors",
                     m === minute
-                      ? isSage
-                        ? "bg-sage/20 text-sage"
-                        : "bg-brand-primary/20 text-brand-primary"
-                      : isSage
-                        ? "text-foreground-secondary hover:bg-sage/10"
-                        : "text-foreground-secondary hover:bg-brand-primary/10",
+                      ? "bg-accent/20 text-accent"
+                      : "text-foreground-secondary hover:bg-accent/10",
                   )}
                 >
                   {m}

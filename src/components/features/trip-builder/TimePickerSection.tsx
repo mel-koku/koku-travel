@@ -8,10 +8,8 @@ export type TimePickerSectionProps = {
   value: string | undefined;
   onChange: (time: string | undefined) => void;
   onClear: () => void;
-  accent: "sage" | "brand-primary";
   hint?: string | null;
   hintPrefix?: string;
-  hintColorClass?: string;
 };
 
 export function TimePickerSection({
@@ -19,10 +17,8 @@ export function TimePickerSection({
   value,
   onChange,
   onClear,
-  accent,
   hint,
   hintPrefix,
-  hintColorClass = "text-sage",
 }: TimePickerSectionProps) {
   return (
     <>
@@ -33,7 +29,6 @@ export function TimePickerSection({
           <TimePicker
             value={value}
             onChange={onChange}
-            accent={accent}
             placeholder="Set time"
           />
           {value && (
@@ -48,7 +43,7 @@ export function TimePickerSection({
         </div>
       </div>
       {hint && (
-        <p className={`mt-1.5 pl-7 text-xs ${hintColorClass}`}>
+        <p className="mt-1.5 pl-7 text-xs text-accent">
           {hintPrefix}{hint}
         </p>
       )}

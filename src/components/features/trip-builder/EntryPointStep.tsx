@@ -345,16 +345,16 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mt-6 rounded-lg border border-sage/30 bg-sage/5 p-4"
+                className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sage/20 text-sage">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-accent">
                       <Plane className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{data.entryPoint.name}</p>
-                      <p className="font-mono text-xs text-sage">{data.entryPoint.iataCode}</p>
+                      <p className="font-mono text-xs text-accent">{data.entryPoint.iataCode}</p>
                     </div>
                   </div>
                   <button
@@ -367,15 +367,13 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 </div>
 
                 {/* Arrival time */}
-                <div className="mt-3 border-t border-sage/10 pt-3">
+                <div className="mt-3 border-t border-accent/10 pt-3">
                   <TimePickerSection
                     label="Landing at"
                     value={data.arrivalTime}
                     onChange={handleArrivalTimeChange}
                     onClear={() => setData((prev) => ({ ...prev, arrivalTime: undefined }))}
-                    accent="sage"
                     hint={arrivalHint}
-                    hintColorClass="text-sage"
                   />
                 </div>
               </m.div>
@@ -405,8 +403,8 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       className={cn(
                         "flex-1 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all",
                         sameAsEntry
-                          ? "border-sage/30 bg-sage/5 text-sage"
-                          : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
+                          ? "border-accent/30 bg-accent/5 text-accent"
+                          : "border-border bg-background text-stone hover:border-accent/20 hover:text-foreground-secondary",
                       )}
                     >
                       Same airport
@@ -417,8 +415,8 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       className={cn(
                         "flex-1 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all",
                         !sameAsEntry
-                          ? "border-sage/30 bg-sage/5 text-sage"
-                          : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
+                          ? "border-accent/30 bg-accent/5 text-accent"
+                          : "border-border bg-background text-stone hover:border-accent/20 hover:text-foreground-secondary",
                       )}
                     >
                       Different airport
@@ -436,15 +434,15 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                         className="overflow-hidden"
                       >
                         {data.exitPoint ? (
-                          <div className="mt-3 rounded-lg border border-brand-primary/20 bg-brand-primary/5 p-4">
+                          <div className="mt-3 rounded-lg border border-accent/30 bg-accent/5 p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary/20 text-brand-primary">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-accent">
                                   <PlaneLanding className="h-5 w-5" />
                                 </div>
                                 <div>
                                   <p className="font-medium text-foreground">{data.exitPoint.name}</p>
-                                  <p className="font-mono text-xs text-brand-primary">{data.exitPoint.iataCode}</p>
+                                  <p className="font-mono text-xs text-accent">{data.exitPoint.iataCode}</p>
                                 </div>
                               </div>
                               <button
@@ -465,7 +463,6 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                               topAirports={topAirports}
                               onSelectAirport={handleSelectExitAirport}
                               placeholder="Search departure airport..."
-                              accentColor="brand-primary"
                             />
                           </div>
                         )}
@@ -480,10 +477,8 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       value={data.departureTime}
                       onChange={handleDepartureTimeChange}
                       onClear={() => setData((prev) => ({ ...prev, departureTime: undefined }))}
-                      accent="brand-primary"
                       hint={departureHint}
                       hintPrefix="Last activity wraps up around "
-                      hintColorClass="text-brand-primary"
                     />
                   </div>
                 </div>

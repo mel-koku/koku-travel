@@ -422,11 +422,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
-                    className={`flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-sm text-white transition-colors${
-                      cityDayValidation.severity === "error"
-                        ? " ring-2 ring-warning ring-offset-2 ring-offset-background"
-                        : ""
-                    }`}
+                    className="flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-sm text-white"
                   >
                     {name}
                     <button
