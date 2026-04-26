@@ -64,4 +64,28 @@ describe("resolveEffectiveDayEntryPoints — explicit clear", () => {
     );
     expect(result["day-2"]).toBeUndefined();
   });
+
+  it("honours a partial per-day override — start set, end undefined (KOK-31)", () => {
+    // Regression: when a day has only one side of a per-day override set
+    // (no cleared flags), the resolver must NOT fall back to the city
+    // accommodation for the missing side. Locks alignment with the UI-side
+    // resolvers in ItineraryShell so map and route calc agree on "end of day".
+    const cityAccommodations: Record<string, CityAccommodation> = {
+      [`${tripId}-osaka`]: { cityId: "osaka", entryPoint: sheraton },
+    };
+    const dayEntryPoints: Record<string, DayEntryPoint> = {
+      [`${tripId}-day-2`]: { startPoint: sheraton },
+    };
+    const result = resolveEffectiveDayEntryPoints(
+      itinerary,
+      tripId,
+      dayEntryPoints,
+      cityAccommodations,
+    );
+    expect(result["day-2"]?.startPoint).toEqual(sheraton);
+    expect(result["day-2"]?.endPoint).toBeUndefined();
+    // Day 1 has no override and still resolves through city accommodation.
+    expect(result["day-1"]?.startPoint).toEqual(sheraton);
+    expect(result["day-1"]?.endPoint).toEqual(sheraton);
+  });
 });

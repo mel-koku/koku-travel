@@ -419,6 +419,11 @@ export const ItineraryShell = ({
     if (dayEP?.startPoint?.type === "accommodation") return dayEP.startPoint;
     // Explicit clear on this day suppresses the city-level fallback
     if (dayEP?.clearedStart) return undefined;
+    // Partial per-day override (KOK-31): if the user set the OTHER side
+    // explicitly, treat the missing side as "no anchor" rather than silently
+    // falling back to the city accommodation. Keeps this resolver aligned with
+    // resolveEffectiveDayEntryPoints so map and route calc agree.
+    if (dayEP?.endPoint) return undefined;
     // Priority 2: City-level accommodation
     const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
     if (effectiveCityId) {
@@ -435,6 +440,11 @@ export const ItineraryShell = ({
     if (dayEP?.endPoint?.type === "accommodation") return dayEP.endPoint;
     // Explicit clear on this day suppresses the city-level fallback
     if (dayEP?.clearedEnd) return undefined;
+    // Partial per-day override (KOK-31): if the user set the OTHER side
+    // explicitly, treat the missing side as "no anchor" rather than silently
+    // falling back to the city accommodation. Keeps this resolver aligned with
+    // resolveEffectiveDayEntryPoints so map and route calc agree.
+    if (dayEP?.startPoint) return undefined;
     // Priority 2: City-level accommodation (same as start)
     const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
     if (effectiveCityId) {
