@@ -429,7 +429,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             </Tooltip>
           )}
           {location.isHiddenGem && (
-            <Tooltip content="Curated by locals in Japan">
+            <Tooltip content="A place chosen for distinctive character">
               <span
                 tabIndex={0}
                 className="inline-flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/40"
