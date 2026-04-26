@@ -51,7 +51,10 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     ).matches;
 
     const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0 : 0.6,
+      // 0.3s lerp keeps the wheel feeling glued to the page while preserving
+      // a faint smoothing pass for the landing parallax. Anything longer
+      // surfaces as the "scroll feels detached from input" symptom (KOK-34).
+      duration: prefersReducedMotion ? 0 : 0.3,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 1.2,
     });

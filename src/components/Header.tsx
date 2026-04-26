@@ -132,6 +132,43 @@ function UserMenu({
   );
 }
 
+/**
+ * Native scroll fallback for routes where LenisProvider isn't mounted.
+ * Mirrors the `scrollProgress` (0..1) and `direction` (1 down / -1 up)
+ * shape that Lenis exposes so Header's hide/show logic works identically
+ * on landing (Lenis-driven) and non-landing (native).
+ */
+function useNativeScrollSignals(enabled: boolean) {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (typeof window === "undefined") return;
+
+    let lastY = window.scrollY;
+
+    const update = () => {
+      const y = window.scrollY;
+      const max = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      setScrollProgress(Math.min(1, Math.max(0, y / max)));
+      const delta = y - lastY;
+      if (delta > 0) setDirection(1);
+      else if (delta < 0) setDirection(-1);
+      lastY = y;
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, [enabled]);
+
+  return { scrollProgress, direction };
+}
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -139,7 +176,11 @@ export default function Header() {
   const router = useRouter();
   const supabase = createClient();
   const { isSignedIn } = useAuthState();
-  const { scrollProgress, direction } = useLenis();
+  const lenisCtx = useLenis();
+  const hasLenis = lenisCtx.lenis !== null;
+  const fallback = useNativeScrollSignals(!hasLenis);
+  const scrollProgress = hasLenis ? lenisCtx.scrollProgress : fallback.scrollProgress;
+  const direction = hasLenis ? lenisCtx.direction : fallback.direction;
   const prefersReducedMotion = useReducedMotion();
 
   const isLandingPage = pathname === "/";
