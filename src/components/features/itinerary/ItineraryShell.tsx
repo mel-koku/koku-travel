@@ -24,6 +24,7 @@ import { DaySelector } from "./DaySelector";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ChapterList } from "@/components/features/itinerary/chapter/ChapterList";
 import { toChapterDays } from "@/lib/itinerary/toChapterDays";
+import { resolveEffectiveDayEntryPoints } from "@/lib/itinerary/accommodationDefaults";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
@@ -239,6 +240,21 @@ export const ItineraryShell = ({
     return out;
   }, [activityIdToLocation]);
 
+  // Resolve start/end EntryPoints for every day (priority: per-day override →
+  // city accommodation → airport on Day 1 / city center). Drives both the
+  // per-day routing picker and the new timeline anchors. Cleared sides return
+  // undefined so the X-clear is honored visually.
+  const resolvedDayEntryPoints = useMemo(() => {
+    if (!tripId) return {};
+    return resolveEffectiveDayEntryPoints(
+      model,
+      tripId,
+      dayEntryPoints,
+      cityAccommodations,
+      tripBuilderData?.entryPoint,
+    );
+  }, [model, tripId, dayEntryPoints, cityAccommodations, tripBuilderData?.entryPoint]);
+
   const chapterDays = useMemo(() => {
     return toChapterDays(
       model,
@@ -255,8 +271,9 @@ export const ItineraryShell = ({
         isDayAccessible(dayIdx, tripUnlocked ?? false, fullAccessEnabled)
         && !model.days[dayIdx]?.isLocked,
       dayIntros,
+      resolvedDayEntryPoints,
     );
-  }, [model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros]);
+  }, [model, guideProse, locationsById, tripStartDate, tripUnlocked, fullAccessEnabled, dayIntros, resolvedDayEntryPoints]);
 
   // Phase 3 day-of affordance — resolves today's focus day from chapterDays dates.
   // Returns {index: 0, isDayOfMode: false} when chapterDays is empty (flag off).

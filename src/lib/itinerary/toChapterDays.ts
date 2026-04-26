@@ -1,7 +1,12 @@
 import type { Itinerary, ItineraryTravelSegment } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import type { ChapterDay, ChapterBeat } from "@/components/features/itinerary/chapter/ChapterList";
+import type {
+  ChapterDay,
+  ChapterBeat,
+  ChapterAnchor,
+} from "@/components/features/itinerary/chapter/ChapterList";
 import type { BeatChip } from "@/components/features/itinerary/chapter/Beat";
+import type { DayEntryPoint } from "@/types/trip";
 import { shouldPromoteToBeatChip } from "@/lib/itinerary/chipDiscipline";
 import { getClosuresForTripDate } from "@/lib/availability/closureDetection";
 
@@ -247,6 +252,11 @@ function cityDisplay(cityId: string): string {
  * @param isDayAccessible - Optional predicate; when provided, days that return false
  *                          are marked `isLocked: true` and rendered as paywall chapters.
  *                          Defaults to always-accessible when omitted.
+ * @param dayEntryPoints  - Optional resolved start/end EntryPoints keyed by day.id
+ *                          (output of `resolveEffectiveDayEntryPoints`). Drives the
+ *                          start/end anchor items at the top/bottom of each spine.
+ *                          City-center fallbacks are filtered out — only `airport`
+ *                          and `accommodation` types render anchors.
  */
 export function toChapterDays(
   itinerary: Itinerary,
@@ -255,6 +265,7 @@ export function toChapterDays(
   tripStartDate?: string,
   isDayAccessible?: (dayIndex: number) => boolean,
   dayIntros?: Record<string, string>,
+  dayEntryPoints?: Record<string, DayEntryPoint>,
 ): ChapterDay[] {
   // Normalize locations to a Map regardless of input shape
   const locMap =
@@ -275,7 +286,26 @@ export function toChapterDays(
       ? addDays(tripStartDate, dayIdx)
       : (day.dateLabel ?? "");
 
-    // Locked day early-return — keeps the chapter header/intro but skips beat computation
+    // Resolve start/end anchors. Filter to airport + accommodation only —
+    // synthetic city-center fallbacks are useful for routing math but don't
+    // belong in the timeline as a "you start here" anchor.
+    const ep = dayEntryPoints?.[day.id];
+    const isAnchorable = (t?: string): t is "airport" | "accommodation" =>
+      t === "airport" || t === "accommodation";
+    const startAnchor: ChapterAnchor | undefined =
+      ep?.startPoint && isAnchorable(ep.startPoint.type)
+        ? {
+            point: ep.startPoint,
+            isArrivalAirport: dayIdx === 0 && ep.startPoint.type === "airport",
+          }
+        : undefined;
+    const endAnchor: ChapterAnchor | undefined =
+      ep?.endPoint && isAnchorable(ep.endPoint.type)
+        ? { point: ep.endPoint }
+        : undefined;
+
+    // Locked day early-return — keeps the chapter header/intro but skips beat computation.
+    // Anchors are intentionally not rendered on locked days (the paywall is the only beat).
     const isLocked = isDayAccessible ? !isDayAccessible(dayIdx) : false;
     if (isLocked) {
       return {
@@ -422,6 +452,8 @@ export function toChapterDays(
       inlineNotes,
       isLocked: false,
       dayActivities: day.activities,
+      startAnchor,
+      endAnchor,
     };
   });
 }
