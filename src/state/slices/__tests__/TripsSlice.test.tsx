@@ -86,6 +86,48 @@ describe("TripsSlice", () => {
     expect(result.current.state.trips).toHaveLength(0);
   });
 
+  it("setDayEntryPoint(undefined) marks the side as explicitly cleared", () => {
+    // Regression: KOK-27. Clearing a day's start/end via the X button must
+    // record an explicit-clear flag so the resolution layer can suppress the
+    // city-level accommodation fallback. Without this, the X looks dead and
+    // the input never re-renders.
+    const { result } = renderHook(() => useTrips(), { wrapper });
+    const tripId = "trip-1";
+    const dayId = "day-1";
+    const key = `${tripId}-${dayId}`;
+    const accommodation = {
+      type: "accommodation" as const,
+      id: "sheraton-osaka",
+      name: "Sheraton Miyako Hotel Osaka",
+      coordinates: { lat: 34.65, lng: 135.52 },
+    };
+
+    act(() => {
+      result.current.actions.setDayEntryPoint(tripId, dayId, "start", accommodation);
+    });
+    expect(result.current.state.dayEntryPoints[key]?.startPoint).toEqual(accommodation);
+    expect(result.current.state.dayEntryPoints[key]?.clearedStart).toBe(false);
+
+    act(() => {
+      result.current.actions.setDayEntryPoint(tripId, dayId, "start", undefined);
+    });
+    expect(result.current.state.dayEntryPoints[key]?.startPoint).toBeUndefined();
+    expect(result.current.state.dayEntryPoints[key]?.clearedStart).toBe(true);
+
+    // Setting a value again clears the flag.
+    act(() => {
+      result.current.actions.setDayEntryPoint(tripId, dayId, "start", accommodation);
+    });
+    expect(result.current.state.dayEntryPoints[key]?.clearedStart).toBe(false);
+
+    // Clearing end is independent of start.
+    act(() => {
+      result.current.actions.setDayEntryPoint(tripId, dayId, "end", undefined);
+    });
+    expect(result.current.state.dayEntryPoints[key]?.clearedEnd).toBe(true);
+    expect(result.current.state.dayEntryPoints[key]?.clearedStart).toBe(false);
+  });
+
   it("resets to default state", () => {
     const { result } = renderHook(() => useTrips(), { wrapper });
     act(() => {

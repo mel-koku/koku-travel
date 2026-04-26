@@ -106,10 +106,17 @@ export type EntryPoint = {
 
 /**
  * Per-day entry point configuration for start/end locations.
+ *
+ * `clearedStart` / `clearedEnd` flags mark an explicit user clear on this day,
+ * overriding the city-level accommodation fallback during resolution. Without
+ * these, a clear at the day level would silently fall through to the city
+ * accommodation and re-render the same value, making the X button look dead.
  */
 export type DayEntryPoint = {
   startPoint?: EntryPoint;
   endPoint?: EntryPoint;
+  clearedStart?: boolean;
+  clearedEnd?: boolean;
 };
 
 /**

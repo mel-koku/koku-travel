@@ -40,15 +40,19 @@ export function resolveEffectiveDayEntryPoints(
 
     // Priority 2: City-level accommodation
     // Use baseCityId for day trips (e.g., day trip to Nara from Kyoto)
+    // Skip per side when the user explicitly cleared this day's start/end —
+    // an explicit clear must not silently fall back to the city accommodation.
     const effectiveCityId = day.baseCityId ?? day.cityId;
     if (effectiveCityId) {
       const cityKey = `${tripId}-${effectiveCityId}`;
       const cityAccom = cityAccommodations[cityKey];
       if (cityAccom) {
-        result[day.id] = {
-          startPoint: cityAccom.entryPoint,
-          endPoint: cityAccom.entryPoint,
-        };
+        const startPoint = explicit?.clearedStart ? undefined : cityAccom.entryPoint;
+        const endPoint = explicit?.clearedEnd ? undefined : cityAccom.entryPoint;
+        if (startPoint || endPoint) {
+          result[day.id] = { startPoint, endPoint };
+        }
+        // Cleared on both sides = honour the clear and skip Priority 3 fallbacks.
         continue;
       }
     }
