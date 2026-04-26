@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, useDayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import * as Popover from "@radix-ui/react-popover";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -39,6 +39,52 @@ function formatDate(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+const navButtonClassName = cn(
+  "inline-flex h-10 w-10 items-center justify-center rounded-lg",
+  "text-popover-foreground/70 hover:bg-muted hover:text-popover-foreground",
+  "transition-colors",
+  "disabled:opacity-30 disabled:pointer-events-none",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+);
+
+function MonthCaptionWithNav({
+  calendarMonth,
+}: {
+  calendarMonth: { date: Date };
+}) {
+  const { goToMonth, previousMonth, nextMonth } = useDayPicker();
+
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <button
+        type="button"
+        aria-label="Go to previous month"
+        disabled={!previousMonth}
+        onClick={() => previousMonth && goToMonth(previousMonth)}
+        className={navButtonClassName}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <div
+        className="text-sm font-medium text-popover-foreground"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {format(calendarMonth.date, "MMMM yyyy")}
+      </div>
+      <button
+        type="button"
+        aria-label="Go to next month"
+        disabled={!nextMonth}
+        onClick={() => nextMonth && goToMonth(nextMonth)}
+        className={navButtonClassName}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
 }
 
 export function DatePicker({
@@ -153,19 +199,9 @@ export function DatePicker({
               classNames={{
                 months: "flex flex-col",
                 month: "space-y-3",
-                month_caption: "flex items-center justify-center pt-1 relative",
+                month_caption: "flex items-center justify-center pt-1",
                 caption_label: "text-sm font-medium text-popover-foreground",
-                nav: "flex items-center gap-1",
-                button_previous: cn(
-                  "absolute left-0 inline-flex h-8 w-8 items-center justify-center rounded-lg",
-                  "text-popover-foreground/70 hover:bg-muted hover:text-popover-foreground",
-                  "transition-colors",
-                ),
-                button_next: cn(
-                  "absolute right-0 inline-flex h-8 w-8 items-center justify-center rounded-lg",
-                  "text-popover-foreground/70 hover:bg-muted hover:text-popover-foreground",
-                  "transition-colors",
-                ),
+                nav: "hidden",
                 month_grid: "w-full border-collapse",
                 weekdays: "flex",
                 weekday:
@@ -188,17 +224,7 @@ export function DatePicker({
                 hidden: "invisible",
               }}
               components={{
-                MonthCaption: ({ calendarMonth, displayIndex: _displayIndex, ...props }) => (
-                  <div {...props} aria-live="polite" aria-atomic="true">
-                    {format(calendarMonth.date, "MMMM yyyy")}
-                  </div>
-                ),
-                Chevron: ({ orientation }) =>
-                  orientation === "left" ? (
-                    <ChevronLeft className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  ),
+                MonthCaption: MonthCaptionWithNav,
               }}
             />
           </Popover.Content>
