@@ -13,6 +13,7 @@ import {
   AskYukuPreview,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { LenisProvider } from "@/providers/LenisProvider";
 import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount, getPrefectureCount, getTipCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
@@ -80,52 +81,60 @@ export default async function Home() {
   return (
     <>
       <link rel="preload" as="image" href={lcpImageUrl} />
-      <main className="flex flex-col">
-        <HeroOpening
-          locationCount={locationCount}
-          content={landingContent ?? undefined}
-          isFreePromo={isFreePromo}
-        />
-        <Philosophy
-          locationCount={locationCount}
-          prefectureCount={prefectureCount}
-          tipCount={tipCount}
-          content={landingContent ?? undefined}
-        />
-        <ErrorBoundary fallback={null}>
-          <ImmersiveShowcase content={landingContent ?? undefined} />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <FeaturedLocations
-            locations={featuredLocations}
+      {/*
+       * Lenis smooth-scroll is mounted only on the landing page. The lerp
+       * pass smooths the parallax-heavy hero/showcase composition; on
+       * every other route it surfaces as the "scroll feels detached"
+       * symptom (KOK-34), so global mounting is intentionally avoided.
+       */}
+      <LenisProvider>
+        <main className="flex flex-col">
+          <HeroOpening
+            locationCount={locationCount}
+            content={landingContent ?? undefined}
+            isFreePromo={isFreePromo}
+          />
+          <Philosophy
+            locationCount={locationCount}
+            prefectureCount={prefectureCount}
+            tipCount={tipCount}
             content={landingContent ?? undefined}
           />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <SeasonalSpotlight
-            season={currentSeason}
-            guides={seasonalGuides}
-            experiences={[]}
-            locations={seasonalLocations}
-            content={landingContent ?? undefined}
-          />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <TestimonialTheater content={landingContent ?? undefined} />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <FeaturedGuides
-            guides={featuredGuides}
-            content={landingContent ?? undefined}
-          />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <AskYukuPreview />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <FinalCTA content={landingContent ?? undefined} isFreePromo={isFreePromo} />
-        </ErrorBoundary>
-      </main>
+          <ErrorBoundary fallback={null}>
+            <ImmersiveShowcase content={landingContent ?? undefined} />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <FeaturedLocations
+              locations={featuredLocations}
+              content={landingContent ?? undefined}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <SeasonalSpotlight
+              season={currentSeason}
+              guides={seasonalGuides}
+              experiences={[]}
+              locations={seasonalLocations}
+              content={landingContent ?? undefined}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <TestimonialTheater content={landingContent ?? undefined} />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <FeaturedGuides
+              guides={featuredGuides}
+              content={landingContent ?? undefined}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <AskYukuPreview />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <FinalCTA content={landingContent ?? undefined} isFreePromo={isFreePromo} />
+          </ErrorBoundary>
+        </main>
+      </LenisProvider>
     </>
   );
 }

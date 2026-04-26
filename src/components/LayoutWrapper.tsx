@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SharedProviders } from "@/components/SharedProviders";
-import { LenisProvider } from "@/providers/LenisProvider";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
 import type { SiteSettings } from "@/types/sanitySiteContent";
@@ -44,32 +43,34 @@ export function LayoutWrapper({
        * reducedMotion="user" tells framer-motion to respect the OS-level
        * prefers-reduced-motion setting across every motion.* component
        * without each one needing to wire up useReducedMotion manually.
-       * LenisProvider already checks the same media query and disables
-       * smooth scroll accordingly.
+       *
+       * LenisProvider is intentionally NOT mounted here. Smooth-scroll lerp
+       * makes guides/places/dashboard feel detached from wheel input
+       * (KOK-34). It is now scoped to the landing page only, where the
+       * parallax benefits from the smoothing pass. Header has a native
+       * scroll fallback for routes without the provider.
        */}
       <MotionConfig reducedMotion="user">
       <SharedProviders>
-        <LenisProvider>
-          {!isTripBuilder && <ScrollProgressBar />}
-          <div className="flex min-h-[100dvh] flex-col">
-            {!isTripBuilder && (
-              <ErrorBoundary fallback={<></>}>
-                <Header />
-              </ErrorBoundary>
-            )}
-            <ErrorBoundary>
-              <main id="main-content" className="flex-1">
-                <PageTransition>{children}</PageTransition>
-              </main>
+        {!isTripBuilder && <ScrollProgressBar />}
+        <div className="flex min-h-[100dvh] flex-col">
+          {!isTripBuilder && (
+            <ErrorBoundary fallback={<></>}>
+              <Header />
             </ErrorBoundary>
-            {!isTripBuilder && (
-              <ErrorBoundary fallback={<></>}>
-                <Footer settings={siteSettings} />
-              </ErrorBoundary>
-            )}
-          </div>
-          {!isTripBuilder && <AskYukuButton />}
-        </LenisProvider>
+          )}
+          <ErrorBoundary>
+            <main id="main-content" className="flex-1">
+              <PageTransition>{children}</PageTransition>
+            </main>
+          </ErrorBoundary>
+          {!isTripBuilder && (
+            <ErrorBoundary fallback={<></>}>
+              <Footer settings={siteSettings} />
+            </ErrorBoundary>
+          )}
+        </div>
+        {!isTripBuilder && <AskYukuButton />}
       </SharedProviders>
       </MotionConfig>
     </ThemeProvider>
