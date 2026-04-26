@@ -4,10 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import type { Location, SubExperience, LocationRelationship } from "@/types/location";
 import { fetchWithTimeout } from "@/lib/utils/fetchWithTimeout";
 
+export type NearbyLocation = Location & { walkMinutes: number };
+
 export type HierarchyContext = {
   children: Location[];
   subExperiences: SubExperience[];
   relationships: (LocationRelationship & { relatedLocation?: Location })[];
+  /**
+   * Coord-proximity fallback for "In this area" — populated only when
+   * `relationships` has no curated clusters. Cards carry derived
+   * `walkMinutes` so the section visually matches curated clusters.
+   */
+  nearby: NearbyLocation[];
 };
 
 export const locationHierarchyKeys = {
