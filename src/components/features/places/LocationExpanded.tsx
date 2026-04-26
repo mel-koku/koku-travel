@@ -25,6 +25,7 @@ import {
   SubExperienceTeaser,
   RelationshipsSection,
 } from "./HierarchySections";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 type LocationExpandedProps = {
   location: Location;
@@ -354,9 +355,34 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               {location.category}
             </span>
             {location.jtaApproved && (
-              <span className="flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
-                JTA Approved
-              </span>
+              <Tooltip content="Japan Tourism Agency (JTA) certified destination">
+                <span
+                  tabIndex={0}
+                  className="flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/40"
+                >
+                  JTA Approved
+                </span>
+              </Tooltip>
+            )}
+            {location.isHiddenGem && (
+              <Tooltip content="A place chosen for distinctive character">
+                <span
+                  tabIndex={0}
+                  className="flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage/40"
+                >
+                  Local Pick
+                </span>
+              </Tooltip>
+            )}
+            {location.isUnescoSite && (
+              <Tooltip content="Designated by UNESCO for global cultural or natural value">
+                <span
+                  tabIndex={0}
+                  className="flex items-center gap-1.5 rounded-md border border-accent/30 px-3 py-1 text-xs font-medium uppercase tracking-wide text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                >
+                  UNESCO
+                </span>
+              </Tooltip>
             )}
             {(details?.rating ?? location.rating) ? (
               <span className="flex items-center gap-1 text-foreground">
