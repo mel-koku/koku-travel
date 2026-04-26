@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { getModel, VERTEX_CHAT_OPTIONS } from "@/lib/server/llmProvider";
-import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
@@ -12,6 +11,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { reserveCost, reconcileCost, costLimitResponse } from "@/lib/api/costLimit";
 import { estimateInputTokens } from "@/lib/api/tokenEstimate";
 import { logger } from "@/lib/logger";
+import { chatRequestSchema } from "./_schema";
 
 const CHAT_MODEL_ID = "gemini-2.5-flash";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -21,47 +21,6 @@ import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
 export const maxDuration = 60;
 
 const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
-
-const CHAT_MESSAGE_MAX_LENGTH = 4000;
-
-const uiMessagePartSchema = z
-  .object({ type: z.string() })
-  .passthrough();
-
-export const chatRequestSchema = z.object({
-  messages: z
-    .array(
-      z
-        .object({
-          role: z.enum(["user", "assistant", "system"]),
-          parts: z
-            .array(uiMessagePartSchema)
-            .min(1, "Message must contain at least one part"),
-        })
-        .passthrough(),
-    )
-    .min(1, "At least one message is required")
-    .superRefine((messages, ctx) => {
-      for (let i = 0; i < messages.length; i++) {
-        const parts = (messages[i] as { parts?: Array<{ type?: string; text?: unknown }> }).parts ?? [];
-        const textLen = parts.reduce((n, p) => {
-          return p.type === "text" && typeof p.text === "string" ? n + p.text.length : n;
-        }, 0);
-        if (textLen > CHAT_MESSAGE_MAX_LENGTH) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.too_big,
-            maximum: CHAT_MESSAGE_MAX_LENGTH,
-            type: "string",
-            inclusive: true,
-            message: `Message content must be at most ${CHAT_MESSAGE_MAX_LENGTH} characters`,
-            path: [i, "parts"],
-          });
-        }
-      }
-    }),
-  context: z.string().optional(),
-  tripContext: z.string().max(10240).optional(),
-});
 
 export const POST = withApiHandler(async (request: NextRequest, { context, user }) => {
   // Feature flag check
