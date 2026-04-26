@@ -219,7 +219,7 @@ export const tripBuilderConfig = defineType({
       type: "text",
       rows: 2,
       fieldset: "dateStep",
-      initialValue: "Your dates shape everything \u2014 cherry blossoms, festivals, fall foliage. Up to 14 days.",
+      initialValue: "Your dates shape everything \u2014 cherry blossoms, festivals, fall foliage. Up to 21 days.",
     }),
     defineField({
       name: "dateStepBackgroundImage",
