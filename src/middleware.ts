@@ -143,25 +143,36 @@ export async function middleware(request: NextRequest) {
 /**
  * Matcher configuration for the middleware.
  *
- * Includes:
- * - API routes that need auth
- * - Auth pages
- * - Dashboard (for session refresh)
+ * Positive list — only paths that actually need session refresh or
+ * default-protected API auth run middleware. Public page routes
+ * (landing, /guides, /places, /pricing, /about, etc.) skip the matcher
+ * entirely so page navigations don't pay the supabase.auth.getUser()
+ * round-trip on every request (saves ~100–300ms TTFB; see KOK-35).
  *
- * Excludes:
- * - Static files (_next/static, images, favicon)
- * - Public API routes (locations, places, etc.)
+ * Includes:
+ * - /api/*           — default-protect; PUBLIC_API_ROUTES short-circuits inside
+ * - /dashboard(/*)   — auth-required, redirects guests to /signin
+ * - /account(/*)     — auth-required
+ * - /saved(/*)       — auth-required
+ * - /trips(/*)       — auth-required (per-trip pages)
+ * - /itinerary(/*)   — kept as safe default per KOK-35; profiling-driven removal is fast-follow
+ * - /signin(/*)      — redirects authenticated users away
+ *
+ * Excludes (handled outside middleware):
+ * - All public page routes (landing, /guides, /places, /pricing, /about, /contact, …)
+ * - /auth/callback   — calls supabase.auth.exchangeCodeForSession() directly, no middleware refresh needed
+ * - /studio/*        — Sanity Studio
+ * - Static assets    — never matched anyway
+ *
+ * Security headers (CSP, HSTS, etc.) are emitted by next.config.ts `headers()`
+ * for every path and are unaffected by this matcher.
  */
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - Static assets
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json)$).*)",
+    // Sub-paths: /dashboard/foo, /api/anything, /itinerary/[id], etc.
+    "/((?:dashboard|account|saved|trips|itinerary|signin|api)/.*)",
+    // Bare matches: /dashboard, /account, /saved, /trips, /itinerary, /signin
+    // (no /api page exists, so it's intentionally omitted here)
+    "/(dashboard|account|saved|trips|itinerary|signin)",
   ],
 };
