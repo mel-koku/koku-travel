@@ -236,6 +236,13 @@ export type TripBuilderData = {
     region?: string;
   };
   /**
+   * Festival IDs the user explicitly wants woven into the trip.
+   * Generator pins the festival's suggested location (if resolvable) on a day
+   * within the festival's date window in the festival's city, or drops a
+   * dated note-activity on that day if no location maps cleanly.
+   */
+  mustIncludeFestivals?: string[];
+  /**
    * Whether this is the traveler's first time visiting Japan.
    * Gates Day 1 orientation tips, adjusts hidden gem ratio, adds pacing warnings.
    */
