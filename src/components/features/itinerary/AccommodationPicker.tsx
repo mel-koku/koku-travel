@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Check } from "lucide-react";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import type { EntryPoint } from "@/types/trip";
+
+const APPLIED_CONFIRMATION_MS = 1800;
 
 type AccommodationPickerProps = {
   startLocation?: EntryPoint;
@@ -23,6 +26,31 @@ export function AccommodationPicker({
   onSetCityAccommodation,
   isReadOnly,
 }: AccommodationPickerProps) {
+  const [appliedForId, setAppliedForId] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (confirmationTimer.current) {
+        clearTimeout(confirmationTimer.current);
+        confirmationTimer.current = null;
+      }
+    };
+  }, []);
+
+  const handleApplyToCity = useCallback(() => {
+    if (!startLocation || !onSetCityAccommodation) return;
+    onSetCityAccommodation(startLocation);
+    setAppliedForId(startLocation.id);
+    setShowConfirmation(true);
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+    confirmationTimer.current = setTimeout(() => {
+      setShowConfirmation(false);
+      confirmationTimer.current = null;
+    }, APPLIED_CONFIRMATION_MS);
+  }, [startLocation, onSetCityAccommodation]);
+
   // Read-only: show names only
   if (isReadOnly) {
     if (!startLocation && !endLocation) return null;
@@ -64,15 +92,28 @@ export function AccommodationPicker({
         />
       </div>
       {/* City-wide action */}
-      {onSetCityAccommodation && cityId && startLocation && (
-        <button
-          type="button"
-          onClick={() => onSetCityAccommodation(startLocation)}
-          className="text-xs font-medium text-brand-primary transition-colors hover:text-brand-primary/80"
-        >
-          Use for all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
-        </button>
-      )}
+      {onSetCityAccommodation &&
+        cityId &&
+        startLocation &&
+        (appliedForId !== startLocation.id || showConfirmation) &&
+        (showConfirmation ? (
+          <span
+            role="status"
+            aria-live="polite"
+            className="inline-flex items-center gap-1 text-xs font-medium text-success"
+          >
+            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            Applied to all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={handleApplyToCity}
+            className="text-xs font-medium text-brand-primary transition-colors hover:text-brand-primary/80"
+          >
+            Use for all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
+          </button>
+        ))}
     </div>
   );
 }
