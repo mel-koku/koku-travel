@@ -115,6 +115,12 @@ export function computeEffectiveDepartureEnd(
 export const LATE_ARRIVAL_THRESHOLD = 19 * 60;
 
 /**
+ * Effective arrival before 08:00 (in minutes-of-day) means most shrines, museums,
+ * and shops are still closed. Strip Day 1 and defer to the next reasonable hour.
+ */
+export const EARLY_ARRIVAL_THRESHOLD = 8 * 60;
+
+/**
  * Compute the raw (uncapped) effective arrival time in minutes.
  * arrival + processing + transit — no MAX_EFFECTIVE_START cap.
  * Returns null if arrivalTime is not provided / invalid.

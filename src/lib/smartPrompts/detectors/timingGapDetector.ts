@@ -226,3 +226,29 @@ export function detectLateArrival(day: ItineraryDay, dayIndex: number): Detected
     },
   ];
 }
+
+/**
+ * Detect pre-dawn arrival on Day 1 — traveler lands before shrines, museums,
+ * and shops open. Returns an acknowledge-and-defer prompt explaining the strip.
+ */
+export function detectEarlyArrival(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  if (dayIndex !== 0 || !day.isEarlyArrival) return [];
+
+  const city = day.cityId ?? "your destination";
+
+  return [
+    {
+      id: `early-arrival-${day.id}`,
+      type: "early_arrival",
+      dayIndex,
+      dayId: day.id,
+      title: "Arrived before sunrise",
+      description: `Most things open from 09:00. We've cleared Day 1 so you can settle in. Pick up activities tomorrow in ${city}.`,
+      icon: "Sunrise",
+      action: {
+        type: "acknowledge_early_arrival",
+        city,
+      },
+    },
+  ];
+}

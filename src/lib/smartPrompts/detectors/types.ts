@@ -23,6 +23,7 @@ export type GapType =
   | "evening_free"
   | "omiyage_reminder"
   | "late_arrival"
+  | "early_arrival"
   | "guide_suggestion";
 
 /**
@@ -164,6 +165,10 @@ export type GapAction =
   | {
       type: "acknowledge_late_arrival";
       suggestions: string[];
+      city: string;
+    }
+  | {
+      type: "acknowledge_early_arrival";
       city: string;
     }
   | {

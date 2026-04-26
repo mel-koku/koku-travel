@@ -155,6 +155,7 @@ export function useSmartPromptActions(
         gap.action.type === "acknowledge_festival" ||
         gap.action.type === "acknowledge_omiyage" ||
         gap.action.type === "acknowledge_late_arrival" ||
+        gap.action.type === "acknowledge_early_arrival" ||
         gap.action.type === "inject_festival" ||
         gap.action.type === "add_evening"
       ) {

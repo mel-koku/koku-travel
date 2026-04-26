@@ -138,6 +138,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     text: "text-sage",
     badge: "bg-sage/15 text-sage",
   },
+  early_arrival: {
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
+  },
   guide_suggestion: {
     bg: "bg-sage/10",
     text: "text-sage",
@@ -228,7 +233,7 @@ export function SmartPromptCard({
                 Skip
               </Button>
             </>
-          ) : gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" || gap.action.type === "acknowledge_late_arrival" ? (
+          ) : gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" || gap.action.type === "acknowledge_late_arrival" || gap.action.type === "acknowledge_early_arrival" ? (
             <Button
               variant="primary"
               size="chip"
