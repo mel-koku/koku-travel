@@ -39,7 +39,7 @@ export function GuideFilterBar({
   const hasSeasons = seasons && seasons.length > 0;
 
   return (
-    <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-xl border-b border-border/50">
+    <div className="sticky top-20 z-40 bg-background/100 border-b border-border/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className="overflow-x-auto scrollbar-hide scroll-fade-r overscroll-contain snap-x snap-mandatory py-3"
