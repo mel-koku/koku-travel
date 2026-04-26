@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
-import { DateStep } from "./DateStep";
 import { EntryPointStep } from "./EntryPointStep";
 import { VibeStep } from "./VibeStep";
 import { RegionStep } from "./RegionStep";
-import { ReviewStep } from "./ReviewStep";
 import { STEP_LABELS } from "./StepProgressTrack";
 import { ArrowLineCTA } from "./ArrowLineCTA";
 import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
@@ -19,6 +18,29 @@ import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
 import { WizardChrome } from "./WizardChrome";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+
+// Heavy steps are dynamically loaded so they don't bloat the initial wizard chunk:
+//   - DateStep pulls in `react-day-picker` via DatePicker (Step 1 only).
+//   - ReviewStep pulls in `@dnd-kit/*` via TripSummaryEditorial → SortableCityList,
+//     plus the ~509-line OptionsSection with framer-motion disclosures (Step 5 only).
+// We pre-warm the next step's chunk from inside an effect (see below) so transitions
+// stay snappy. `loading: () => null` is intentional — the AnimatePresence wipe covers
+// the gap, and the project doesn't have a shared StepSkeleton component.
+const DateStep = dynamic(
+  () => import("./DateStep").then((m) => ({ default: m.DateStep })),
+  { ssr: false, loading: () => null },
+);
+const ReviewStep = dynamic(
+  () => import("./ReviewStep").then((m) => ({ default: m.ReviewStep })),
+  { ssr: false, loading: () => null },
+);
+
+// `next/dynamic`'s LoadableComponent exposes `.preload()` at runtime but not
+// in its public type. Cast through `unknown` to reach it without `any`.
+type Preloadable = { preload?: () => void };
+const preload = (component: unknown) => {
+  (component as Preloadable).preload?.();
+};
 
 export type TripBuilderV2Props = {
   onComplete?: () => void;
@@ -69,6 +91,14 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
   } = useTripBuilderNavigation({ onComplete, sanityConfig });
 
   const variants = prefersReducedMotion ? reducedMotionVariants : stepVariants;
+
+  // Pre-warm dynamic step chunks so wizard transitions stay snappy.
+  // Strategy: while the user is on the *previous* step, fetch the next step's
+  // chunk. `next/dynamic` no-ops on repeat calls, so these are idempotent.
+  useEffect(() => {
+    if (currentStep === 0) preload(DateStep);
+    if (currentStep >= 4) preload(ReviewStep);
+  }, [currentStep]);
 
   // Dynamic disabled hint for the region step
   // Use unique city count (Set) to match what the user sees in chips
