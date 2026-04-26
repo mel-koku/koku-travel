@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useRef } from "react";
+import { Button } from "@/components/ui/Button";
 import { SplitText } from "@/components/ui/SplitText";
 import {
   easeReveal,
@@ -109,12 +110,15 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
               {description}
             </p>
             <div className="mt-8">
-              <a
+              <Button
+                asChild
                 href="/trip-builder"
-                className="btn-yuku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto sm:px-10"
+                variant="primary"
+                size="hero"
+                className="w-full sm:w-auto"
               >
                 {primaryCta}
-              </a>
+              </Button>
               <p className="mt-4 text-xs text-white/70">{freePreviewNote}</p>
             </div>
           </div>
@@ -214,12 +218,15 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
             transition={{ duration: 0.35, delay: 0.6, ease: easeReveal }}
             className="mt-8"
           >
-            <a
+            <Button
+              asChild
               href="/trip-builder"
-              className="btn-yuku inline-flex h-14 w-full items-center justify-center rounded-lg bg-brand-primary px-6 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto sm:px-10"
+              variant="primary"
+              size="hero"
+              className="w-full sm:w-auto"
             >
               {primaryCta}
-            </a>
+            </Button>
             <p className="mt-4 text-xs text-white/70">{freePreviewNote}</p>
           </motion.div>
         </div>

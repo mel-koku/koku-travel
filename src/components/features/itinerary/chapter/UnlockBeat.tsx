@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
+import { Button } from "@/components/ui/Button";
 
 export type UnlockBeatProps = {
   cities: string[];
@@ -48,13 +49,9 @@ export function UnlockBeat({
           </p>
 
           <div className="flex items-center gap-4 flex-wrap">
-            <button
-              type="button"
-              onClick={onUnlock}
-              className="btn-yuku px-6 py-3 rounded-md text-sm font-medium"
-            >
+            <Button type="button" variant="primary" size="lg" onClick={onUnlock}>
               {loginRequired ? "Log in to see full itinerary" : `Unlock full trip · ${priceLabel}`}
-            </button>
+            </Button>
             {!loginRequired && typeof launchSlotsRemaining === "number" && launchSlotsRemaining > 0 && (
               <span className="text-xs text-foreground-secondary">
                 {launchSlotsRemaining} launch slots remaining

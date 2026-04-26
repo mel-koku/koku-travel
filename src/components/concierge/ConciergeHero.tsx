@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
+import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { ConciergePageContent } from "@/types/sanitySiteContent";
 
@@ -52,12 +52,9 @@ export function ConciergeHero({ content }: Props) {
         </ScrollReveal>
 
         <ScrollReveal delay={0.22}>
-          <Link
-            href="#inquire"
-            className="btn-yuku inline-flex h-12 items-center rounded-lg bg-brand-primary px-8 font-sans text-sm font-medium text-white active:scale-[0.98]"
-          >
+          <Button asChild href="#inquire" variant="primary" size="hero">
             {ctaText}
-          </Link>
+          </Button>
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>

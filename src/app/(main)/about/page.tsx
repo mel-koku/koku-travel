@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Github, Linkedin, Twitter, Globe } from "lucide-react";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { getAboutPageContent } from "@/lib/sanity/contentService";
 
@@ -382,12 +383,9 @@ export default async function AboutPage() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.16}>
-            <a
-              href="/trip-builder"
-              className="btn-yuku inline-flex h-14 items-center justify-center rounded-lg bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-glow)] hover:bg-brand-secondary active:scale-[0.98]"
-            >
-              <span className="relative">{ctaButtonText}</span>
-            </a>
+            <Button asChild href="/trip-builder" variant="primary" size="hero">
+              {ctaButtonText}
+            </Button>
           </ScrollReveal>
         </div>
       </section>

@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function ExperiencesPage() {
   const content = await getPagesContent();
-  return <ExperiencesComingSoon variant="a" content={content ?? undefined} />;
+  return <ExperiencesComingSoon content={content ?? undefined} />;
 }
