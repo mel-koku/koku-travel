@@ -22,16 +22,26 @@ const LANDING_CACHE_TTL = 30 * 60 * 1000; // 30 min (shorter than ISR revalidate
 const isDev = process.env.NODE_ENV === "development";
 
 /**
- * Fetches the total count of explorable locations in the database
+ * Fetches the total count of browseable locations in the database.
  *
- * Only counts locations that are not permanently closed,
- * matching the filtering logic used by the /api/locations endpoint.
+ * Mirrors the filters used by the Places browse experience
+ * (`/api/locations/all` → `PlacesShell`) so the landing page hero
+ * advertises a number users can actually reach in the grid:
+ *   - is_active = true
+ *   - business_status not PERMANENTLY_CLOSED (null permitted)
+ *   - is_accommodation = false (stays are not browseable here)
+ *   - parent_id IS NULL (only top-level rows; sub-experiences hidden)
  *
- * @returns The total number of explorable locations
+ * Cache key is versioned (`-v2`) so deploys invalidate the prior count
+ * (which included accommodations + child rows) without manual cleanup.
+ *
+ * @returns The total number of browseable locations
  */
+const LOCATION_COUNT_CACHE_KEY = "landing-location-count-v2";
+
 export async function getLocationCount(): Promise<number> {
   if (!isDev) {
-    const cached = readFileCache<number>("landing-location-count", LANDING_CACHE_TTL);
+    const cached = readFileCache<number>(LOCATION_COUNT_CACHE_KEY, LANDING_CACHE_TTL);
     if (cached !== null) return cached;
   }
 
@@ -41,13 +51,15 @@ export async function getLocationCount(): Promise<number> {
     .from("locations")
     .select("*", { count: "exact", head: true })
     .eq("is_active", true)
-    .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+    .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+    .eq("is_accommodation", false)
+    .is("parent_id", null);
 
   if (error || count === null) {
-    return readFileCacheStale<number>("landing-location-count") ?? 0;
+    return readFileCacheStale<number>(LOCATION_COUNT_CACHE_KEY) ?? 0;
   }
 
-  writeFileCache("landing-location-count", count);
+  writeFileCache(LOCATION_COUNT_CACHE_KEY, count);
   return count;
 }
 
