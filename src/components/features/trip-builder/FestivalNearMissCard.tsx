@@ -28,13 +28,16 @@ export function FestivalNearMissCard() {
   const [dismissedFestivalId, setDismissedFestivalId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<{
     festivalName: string;
-    newEndDate: string;
+    direction: "forward" | "backward";
+    newPivotDate: string; // newEndDate for forward, newStartDate for backward
     days: number;
+    previousStartDate: string;
     previousEndDate: string;
     previousDuration: number | undefined;
   } | null>(null);
 
   if (confirmed) {
+    const isForward = confirmed.direction === "forward";
     return (
       <div
         role="status"
@@ -42,7 +45,10 @@ export function FestivalNearMissCard() {
       >
         <p className="text-sm text-foreground-secondary">
           <span aria-hidden="true">✓ </span>
-          Trip extended through {formatFriendlyDate(confirmed.newEndDate)}. We&apos;ll plan {confirmed.days === 1 ? "1 extra day" : `${confirmed.days} extra days`} around {confirmed.festivalName}.
+          {isForward
+            ? `Trip extended through ${formatFriendlyDate(confirmed.newPivotDate)}.`
+            : `Trip now starts ${formatFriendlyDate(confirmed.newPivotDate)}.`}{" "}
+          We&apos;ll plan {confirmed.days === 1 ? "1 extra day" : `${confirmed.days} extra days`} around {confirmed.festivalName}.
         </p>
         <button
           type="button"
@@ -51,7 +57,11 @@ export function FestivalNearMissCard() {
           onClick={() => {
             setData((prev) => ({
               ...prev,
-              dates: { ...prev.dates, end: confirmed.previousEndDate },
+              dates: {
+                ...prev.dates,
+                start: confirmed.previousStartDate,
+                end: confirmed.previousEndDate,
+              },
               duration: confirmed.previousDuration,
             }));
             setConfirmed(null);
@@ -72,7 +82,10 @@ export function FestivalNearMissCard() {
 
   const isActionable = warning.action === "extend_trip" && !!warning.actionData;
   const extendDays = (warning.actionData?.extendDays as number | undefined) ?? 0;
+  const direction =
+    (warning.actionData?.direction as "forward" | "backward" | undefined) ?? "forward";
   const newEndDate = warning.actionData?.newEndDate as string | undefined;
+  const newStartDate = warning.actionData?.newStartDate as string | undefined;
   const festivalName =
     (warning.actionData?.festivalName as string | undefined) ?? warning.title;
 
@@ -96,14 +109,15 @@ export function FestivalNearMissCard() {
         </button>
       </div>
 
-      {isActionable && newEndDate && (
+      {isActionable && direction === "forward" && newEndDate && (
         <div className="mt-3">
           <button
             type="button"
             className="rounded-md bg-brand-primary px-3 py-1.5 text-xs font-medium text-white shadow-[var(--shadow-sm)] hover:bg-brand-primary/90"
             onClick={() => {
+              const previousStartDate = data.dates.start;
               const previousEndDate = data.dates.end;
-              if (!previousEndDate) return; // invariant: extend renders only when end is set
+              if (!previousStartDate || !previousEndDate) return; // invariant: extend renders only when both dates are set
               const previousDuration = data.duration;
               setData((prev) => ({
                 ...prev,
@@ -112,14 +126,47 @@ export function FestivalNearMissCard() {
               }));
               setConfirmed({
                 festivalName,
-                newEndDate,
+                direction: "forward",
+                newPivotDate: newEndDate,
                 days: extendDays,
+                previousStartDate,
                 previousEndDate,
                 previousDuration,
               });
             }}
           >
             Extend trip by {extendDays === 1 ? "1 day" : `${extendDays} days`}
+          </button>
+        </div>
+      )}
+
+      {isActionable && direction === "backward" && newStartDate && (
+        <div className="mt-3">
+          <button
+            type="button"
+            className="rounded-md bg-brand-primary px-3 py-1.5 text-xs font-medium text-white shadow-[var(--shadow-sm)] hover:bg-brand-primary/90"
+            onClick={() => {
+              const previousStartDate = data.dates.start;
+              const previousEndDate = data.dates.end;
+              if (!previousStartDate || !previousEndDate) return; // invariant: extend renders only when both dates are set
+              const previousDuration = data.duration;
+              setData((prev) => ({
+                ...prev,
+                dates: { ...prev.dates, start: newStartDate },
+                duration: (prev.duration ?? 0) + extendDays,
+              }));
+              setConfirmed({
+                festivalName,
+                direction: "backward",
+                newPivotDate: newStartDate,
+                days: extendDays,
+                previousStartDate,
+                previousEndDate,
+                previousDuration,
+              });
+            }}
+          >
+            Start trip {extendDays === 1 ? "1 day" : `${extendDays} days`} earlier
           </button>
         </div>
       )}
