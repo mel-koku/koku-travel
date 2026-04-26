@@ -49,6 +49,7 @@ import {
   getLocationDurationMinutes,
 } from "@/lib/generation/helpers";
 import { buildLocationMaps } from "@/lib/generation/locationFetcher";
+import { resolveMustIncludeFestivals, type ResolvedFestivalNote } from "@/lib/generation/festivalResolver";
 
 
 /**
@@ -178,6 +179,47 @@ export async function generateItinerary(
 
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);
   const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays, data.cityDays);
+
+  // Resolve mustIncludeFestivals (KOK-32). User opted into festivals via the
+  // "include this festival" CTA on the warning card. Pin the festival's
+  // suggested location if we can match it; otherwise drop a dated note on
+  // the festival day. Only consider days where the trip is actually in the
+  // festival's city. Region-keyed festivals warn once and skip.
+  const dayCityKeys = expandedCitySequence.map((c) => c.key);
+  const festivalResolution = data.mustIncludeFestivals?.length
+    ? resolveMustIncludeFestivals(
+        data.mustIncludeFestivals,
+        data.dates.start,
+        totalDays,
+        data.cities ?? [],
+        allLocations,
+        dayCityKeys,
+      )
+    : { pins: [], notes: [] };
+
+  // Group festival notes by day for injection in the day loop.
+  const festivalNotesByDay = new Map<number, ResolvedFestivalNote[]>();
+  for (const note of festivalResolution.notes) {
+    const list = festivalNotesByDay.get(note.dayIndex) ?? [];
+    list.push(note);
+    festivalNotesByDay.set(note.dayIndex, list);
+  }
+
+  // Merge resolved festival pins into pinnedLocationMap so the existing
+  // pinned-injection loop handles them. Festival pins always carry the
+  // exact dayIndex, which means the loop's preferredDay branch fires.
+  for (const pin of festivalResolution.pins) {
+    if (!pinnedLocationMap.has(pin.location.id)) {
+      pinnedLocationMap.set(pin.location.id, {
+        location: pin.location,
+        preferredDay: pin.dayIndex,
+      });
+      logger.info(
+        `Festival auto-include: pinned "${pin.location.name}" for "${pin.festivalId}" on day ${pin.dayIndex + 1}`,
+      );
+    }
+  }
+
   const interestSequence = resolveInterestSequence(data);
   const usedLocations = new Set<string>();
   const usedLocationNames = new Set<string>(); // Track names to prevent same-name duplicates
@@ -560,6 +602,24 @@ export async function generateItinerary(
       timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + locationDuration);
 
       logger.info(`Day ${dayIndex + 1}: Added pinned location "${pinned.location.name}"`);
+    }
+
+    // Inject festival fallback notes (KOK-32). When the festival's
+    // suggestedActivity didn't resolve to a real Location, drop a dated
+    // note-activity on the festival day so the trip still reflects the
+    // user's opt-in. Title stays "Note" (literal type constraint); festival
+    // name + description + suggestedActivity prose live in the notes body.
+    const festivalNotesForDay = festivalNotesByDay.get(dayIndex) ?? [];
+    for (const fn of festivalNotesForDay) {
+      const noteActivity: Extract<ItineraryActivity, { kind: "note" }> = {
+        kind: "note",
+        id: `festival-${fn.festivalId}-${dayIndex + 1}`,
+        title: "Note",
+        timeOfDay: "afternoon",
+        notes: `${fn.festivalName}. ${fn.notes}`,
+      };
+      dayActivities.push(noteActivity);
+      logger.info(`Day ${dayIndex + 1}: Added festival note "${fn.festivalName}"`);
     }
 
     // Track assigned meal types to prevent multiple lunches/dinners per day

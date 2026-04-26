@@ -5,6 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { FestivalNearMissCard } from "./FestivalNearMissCard";
+import { FestivalIncludeCard } from "./FestivalIncludeCard";
 import { OptionsSection, type OptionsFormValues } from "./OptionsSection";
 import { type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
@@ -209,6 +210,9 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
 
         {/* Festival near-miss stays inline directly under Route & Stays */}
         <FestivalNearMissCard />
+
+        {/* Festival overlap auto-include CTA (KOK-32) */}
+        <FestivalIncludeCard />
 
         {/* Duration warning */}
         {durationWarning && (
