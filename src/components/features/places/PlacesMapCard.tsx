@@ -11,11 +11,18 @@ type PlacesMapCardProps = {
   isHighlighted?: boolean;
   onHover?: (locationId: string | null) => void;
   onSelect?: (location: Location) => void;
+  /** Distance in km from the user's current location, when Near Me is active. */
+  distanceKm?: number;
 };
+
+function formatDistance(km: number): string {
+  if (km < 1) return `${Math.round(km * 1000)} m`;
+  return `${km.toFixed(1)} km`;
+}
 
 export const PlacesMapCard = memo(
   forwardRef<HTMLDivElement, PlacesMapCardProps>(function PlacesMapCard(
-    { location, isHighlighted, onHover, onSelect },
+    { location, isHighlighted, onHover, onSelect, distanceKm },
     ref,
   ) {
     const thumb = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 96);
@@ -64,6 +71,14 @@ export const PlacesMapCard = memo(
                       <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
                     </svg>
                     {location.rating.toFixed(1)}
+                  </span>
+                </>
+              ) : null}
+              {distanceKm != null ? (
+                <>
+                  <span className="text-border">&middot;</span>
+                  <span className="shrink-0 font-mono text-[11px] text-foreground-secondary">
+                    {formatDistance(distanceKm)}
                   </span>
                 </>
               ) : null}
