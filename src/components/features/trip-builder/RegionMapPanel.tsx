@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { JAPAN_MAP_VIEWBOX, REGION_PREFECTURES, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { KnownRegionId } from "@/types/trip";
@@ -58,7 +58,7 @@ export function RegionMapPanel({
       <div className="border-t border-border p-6">
         <AnimatePresence mode="popLayout">
           {selectedRegionNames.length > 0 ? (
-            <motion.div
+            <m.div
               key="summary"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -82,9 +82,9 @@ export function RegionMapPanel({
                   {selectedRegionNames.length === 1 ? "region" : "regions"}
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.p
+            <m.p
               key="empty"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -92,7 +92,7 @@ export function RegionMapPanel({
               className="text-sm text-stone"
             >
               Select regions to see them on the map
-            </motion.p>
+            </m.p>
           )}
         </AnimatePresence>
       </div>

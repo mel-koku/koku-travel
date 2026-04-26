@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { GoogleSignInButton } from "@/components/ui/GoogleSignInButton";
@@ -50,7 +50,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
   }, [isSuccess, onSuccessComplete, isGuest]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -63,7 +63,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
       <div className="relative z-10 flex flex-col items-center gap-8 px-6 text-center">
         <AnimatePresence mode="wait">
           {isSuccess ? (
-            <motion.div
+            <m.div
               key="success"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -71,14 +71,14 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
               className="flex flex-col items-center gap-6"
             >
               {/* Checkmark */}
-              <motion.div
+              <m.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.4, delay: 0.1, ease: easeReveal }}
                 className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-primary/15"
               >
                 <svg className="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <motion.path
+                  <m.path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     d="M5 13l4 4L19 7"
@@ -87,28 +87,28 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                     transition={{ duration: 0.4, delay: 0.3 }}
                   />
                 </svg>
-              </motion.div>
+              </m.div>
 
-              <motion.h2
+              <m.h2
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2, ease: easeReveal }}
                 className={typography({ intent: "editorial-h2" })}
               >
                 Your trip is ready
-              </motion.h2>
+              </m.h2>
 
-              <motion.p
+              <m.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
                 className="max-w-xs text-sm text-foreground-secondary"
               >
                 {successData?.tripName}
-              </motion.p>
+              </m.p>
 
               {isGuest && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
@@ -137,28 +137,28 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                   >
                     {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? "Continue with Day 1 only" : "Continue without saving"}
                   </button>
-                </motion.div>
+                </m.div>
               )}
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div
+            <m.div
               key="generating"
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center gap-8"
             >
-              <motion.h2
+              <m.h2
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
                 className={typography({ intent: "editorial-h2" })}
               >
                 {sanityConfig?.generatingHeading ?? "Building your itinerary"}
-              </motion.h2>
+              </m.h2>
 
               {/* Progress bar */}
               <div className="h-0.5 w-64 overflow-hidden rounded-full bg-border">
-                <motion.div
+                <m.div
                   className="h-full bg-brand-primary"
                   initial={{ width: "0%" }}
                   animate={{ width: "90%" }}
@@ -169,7 +169,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
               {/* Rotating status messages */}
               <div className="h-6">
                 <AnimatePresence mode="wait">
-                  <motion.p
+                  <m.p
                     key={messageIndex}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -178,13 +178,13 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                     className="text-sm text-foreground-secondary"
                   >
                     {messages[messageIndex]}
-                  </motion.p>
+                  </m.p>
                 </AnimatePresence>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

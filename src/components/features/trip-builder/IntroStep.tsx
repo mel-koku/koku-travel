@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { m, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
 import { easeReveal, staggerWord, durationBase } from "@/lib/motion";
@@ -100,12 +100,12 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
         {/* ── LEFT COLUMN — Typography + CTA ── */}
         <div className="flex flex-col justify-center">
           {/* Eyebrow */}
-          <motion.p
+          <m.p
             className="eyebrow-editorial"
             {...fade(0.15)}
           >
             {eyebrow}
-          </motion.p>
+          </m.p>
 
           {/* Heading — lead-in */}
           <SplitText
@@ -132,15 +132,15 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
           </SplitText>
 
           {/* Description */}
-          <motion.p
+          <m.p
             className="mt-6 max-w-sm text-base leading-relaxed text-foreground-secondary sm:text-lg"
             {...fade(0.45)}
           >
             {description}
-          </motion.p>
+          </m.p>
 
           {/* CTAs — Primary + Secondary */}
-          <motion.div
+          <m.div
             className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
             initial={
               prefersReducedMotion ? {} : { opacity: 0.005, y: 12 }
@@ -180,17 +180,17 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                 Skip the Details
               </button>
             )}
-          </motion.div>
+          </m.div>
 
           {/* Quick Plan — express mode (expanded) */}
           {onQuickStart && showQuickPlan && (
-            <motion.div
+            <m.div
               ref={quickPlanRef}
               className="mt-6"
               {...fade(0.1)}
             >
               <AnimatePresence>
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
@@ -265,9 +265,9 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                       Go
                     </button>
                   </div>
-                </motion.div>
+                </m.div>
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           )}
         </div>
 

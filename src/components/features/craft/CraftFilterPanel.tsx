@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { CRAFT_TYPES, type CraftTypeId } from "@/data/craftTypes";
@@ -77,7 +77,7 @@ export function CraftFilterPanel({
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -86,7 +86,7 @@ export function CraftFilterPanel({
             onClick={onClose}
           />
 
-          <motion.div
+          <m.div
             ref={panelRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -181,7 +181,7 @@ export function CraftFilterPanel({
                 Show {resultsCount} {resultsCount === 1 ? "workshop" : "workshops"}
               </button>
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

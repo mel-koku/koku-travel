@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -32,7 +32,7 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-6 py-24 sm:py-32 lg:py-40 text-center">
         <div className="max-w-2xl">
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -40,9 +40,9 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
             className={cn(typography({ intent: "editorial-h2" }), "text-white")}
           >
             {content?.finalCtaHeading ?? "Your Japan is waiting"}
-          </motion.h2>
+          </m.h2>
 
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -50,9 +50,9 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
             className="mt-4 text-base text-white/80"
           >
             {content?.finalCtaDescription ?? "Pick your dates. See Day 1 free before you decide."}
-          </motion.p>
+          </m.p>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -67,7 +67,7 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
                 ? "Free during our launch. No payment required."
                 : "Free to preview. $19 to unlock your full trip."}
             </p>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

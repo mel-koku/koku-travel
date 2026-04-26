@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { forwardRef, memo, useMemo, useState, useEffect, useRef as useReactRef, type ChangeEvent } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 
@@ -545,7 +545,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         data-selected={isSelected || undefined}
         data-activity-id={activity.id}
       >
-        <motion.div
+        <m.div
           layout={!prefersReducedMotion && !isDragging}
           transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
           className={`group relative cursor-pointer rounded-lg bg-background transition-all duration-200 ${
@@ -812,7 +812,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               <p className="text-sm text-foreground-secondary">{activity.notes}</p>
             </div>
           )}
-        </motion.div>
+        </m.div>
       </div>
     );
   },

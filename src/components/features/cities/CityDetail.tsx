@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { CityPageData } from "@/lib/cities/cityData";
 import type { CityStats, CategoryBreakdown } from "@/lib/cities/cityHelpers";
 import type { Location } from "@/types/location";
@@ -106,7 +106,7 @@ export function CityDetail({
         <div className="absolute inset-0 flex items-end">
           <div className="w-full px-6 sm:px-8 lg:px-12 pb-10 sm:pb-14">
             <div className="mx-auto max-w-7xl">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -117,23 +117,23 @@ export function CityDetail({
                 </Link>
                 <span className="text-white/40">/</span>
                 <span className="eyebrow-editorial text-white/70">{regionName}</span>
-              </motion.div>
-              <motion.h1
+              </m.div>
+              <m.h1
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className={cn(typography({ intent: "editorial-hero" }), "text-4xl sm:text-5xl lg:text-6xl text-white")}
               >
                 {city.name}
-              </motion.h1>
-              <motion.p
+              </m.h1>
+              <m.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="mt-2 text-lg text-white/80"
               >
                 {city.nameJapanese} · {city.tagline}
-              </motion.p>
+              </m.p>
             </div>
           </div>
         </div>
@@ -142,15 +142,15 @@ export function CityDetail({
       {/* Description + Stats */}
       <section className="py-12 sm:py-16 px-6">
         <div className="mx-auto max-w-7xl">
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="max-w-2xl text-base sm:text-lg text-foreground-body leading-relaxed"
           >
             {city.description}
-          </motion.p>
-          <motion.div
+          </m.p>
+          <m.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -172,7 +172,7 @@ export function CityDetail({
                 <span className="text-sm font-medium capitalize text-foreground">{item.value}</span>
               </div>
             ))}
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -188,7 +188,7 @@ export function CityDetail({
                 const color = getCategoryHexColor(cat.category);
                 const widthPct = Math.max((cat.count / maxCount) * 100, 4);
                 return (
-                  <motion.div
+                  <m.div
                     key={cat.category}
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -200,7 +200,7 @@ export function CityDetail({
                       {CATEGORY_LABELS[cat.category] ?? cat.category}
                     </span>
                     <div className="flex-1 h-7 rounded-lg bg-surface overflow-hidden">
-                      <motion.div
+                      <m.div
                         className="h-full rounded-lg flex items-center justify-end pr-2"
                         style={{ backgroundColor: color }}
                         initial={{ width: 0 }}
@@ -209,9 +209,9 @@ export function CityDetail({
                         transition={{ duration: 0.6, delay: 0.1 + i * 0.04, ease: [0.25, 0.1, 0.25, 1] }}
                       >
                         <span className="text-[11px] font-semibold text-white">{cat.count}</span>
-                      </motion.div>
+                      </m.div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </div>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
@@ -69,7 +69,7 @@ function OverviewSection({
     !!description && description.trim().split(/\s+/).length > DESC_CLAMP_THRESHOLD;
 
   return (
-    <motion.section {...sectionReveal} className="space-y-2">
+    <m.section {...sectionReveal} className="space-y-2">
       <h2 className="eyebrow-editorial">Overview</h2>
       {summary && (
         <p className="text-sm font-medium leading-relaxed text-foreground">
@@ -98,7 +98,7 @@ function OverviewSection({
           )}
         </div>
       )}
-    </motion.section>
+    </m.section>
   );
 }
 
@@ -363,31 +363,31 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       </div>
 
       {/* Title section */}
-      <motion.div
+      <m.div
         className="mx-auto max-w-4xl px-6 py-8 sm:py-12"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
       >
-        <motion.p variants={fadeUp} className="eyebrow-editorial capitalize">
+        <m.p variants={fadeUp} className="eyebrow-editorial capitalize">
           {location.category}
-        </motion.p>
+        </m.p>
 
-        <motion.h1
+        <m.h1
           variants={fadeUp}
           className={cn(typography({ intent: "editorial-h1" }), "mt-3")}
         >
           {displayName}
-        </motion.h1>
+        </m.h1>
 
         {location.nameJapanese && (
-          <motion.p variants={fadeUp} className="mt-1 text-base text-foreground-secondary">
+          <m.p variants={fadeUp} className="mt-1 text-base text-foreground-secondary">
             {location.nameJapanese}
-          </motion.p>
+          </m.p>
         )}
 
         {/* Metadata row */}
-        <motion.div variants={fadeUp} className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
+        <m.div variants={fadeUp} className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
           {(details?.rating ?? location.rating) ? (
             <span className="flex items-center gap-1 text-foreground">
               <svg className="h-4 w-4 text-warning" viewBox="0 0 24 24" fill="currentColor">
@@ -416,10 +416,10 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             </span>
           )}
           <span className="text-stone">{location.city}, {location.region}</span>
-        </motion.div>
+        </m.div>
 
         {/* JTA + Hidden Gem badges */}
-        <motion.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
+        <m.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
           {location.jtaApproved && (
             <Tooltip content="Japan Tourism Agency (JTA) certified destination">
               <span
@@ -450,10 +450,10 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               </span>
             </Tooltip>
           )}
-        </motion.div>
+        </m.div>
 
         {/* Save button (disabled with explanation for container parents like districts) */}
-        <motion.div variants={fadeUp} className="mt-5">
+        <m.div variants={fadeUp} className="mt-5">
           {location.parentMode === "container" ? (
             <button
               type="button"
@@ -480,8 +480,8 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               {isSaved ? "Saved" : "Save for trip"}
             </button>
           )}
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
 
       {/* Content sections */}
@@ -498,7 +498,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
         {/* Local tips: insider tip + location-specific guidance */}
         {(location.insiderTip || tips.length > 0) && (
-          <motion.section {...sectionReveal} className="space-y-3">
+          <m.section {...sectionReveal} className="space-y-3">
             <h2 className="eyebrow-editorial">Local tips</h2>
             <div className="space-y-2">
               {location.insiderTip && (
@@ -521,12 +521,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 </div>
               ))}
             </div>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Practical info */}
         {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo || location.dietaryOptions?.servesVegetarianFood || mealLabels || serviceLabels) && (
-          <motion.section {...sectionReveal} className="space-y-3">
+          <m.section {...sectionReveal} className="space-y-3">
             <h2 className="eyebrow-editorial">Practical info</h2>
             <dl className="space-y-2 text-sm">
               {location.nameJapanese && (
@@ -572,12 +572,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 </div>
               )}
             </dl>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Accessibility */}
         {accessibilityBadges.length > 0 && (
-          <motion.section {...sectionReveal} className="space-y-2">
+          <m.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Accessibility</h2>
             <div className="flex flex-wrap gap-1.5">
               {accessibilityBadges.map((badge) => (
@@ -592,12 +592,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 </span>
               ))}
             </div>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Good for */}
         {goodForPills.length > 0 && (
-          <motion.section {...sectionReveal} className="space-y-2">
+          <m.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Good for</h2>
             <div className="flex flex-wrap gap-1.5">
               {goodForPills.map((pill) => (
@@ -609,12 +609,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 </span>
               ))}
             </div>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Reviews */}
         {details?.reviews && details.reviews.length > 0 && (
-          <motion.section {...sectionReveal} className="space-y-3">
+          <m.section {...sectionReveal} className="space-y-3">
             <h2 className="eyebrow-editorial">Reviews</h2>
             <div className="space-y-3">
               {details.reviews
@@ -643,7 +643,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                   </div>
                 ))}
             </div>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Loading indicator */}
@@ -656,15 +656,15 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
         {/* Address */}
         {details?.formattedAddress && (
-          <motion.section {...sectionReveal} className="space-y-1">
+          <m.section {...sectionReveal} className="space-y-1">
             <h2 className="eyebrow-editorial">Address</h2>
             <p className="text-sm text-foreground-secondary">{details.formattedAddress}</p>
-          </motion.section>
+          </m.section>
         )}
 
         {/* Opening hours */}
         {status === "success" && (
-          <motion.section {...sectionReveal} className="space-y-2">
+          <m.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Opening hours</h2>
             {hasOpeningHours ? (
               <ul className="space-y-1 text-sm text-foreground-secondary">
@@ -675,12 +675,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
             ) : (
               <p className="text-sm text-foreground-secondary">Open 24 hours or hours not listed</p>
             )}
-          </motion.section>
+          </m.section>
         )}
 
         {/* Links */}
         {hasLinks && (
-          <motion.section {...sectionReveal} className="space-y-2">
+          <m.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Links</h2>
             <ul className="space-y-1 text-sm text-brand-primary">
               {details?.websiteUri && isSafeUrl(details.websiteUri) && (
@@ -701,7 +701,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
                 </li>
               )}
             </ul>
-          </motion.section>
+          </m.section>
         )}
       </div>
 
@@ -766,7 +766,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       {nearbyLocations.length > 0 && (
         <section className="bg-canvas py-12 sm:py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.h2
+            <m.h2
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -774,7 +774,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               className={cn(typography({ intent: "editorial-h2" }), "text-center mb-10")}
             >
               Explore Nearby
-            </motion.h2>
+            </m.h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {nearbyLocations.map((nearby) => (
                 <LocationCard

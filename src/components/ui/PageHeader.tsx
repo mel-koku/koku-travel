@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxSubtle } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
@@ -46,7 +46,7 @@ export function PageHeader({
     >
       {/* Parallax background image */}
       {imageUrl ? (
-        <motion.div
+        <m.div
           className="absolute inset-0"
           style={prefersReducedMotion ? {} : { y: imageY }}
         >
@@ -59,9 +59,9 @@ export function PageHeader({
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
-        </motion.div>
+        </m.div>
       ) : (
-        <motion.div
+        <m.div
           className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/85"
           style={prefersReducedMotion ? {} : { y: imageY }}
         />

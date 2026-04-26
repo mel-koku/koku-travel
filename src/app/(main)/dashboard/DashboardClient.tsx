@@ -16,7 +16,7 @@ import { logger } from "@/lib/logger";
 import { sanitizeString } from "@/lib/api/sanitization";
 import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { AccountSection } from "./components/AccountSection";
 import { GuestSignInPrompt } from "@/components/features/dashboard/GuestSignInPrompt";
 import { useSignInPrompts } from "@/hooks/useSignInPrompts";
@@ -512,7 +512,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
       {/* Saves threshold toast for guests */}
       <AnimatePresence>
         {savesThresholdToast && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -529,7 +529,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                 Sign in
               </Link>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

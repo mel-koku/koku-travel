@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { m, useInView } from "framer-motion";
 import { easeReveal, durationBase } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
@@ -56,7 +56,7 @@ function QAPill({
   const enterX = scatter.direction === "left" ? -30 : 30;
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       initial={{ opacity: 0, x: enterX, rotate: 0 }}
       animate={
@@ -79,7 +79,7 @@ function QAPill({
         <p className={cn(typography({ intent: "utility-body" }), "text-sm font-medium")}>
           {q}
         </p>
-        <motion.p
+        <m.p
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{
@@ -90,9 +90,9 @@ function QAPill({
           className={cn(typography({ intent: "utility-body-muted" }), "mt-1.5 text-sm")}
         >
           {a}
-        </motion.p>
+        </m.p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -104,7 +104,7 @@ export function AskYukuPreview() {
     <section aria-label="Ask Yuku" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div ref={sectionRef} className="mx-auto max-w-7xl px-6">
         {/* Heading */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
           transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
@@ -114,7 +114,7 @@ export function AskYukuPreview() {
           <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl")}>
             Travel questions, answered in the context of your trip.
           </h2>
-        </motion.div>
+        </m.div>
 
         {/* Desktop: scattered pills */}
         <div className="relative mt-12 hidden lg:block" style={{ height: "370px" }}>
@@ -132,7 +132,7 @@ export function AskYukuPreview() {
         {/* Mobile/Tablet: clean 2-col grid */}
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:hidden">
           {QA_ITEMS.map((chat, i) => (
-            <motion.div
+            <m.div
               key={chat.q}
               initial={{ opacity: 0, y: 12 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
@@ -149,7 +149,7 @@ export function AskYukuPreview() {
               <p className={cn(typography({ intent: "utility-body-muted" }), "mt-1.5 text-sm")}>
                 {chat.a}
               </p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

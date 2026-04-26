@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useLenis } from "@/providers/LenisProvider";
 import { easePageTransition } from "@/lib/motion";
@@ -102,7 +102,7 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <motion.div
+        <m.div
           key="menu-overlay"
           data-menu-overlay
           role="dialog"
@@ -142,7 +142,7 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
               <MenuPanel />
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

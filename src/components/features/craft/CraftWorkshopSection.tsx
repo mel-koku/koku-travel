@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ExperienceCard } from "@/components/features/experiences/ExperienceCard";
 import { useWorkshopExperiences } from "@/hooks/useWorkshopExperiences";
 import { typography } from "@/lib/typography-system";
@@ -21,7 +21,7 @@ export function CraftWorkshopSection({ selectedCraftType }: CraftWorkshopSection
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-canvas">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: easeReveal }}
@@ -48,7 +48,7 @@ export function CraftWorkshopSection({ selectedCraftType }: CraftWorkshopSection
             </div>
           ))}
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

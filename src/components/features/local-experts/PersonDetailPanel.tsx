@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/cn";
@@ -79,7 +79,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
       {person && displayPerson && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -89,7 +89,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
           />
 
           {/* Panel */}
-          <motion.aside
+          <m.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -275,7 +275,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                 </div>
               </div>
             </div>
-          </motion.aside>
+          </m.aside>
         </>
       )}
     </AnimatePresence>

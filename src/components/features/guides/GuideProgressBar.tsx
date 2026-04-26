@@ -1,7 +1,7 @@
 "use client";
 
 import { type RefObject } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 type GuideProgressBarProps = {
   contentRef: RefObject<HTMLDivElement | null>;
@@ -23,7 +23,7 @@ export function GuideProgressBar({ contentRef }: GuideProgressBarProps) {
   if (prefersReducedMotion) return null;
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-x-0 top-0 z-60 h-[2px] origin-left bg-brand-primary"
       style={{ scaleX: scrollYProgress, opacity }}
     />

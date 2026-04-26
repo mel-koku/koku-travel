@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
@@ -59,7 +59,7 @@ export function AddPlaceDialog({
       {open && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 z-[60] bg-charcoal/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -73,7 +73,7 @@ export function AddPlaceDialog({
           />
           {/* Dialog centering wrapper — pointer-events-none so clicks pass through to backdrop */}
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
-            <motion.div
+            <m.div
               role="dialog"
               aria-label="Add a place"
               className={cn(
@@ -126,7 +126,7 @@ export function AddPlaceDialog({
                   />
                 )}
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </>
       )}

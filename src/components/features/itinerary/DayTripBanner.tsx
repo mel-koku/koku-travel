@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { DayTripSuggestion } from "@/types/dayTrips";
 
 /**
@@ -37,7 +37,7 @@ export function DayTripBanner({
   }
 
   return (
-    <motion.div
+    <m.div
       data-day-trip-banner
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
@@ -77,6 +77,6 @@ export function DayTripBanner({
           </button>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

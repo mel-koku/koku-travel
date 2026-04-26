@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { MotionConfig } from "framer-motion";
+import { LazyMotion, MotionConfig, domMax } from "framer-motion";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -50,6 +50,20 @@ export function LayoutWrapper({
        * parallax benefits from the smoothing pass. Header has a native
        * scroll fallback for routes without the provider.
        */}
+      {/*
+       * LazyMotion + features={domMax} swaps the heavy `motion` component
+       * for the lighter `m` component (used everywhere in this codebase) and
+       * loads the full feature bundle once at the layout level.
+       *
+       * `domMax` is required (not `domAnimation`) because we use `layout`,
+       * `LayoutGroup`, and gesture features (`whileTap`, `whileHover`) which
+       * are only included in the max bundle.
+       *
+       * The `strict` flag is intentionally OFF in production: it throws at
+       * runtime on any `motion.X` usage. Re-enable it temporarily during
+       * future motion-API audits.
+       */}
+      <LazyMotion features={domMax}>
       <MotionConfig reducedMotion="user">
       <SharedProviders>
         {!isTripBuilder && <ScrollProgressBar />}
@@ -73,6 +87,7 @@ export function LayoutWrapper({
         {!isTripBuilder && <AskYukuButton />}
       </SharedProviders>
       </MotionConfig>
+      </LazyMotion>
     </ThemeProvider>
   );
 }

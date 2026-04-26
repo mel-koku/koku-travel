@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check } from "lucide-react";
 
 type VibeCardProps = {
@@ -21,7 +21,7 @@ export function VibeCard({
   onToggle,
 }: VibeCardProps) {
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onToggle}
       disabled={isDisabled && !isSelected}
@@ -68,15 +68,15 @@ export function VibeCard({
         }`}
       >
         {isSelected && (
-          <motion.div
+          <m.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
             <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-          </motion.div>
+          </m.div>
         )}
       </div>
-    </motion.button>
+    </m.button>
   );
 }

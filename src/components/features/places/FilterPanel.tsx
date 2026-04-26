@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { Button } from "@/components/ui/Button";
@@ -200,7 +200,7 @@ export function FilterPanel({
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -210,7 +210,7 @@ export function FilterPanel({
           />
 
           {/* Panel */}
-          <motion.div
+          <m.div
             ref={panelRef}
             data-lenis-prevent
             className="fixed right-0 top-0 z-50 h-full w-[420px] max-w-[90vw] bg-background border-l border-border flex flex-col shadow-[var(--shadow-elevated)]"
@@ -244,7 +244,7 @@ export function FilterPanel({
             </div>
 
             {/* Content — sections stagger in after panel settles */}
-            <motion.div
+            <m.div
               className="flex-1 overflow-y-auto px-6 py-6 pb-[env(safe-area-inset-bottom)] space-y-1"
               initial="hidden"
               animate="visible"
@@ -254,7 +254,7 @@ export function FilterPanel({
               }}
             >
               {/* Search — always visible */}
-              <motion.div className="relative pb-4" variants={sectionVariants}>
+              <m.div className="relative pb-4" variants={sectionVariants}>
                 <svg
                   className="absolute left-3 top-1/2 -translate-y-[calc(50%+8px)] h-4 w-4 text-stone"
                   fill="none"
@@ -282,7 +282,7 @@ export function FilterPanel({
                     </svg>
                   </button>
                 )}
-              </motion.div>
+              </m.div>
 
               {/* Sort by */}
               <FilterSection
@@ -458,7 +458,7 @@ export function FilterPanel({
                   />
                 </div>
               </FilterSection>
-            </motion.div>
+            </m.div>
 
             {/* Footer */}
             <div className="border-t border-border px-6 py-4 flex items-center justify-between shrink-0">
@@ -482,7 +482,7 @@ export function FilterPanel({
                 Show {resultsCount.toLocaleString()} places
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>
@@ -505,7 +505,7 @@ const sectionVariants = {
 
 function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, children }: FilterSectionProps) {
   return (
-    <motion.div className="border-b border-border/50 last:border-b-0" variants={sectionVariants}>
+    <m.div className="border-b border-border/50 last:border-b-0" variants={sectionVariants}>
       <button
         onClick={onToggle}
         className="flex items-center justify-between w-full py-3.5 group"
@@ -557,7 +557,7 @@ function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, chil
       </button>
       <AnimatePresence initial={false}>
         {isExpanded && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -567,10 +567,10 @@ function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, chil
             <div className="pb-4">
               {children}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }
 

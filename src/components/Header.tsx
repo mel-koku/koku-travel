@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 import IdentityBadge, { useAuthState } from "@/components/ui/IdentityBadge";
 import { Dropdown } from "@/components/ui/Dropdown";
@@ -257,7 +257,7 @@ export default function Header() {
         Skip to main content
       </a>
 
-      <motion.header
+      <m.header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
           isOverHero ? "bg-transparent backdrop-blur-xl" : "bg-background/100"
@@ -360,7 +360,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </motion.header>
+      </m.header>
 
       {/* Full-screen menu overlay */}
       <MenuOverlay

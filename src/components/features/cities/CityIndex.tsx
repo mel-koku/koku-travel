@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { typography } from "@/lib/typography-system";
 import { CityCard } from "./CityCard";
 import type { CityPageData } from "@/lib/cities/cityData";
@@ -30,30 +30,30 @@ export function CityIndex({ regions, totalCities }: Props) {
       {/* Hero */}
       <section className="pt-32 pb-12 sm:pt-40 sm:pb-16 px-6">
         <div className="mx-auto max-w-7xl">
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="eyebrow-editorial text-brand-primary"
           >
             {totalCities} cities across Japan
-          </motion.p>
-          <motion.h1
+          </m.p>
+          <m.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className={`mt-3 ${typography({ intent: "editorial-h1" })}`}
           >
             Cities of Japan
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-4 max-w-xl text-lg text-foreground-secondary"
           >
             From neon-lit capitals to mountain onsen towns. Find your next destination.
-          </motion.p>
+          </m.p>
         </div>
       </section>
 
@@ -64,7 +64,7 @@ export function CityIndex({ regions, totalCities }: Props) {
           className={`py-12 sm:py-16 ${ri % 2 === 1 ? "bg-canvas" : ""}`}
         >
           <div className="mx-auto max-w-7xl px-6">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -76,7 +76,7 @@ export function CityIndex({ regions, totalCities }: Props) {
               <p className="mt-1.5 text-sm text-foreground-secondary">
                 {region.tagline}
               </p>
-            </motion.div>
+            </m.div>
 
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {region.cities.map((city, i) => (

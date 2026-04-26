@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import {
   Accessibility,
   ChevronDown,
@@ -199,7 +199,7 @@ export function OptionsSection(props: OptionsSectionProps) {
 
         <AnimatePresence initial={false}>
           {isInlineOpen && !isModalOpen && (
-            <motion.div
+            <m.div
               key="inline-body"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -208,7 +208,7 @@ export function OptionsSection(props: OptionsSectionProps) {
               className="overflow-hidden border-t border-border"
             >
               <div className="px-4 pt-4 pb-5">{body}</div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

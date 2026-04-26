@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 type MenuTriggerProps = {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export function MenuTrigger({ isOpen, onToggle, color = "charcoal" }: MenuTrigge
       aria-expanded={isOpen}
     >
       <div className="relative flex h-4 w-6 flex-col items-center justify-center">
-        <motion.span
+        <m.span
           className={`absolute h-[2px] w-6 rounded-full ${lineColor}`}
           animate={
             isOpen
@@ -41,7 +41,7 @@ export function MenuTrigger({ isOpen, onToggle, color = "charcoal" }: MenuTrigge
           }
           transition={transition}
         />
-        <motion.span
+        <m.span
           className={`absolute h-[2px] w-6 rounded-full ${lineColor}`}
           animate={
             isOpen

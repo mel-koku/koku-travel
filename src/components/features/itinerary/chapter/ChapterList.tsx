@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useCallback } from "react";
-import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
+import { LayoutGroup, m, useReducedMotion } from "framer-motion";
 import { ChapterHeader } from "./ChapterHeader";
 import { Spine } from "./Spine";
 import { Beat } from "./Beat";
@@ -295,7 +295,7 @@ export function ChapterList({
                   const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
 
                   return (
-                    <motion.div
+                    <m.div
                       key={beat.id}
                       layout={prefersReducedMotion ? false : "position"}
                       transition={{ duration: durationBase, ease: easeEditorialMut }}
@@ -322,7 +322,7 @@ export function ChapterList({
                       {beat.transitToNext && beatIdx < day.beats.length - 1 && (
                         <BeatTransit {...beat.transitToNext} />
                       )}
-                    </motion.div>
+                    </m.div>
                   );
                 })}
                 </LayoutGroup>

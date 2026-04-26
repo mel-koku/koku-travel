@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import { AnimatePresence, m, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
 import { EntryPointStep } from "./EntryPointStep";
@@ -115,7 +115,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
 
       {/* Step Content */}
       <AnimatePresence mode="wait" custom={direction}>
-        <motion.div
+        <m.div
           key={`step-${currentStep}`}
           custom={direction}
           variants={variants}
@@ -220,7 +220,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               />
             </StepShell>
           )}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </div>
   );

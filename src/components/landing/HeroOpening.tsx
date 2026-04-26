@@ -1,12 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-} from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { SplitText } from "@/components/ui/SplitText";
@@ -135,11 +130,11 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
       className="relative h-[100dvh] w-full overflow-hidden bg-background"
     >
       {/* Image layer: scroll parallax (outer) + entrance animation (inner) */}
-      <motion.div
+      <m.div
         className="absolute inset-0 will-change-transform"
         style={{ y: imageY }}
       >
-        <motion.div
+        <m.div
           className="absolute inset-0"
           initial={{ opacity: 0.005, scale: 1.08 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -174,11 +169,11 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
           />
           {/* Grain texture */}
           <div className="texture-grain pointer-events-none absolute inset-0 z-10" />
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
       {/* Content layer: bottom-left editorial, fades out on scroll */}
-      <motion.div
+      <m.div
         className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left"
         style={{
           opacity: contentOpacity,
@@ -202,17 +197,17 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
           </SplitText>
 
           {/* Supporting line */}
-          <motion.p
+          <m.p
             initial={{ opacity: 0.005, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.4, ease: easeReveal }}
             className="mt-5 max-w-lg text-base text-white/80 sm:text-lg"
           >
             {description}
-          </motion.p>
+          </m.p>
 
           {/* CTA */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0.005, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.6, ease: easeReveal }}
@@ -228,10 +223,10 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
               {primaryCta}
             </Button>
             <p className="mt-4 text-xs text-white/70">{freePreviewNote}</p>
-          </motion.div>
+          </m.div>
         </div>
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }

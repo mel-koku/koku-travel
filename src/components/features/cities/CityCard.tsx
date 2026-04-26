@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { memo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 
 const FALLBACK_IMAGE =
@@ -35,7 +35,7 @@ export const CityCard = memo(function CityCard({
   const imageSrc = resizePhotoUrl(heroImage, 800) ?? FALLBACK_IMAGE;
 
   return (
-    <motion.article
+    <m.article
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
@@ -92,6 +92,6 @@ export const CityCard = memo(function CityCard({
           </div>
         </div>
       </Link>
-    </motion.article>
+    </m.article>
   );
 });

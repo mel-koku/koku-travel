@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { getActiveCraftHighlights } from "@/data/craftSeasons";
 import { getCraftTypeColor } from "@/data/craftTypes";
 import type { CraftTypeId } from "@/data/craftTypes";
@@ -24,7 +24,7 @@ export function CraftSeasonalBanner({ onSelectCraftType }: CraftSeasonalBannerPr
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4">
       <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory overscroll-contain pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
         {highlights.map((h, i) => (
-          <motion.button
+          <m.button
             key={h.craftType}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -44,7 +44,7 @@ export function CraftSeasonalBanner({ onSelectCraftType }: CraftSeasonalBannerPr
                 {h.description}
               </p>
             </div>
-          </motion.button>
+          </m.button>
         ))}
       </div>
     </section>

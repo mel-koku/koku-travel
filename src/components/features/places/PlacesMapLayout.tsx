@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type UIEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -264,7 +264,7 @@ export function PlacesMapLayout({
       <AnimatePresence>
         {isChatOpen && (
           <>
-            <motion.div
+            <m.div
               className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -272,7 +272,7 @@ export function PlacesMapLayout({
               transition={{ duration: durationFast, ease: easeReveal }}
               onClick={onChatClose}
             />
-            <motion.div
+            <m.div
               data-lenis-prevent
               className="fixed z-50 flex flex-col bg-background shadow-[var(--shadow-elevated)]
                 inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[480px] sm:max-w-[95vw] sm:border-l sm:border-border"
@@ -293,7 +293,7 @@ export function PlacesMapLayout({
                 </button>
               </div>
               <AskYukuChat onClose={onChatClose} />
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

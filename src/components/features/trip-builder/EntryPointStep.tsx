@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Plane } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -325,14 +325,14 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             STEP 02
           </p>
 
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
             className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
           >
             {sanityConfig?.entryPointHeading ?? "Where will you land?"}
-          </motion.h2>
+          </m.h2>
 
           <p className="mt-2 text-sm text-stone">
             {sanityConfig?.entryPointDescription ?? "Optional. We\u2019ll route from there."}
@@ -341,7 +341,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
           {/* Selected airport display */}
           <AnimatePresence mode="wait">
             {data.entryPoint && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -378,14 +378,14 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     hintColorClass="text-sage"
                   />
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
           {/* Departure airport section — shown after entry point is selected */}
           <AnimatePresence>
             {data.entryPoint && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
@@ -428,7 +428,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   {/* Exit airport selection — only when "Different" is chosen */}
                   <AnimatePresence>
                     {!sameAsEntry && (
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
@@ -469,7 +469,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                             />
                           </div>
                         )}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
 
@@ -487,13 +487,13 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     />
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
           {/* Flight paste + Airport search + cards grid */}
           {!data.entryPoint && !isLoading && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -523,7 +523,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 noResultsText={sanityConfig?.entryPointNoResults ?? "No airports found"}
                 popularLabelClassName="mb-2 mt-4"
               />
-            </motion.div>
+            </m.div>
           )}
 
           {isLoading && (
@@ -794,7 +794,7 @@ function JapanSilhouette({
               <g key={airport.iataCode} className="cursor-pointer">
                 {/* Pulse ring for selected entry */}
                 {isSelected && (
-                  <motion.circle
+                  <m.circle
                     cx={pos.x}
                     cy={pos.y}
                     r={12}
@@ -809,7 +809,7 @@ function JapanSilhouette({
 
                 {/* Pulse ring for selected exit */}
                 {isExitSelected && !isSelected && (
-                  <motion.circle
+                  <m.circle
                     cx={pos.x}
                     cy={pos.y}
                     r={12}
@@ -844,7 +844,7 @@ function JapanSilhouette({
                 />
 
                 {/* Marker dot */}
-                <motion.circle
+                <m.circle
                   cx={pos.x}
                   cy={pos.y}
                   r={isSelected || isExitSelected ? 5 : isTop ? 3.5 : 2}

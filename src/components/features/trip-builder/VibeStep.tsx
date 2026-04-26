@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
@@ -85,33 +85,33 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           STEP 03
         </p>
 
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
           {sanityConfig?.vibeStepHeading ?? "How do you want to spend your days?"}
-        </motion.h2>
+        </m.h2>
 
-        <motion.p
+        <m.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="mt-2 text-sm text-stone"
         >
           {sanityConfig?.vibeStepDescription ?? "Pick up to 3. These shape what we schedule."}
-        </motion.p>
+        </m.p>
 
         <div aria-live="polite">
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="mt-3 font-mono text-xs tracking-wide text-stone/70"
           >
             {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
-          </motion.p>
+          </m.p>
           {hasPrefilledVibes && (
             <p className="mt-1 text-xs text-stone">Pre-selected from your profile</p>
           )}
@@ -120,25 +120,25 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
 
       {/* Vibe list */}
       <div className="mx-auto mt-6 w-full max-w-2xl px-4 pb-24 sm:px-6 lg:mt-8">
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.15 }}
           className="overflow-hidden rounded-lg border border-border bg-card divide-y divide-border"
         >
           {TRIP_BUILDER_VIBES.map((vibe, i) => renderVibe(vibe, i))}
-        </motion.div>
+        </m.div>
 
         {/* Warning when max reached */}
         {isMaxSelected && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="mt-4 text-center text-sm text-warning"
           >
             {(sanityConfig?.vibeStepMaxWarning ?? "All {max} picked. Tap one to swap it.").replace("{max}", String(MAX_VIBE_SELECTION))}
-          </motion.p>
+          </m.p>
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { durationFast, easeReveal } from "@/lib/motion";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { cn } from "@/lib/cn";
@@ -115,7 +115,7 @@ export function ArticleFloatingCTA({
   return (
     <AnimatePresence>
       {showPill && (
-        <motion.div
+        <m.div
           key="floating-cta-mobile"
           className="fixed inset-x-0 bottom-0 z-30"
           initial={{ opacity: 0, y: 20 }}
@@ -190,7 +190,7 @@ export function ArticleFloatingCTA({
               </button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

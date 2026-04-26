@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { parallaxHero, durationEpic, easeScrollIndicator } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
@@ -128,7 +128,7 @@ export function GuideHero({
       {/* Sticky viewport */}
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         {/* Image with subtle scale */}
-        <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
+        <m.div className="absolute inset-0" style={{ scale: imageScale }}>
           {hasImage ? (
             <Image
               src={featuredImage}
@@ -141,13 +141,13 @@ export function GuideHero({
           ) : (
             <div className="h-full w-full bg-charcoal" />
           )}
-        </motion.div>
+        </m.div>
 
         {overlays}
         {titleContent}
 
         {/* Scroll indicator */}
-        <motion.div
+        <m.div
           className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 hidden sm:block"
           style={{ opacity: scrollIndicatorOpacity }}
         >
@@ -156,7 +156,7 @@ export function GuideHero({
               Scroll
             </span>
             <div className="relative h-12 w-px overflow-hidden">
-              <motion.div
+              <m.div
                 animate={{ y: [0, 48, 0] }}
                 transition={{
                   duration: durationEpic,
@@ -167,7 +167,7 @@ export function GuideHero({
               />
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

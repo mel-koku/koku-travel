@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { easeRevealMut, staggerItem, durationMicro } from "@/lib/motion";
@@ -98,7 +98,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
   };
 
   return (
-    <motion.nav
+    <m.nav
       className="flex h-full flex-col px-4 py-12 sm:px-6 lg:px-12"
       variants={containerVariants}
       initial="hidden"
@@ -106,7 +106,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
       exit="exit"
     >
       {/* Logo */}
-      <motion.div className="mb-8" variants={itemVariants}>
+      <m.div className="mb-8" variants={itemVariants}>
         <Link
           href="/"
           onClick={onClose}
@@ -121,13 +121,13 @@ export function MenuNav({ onClose }: MenuNavProps) {
             </span>
           </span>
         </Link>
-      </motion.div>
+      </m.div>
 
       <div className="flex flex-col gap-2 sm:gap-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
-            <motion.div key={item.href} variants={itemVariants}>
+            <m.div key={item.href} variants={itemVariants}>
               <Link
                 href={item.href}
                 onClick={onClose}
@@ -152,13 +152,13 @@ export function MenuNav({ onClose }: MenuNavProps) {
                     />
                   </span>
                 </Link>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>
 
       {/* Bottom section: secondary links */}
-      <motion.div
+      <m.div
         className="mt-auto flex flex-col gap-3 border-t border-border pt-6"
         variants={bottomVariants}
       >
@@ -229,7 +229,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             />
           </svg>
         </button>
-      </motion.div>
-    </motion.nav>
+      </m.div>
+    </m.nav>
   );
 }

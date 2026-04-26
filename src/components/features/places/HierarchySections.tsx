@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Clock } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -33,7 +33,7 @@ export function ChildLocationsSection({
   if (childLocations.length === 0) return null;
 
   return (
-    <motion.section
+    <m.section
       variants={fadeUp}
       initial="hidden"
       animate="visible"
@@ -52,7 +52,7 @@ export function ChildLocationsSection({
           />
         ))}
       </div>
-    </motion.section>
+    </m.section>
   );
 }
 
@@ -173,7 +173,7 @@ export function SubExperiencesSection({
   const timeVariants = subExperiences.filter((s) => s.subType === "time_variant");
 
   return (
-    <motion.section
+    <m.section
       variants={fadeUp}
       initial="hidden"
       animate="visible"
@@ -224,7 +224,7 @@ export function SubExperiencesSection({
           </div>
         </div>
       )}
-    </motion.section>
+    </m.section>
   );
 }
 
@@ -270,7 +270,7 @@ export function RelationshipsSection({
   return (
     <>
       {inThisArea.length > 0 && (
-        <motion.section
+        <m.section
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -290,10 +290,10 @@ export function RelationshipsSection({
               />
             ))}
           </div>
-        </motion.section>
+        </m.section>
       )}
       {alternatives.length > 0 && (
-        <motion.section
+        <m.section
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -318,7 +318,7 @@ export function RelationshipsSection({
               </div>
             ))}
           </div>
-        </motion.section>
+        </m.section>
       )}
     </>
   );

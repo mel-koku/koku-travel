@@ -6,6 +6,9 @@ vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: Record<string, unknown>) => <div {...props}>{children as React.ReactNode}</div>,
   },
+  m: {
+    div: ({ children, ...props }: Record<string, unknown>) => <div {...props}>{children as React.ReactNode}</div>,
+  },
   useScroll: () => ({ scrollYProgress: { get: () => 0 } }),
   useTransform: () => ({ get: () => 1 }),
   useReducedMotion: () => false,
