@@ -23,6 +23,7 @@ export type RegionScore = {
   totalScore: number; // Combined weighted score
   isRecommended: boolean; // True if in top 3
   isEntryPointRegion: boolean; // True if this is the entry point's region
+  isExitPointRegion: boolean; // True if this is the exit point's region
 };
 
 // Haversine distance imported from @/lib/utils/geoUtils
@@ -88,9 +89,11 @@ function calculateProximityScore(
  */
 export function scoreRegionsForTrip(
   vibes: VibeId[],
-  entryPoint?: EntryPoint
+  entryPoint?: EntryPoint,
+  exitPoint?: EntryPoint
 ): RegionScore[] {
   const entryPointRegionId = entryPoint?.region;
+  const exitPointRegionId = exitPoint?.region;
 
   const scoredRegions = REGION_DESCRIPTIONS.map((region) => {
     const matchScore = calculateVibeMatch(region, vibes);
@@ -106,6 +109,7 @@ export function scoreRegionsForTrip(
       totalScore,
       isRecommended: false, // Will be set after sorting
       isEntryPointRegion: region.id === entryPointRegionId,
+      isExitPointRegion: exitPointRegionId !== undefined && region.id === exitPointRegionId,
     };
   });
 
