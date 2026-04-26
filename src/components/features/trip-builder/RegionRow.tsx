@@ -66,11 +66,11 @@ export function RegionRow({
         ease: easeCinematicMut,
       }}
       className={cn(
-        "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left transition-colors duration-300 lg:px-5 lg:py-5",
+        "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left backdrop-blur-sm transition-colors duration-300 lg:px-5 lg:py-5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         hasSelection
-          ? "border-border bg-brand-primary/5"
-          : "border-border/50 hover:border-border",
+          ? "border-border bg-brand-primary/10"
+          : "border-border/50 bg-canvas/80 hover:border-border hover:bg-canvas/90",
       )}
     >
       {/* Selection checkbox */}
