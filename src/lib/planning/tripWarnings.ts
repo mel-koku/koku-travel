@@ -651,7 +651,10 @@ function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
 
   if (relevant.length === 0) return [];
 
-  // Show up to 2 festival warnings
+  // Show up to 2 festival warnings.
+  // Each carries an `include_festival` action so the FestivalIncludeCard
+  // can offer a one-click opt-in. The card itself decides when to render
+  // the CTA (e.g. only pre-generation in the trip builder).
   return relevant.slice(0, 2).map((f) => ({
     id: `festival-${f.id}`,
     type: "festival" as const,
@@ -659,6 +662,12 @@ function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
     title: `${f.name} (${f.nameJa})`,
     message: f.description,
     icon: Sparkles,
+    action: "include_festival",
+    actionData: {
+      festivalId: f.id,
+      festivalName: f.name,
+      festivalCity: f.city,
+    },
   }));
 }
 

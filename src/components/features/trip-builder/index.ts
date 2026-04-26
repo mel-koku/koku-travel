@@ -23,6 +23,7 @@ export { PreferenceCard } from "./PreferenceCard";
 export { OptionsSection } from "./OptionsSection";
 export type { OptionsFormValues } from "./OptionsSection";
 export { FestivalNearMissCard } from "./FestivalNearMissCard";
+export { FestivalIncludeCard } from "./FestivalIncludeCard";
 export { GeneratingOverlay } from "./GeneratingOverlay";
 
 // Shared components
