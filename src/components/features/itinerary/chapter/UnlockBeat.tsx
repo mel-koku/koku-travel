@@ -3,8 +3,10 @@
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
 import { Button } from "@/components/ui/Button";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 export type UnlockBeatProps = {
+  /** City IDs (e.g. "tokyo"). Display names are resolved via formatCityName. */
   cities: string[];
   totalDays: number;
   priceLabel: string;
@@ -23,7 +25,7 @@ export function UnlockBeat({
   loginRequired,
   onUnlock,
 }: UnlockBeatProps) {
-  const cityList = cities.slice(0, 3).join(", ");
+  const cityList = cities.slice(0, 3).map(formatCityName).join(", ");
   const overflow = cities.length > 3 ? ` + ${cities.length - 3} more` : "";
 
   return (

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Check } from "lucide-react";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import type { EntryPoint } from "@/types/trip";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 const APPLIED_CONFIRMATION_MS = 1800;
 
@@ -103,7 +104,7 @@ export function AccommodationPicker({
             className="inline-flex items-center gap-1 text-xs font-medium text-success"
           >
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
-            Applied to all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
+            Applied to all {formatCityName(cityId)} days
           </span>
         ) : (
           <button
@@ -111,7 +112,7 @@ export function AccommodationPicker({
             onClick={handleApplyToCity}
             className="text-xs font-medium text-brand-primary transition-colors hover:text-brand-primary/80"
           >
-            Use for all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
+            Use for all {formatCityName(cityId)} days
           </button>
         ))}
     </div>

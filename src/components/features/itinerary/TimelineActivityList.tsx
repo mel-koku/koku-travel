@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { buildDayLabel } from "@/lib/itinerary/dayLabel";
+import { buildDayLabel, formatCityName } from "@/lib/itinerary/dayLabel";
 import type {
   ItineraryActivity,
   ItineraryDay,
@@ -493,7 +493,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                 {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isLateArrival && !lateArrivalDismissed && (
                   <li className="list-none mt-3">
                     <LateArrivalCard
-                      city={day.cityId ?? "your destination"}
+                      city={day.cityId ? formatCityName(day.cityId) : "your destination"}
                       onDismiss={() => setLateArrivalDismissed(true)}
                     />
                   </li>
@@ -501,7 +501,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                 {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isEarlyArrival && !day.isLateArrival && !earlyArrivalDismissed && (
                   <li className="list-none mt-3">
                     <EarlyArrivalCard
-                      city={day.cityId ?? "your destination"}
+                      city={day.cityId ? formatCityName(day.cityId) : "your destination"}
                       onDismiss={() => setEarlyArrivalDismissed(true)}
                     />
                   </li>

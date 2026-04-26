@@ -7,6 +7,7 @@ import type { DetectedGap } from "./types";
 import { getEveningSuggestions, formatEveningSuggestions } from "@/data/nightActivities";
 import { getOmiyageForCity, formatOmiyageItems } from "@/data/omiyageGuide";
 import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 /**
  * Detect days ending before 20:00 that could benefit from evening activities.
@@ -71,7 +72,7 @@ export function detectOmiyageReminders(
     const day = itinerary.days[dayIndex];
     if (!day) continue;
 
-    const cityLabel = city.charAt(0).toUpperCase() + city.slice(1);
+    const cityLabel = formatCityName(city);
     const omiyage = getOmiyageForCity(city, 3);
     const omiyageItems = formatOmiyageItems(omiyage);
     const omiyageText = omiyage.length > 0

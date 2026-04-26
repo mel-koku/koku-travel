@@ -25,6 +25,7 @@ import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ChapterList } from "@/components/features/itinerary/chapter/ChapterList";
 import { toChapterDays } from "@/lib/itinerary/toChapterDays";
 import { resolveEffectiveDayEntryPoints } from "@/lib/itinerary/accommodationDefaults";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
@@ -960,7 +961,7 @@ export const ItineraryShell = ({
             onClose={() => setAddPlaceDialogOpen(false)}
             days={model.days.map((d, idx) => ({
               index: idx,
-              label: `Day ${idx + 1}${d.cityId ? ` · ${d.cityId}` : ""}`,
+              label: `Day ${idx + 1}${d.cityId ? ` · ${formatCityName(d.cityId)}` : ""}`,
               activities: d.activities,
             }))}
             defaultDayIndex={safeSelectedDay}

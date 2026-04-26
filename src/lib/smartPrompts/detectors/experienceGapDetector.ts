@@ -6,6 +6,7 @@ import type { ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { DetectedGap } from "./types";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 import { getSuggestedAlternatives, formatCategoryName } from "./helpers";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 /**
  * Detect experience gaps (light days that could use more activities).
@@ -149,7 +150,7 @@ export function detectGuideSuggestions(day: ItineraryDay, dayIndex: number): Det
 
   const isCraftMajority = craftCount > eligibleCount / 2;
   const personType = isCraftMajority ? "artisan" : "guide";
-  const cityName = day.cityId ?? "this area";
+  const cityName = day.cityId ? formatCityName(day.cityId) : "this area";
 
   return [
     {

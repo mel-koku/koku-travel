@@ -7,6 +7,7 @@ import type { DetectedGap } from "./types";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
 import { getEveningSuggestions } from "@/data/nightActivities";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 /**
  * Detect long gaps between activities (>2.5 hours).
@@ -206,6 +207,7 @@ export function detectLateArrival(day: ItineraryDay, dayIndex: number): Detected
   if (dayIndex !== 0 || !day.isLateArrival) return [];
 
   const city = day.cityId ?? "your destination";
+  const cityLabel = day.cityId ? formatCityName(day.cityId) : "your destination";
   const suggestions = getEveningSuggestions(city, 3);
   const suggestionNames = suggestions.map((s) => s.name);
 
@@ -216,7 +218,7 @@ export function detectLateArrival(day: ItineraryDay, dayIndex: number): Detected
       dayIndex,
       dayId: day.id,
       title: "You get in late today",
-      description: `Take it easy tonight and start fresh tomorrow, or explore late-night ${city}: ${suggestionNames.join(", ")}.`,
+      description: `Take it easy tonight and start fresh tomorrow, or explore late-night ${cityLabel}: ${suggestionNames.join(", ")}.`,
       icon: "Moon",
       action: {
         type: "acknowledge_late_arrival",
@@ -235,6 +237,7 @@ export function detectEarlyArrival(day: ItineraryDay, dayIndex: number): Detecte
   if (dayIndex !== 0 || !day.isEarlyArrival) return [];
 
   const city = day.cityId ?? "your destination";
+  const cityLabel = day.cityId ? formatCityName(day.cityId) : "your destination";
 
   return [
     {
@@ -243,7 +246,7 @@ export function detectEarlyArrival(day: ItineraryDay, dayIndex: number): Detecte
       dayIndex,
       dayId: day.id,
       title: "Arrived before sunrise",
-      description: `Most things open from 09:00. We've cleared Day 1 so you can settle in. Pick up activities tomorrow in ${city}.`,
+      description: `Most things open from 09:00. We've cleared Day 1 so you can settle in. Pick up activities tomorrow in ${cityLabel}.`,
       icon: "Sunrise",
       action: {
         type: "acknowledge_early_arrival",

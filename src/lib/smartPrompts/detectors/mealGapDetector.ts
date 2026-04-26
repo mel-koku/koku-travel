@@ -5,6 +5,7 @@
 import type { ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { DetectedGap } from "./types";
 import { getCoveredMealTypes } from "@/lib/smartPrompts/foodDetection";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 /**
  * Detect meal gaps in a day with smarter contextual messaging.
@@ -27,7 +28,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
 
   if (morningActivities.length > 0 && !hasBreakfast) {
     const firstActivity = morningActivities[0];
-    const cityName = day.cityId ?? "the area";
+    const cityName = day.cityId ? formatCityName(day.cityId) : "the area";
 
     // Restaurant breakfast option
     gaps.push({
@@ -79,7 +80,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
   if (afternoonActivities.length >= 2 && !hasLunch) {
     const lastMorningActivity = morningActivities[morningActivities.length - 1];
     const firstAfternoonActivity = activities.find((a) => a.timeOfDay === "afternoon");
-    const cityName = day.cityId ?? "the area";
+    const cityName = day.cityId ? formatCityName(day.cityId) : "the area";
 
     let description = `No lunch planned in ${cityName}.`;
     if (lastMorningActivity) {
@@ -138,7 +139,7 @@ export function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap
     const lastActivity = activities[activities.length - 1];
     const lastAfternoonActivity = activities.filter((a) => a.timeOfDay === "afternoon").pop();
     const contextActivity = lastAfternoonActivity ?? lastActivity;
-    const cityName = day.cityId ?? "the area";
+    const cityName = day.cityId ? formatCityName(day.cityId) : "the area";
 
     let description = `No dinner on Day ${dayIndex + 1}.`;
     if (contextActivity) {
