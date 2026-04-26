@@ -1,67 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
-import {
-  Wallet,
-  Gauge,
-  Users,
-  Accessibility,
-  StickyNote,
-} from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
-import { PreferenceCard } from "./PreferenceCard";
 import { FestivalNearMissCard } from "./FestivalNearMissCard";
-import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
+import { OptionsSection, type OptionsFormValues } from "./OptionsSection";
+import { type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { getTripTier, getTierPriceDollars } from "@/lib/billing/access";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
-import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import type { TripStyle, KnownCityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
-
-type PreferenceFormValues = {
-  groupSize?: number;
-  groupType?: "solo" | "couple" | "family" | "friends" | "business" | "";
-  childrenAges?: string;
-  travelStyle?: TripStyle | "";
-  mobilityAssistance?: boolean;
-  dietary?: string[];
-  dietaryOther?: string;
-  additionalNotes?: string;
-};
-
-const DIETARY_OPTIONS = [
-  { id: "vegetarian", label: "Vegetarian" },
-  { id: "vegan", label: "Vegan" },
-  { id: "halal", label: "Halal" },
-  { id: "kosher", label: "Kosher" },
-  { id: "gluten-free", label: "Gluten-Free" },
-  { id: "dairy-free", label: "Dairy-Free" },
-  { id: "other", label: "Other" },
-];
-
-
-const PACE_OPTIONS = [
-  { label: "Relaxed", value: "relaxed", description: "Late starts, long lunches, fewer stops" },
-  { label: "Balanced", value: "balanced", description: "Steady pace. Room to breathe." },
-  { label: "Full", value: "fast", description: "Early to late, covering more ground" },
-];
-
-const GROUP_TYPE_SEGMENTS = [
-  { label: "Solo", value: "solo" },
-  { label: "Couple", value: "couple" },
-  { label: "Family", value: "family" },
-  { label: "Friends", value: "friends" },
-];
-
 
 export type ReviewStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -90,7 +46,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     return undefined;
   }, [data.budget?.perDay, data.budget?.total, budgetMode]);
 
-  const defaultValues = useMemo<PreferenceFormValues>(
+  const defaultValues = useMemo<OptionsFormValues>(
     () => ({
       groupSize: data.group?.size,
       groupType: data.group?.type ?? "",
@@ -104,7 +60,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     [data]
   );
 
-  const { control, register, setValue } = useForm<PreferenceFormValues>({
+  const { control, register, setValue } = useForm<OptionsFormValues>({
     defaultValues,
     mode: "onChange",
   });
@@ -120,6 +76,13 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     },
     [setData]
   );
+
+  const handleToggleFirstTime = useCallback(() => {
+    setData((prev) => ({
+      ...prev,
+      isFirstTimeVisitor: !prev.isFirstTimeVisitor,
+    }));
+  }, [setData]);
 
   const syncToContext = useCallback(() => {
     const childrenAges =
@@ -180,7 +143,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     if (duration && regionStr) return `${duration} days in ${regionStr}`;
     if (duration) return `${duration} days in Japan`;
     if (regionStr) return `Your trip to ${regionStr}`;
-    return "Here\u2019s what you\u2019ve got so far";
+    return "Here’s what you’ve got so far";
   }, [data.cities, data.regions, data.duration]);
 
   const durationWarning = useMemo(
@@ -200,7 +163,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
 
   return (
     <div className="flex flex-col gap-8 pt-4 pb-32 lg:pb-8">
-      {/* Step heading — centered, spans both columns */}
+      {/* Step heading */}
       <div className="text-center">
         <p className="eyebrow-editorial text-brand-primary">STEP 05</p>
         <motion.h2
@@ -222,9 +185,8 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         )}
       </div>
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Left — Trip Summary (accommodation inline in Route & Stays) */}
+      {/* Single centered column — plan-forward */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <TripSummaryEditorial
           onEditDates={handleEditDates}
           onEditEntryPoint={handleEditEntryPoint}
@@ -245,276 +207,46 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           }}
         />
 
-        {/* Right — Settings, preferences, warnings */}
-        <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
-          {/* Toggles */}
-          <div className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
-            <div>
-              <p className="text-sm font-medium text-foreground">First time in Japan?</p>
-              <p className="text-xs text-stone">Day 1 paced gently with orientation tips.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setData((prev) => ({
-                  ...prev,
-                  isFirstTimeVisitor: !prev.isFirstTimeVisitor,
-                }))
-              }
-              className={cn(
-                "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-                data.isFirstTimeVisitor ? "bg-brand-primary" : "bg-border"
-              )}
-            >
-              <span
-                className={cn(
-                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
-                  data.isFirstTimeVisitor && "translate-x-5"
-                )}
-              />
-            </button>
-          </div>
+        {/* Festival near-miss stays inline directly under Route & Stays */}
+        <FestivalNearMissCard />
 
-          {hasProfileDefaults && (
-            <p className="text-xs text-stone">Some fields pre-filled from your profile.</p>
-          )}
-
-          {/* Pace — segmented control */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-stone" />
-                <p className="text-sm font-medium text-foreground">Pace</p>
-              </div>
-              <Controller
-                control={control}
-                name="travelStyle"
-                render={({ field }) => (
-                  <div className="flex rounded-lg border border-border bg-background p-0.5">
-                    {PACE_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => field.onChange(field.value === option.value ? "" : option.value)}
-                        className={cn(
-                          "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-                          field.value === option.value
-                            ? "bg-brand-primary text-white shadow-[var(--shadow-sm)]"
-                            : "text-stone hover:text-foreground"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              />
-            </div>
-            <Controller
-              control={control}
-              name="travelStyle"
-              render={({ field }) => {
-                const selected = PACE_OPTIONS.find((o) => o.value === field.value);
-                return selected ? (
-                  <p className="mt-1.5 text-xs text-stone">{selected.description}</p>
-                ) : <></>;
-              }}
-            />
-          </div>
-
-          {/* Group — segmented type + inline size */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-stone" />
-                <p className="text-sm font-medium text-foreground">Group</p>
-              </div>
-              <Controller
-                control={control}
-                name="groupType"
-                render={({ field }) => (
-                  <div className="flex rounded-lg border border-border bg-background p-0.5">
-                    {GROUP_TYPE_SEGMENTS.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => field.onChange(field.value === option.value ? "" : option.value)}
-                        className={cn(
-                          "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
-                          field.value === option.value
-                            ? "bg-brand-primary text-white shadow-[var(--shadow-sm)]"
-                            : "text-stone hover:text-foreground"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              />
-            </div>
-            {(formValues.groupType === "family" || formValues.groupType === "friends") && (
-              <div className="mt-2 flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="group-size-inline" className="text-xs text-stone">Adults</label>
-                  <Input
-                    id="group-size-inline"
-                    type="number"
-                    min={1}
-                    max={20}
-                    placeholder="2"
-                    className="h-8 w-16 min-h-0 text-center text-xs"
-                    {...register("groupSize", { valueAsNumber: true })}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <label htmlFor="children-ages-inline" className="text-xs text-stone whitespace-nowrap">Kids ages</label>
-                  <Input
-                    id="children-ages-inline"
-                    placeholder="5, 8"
-                    className="h-8 w-24 min-h-0 text-xs"
-                    {...register("childrenAges")}
-                  />
-                </div>
-              </div>
+        {/* Duration warning */}
+        {durationWarning && (
+          <div
+            role="alert"
+            className={cn(
+              "flex items-start gap-3 rounded-lg border px-4 py-3",
+              durationWarning.severity === "warning"
+                ? "border-warning/30 bg-warning/5"
+                : "border-sage/30 bg-sage/5"
             )}
+          >
+            <span className="mt-0.5 shrink-0 text-sm">
+              {durationWarning.severity === "warning" ? "⚠️" : "ℹ️"}
+            </span>
+            <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
           </div>
+        )}
 
-          {/* Access — mobility toggle + dietary pills */}
-          <div className="rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-brand-primary/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Accessibility className="h-4 w-4 text-stone" />
-                <p className="text-sm font-medium text-foreground">Mobility assistance</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setValue("mobilityAssistance", !formValues.mobilityAssistance)}
-                className={cn(
-                  "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-                  formValues.mobilityAssistance ? "bg-brand-primary" : "bg-border"
-                )}
-              >
-                <span
-                  className={cn(
-                    "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-[var(--shadow-sm)]",
-                    formValues.mobilityAssistance && "translate-x-5"
-                  )}
-                />
-              </button>
-            </div>
-            <div className="mt-2.5">
-              <p className="mb-1.5 text-xs text-stone">Dietary</p>
-              <div className="flex flex-wrap gap-1.5">
-                {DIETARY_OPTIONS.filter((o) => o.id !== "other").map((option) => {
-                  const isSelected = formValues.dietary?.includes(option.id);
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => {
-                        const current = formValues.dietary ?? [];
-                        const next = isSelected
-                          ? current.filter((id) => id !== option.id)
-                          : [...current, option.id];
-                        setValue("dietary", next);
-                      }}
-                      className={cn(
-                        "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
-                        isSelected
-                          ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
-                          : "border-border text-stone hover:text-foreground-secondary"
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const current = formValues.dietary ?? [];
-                    const has = current.includes("other");
-                    setValue("dietary", has ? current.filter((id) => id !== "other") : [...current, "other"]);
-                  }}
-                  className={cn(
-                    "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
-                    formValues.dietary?.includes("other")
-                      ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
-                      : "border-border text-stone hover:text-foreground-secondary"
-                  )}
-                >
-                  Other
-                </button>
-              </div>
-              {formValues.dietary?.includes("other") && (
-                <Input
-                  id="dietary-other-inline"
-                  placeholder="Please specify..."
-                  className="mt-2 h-8 min-h-0 text-xs"
-                  {...register("dietaryOther")}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Duration Warning */}
-          {durationWarning && (
-            <div
-              role="alert"
-              className={cn(
-                "flex items-start gap-3 rounded-lg border px-4 py-3",
-                durationWarning.severity === "warning"
-                  ? "border-warning/30 bg-warning/5"
-                  : "border-sage/30 bg-sage/5"
-              )}
-            >
-              <span className="mt-0.5 shrink-0 text-sm">
-                {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
-              </span>
-              <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
-            </div>
-          )}
-
-          {/* Festival near-miss card (C10) */}
-          <FestivalNearMissCard />
-
-          {/* Budget & Notes */}
-          <PreferenceCard
-              icon={<Wallet className="h-5 w-5" />}
-              title={sanityConfig?.reviewBudgetTitle ?? "Budget"}
-              optional
-              hasValue={budgetValue !== undefined}
-              summary={budgetValue ? `¥${budgetValue.amount.toLocaleString()}/${budgetValue.mode === "perDay" ? "day" : "total"}` : undefined}
-            >
-              <BudgetInput
-                id="budget-input"
-                duration={data.duration}
-                value={budgetValue}
-                onChange={handleBudgetChange}
-                onModeChange={setBudgetMode}
-              />
-            </PreferenceCard>
-
-            <PreferenceCard
-              icon={<StickyNote className="h-5 w-5" />}
-              title={sanityConfig?.reviewNotesTitle ?? "Notes"}
-              optional
-              hasValue={!!formValues.additionalNotes?.trim()}
-              summary={formValues.additionalNotes?.trim() ? `${formValues.additionalNotes.trim().slice(0, 30)}${formValues.additionalNotes.trim().length > 30 ? "..." : ""}` : undefined}
-            >
-              <textarea
-                id="additional-notes"
-                placeholder={sanityConfig?.reviewNotesPlaceholder ?? "Birthday dinner in Kyoto, must see Fushimi Inari, need wheelchair access..."}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                rows={4}
-                {...register("additionalNotes")}
-              />
-            </PreferenceCard>
-        </div>
+        {/* Single Options section — bundles all 7 preferences. */}
+        <OptionsSection
+          control={control}
+          register={register}
+          setValue={setValue}
+          formValues={formValues}
+          isFirstTimeVisitor={Boolean(data.isFirstTimeVisitor)}
+          onToggleFirstTime={handleToggleFirstTime}
+          budgetValue={budgetValue}
+          budgetMode={budgetMode}
+          onBudgetModeChange={setBudgetMode}
+          onBudgetChange={handleBudgetChange}
+          duration={data.duration}
+          showProfileHint={hasProfileDefaults}
+          budgetTitle={sanityConfig?.reviewBudgetTitle}
+          notesTitle={sanityConfig?.reviewNotesTitle}
+          notesPlaceholder={sanityConfig?.reviewNotesPlaceholder}
+        />
       </div>
-
     </div>
   );
 }
-

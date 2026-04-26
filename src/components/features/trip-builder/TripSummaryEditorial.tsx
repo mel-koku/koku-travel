@@ -293,73 +293,74 @@ export function TripSummaryEditorial({
   return (
     <div>
       <div className="flex flex-col gap-4">
-        {/* Dates */}
-        <SummaryItem
-          icon={<Calendar className="h-4 w-4" />}
-          label="Dates"
-          value={
-            formattedDates ? (
-              <span>
-                {formattedDates}
-                {data.duration && (
-                  <span className="ml-2 text-stone">
-                    ({data.duration - 1} night{data.duration - 1 !== 1 ? "s" : ""})
-                  </span>
-                )}
-              </span>
-            ) : (
-              <span className="text-stone">Not set</span>
-            )
-          }
-          onEdit={onEditDates}
-        />
+        {/* Dates + Flights — paired side-by-side on desktop, stack on mobile */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <SummaryItem
+            icon={<Calendar className="h-4 w-4" />}
+            label="Dates"
+            value={
+              formattedDates ? (
+                <span>
+                  {formattedDates}
+                  {data.duration && (
+                    <span className="ml-2 text-stone">
+                      ({data.duration - 1} night{data.duration - 1 !== 1 ? "s" : ""})
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-stone">Not set</span>
+              )
+            }
+            onEdit={onEditDates}
+          />
 
-        {/* Flights */}
-        <SummaryItem
-          icon={<Plane className="h-4 w-4" />}
-          label="Flights"
-          value={
-            data.entryPoint ? (
-              <div className="flex flex-col gap-0.5">
-                <span>
-                  <span className="text-stone">In:</span>{" "}
-                  {data.entryPoint.name}
-                  <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
-                    {data.entryPoint.iataCode}
-                  </span>
-                  {data.arrivalTime && (
-                    <span className="ml-2 text-xs text-stone">
-                      Landing {formatTime12h(data.arrivalTime)}
+          <SummaryItem
+            icon={<Plane className="h-4 w-4" />}
+            label="Flights"
+            value={
+              data.entryPoint ? (
+                <div className="flex flex-col gap-0.5">
+                  <span>
+                    <span className="text-stone">In:</span>{" "}
+                    {data.entryPoint.name}
+                    <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                      {data.entryPoint.iataCode}
                     </span>
-                  )}
-                </span>
-                <span>
-                  <span className="text-stone">Out:</span>{" "}
-                  {data.sameAsEntry !== false ? (
-                    "Same airport"
-                  ) : data.exitPoint ? (
-                    <>
-                      {data.exitPoint.name}
-                      <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
-                        {data.exitPoint.iataCode}
+                    {data.arrivalTime && (
+                      <span className="ml-2 text-xs text-stone">
+                        Landing {formatTime12h(data.arrivalTime)}
                       </span>
-                    </>
-                  ) : (
-                    "Same airport"
-                  )}
-                  {data.departureTime && (
-                    <span className="ml-2 text-xs text-stone">
-                      Departing {formatTime12h(data.departureTime)}
-                    </span>
-                  )}
-                </span>
-              </div>
-            ) : (
-              <span className="text-stone">Not set</span>
-            )
-          }
-          onEdit={onEditEntryPoint}
-        />
+                    )}
+                  </span>
+                  <span>
+                    <span className="text-stone">Out:</span>{" "}
+                    {data.sameAsEntry !== false ? (
+                      "Same airport"
+                    ) : data.exitPoint ? (
+                      <>
+                        {data.exitPoint.name}
+                        <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                          {data.exitPoint.iataCode}
+                        </span>
+                      </>
+                    ) : (
+                      "Same airport"
+                    )}
+                    {data.departureTime && (
+                      <span className="ml-2 text-xs text-stone">
+                        Departing {formatTime12h(data.departureTime)}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-stone">Not set</span>
+              )
+            }
+            onEdit={onEditEntryPoint}
+          />
+        </div>
 
         {/* Vibes */}
         <SummaryItem
