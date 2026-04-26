@@ -98,6 +98,7 @@ function interleaveForDiversity<T extends { category: string }>(
 export function usePlacesFilters(
   locations: Location[],
   filterMetadata: FilterMetadata | undefined,
+  savedPlaceIds: Set<string> = new Set(),
 ) {
   // Filter state
   const [query, setQuery] = useState("");
@@ -110,6 +111,7 @@ export function usePlacesFilters(
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [savedOnly, setSavedOnly] = useState(false);
   const [yukuIds, setYukuIds] = useState<string[]>([]);
   // URL-driveable filters (set from ?city=, ?category=, ?jta= params)
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -142,6 +144,7 @@ export function usePlacesFilters(
     wheelchairAccessible,
     vegetarianFriendly,
     featuredOnly,
+    savedOnly,
     yukuIds,
     selectedCity,
     selectedCategory,
@@ -270,6 +273,8 @@ export function usePlacesFilters(
         ? true
         : location.isFeatured === true;
 
+      const matchesSaved = !savedOnly ? true : savedPlaceIds.has(location.id);
+
       const matchesCity = !selectedCity
         ? true
         : location.city.toLowerCase() === selectedCity.toLowerCase();
@@ -298,13 +303,14 @@ export function usePlacesFilters(
         matchesWheelchair &&
         matchesVegetarian &&
         matchesFeatured &&
+        matchesSaved &&
         matchesCity &&
         matchesCategory &&
         matchesJta &&
         matchesUnesco
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, yukuIds, selectedCity, selectedCategory, jtaApprovedOnly, unescoOnly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, savedOnly, savedPlaceIds, yukuIds, selectedCity, selectedCategory, jtaApprovedOnly, unescoOnly]);
 
   // Sort
   const sortedLocations = useMemo(() => {
@@ -429,6 +435,10 @@ export function usePlacesFilters(
       filters.push({ type: "featured", value: "true", label: "Featured" });
     }
 
+    if (savedOnly) {
+      filters.push({ type: "saved", value: "true", label: "Saved only" });
+    }
+
     if (selectedCity) {
       const label = selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1);
       filters.push({ type: "city", value: selectedCity, label });
@@ -461,6 +471,7 @@ export function usePlacesFilters(
     wheelchairAccessible,
     vegetarianFriendly,
     featuredOnly,
+    savedOnly,
     selectedCity,
     selectedCategory,
     jtaApprovedOnly,
@@ -498,6 +509,9 @@ export function usePlacesFilters(
       case "featured":
         setFeaturedOnly(false);
         break;
+      case "saved":
+        setSavedOnly(false);
+        break;
       case "city":
         setSelectedCity(null);
         break;
@@ -523,6 +537,7 @@ export function usePlacesFilters(
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
     setFeaturedOnly(false);
+    setSavedOnly(false);
     setYukuIds([]);
     setSelectedCity(null);
     setSelectedCategory(null);
@@ -546,6 +561,7 @@ export function usePlacesFilters(
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
+    savedOnly, setSavedOnly,
     yukuIds, setYukuIds, clearYukuFilter,
     selectedCity, setSelectedCity,
     selectedCategory, setSelectedCategory,

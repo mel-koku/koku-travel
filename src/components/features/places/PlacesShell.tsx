@@ -8,6 +8,8 @@ import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
+import { useSavedPlaces } from "@/hooks/useSavedQuery";
+import { useAppState } from "@/state/AppState";
 import { PlacesPagination } from "./PlacesPagination";
 import { PLACES_PAGE_SIZE } from "@/lib/filters/filterUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
@@ -83,6 +85,17 @@ export function PlacesShell({ content }: PlacesShellProps) {
     error,
   } = useAllLocationsSingle();
   const { data: filterMetadata } = useFilterMetadataQuery();
+  const { user } = useAppState();
+  const { saved } = useSavedPlaces(user?.email ? user.id : undefined);
+  const savedLocationIdSet = useMemo(
+    () =>
+      new Set(
+        saved
+          .map((s) => s.locationId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [saved],
+  );
 
   const {
     query, setQuery,
@@ -94,6 +107,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
+    savedOnly, setSavedOnly,
     yukuIds, setYukuIds, clearYukuFilter,
     selectedCity, setSelectedCity,
     selectedCategory, setSelectedCategory,
@@ -109,7 +123,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     activeFilterCount,
     removeFilter,
     clearAllFilters,
-  } = usePlacesFilters(locations, filterMetadata);
+  } = usePlacesFilters(locations, filterMetadata, savedLocationIdSet);
 
   const handleFilterSeasonal = useCallback(() => {
     setSelectedCategory("in_season");
@@ -183,6 +197,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
     if (searchParams.get("featured") === "true") setFeaturedOnly(true);
     if (searchParams.get("unesco") === "true") setUnescoOnly(true);
+    if (searchParams.get("saved") === "1") setSavedOnly(true);
     const pageParam = searchParams.get("page");
     if (pageParam) {
       const parsed = Number.parseInt(pageParam, 10);
@@ -295,6 +310,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       if (vegetarianFriendly) params.set("vegetarian", "true");
       if (featuredOnly) params.set("featured", "true");
       if (unescoOnly) params.set("unesco", "true");
+      if (savedOnly) params.set("saved", "1");
       if (viewMode === "grid" && page > 1) params.set("page", String(page));
       if (yukuIds.length > 0) params.set("yuku", yukuIds.join(","));
       if (locationParam) params.set("location", locationParam);
@@ -306,7 +322,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     viewMode, query, selectedCity, selectedCategory, jtaApprovedOnly,
     selectedSort, selectedPrefectures, selectedVibes, selectedPriceLevel,
     selectedDuration, openNow, wheelchairAccessible, vegetarianFriendly,
-    featuredOnly, unescoOnly, yukuIds, locationParam, router, page,
+    featuredOnly, unescoOnly, savedOnly, yukuIds, locationParam, router, page,
   ]);
 
   return (
@@ -488,6 +504,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onFeaturedToggle={setFeaturedOnly}
         unescoOnly={unescoOnly}
         onUnescoToggle={setUnescoOnly}
+        savedOnly={savedOnly}
+        onSavedOnlyChange={setSavedOnly}
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onClearAll={handleClearAll}
         sortOptions={SORT_OPTIONS}

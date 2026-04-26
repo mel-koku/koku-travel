@@ -51,6 +51,9 @@ type FilterPanelProps = {
   // UNESCO filter
   unescoOnly: boolean;
   onUnescoToggle: (value: boolean) => void;
+  // Saved-only filter
+  savedOnly: boolean;
+  onSavedOnlyChange: (value: boolean) => void;
   // Results count
   resultsCount: number;
   // Clear all
@@ -98,6 +101,8 @@ export function FilterPanel({
   onFeaturedToggle,
   unescoOnly,
   onUnescoToggle,
+  savedOnly,
+  onSavedOnlyChange,
   resultsCount,
   onClearAll,
   sortOptions,
@@ -133,7 +138,7 @@ export function FilterPanel({
   const whatActiveCount = selectedVibes.length + (selectedCategory === "in_season" ? 1 : 0);
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const highlightsActiveCount = (unescoOnly ? 1 : 0) + (featuredOnly ? 1 : 0);
+  const highlightsActiveCount = (unescoOnly ? 1 : 0) + (featuredOnly ? 1 : 0) + (savedOnly ? 1 : 0);
   const dietaryActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key + focus management
@@ -187,6 +192,7 @@ export function FilterPanel({
     vegetarianFriendly ||
     featuredOnly ||
     unescoOnly ||
+    savedOnly ||
     selectedSort !== "recommended";
 
   return (
@@ -319,7 +325,7 @@ export function FilterPanel({
                 activeCount={highlightsActiveCount}
                 isExpanded={expandedSections.highlights}
                 onToggle={() => toggleSection("highlights")}
-                onClear={highlightsActiveCount > 0 ? () => { onUnescoToggle(false); onFeaturedToggle(false); } : undefined}
+                onClear={highlightsActiveCount > 0 ? () => { onUnescoToggle(false); onFeaturedToggle(false); onSavedOnlyChange(false); } : undefined}
               >
                 <div className="space-y-4">
                   <ToggleOption
@@ -334,6 +340,13 @@ export function FilterPanel({
                     description="Handpicked places worth the trip"
                     checked={featuredOnly}
                     onChange={onFeaturedToggle}
+                  />
+
+                  <ToggleOption
+                    label="Saved only"
+                    description="Show only places you've saved"
+                    checked={savedOnly}
+                    onChange={onSavedOnlyChange}
                   />
                 </div>
               </FilterSection>
