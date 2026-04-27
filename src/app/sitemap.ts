@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { getPublishedGuides } from "@/lib/guides/guideService";
-import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { getAllCitySlugs } from "@/lib/cities/cityData";
 import { getSitemapLocationIds } from "@/lib/locations/locationService";
 import { logger } from "@/lib/logger";
@@ -38,9 +37,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch dynamic content in parallel — sitemap generation is the slowest route,
   // and a failure in any single fetcher should not sink the whole file.
-  const [guidesResult, experiencesResult, locationIdsResult] = await Promise.allSettled([
+  //
+  // Sanity experiences are intentionally excluded: they're authored at experience
+  // slugs but the `/guides/[slug]` detail page only resolves _type=="guide", so
+  // sitemapping them produces 530+ soft-404s. Add `/experiences/[slug]` here
+  // once that route renders real experience content.
+  const [guidesResult, locationIdsResult] = await Promise.allSettled([
     getPublishedGuides(),
-    getPublishedExperiences(),
     getSitemapLocationIds(),
   ]);
 
@@ -54,17 +57,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       : (logger.warn("sitemap: guides fetch failed", { error: String(guidesResult.reason) }), []);
 
-  // Experience routes redirect to /guides/{slug} canonical URLs
-  const experienceRoutes: MetadataRoute.Sitemap =
-    experiencesResult.status === "fulfilled"
-      ? experiencesResult.value.map((exp) => ({
-          url: `${BASE_URL}/guides/${exp.slug}`,
-          lastModified: exp.publishedAt ? new Date(exp.publishedAt) : new Date(),
-          changeFrequency: "monthly" as const,
-          priority: 0.7,
-        }))
-      : (logger.warn("sitemap: experiences fetch failed", { error: String(experiencesResult.reason) }), []);
-
   const placeRoutes: MetadataRoute.Sitemap =
     locationIdsResult.status === "fulfilled"
       ? locationIdsResult.value.map((id) => ({
@@ -75,5 +67,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       : (logger.warn("sitemap: places fetch failed", { error: String(locationIdsResult.reason) }), []);
 
-  return [...staticRoutes, ...cityRoutes, ...guideRoutes, ...experienceRoutes, ...placeRoutes];
+  return [...staticRoutes, ...cityRoutes, ...guideRoutes, ...placeRoutes];
 }

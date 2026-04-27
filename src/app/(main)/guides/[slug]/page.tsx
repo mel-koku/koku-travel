@@ -52,10 +52,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  // Fallback to Supabase
+  // Fallback to Supabase. If neither source has the guide, call notFound()
+  // here so Next.js commits to a 404 response *during the metadata phase*.
+  // Returning fallback metadata + relying on notFound() in the page render
+  // produces a soft-404 (HTTP 200 with not-found UI) on Next 16 + ISR routes.
   const result = await getCachedSupabaseGuide(slug);
   if (!result) {
-    return { title: "Guide Not Found | Yuku Japan" };
+    notFound();
   }
 
   const { guide } = result;

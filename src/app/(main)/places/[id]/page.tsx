@@ -32,8 +32,11 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   const { id } = await params;
   const location = await fetchLocation(id);
 
+  // Call notFound() here so Next.js commits to a 404 during the metadata phase.
+  // Returning fallback metadata + relying on notFound() in the page render
+  // produces a soft-404 (HTTP 200 with not-found UI) on Next 16 + ISR routes.
   if (!location) {
-    return { title: "Place not found" };
+    notFound();
   }
 
   const description =
