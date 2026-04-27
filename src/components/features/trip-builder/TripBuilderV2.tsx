@@ -437,7 +437,7 @@ function StepShell({
             onClick={nextDisabled ? handleDisabledClick : onNext}
             aria-describedby={disabledHint ? "step-disabled-hint-mobile" : undefined}
             className={cn(
-              "h-12 flex-1 rounded-lg text-sm font-medium uppercase tracking-wider transition",
+              "h-12 flex-1 rounded-lg text-sm font-medium transition",
               nextDisabled
                 ? "bg-surface text-stone"
                 : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98]"

@@ -175,7 +175,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                     return !v;
                   });
                 }}
-                className="h-14 w-full cursor-pointer rounded-lg border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
+                className="h-14 w-full cursor-pointer rounded-lg border border-border bg-transparent px-10 text-sm font-semibold text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
               >
                 Skip the Details
               </button>
@@ -260,7 +260,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                     <button
                       type="button"
                       onClick={handleQuickStart}
-                      className="h-11 w-full rounded-lg bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
+                      className="h-11 w-full rounded-lg bg-brand-primary text-sm font-semibold text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
                     >
                       Go
                     </button>
