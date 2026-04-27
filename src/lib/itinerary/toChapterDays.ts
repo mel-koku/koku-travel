@@ -79,15 +79,22 @@ function timeToHour(hhmm: string): number {
  * Resolve the clock time string ("HH:MM") for a beat.
  *
  * Priority:
- *   1. travelFromPrevious.arrivalTime (the moment we arrive)
- *   2. travelToNext.departureTime (when we leave — less ideal but better than nothing)
- *   3. Default per timeOfDay slot
+ *   1. schedule.arrivalTime (planner sets this fresh on every replan — most authoritative)
+ *   2. travelFromPrevious.arrivalTime (the moment we arrive)
+ *   3. travelToNext.departureTime (when we leave — less ideal but better than nothing)
+ *   4. Default per timeOfDay slot
+ *
+ * `schedule` takes priority because it's written unconditionally by the planner;
+ * the travel segments may be stale across reorders for activities at the boundary
+ * of a day (no incoming/outgoing route to overwrite them).
  */
 function pickTime(
   timeOfDay: string,
+  schedule?: { arrivalTime?: string },
   travelFromPrevious?: ItineraryTravelSegment,
   travelToNext?: ItineraryTravelSegment,
 ): string {
+  if (schedule?.arrivalTime) return schedule.arrivalTime;
   if (travelFromPrevious?.arrivalTime) return travelFromPrevious.arrivalTime;
   if (travelToNext?.departureTime) return travelToNext.departureTime;
   return DEFAULT_CLOCK[timeOfDay] ?? "09:00";
@@ -360,6 +367,7 @@ export function toChapterDays(
     const beats: ChapterBeat[] = resolved.map(({ activity, location }, beatIdx) => {
       const time = pickTime(
         activity.timeOfDay,
+        activity.schedule,
         activity.travelFromPrevious,
         activity.travelToNext,
       );

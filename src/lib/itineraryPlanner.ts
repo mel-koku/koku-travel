@@ -688,6 +688,11 @@ async function planItineraryDay(
       const plannerActivity: ItineraryActivity = {
         ...activity,
         durationMin: visitDuration,
+        // Clear stale travel segments — fresh ones (if applicable) are written
+        // on the surrounding stops; stale fields would otherwise survive a
+        // reorder and bleed prior arrival/departure times into the timeline.
+        travelFromPrevious: undefined,
+        travelToNext: undefined,
         schedule: {
           arrivalTime: formatTime(cursorMinutes),
           departureTime: formatTime(cursorMinutes + visitDuration),
@@ -743,7 +748,16 @@ async function planItineraryDay(
       }
     }
 
-    const plannerActivity: ItineraryActivity = { ...activity };
+    // Spread, then clear stale travel segments. Fresh `travelFromPrevious` is
+    // written below when a route resolves; fresh `travelToNext` is written on
+    // the *previous* activity by the next iteration. After a reorder this
+    // matters: an activity that's now first (no incoming route) or last (no
+    // outgoing route) would otherwise carry stale times from its prior slot.
+    const plannerActivity: ItineraryActivity = {
+      ...activity,
+      travelFromPrevious: undefined,
+      travelToNext: undefined,
+    };
 
     const resolved = resolvedForPreCheck;
     if (resolved) {

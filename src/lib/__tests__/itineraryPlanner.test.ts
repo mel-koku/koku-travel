@@ -193,6 +193,51 @@ describe("planItinerary", () => {
     }
   });
 
+  it("clears stale travelFromPrevious on the now-first activity after a reorder", async () => {
+    // Regression: when a route optimizer reorders activities so a stop that
+    // *was* mid-day becomes the first place activity of the day, the first
+    // activity has no incoming route. The spread previously preserved its
+    // stale `travelFromPrevious.arrivalTime` (e.g. "19:54" from when it was
+    // an evening stop), causing the renderer to display the prior time.
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary = createTestItinerary();
+    const firstActivity = itinerary.days[0]?.activities[0];
+    if (firstActivity?.kind === "place") {
+      // Stale evening arrival time from a prior layout
+      firstActivity.travelFromPrevious = {
+        mode: "train",
+        durationMinutes: 12,
+        arrivalTime: "19:54",
+        departureTime: "19:42",
+      };
+    }
+
+    const result = await planItinerary(itinerary, {
+      defaultDayStart: "08:00",
+      transitionBufferMinutes: 10,
+    });
+
+    const replanned = result.days[0]?.activities[0];
+    expect(replanned?.kind).toBe("place");
+    if (replanned?.kind === "place") {
+      // First activity: no resolved route → travelFromPrevious must be cleared.
+      expect(replanned.travelFromPrevious).toBeUndefined();
+      // Schedule reflects the day start.
+      expect(replanned.schedule?.arrivalTime).toBe("08:00");
+    }
+  });
+
   it("keeps walking mode when the walk is short", async () => {
     // Return short distance (<1km) so transit lookup is NOT triggered
     mockRequestRoute.mockImplementation((request: RoutingRequest) => {
