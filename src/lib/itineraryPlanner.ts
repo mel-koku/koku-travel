@@ -909,6 +909,28 @@ async function planItineraryDay(
       const arrivalToHotelResolved = resolvedRouteByActivityId.get(arrivalToHotelKey);
       if (!arrivalToHotelResolved) return;
       const { route, travelMode } = arrivalToHotelResolved;
+
+      // Bail when the resolution layer fell back to a long-distance walk
+      // because transit lookup failed (NAVITIME returned no transit steps for
+      // the synthetic airport→hotel pair — see resolution branch around the
+      // `hasTransitSteps` check). For a 30–70km airport→hotel, that walk is
+      // 6–14h, and materializing it as a real segment advances the cursor
+      // past midnight, wrapping every subsequent activity's arrivalTime via
+      // formatTime's modulo. Dropping the segment falls back to the existing
+      // prevCoords→hotel jump (still wired in the routing-pair loop), so
+      // next-stop routing is unaffected; we just don't visualize the
+      // airport→hotel transition for this trip. Genuinely walkable airport
+      // hotels (≤30min walk, ~2.5km) still render.
+      const segmentDurationMin = Math.max(1, Math.round(route.durationSeconds / 60));
+      const MAX_AIRPORT_HOTEL_WALK_MIN = 30;
+      if (travelMode === "walk" && segmentDurationMin > MAX_AIRPORT_HOTEL_WALK_MIN) {
+        logger.warn("Skipping airport→hotel segment: walk fallback duration unrealistic", {
+          activityId: firstPlace.id,
+          durationMinutes: segmentDurationMin,
+        });
+        return;
+      }
+
       const travelInstructions = route.legs.flatMap((leg) =>
         (leg.steps ?? [])
           .map((step) => step.instruction)

@@ -454,6 +454,224 @@ describe("planItinerary", () => {
     }
   });
 
+  it("does not wrap cursor past midnight when transit lookup fails for the airport→hotel pair", async () => {
+    // Repro for the wrap-around bug observed in production (PR #125 revert):
+    //
+    // When NAVITIME (or whichever transit provider) fails to return a transit
+    // route for the synthetic airport→hotel pair, the resolution layer falls
+    // back to the walk result. For a 70km airport-to-hotel, that walk is
+    // ~840min. cursorMinutes += 840 advances the day clock past midnight, and
+    // formatTime() wraps subsequent activity arrival times into the next-day
+    // hours (e.g. "00:08", "01:07"). Cursor monotonicity must hold.
+    //
+    // Mock: walk fetch returns a 14h walk for the long airport→hotel pair
+    // (70km at walking speed) and 30min for short pairs. Transit fetch returns
+    // a successful transit shape but with NO transit steps — this triggers
+    // the planner's `hasTransitSteps` gate to fall back to walk.
+    // Airport coords for matching "this is the airport→hotel leg". The wrap
+    // bug is specific to this synthetic pair — every other leg in the day is a
+    // normal hotel-to-stop or stop-to-stop pair.
+    const NRT_LAT = 35.7647;
+    const NRT_LNG = 140.3863;
+    const isFromNrt = (lat: number, lng: number) =>
+      Math.abs(lat - NRT_LAT) < 0.001 && Math.abs(lng - NRT_LNG) < 0.001;
+
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      const fromAirport = isFromNrt(request.origin.lat, request.origin.lng);
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          // Airport→hotel walk fallback: 14h for ~70km. Otherwise 30min walk.
+          return Promise.resolve(buildRoute("walk", fromAirport ? 50400 : 1800));
+        case "transit":
+          // No instruction → no transit step → hasTransitSteps === false
+          // → planner treats this as transit-failed and falls back to walk.
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          bounds: { startTime: "08:00", endTime: "20:00" },
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita",
+              isAnchor: true,
+              coordinates: { lat: 35.7647, lng: 140.3863 },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              schedule: {
+                arrivalTime: "08:00",
+                departureTime: "08:30",
+                status: "scheduled",
+              },
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+            {
+              kind: "place",
+              id: "day1-activity-2",
+              title: "Nishiki Market",
+              timeOfDay: "afternoon",
+              durationMin: 90,
+              locationId: "kyoto-nishiki-market",
+              tags: ["food"],
+            },
+          ],
+        },
+      ],
+    };
+
+    // Hotel ~70km from NRT (e.g. central Tokyo).
+    const hotelCoords = { lat: 35.6895, lng: 139.6917 };
+    const dayId = itinerary.days[0]!.id;
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "08:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const activities = result.days[0]!.activities;
+    const placeActivities = activities.filter(
+      (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+    );
+
+    // Invariant: arrival times across Day 1 must be monotonically increasing
+    // within the same day (no wrap past midnight). A schedule that crosses
+    // midnight indicates the cursor was advanced by an unrealistic walk
+    // fallback for an unwalkable airport→hotel distance.
+    const arrivalMinutes = placeActivities.map((a) => {
+      const t = a.schedule?.arrivalTime ?? "00:00";
+      const [h, m] = t.split(":").map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    });
+    for (let i = 1; i < arrivalMinutes.length; i++) {
+      expect(arrivalMinutes[i]).toBeGreaterThanOrEqual(arrivalMinutes[i - 1]!);
+    }
+
+    // Stronger bound: even with transit failures, no Day 1 stop should be
+    // scheduled past 22:00 — that indicates the airport→hotel "walk" fallback
+    // consumed the entire day clock.
+    for (const arrival of arrivalMinutes) {
+      expect(arrival).toBeLessThan(22 * 60);
+    }
+
+    // The anchor's travelToNext must not be the unrealistic walk fallback.
+    // Either the segment was dropped (undefined) or — in the future — replaced
+    // with a heuristic estimate. Either way, no 14-hour walks.
+    const anchor = placeActivities[0];
+    if (anchor?.travelToNext) {
+      expect(anchor.travelToNext.durationMinutes).toBeLessThanOrEqual(180);
+    }
+  });
+
+  it("first-plan path (no pre-set anchor schedule) also routes airport→hotel without wrap-around", async () => {
+    // Counter-coverage for the hypothesis in the redo handoff: the original
+    // PR's tests only exercised the re-plan branch (anchor with pre-set
+    // schedule). The first-plan branch — used by the engine's initial
+    // `generateTripFromBuilderData` call where the arrival anchor is injected
+    // *without* a schedule — was never test-covered, and the handoff flagged
+    // it as a candidate site for a separate bug. Verify it produces a
+    // sensible schedule (no past-midnight wrap) under the same transit-fail
+    // conditions.
+    const NRT_LAT = 35.7647;
+    const NRT_LNG = 140.3863;
+    const isFromNrt = (lat: number, lng: number) =>
+      Math.abs(lat - NRT_LAT) < 0.001 && Math.abs(lng - NRT_LNG) < 0.001;
+
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      const fromAirport = isFromNrt(request.origin.lat, request.origin.lng);
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", fromAirport ? 50400 : 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          // Note: no `bounds` set — first-plan path mirrors what the engine
+          // produces when arrivalTime is unknown (no schedule pre-set on the
+          // anchor either).
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita",
+              isAnchor: true,
+              coordinates: { lat: NRT_LAT, lng: NRT_LNG },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              // No schedule — exercises the first-plan branch
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+          ],
+        },
+      ],
+    };
+
+    const hotelCoords = { lat: 35.6895, lng: 139.6917 };
+    const dayId = itinerary.days[0]!.id;
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "09:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const placeActivities = result.days[0]!.activities.filter(
+      (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+    );
+
+    const arrivalMinutes = placeActivities.map((a) => {
+      const t = a.schedule?.arrivalTime ?? "00:00";
+      const [h, m] = t.split(":").map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    });
+    for (let i = 1; i < arrivalMinutes.length; i++) {
+      expect(arrivalMinutes[i]).toBeGreaterThanOrEqual(arrivalMinutes[i - 1]!);
+    }
+    for (const arrival of arrivalMinutes) {
+      expect(arrival).toBeLessThan(22 * 60);
+    }
+  });
+
   it("does not synthesize an airport→hotel leg when no arrival anchor is present", async () => {
     // Counter-regression: a normal mid-trip day with a hotel startPoint but
     // no arrival anchor should NOT produce a synthetic airport→hotel
