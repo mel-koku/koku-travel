@@ -6,6 +6,7 @@ function place(
   id: string,
   timeOfDay: "morning" | "afternoon" | "evening",
   arrivalTime?: string,
+  tags?: string[],
 ): Extract<ItineraryActivity, { kind: "place" }> {
   return {
     kind: "place",
@@ -13,6 +14,7 @@ function place(
     title: `Place ${id}`,
     timeOfDay,
     locationId: id,
+    tags,
     schedule: arrivalTime
       ? { arrivalTime, departureTime: arrivalTime, status: "scheduled" }
       : undefined,
@@ -79,5 +81,35 @@ describe("detectMealGaps", () => {
     ];
     const gaps = detectMealGaps(day(activities), 0);
     expect(gaps.find((g) => g.action.type === "add_meal" && g.action.mealType === "breakfast")).toBeUndefined();
+  });
+
+  it("fires lunch even when a landmark is mis-tagged with a food tag", () => {
+    // Regression: Nishi Sando Path was tagged ["dining", "landmark"] in
+    // Supabase. The old isFoodActivity treated any food tag as definitive,
+    // so the path was inferred as covering lunch (12:59 → lunch window),
+    // suppressing the slot. Non-food primary tags (landmark/temple/shrine/
+    // path/etc.) now override the food classification.
+    const activities = [
+      place("morning-stop", "morning", "11:47", ["historical", "temple"]),
+      place("nishi-sando", "afternoon", "12:59", ["dining", "landmark"]),
+      place("temple", "afternoon", "14:29", ["cultural", "temple"]),
+      place("shrine", "afternoon", "15:58", ["historical", "shrine"]),
+    ];
+    const gaps = detectMealGaps(day(activities), 0);
+    expect(
+      gaps.find((g) => g.action.type === "add_meal" && g.action.mealType === "lunch"),
+    ).toBeDefined();
+  });
+
+  it("still suppresses lunch when a real restaurant covers it", () => {
+    const activities = [
+      place("morning-stop", "morning", "10:00", ["temple"]),
+      place("ramen-shop", "afternoon", "12:30", ["dining", "ramen"]),
+      place("afternoon-stop", "afternoon", "15:00", ["shrine"]),
+    ];
+    const gaps = detectMealGaps(day(activities), 0);
+    expect(
+      gaps.find((g) => g.action.type === "add_meal" && g.action.mealType === "lunch"),
+    ).toBeUndefined();
   });
 });
