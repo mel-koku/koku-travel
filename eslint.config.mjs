@@ -46,7 +46,7 @@ const eslintConfig = defineConfig([
     ".github/scripts/**",
     // Scraped data dumps, never shipped
     "tmp/**",
-    // Local Claude harness state: worktree caches, transcripts, notes
+    // Local AI tooling state: worktree caches, transcripts, notes
     ".claude/**",
     // Root-level one-off operational scripts (kept locally, not shipped)
     "*.mjs",

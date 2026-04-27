@@ -1,7 +1,7 @@
-# Claude Code project instructions (local only)
+# Project instructions (local only)
 CLAUDE.md
 
-# Claude Code session state (launch configs, worktrees, local settings)
+# Local AI tooling state (launch configs, worktrees, local settings)
 .claude/
 
 # Superpowers CLI local state
@@ -175,7 +175,7 @@ tsconfig.tsbuildinfo
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Local-only documentation (Claude & internal dev notes)
+# Local-only documentation and tooling state
 CLAUDE.md
 .claudedoc/
 .clauderules.md

@@ -359,8 +359,8 @@ describe("planItinerary — expanded", () => {
     it("adds travel segment from last activity to end point", async () => {
       // Return-to-hotel uses a synchronous haversine heuristic, not the
       // routing API (see `TRANSIT_DISTANCE_THRESHOLD_KM` branch in
-      // itineraryPlanner.ts ~L800 — intentional, per CLAUDE.md "Return-to-hotel
-      // segments use heuristic (informational only)"). So mocking requestRoute
+      // itineraryPlanner.ts ~L800 — intentional; return-to-hotel
+      // segments use the heuristic (informational only). So mocking requestRoute
       // here has no effect on the return leg — its mode is derived directly
       // from distance between coordinates.
       //

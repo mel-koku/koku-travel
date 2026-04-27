@@ -14,7 +14,6 @@ paths = [
     '''\.env\.local\.example$''',
     '''docs/.*\.md$''',
     '''tests/.*''',
-    '''\.claudedoc/.*''',
 ]
 
 # Ignore test fixtures and mock data

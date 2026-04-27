@@ -9,7 +9,7 @@
  *    - Availability: Not all places have editorial summaries
  *
  * 2. shortDescription (Medium Priority)
- *    - Source: Claude-generated descriptions
+ *    - Source: AI-generated descriptions
  *    - Quality: Good quality, consistent format
  *    - Availability: Generated for most curated locations
  *
@@ -40,7 +40,7 @@ export function getBestSummary(
     return googleEditorialSummary.trim();
   }
 
-  // Priority 2: Claude-generated short description
+  // Priority 2: AI-generated short description
   if (location.shortDescription?.trim()) {
     return location.shortDescription.trim();
   }
@@ -92,12 +92,12 @@ export function hasSummary(
 export function getSummarySource(
   location: Location,
   googleEditorialSummary?: string | null,
-): "google" | "claude" | "original" | undefined {
+): "google" | "ai" | "original" | undefined {
   if (googleEditorialSummary?.trim()) {
     return "google";
   }
   if (location.shortDescription?.trim()) {
-    return "claude";
+    return "ai";
   }
   if (location.description?.trim()) {
     return "original";
