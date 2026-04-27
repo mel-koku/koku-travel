@@ -22,6 +22,7 @@ vi.mock("@/lib/supabase/server", () => ({
         const chain = {
           select: () => chain,
           eq: () => chain,
+          in: () => chain,
           order: () => chain,
           limit: () => thenable,
           then: thenable.then.bind(thenable),
