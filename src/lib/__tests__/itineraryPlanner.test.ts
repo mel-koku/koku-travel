@@ -238,6 +238,43 @@ describe("planItinerary", () => {
     }
   });
 
+  it("refreshes timeOfDay to match the fresh schedule", async () => {
+    // Regression: `timeOfDay` is set at generation and can mismatch the
+    // post-replan schedule (e.g. a stop tagged "evening" gets rescheduled to
+    // 13:22 but keeps the "evening" tag). Downstream consumers — meal-slot
+    // positions, lifestyle/timing detectors — bucket on `timeOfDay`, so a
+    // stale value pushes them to the wrong slot. Planner now re-derives.
+    mockRequestRoute.mockImplementation(() =>
+      Promise.resolve(buildRoute("walk", 600)),
+    );
+
+    const itinerary = createTestItinerary();
+    // Tag the activities as "evening" (e.g. from a prior layout) and verify
+    // the planner overwrites them.
+    for (const activity of itinerary.days[0]?.activities ?? []) {
+      if (activity.kind === "place") {
+        activity.timeOfDay = "evening";
+      }
+    }
+
+    const result = await planItinerary(itinerary, {
+      defaultDayStart: "08:00",
+      transitionBufferMinutes: 10,
+    });
+
+    const [first, second] = result.days[0]?.activities ?? [];
+    expect(first?.kind).toBe("place");
+    if (first?.kind === "place") {
+      // Scheduled at 08:00 → morning bucket
+      expect(first.timeOfDay).toBe("morning");
+    }
+    expect(second?.kind).toBe("place");
+    if (second?.kind === "place") {
+      // Scheduled at ~10:30 (8 + 2h visit + 10m transit) → still morning
+      expect(second.timeOfDay).toBe("morning");
+    }
+  });
+
   it("keeps walking mode when the walk is short", async () => {
     // Return short distance (<1km) so transit lookup is NOT triggered
     mockRequestRoute.mockImplementation((request: RoutingRequest) => {

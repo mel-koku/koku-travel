@@ -59,6 +59,20 @@ export function formatTime(totalMinutes: number): string {
 }
 
 /**
+ * Re-derive `timeOfDay` from a fresh scheduled arrival in minutes-since-midnight.
+ * Necessary because the field is set at generation and would otherwise stay
+ * stale after a re-plan, mis-bucketing activities for downstream consumers
+ * (meal slot positions, lifestyle/timing detectors, route grouping).
+ */
+function inferTimeOfDay(
+  arrivalMinutes: number,
+): "morning" | "afternoon" | "evening" {
+  if (arrivalMinutes < 12 * 60) return "morning";
+  if (arrivalMinutes < 18 * 60) return "afternoon";
+  return "evening";
+}
+
+/**
  * Returns true when an activity is a user-authored custom stop with no resolvable address.
  * These activities should advance the cursor by durationMin but skip routing and operating-window evaluation.
  */
@@ -688,6 +702,10 @@ async function planItineraryDay(
       const plannerActivity: ItineraryActivity = {
         ...activity,
         durationMin: visitDuration,
+        // Re-derive timeOfDay so meal-slot/timing detectors see fresh buckets
+        // after a reorder (the field is set at generation and would otherwise
+        // be stale).
+        timeOfDay: inferTimeOfDay(cursorMinutes),
         // Clear stale travel segments — fresh ones (if applicable) are written
         // on the surrounding stops; stale fields would otherwise survive a
         // reorder and bleed prior arrival/departure times into the timeline.
@@ -896,6 +914,10 @@ async function planItineraryDay(
           }
         : undefined,
     };
+    // Re-derive timeOfDay from the fresh schedule. Otherwise the field stays
+    // at its generation-time value and mis-buckets the activity for downstream
+    // consumers (meal-slot positioning, timing/lifestyle detectors, etc.).
+    plannerActivity.timeOfDay = inferTimeOfDay(evaluation.adjustedArrival);
 
     if (evaluation.window) {
       plannerActivity.operatingWindow = {
