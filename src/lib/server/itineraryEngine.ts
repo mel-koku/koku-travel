@@ -466,27 +466,10 @@ export async function generateTripFromBuilderData(
       ...optimizedItinerary.days[0].activities,
     ];
 
-    // Reframe Day 1's `startPoint` after the anchor is in place:
-    //   - With a real hotel accommodation: promote endPoint (hotel) →
-    //     startPoint so the planner routes airport→hotel as a real travel
-    //     segment, then hotel→first activity for the day's stops. Without
-    //     this, the planner silently jumps `prevCoords` from the anchor to
-    //     the hotel without consuming the day clock or rendering a map line.
-    //   - Without accommodation: drop startPoint (anchor coords serve as the
-    //     routing origin for the first real stop). The city-center fallback
-    //     used as `endPoint` is a synthetic proxy — promoting it would
-    //     fabricate a routing leg the user didn't ask for.
+    // Remove startPoint from dayEntryPoints — airport activity coords serve as routing origin
     const day0Entry = dayEntryPoints[optimizedItinerary.days[0].id];
-    const day0CityId = optimizedItinerary.days[0].baseCityId ?? optimizedItinerary.days[0].cityId;
-    const hasDay0Accommodation = Boolean(
-      builderData.accommodations && day0CityId && builderData.accommodations[day0CityId],
-    );
     if (day0Entry) {
-      if (hasDay0Accommodation && day0Entry.endPoint) {
-        day0Entry.startPoint = day0Entry.endPoint;
-      } else {
-        delete day0Entry.startPoint;
-      }
+      delete day0Entry.startPoint;
     }
 
     // Set Day 1 bounds based on arrival time availability

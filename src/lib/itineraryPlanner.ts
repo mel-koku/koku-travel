@@ -502,47 +502,6 @@ async function planItineraryDay(
   // Tracks whether any addressless-custom activity was skipped since the last coordinate stop
   let pendingSkippedOverCustom = false;
 
-  // ── Day 1 airport→hotel transit pair ──
-  // When the first place activity is an arrival anchor AND the day has a
-  // startPoint set (a hotel — `clearedStart` already nulls this out upstream
-  // in `resolveEffectiveDayEntryPoints`), compute the airport→hotel leg as a
-  // real travel segment. Without this, the planner silently jumps `prevCoords`
-  // from the anchor to the hotel without consuming the day clock or rendering
-  // a map line.
-  //
-  // We pre-compute the route here (alongside the regular pairs) so it benefits
-  // from the same Phase 1 + Phase 2 parallelism. The result is keyed by a
-  // synthetic id (`<anchorId>::to-hotel`) and looked up only inside the anchor
-  // branch of the sequential assembly.
-  // Minimum distance (m) before we treat startPoint as a real second location.
-  // When startPoint is set to the airport itself (e.g. Priority 3 fallback in
-  // resolveEffectiveDayEntryPoints when no accommodation is configured), the
-  // synthetic pair would be airport→airport — meaningless. ~500m comfortably
-  // skips that case while still firing for any nearby airport hotel.
-  const ARRIVAL_TO_HOTEL_MIN_DISTANCE_M = 500;
-
-  let arrivalToHotelKey: string | null = null;
-  if (firstPlace?.isAnchor && firstPlace.id.startsWith("anchor-arrival") && startPoint) {
-    // Resolve the anchor's coordinates the same way as any other place. Anchors
-    // typically have `coordinates` set on the activity itself (see
-    // itineraryEngine.ts), but we respect the same fallback chain to be safe.
-    const anchorMeta = metaByActivityId.get(firstPlace.id);
-    const anchorCoords = anchorMeta?.coordinates ?? null;
-    if (anchorCoords) {
-      const hotelCoords = { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng };
-      const distanceM = haversineDistance(anchorCoords, hotelCoords);
-      if (distanceM >= ARRIVAL_TO_HOTEL_MIN_DISTANCE_M) {
-        arrivalToHotelKey = `${firstPlace.id}::to-hotel`;
-        routingPairs.push({
-          origin: anchorCoords,
-          destination: hotelCoords,
-          activityId: arrivalToHotelKey,
-          explicitMode: null,
-        });
-      }
-    }
-  }
-
   for (const activity of placeActivities) {
     const meta = metaByActivityId.get(activity.id);
     const coordinates = meta?.coordinates ?? null;
@@ -880,86 +839,12 @@ async function planItineraryDay(
       const prevForTravelToNext = resolved.skippedOverCustom ? lastCoordinateIndex : lastPlaceIndex;
       if (prevForTravelToNext != null) {
         const previousActivity = plannedActivities[prevForTravelToNext] as Extract<ItineraryActivity, { kind: "place" }>;
-        // Don't clobber the airport→hotel transit segment we just attached to
-        // an arrival anchor. The next stop is hotel→stop1, but that leg is
-        // implicit (the hotel dwell/drop-bag gap between segments) and the
-        // chapter spine renders the anchor's outgoing segment as the visible
-        // transit between the anchor and the next stop.
-        const isArrivalAnchorWithTransit =
-          previousActivity.isAnchor === true &&
-          previousActivity.id.startsWith("anchor-arrival") &&
-          previousActivity.travelToNext !== undefined;
-        if (!isArrivalAnchorWithTransit) {
-          previousActivity.travelToNext = travelSegment;
-        }
+        previousActivity.travelToNext = travelSegment;
       }
 
       plannerActivity.travelFromPrevious = travelSegment;
       cursorMinutes += travelSegment.durationMinutes;
     }
-
-    // Day 1 airport→hotel: attach the pre-computed transit leg as the
-    // anchor's `travelToNext` and advance the cursor by its duration. Defined
-    // here so both the pre-set-schedule branch (re-plan path) and the
-    // regular-flow branch (first-plan path) can call it after the anchor's
-    // schedule + cursor are settled. Map line falls out automatically via the
-    // existing render layer.
-    const attachArrivalToHotelTransit = (): void => {
-      if (!arrivalToHotelKey || activity.id !== firstPlace?.id) return;
-      const arrivalToHotelResolved = resolvedRouteByActivityId.get(arrivalToHotelKey);
-      if (!arrivalToHotelResolved) return;
-      const { route, travelMode } = arrivalToHotelResolved;
-      const travelInstructions = route.legs.flatMap((leg) =>
-        (leg.steps ?? [])
-          .map((step) => step.instruction)
-          .filter((instruction): instruction is string => Boolean(instruction)),
-      );
-      const travelPath = route.geometry && route.geometry.length > 0
-        ? mergePathSegments([route.geometry])
-        : mergePathSegments(route.legs.map((leg) => leg.geometry));
-      const transitSteps = buildTransitSteps(route);
-
-      const transitSegment = buildTravelSegment(
-        travelMode,
-        cursorMinutes,
-        route.durationSeconds,
-        route.distanceMeters,
-        travelPath,
-        travelInstructions.length ? travelInstructions : undefined,
-        transitSteps,
-      );
-
-      // Last-train + rush-hour warnings, mirroring the regular routing path
-      // so the same heuristics surface on this leg.
-      if (day.cityId && transitSegment.departureTime && cursorMinutes >= 1200) {
-        const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
-        if (lastTrainTime) {
-          const depMinutes = parseTime(transitSegment.departureTime);
-          if (depMinutes !== null && depMinutes > lastTrainTime) {
-            transitSegment.lastTrainWarning = true;
-          }
-        }
-      }
-      if (
-        transitSegment.departureTime &&
-        travelMode !== "walk" &&
-        travelMode !== "car" &&
-        travelMode !== "taxi" &&
-        travelMode !== "bicycle"
-      ) {
-        const depMinutes = parseTime(transitSegment.departureTime);
-        if (
-          depMinutes !== null &&
-          ((depMinutes >= 450 && depMinutes <= 570) ||
-            (depMinutes >= 1050 && depMinutes <= 1140))
-        ) {
-          transitSegment.rushHourWarning = true;
-        }
-      }
-
-      plannerActivity.travelToNext = transitSegment;
-      cursorMinutes += transitSegment.durationMinutes;
-    };
 
     // Preserve pre-set schedule on anchor activities (e.g. departure airport)
     if (activity.isAnchor && activity.schedule?.arrivalTime) {
@@ -969,8 +854,6 @@ async function planItineraryDay(
       if (depMin !== null) {
         cursorMinutes = depMin + options.transitionBufferMinutes;
       }
-      attachArrivalToHotelTransit();
-
       plannedActivities.push(plannerActivity);
       lastPlaceIndex = plannedActivities.length - 1;
       lastCoordinateIndex = plannedActivities.length - 1;
@@ -1046,14 +929,6 @@ async function planItineraryDay(
     }
 
     cursorMinutes = evaluation.adjustedDeparture + options.transitionBufferMinutes;
-
-    // First-plan path for the arrival anchor (no pre-set schedule). The cursor
-    // is now at "anchor-processing-done + buffer"; attach the airport→hotel
-    // transit and advance the cursor by its duration. The pre-set-schedule
-    // branch above handles the re-plan path.
-    if (activity.isAnchor) {
-      attachArrivalToHotelTransit();
-    }
 
     plannerActivity.notes = plannerActivity.notes ?? meta.location?.recommendedVisit?.summary;
 
