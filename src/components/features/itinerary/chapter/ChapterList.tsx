@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutGroup, m, useReducedMotion } from "framer-motion";
 import { ChapterHeader } from "./ChapterHeader";
 import { Spine } from "./Spine";
 import { Beat } from "./Beat";
 import { BeatAnchor } from "./BeatAnchor";
+import { BeatMealSlot } from "./BeatMealSlot";
 import { BeatTransit } from "./BeatTransit";
 import { InlineDayNote, type InlineDayNoteEntry } from "./InlineDayNote";
 import { UnlockBeat } from "./UnlockBeat";
@@ -17,6 +18,9 @@ import type { EntryPoint } from "@/types/trip";
 import { getGtag } from "@/lib/analytics/customLocations";
 import { useFocusDay } from "@/lib/itinerary/useFocusDay";
 import { easeEditorialMut, durationBase } from "@/lib/motion";
+import { DISMISSED_MEAL_SLOTS_PREFIX } from "@/lib/constants/storage";
+import { getLocal, setLocal } from "@/lib/storageHelpers";
+import { computeBeatMealSlotInsertions } from "@/lib/itinerary/mealSlotsForBeats";
 
 export type ChapterBeat = {
   id: string;
@@ -126,6 +130,13 @@ export type ChapterListProps = {
   onDayEndChange?: (location: import("@/types/trip").EntryPoint | undefined) => void;
   /** Apply the current start as the city-level accommodation (all days in city). */
   onSetCityAccommodation?: (location: import("@/types/trip").EntryPoint | undefined) => void;
+  /** Trip's accommodation style — when "ryokan", breakfast + dinner slots are suppressed. */
+  accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
+  /**
+   * Called when a meal slot's "Add a spot" is clicked. Caller is responsible
+   * for opening the catalog/add-place flow scoped to the given day.
+   */
+  onAddSpotForMeal?: (dayIndex: number) => void;
 };
 
 function beatIsBeforeNow(time: string, dayDate: string, now: Date): boolean {
@@ -175,9 +186,32 @@ export function ChapterList({
   onDayStartChange,
   onDayEndChange,
   onSetCityAccommodation,
+  accommodationStyle,
+  onAddSpotForMeal,
 }: ChapterListProps) {
   const day1LastBeatRef = useRef<HTMLDivElement | null>(null);
   const hasLoggedScrollDepth = useRef(false);
+
+  const dismissalKey = trip.id ? `${DISMISSED_MEAL_SLOTS_PREFIX}${trip.id}` : null;
+  const [dismissedMealSlotIds, setDismissedMealSlotIds] = useState<Set<string>>(() => {
+    if (!dismissalKey) return new Set();
+    const stored = getLocal<string[]>(dismissalKey);
+    return stored ? new Set(stored) : new Set();
+  });
+
+  useEffect(() => {
+    if (!dismissalKey) return;
+    setLocal(dismissalKey, [...dismissedMealSlotIds]);
+  }, [dismissedMealSlotIds, dismissalKey]);
+
+  const dismissMealSlot = useCallback((promptId: string) => {
+    setDismissedMealSlotIds((prev) => {
+      if (prev.has(promptId)) return prev;
+      const next = new Set(prev);
+      next.add(promptId);
+      return next;
+    });
+  }, []);
 
   const isPaged = selectedDayIndex !== undefined && onDayChange !== undefined;
   const activeIdx = isPaged ? Math.max(0, Math.min(selectedDayIndex, trip.days.length - 1)) : 0;
@@ -204,7 +238,7 @@ export function ChapterList({
         for (const entry of entries) {
           if (entry.isIntersecting && !hasLoggedScrollDepth.current) {
             hasLoggedScrollDepth.current = true;
-            getGtag()?.("event", "itinerary_v2.scroll_depth", {
+            getGtag()?.("event", "itinerary.scroll_depth", {
               trip_id: trip.id,
               day_index: 0,
             });
@@ -279,7 +313,38 @@ export function ChapterList({
               </div>
             )
           ) : (
-            (day.beats.length > 0 || day.startAnchor || day.endAnchor) && (
+            (day.beats.length > 0 || day.startAnchor || day.endAnchor) && (() => {
+              const mealInsertions = isReadOnly
+                ? []
+                : computeBeatMealSlotInsertions({
+                    dayId: day.id,
+                    dayIndex: idx,
+                    cityId: day.cityId,
+                    dayActivities: day.dayActivities,
+                    beats: day.beats,
+                    accommodationStyle,
+                    dismissedPromptIds: dismissedMealSlotIds,
+                  });
+              const slotsByBeforeBeatId = new Map<string, typeof mealInsertions[number]>();
+              const trailingSlots: typeof mealInsertions = [];
+              for (const ins of mealInsertions) {
+                if (ins.beforeBeatId) {
+                  if (!slotsByBeforeBeatId.has(ins.beforeBeatId)) {
+                    slotsByBeforeBeatId.set(ins.beforeBeatId, ins);
+                  }
+                } else {
+                  trailingSlots.push(ins);
+                }
+              }
+              const renderMealSlot = (ins: typeof mealInsertions[number]) => (
+                <BeatMealSlot
+                  key={`meal-${ins.promptId}`}
+                  mealType={ins.mealType}
+                  onAddSpot={() => onAddSpotForMeal?.(idx)}
+                  onDismiss={() => dismissMealSlot(ins.promptId)}
+                />
+              );
+              return (
               <Spine>
                 {day.startAnchor && (
                   <BeatAnchor
@@ -293,44 +358,49 @@ export function ChapterList({
                   const currentBeatIdx = currentBeatIndexByDay.get(day.id) ?? -1;
                   const isCurrent = idx === focusDayIdx && beatIdx === currentBeatIdx;
                   const isPast = idx === focusDayIdx && beatIdx < currentBeatIdx;
+                  const slotBefore = slotsByBeforeBeatId.get(beat.id);
 
                   return (
-                    <m.div
-                      key={beat.id}
-                      layout={prefersReducedMotion ? false : "position"}
-                      transition={{ duration: durationBase, ease: easeEditorialMut }}
-                      ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
-                    >
-                      <Beat
-                        time={beat.time}
-                        location={beat.location}
-                        body={beat.body}
-                        note={beat.note}
-                        isPast={isPast}
-                        isCurrent={isCurrent}
-                        chips={beat.chips}
-                        hasMore={beat.hasMore}
-                        onExpand={() => onExpandBeat(beat.id)}
-                        onMoveUp={isReadOnly ? undefined : () => handleMove(idx, beatIdx, -1, day.beats)}
-                        onMoveDown={isReadOnly ? undefined : () => handleMove(idx, beatIdx, 1, day.beats)}
-                        canMoveUp={beatIdx > 0}
-                        canMoveDown={beatIdx < day.beats.length - 1}
-                        onReplace={isReadOnly || !onReplaceBeat ? undefined : () => onReplaceBeat(idx, beat.id)}
-                        onNoteChange={isReadOnly || !onNoteChange ? undefined : (value) => onNoteChange(idx, beat.id, value)}
-                        onRemove={isReadOnly || !onRemoveBeat ? undefined : () => onRemoveBeat(idx, beat.id)}
-                      />
-                      {beat.transitToNext && beatIdx < day.beats.length - 1 && (
-                        <BeatTransit {...beat.transitToNext} />
-                      )}
-                    </m.div>
+                    <Fragment key={beat.id}>
+                      {slotBefore && renderMealSlot(slotBefore)}
+                      <m.div
+                        layout={prefersReducedMotion ? false : "position"}
+                        transition={{ duration: durationBase, ease: easeEditorialMut }}
+                        ref={idx === 0 && beatIdx === day.beats.length - 1 ? (el) => { day1LastBeatRef.current = el; } : undefined}
+                      >
+                        <Beat
+                          time={beat.time}
+                          location={beat.location}
+                          body={beat.body}
+                          note={beat.note}
+                          isPast={isPast}
+                          isCurrent={isCurrent}
+                          chips={beat.chips}
+                          hasMore={beat.hasMore}
+                          onExpand={() => onExpandBeat(beat.id)}
+                          onMoveUp={isReadOnly ? undefined : () => handleMove(idx, beatIdx, -1, day.beats)}
+                          onMoveDown={isReadOnly ? undefined : () => handleMove(idx, beatIdx, 1, day.beats)}
+                          canMoveUp={beatIdx > 0}
+                          canMoveDown={beatIdx < day.beats.length - 1}
+                          onReplace={isReadOnly || !onReplaceBeat ? undefined : () => onReplaceBeat(idx, beat.id)}
+                          onNoteChange={isReadOnly || !onNoteChange ? undefined : (value) => onNoteChange(idx, beat.id, value)}
+                          onRemove={isReadOnly || !onRemoveBeat ? undefined : () => onRemoveBeat(idx, beat.id)}
+                        />
+                        {beat.transitToNext && beatIdx < day.beats.length - 1 && (
+                          <BeatTransit {...beat.transitToNext} />
+                        )}
+                      </m.div>
+                    </Fragment>
                   );
                 })}
                 </LayoutGroup>
+                {trailingSlots.map(renderMealSlot)}
                 {day.endAnchor && (
                   <BeatAnchor role="end" point={day.endAnchor.point} />
                 )}
               </Spine>
-            )
+              );
+            })()
           )}
           </div>
           {isPaged && (

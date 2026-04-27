@@ -1128,6 +1128,11 @@ export const ItineraryShell = ({
                   onDayStartChange={isReadOnly ? undefined : handleStartLocationChange}
                   onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
                   onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
+                  accommodationStyle={tripBuilderData?.accommodationStyle}
+                  onAddSpotForMeal={isReadOnly ? undefined : (dayIndex) => {
+                    setSelectedDay(dayIndex);
+                    setAddPlaceDialogOpen(true);
+                  }}
                   isReadOnly={isReadOnly}
                 />
               </ErrorBoundary>

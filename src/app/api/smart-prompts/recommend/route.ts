@@ -21,6 +21,7 @@ import {
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { parseLocalDateWithOffset, formatLocalDateISO } from "@/lib/utils/dateUtils";
 import { filterByMealType } from "@/lib/mealFiltering";
+import { createKonbiniActivity } from "@/lib/itinerary/konbiniNote";
 
 /**
  * Default durations for different meal types in minutes
@@ -30,24 +31,6 @@ const MEAL_DURATIONS: Record<string, number> = {
   lunch: 60,
   dinner: 90,
   snack: 30,
-};
-
-/**
- * Konbini tips and recommendations by meal type
- */
-const KONBINI_INFO: Record<string, { title: string; tips: string }> = {
-  breakfast: {
-    title: "Konbini Breakfast",
-    tips: "Try onigiri (rice balls), tamago sando (egg sandwich), or hot canned coffee. 7-Eleven, Lawson, and FamilyMart are everywhere and open 24/7.",
-  },
-  lunch: {
-    title: "Konbini Lunch",
-    tips: "Bento boxes, yakisoba, udon cups, or seasonal limited items. Most konbinis have a microwave and hot water. Don't miss the premium onigiri!",
-  },
-  dinner: {
-    title: "Konbini Dinner",
-    tips: "Hot nikuman (meat buns), oden in winter, or fresh bento. Perfect for a quick meal at your hotel after a long day of sightseeing.",
-  },
 };
 
 /**
@@ -209,26 +192,6 @@ function createMealActivity(
     recommendationReason: {
       primaryReason: `Suggested to fill a ${mealType} gap in your day`,
     },
-  };
-}
-
-/**
- * Create a konbini quick meal activity (note-based, no specific location)
- */
-function createKonbiniActivity(
-  mealType: "breakfast" | "lunch" | "dinner",
-  timeSlot: "morning" | "afternoon" | "evening"
-): ItineraryActivity {
-  const info = KONBINI_INFO[mealType] ?? KONBINI_INFO["lunch"];
-  const infoTitle = info?.title ?? "Konbini Meal";
-  const infoTips = info?.tips ?? "Grab a quick meal from 7-Eleven, Lawson, or FamilyMart.";
-
-  return {
-    kind: "note",
-    id: generateActivityId(),
-    title: "Note",
-    timeOfDay: timeSlot,
-    notes: `**${infoTitle}**\n\n${infoTips}`,
   };
 }
 
