@@ -7,13 +7,13 @@ import { X } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useToast } from "@/context/ToastContext";
-import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
+import { REGIONS, deriveRegionsFromCities, getRegionForCity } from "@/data/regions";
 import {
   scoreRegionsForTrip,
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
 import { optimizeCitySequence } from "@/lib/routing/citySequence";
-import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import { getAllCities, getChildCityMapping } from "@/lib/tripBuilder/cityRelevance";
 import { validateCityDayRatio } from "@/lib/tripBuilder/cityDayValidation";
 import type { CityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
@@ -60,6 +60,9 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   const { data, setData } = useTripBuilder();
   const { showToast } = useToast();
   const hasAutoSelected = useRef(false);
+  // Tracks the exit airport we've already evaluated for open-jaw augmentation.
+  // Prevents re-firing if the user removes the augmented city manually.
+  const lastAugmentedExitRef = useRef<string | null>(null);
   const hoverClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPanelHovered = useRef(false);
 
@@ -149,6 +152,10 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   // All cities data for looking up dynamic city metadata
   const allCitiesData = useMemo(() => getAllCities(), []);
 
+  // Child-city → planning-city map (e.g. "narita" → "tokyo"). Used so a child
+  // city in the search bar still flips its parent region's selection state.
+  const childCityMap = useMemo(() => getChildCityMapping(), []);
+
   // Derive regions from selected cities (for map highlighting & summary)
   const derivedRegions = useMemo(
     () => deriveRegionsFromCities(Array.from(selectedCities)),
@@ -223,6 +230,60 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     // when the exit airport arrives. Manual selections are preserved by the
     // hasAutoSelected ref + selectedCities.size > 0 early returns above.
   }, [vibes, data.entryPoint, data.exitPoint, data.sameAsEntry, data.duration, selectedCities.size, setData]);
+
+  // Augment-on-divergence: when the user back-navigates and switches to an
+  // open-jaw flight whose exit region isn't represented in their existing
+  // city picks, append a single exit-region city. Each exit airport is
+  // evaluated at most once (lastAugmentedExitRef) so a manual removal sticks.
+  useEffect(() => {
+    if (data.sameAsEntry !== false) return;
+    if (!data.entryPoint?.region || !data.exitPoint?.region || !data.exitPoint.cityId) return;
+    if (data.entryPoint.region === data.exitPoint.region) return;
+    // First mount with no cities is handled by the initial auto-select above.
+    if (selectedCities.size === 0) return;
+
+    const exitKey = data.exitPoint.iataCode ?? data.exitPoint.id;
+    if (lastAugmentedExitRef.current === exitKey) return;
+
+    const exitRegion = data.exitPoint.region;
+    const hasExitRegionCity = Array.from(selectedCities).some((cityId) => {
+      const lower = cityId.toLowerCase();
+      if (getRegionForCity(lower as CityId) === exitRegion) return true;
+      const parent = childCityMap.get(lower)?.planningCity;
+      if (!parent) return false;
+      return getRegionForCity(parent.toLowerCase() as CityId) === exitRegion;
+    });
+
+    // Always claim the ref so we don't re-evaluate on subsequent renders.
+    lastAugmentedExitRef.current = exitKey;
+
+    if (hasExitRegionCity) return;
+
+    const exitCity = data.exitPoint.cityId;
+    if (selectedCities.has(exitCity)) return;
+
+    const exitCityName =
+      REGIONS.flatMap((r) => r.cities).find((c) => c.id === exitCity)?.name ?? exitCity;
+    const exitRegionName =
+      REGIONS.find((r) => r.id === exitRegion)?.name ?? exitRegion;
+
+    setData((prev) => {
+      const raw = [...(prev.cities ?? []), exitCity];
+      const cities = optimizeCitySequence(prev.entryPoint, raw, prev.exitPoint, prev.duration);
+      return {
+        ...prev,
+        cities,
+        regions: deriveRegionsFromCities(cities),
+        // City set changed — clear stale cityDays so defaults recompute.
+        cityDays: undefined,
+      };
+    });
+
+    showToast(`Added ${exitCityName} so you end the trip near your ${exitRegionName} departure airport`, {
+      variant: "info",
+      duration: 4000,
+    });
+  }, [data.entryPoint, data.exitPoint, data.sameAsEntry, data.duration, selectedCities, childCityMap, setData, showToast]);
 
   // City/day ratio validation
   const cityDayValidation = useMemo(
@@ -319,14 +380,20 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         selectedCities.has(id)
       ).length;
 
-      // Also check if any dynamic cities in this region are selected
+      // Also check if any dynamic cities in this region are selected.
+      // A "dynamic" city is either:
+      //   1. A non-known planning city whose metadata.region matches, or
+      //   2. A child city (e.g. "narita") whose planning-city parent
+      //      (e.g. "tokyo") sits in this region.
       const regionName = regionDef.name.toLowerCase();
       const hasDynamicSelected = Array.from(selectedCities).some((cityId) => {
         if (knownCityIds.includes(cityId)) return false;
-        const cityData = allCitiesData.find(
-          (c) => c.city.toLowerCase() === cityId
-        );
-        return cityData?.region?.toLowerCase() === regionName;
+        const lower = cityId.toLowerCase();
+        const cityData = allCitiesData.find((c) => c.city.toLowerCase() === lower);
+        if (cityData?.region?.toLowerCase() === regionName) return true;
+        const parent = childCityMap.get(lower)?.planningCity;
+        if (!parent) return false;
+        return knownCityIds.includes(parent.toLowerCase() as CityId);
       });
 
       const totalSelected = selectedCount + (hasDynamicSelected ? 1 : 0);
@@ -335,7 +402,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         return "full";
       return "partial";
     },
-    [selectedCities, allCitiesData]
+    [selectedCities, allCitiesData, childCityMap]
   );
 
   // Detail panel region (from hover on desktop)
