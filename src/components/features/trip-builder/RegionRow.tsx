@@ -1,7 +1,7 @@
 "use client";
 
 import { m, useReducedMotion } from "framer-motion";
-import { Check, Minus, Pin, Plane, PlaneTakeoff, Repeat, Sparkles } from "lucide-react";
+import { Check, Pin, Plane, PlaneTakeoff, Repeat, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut, durationBase } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -66,32 +66,13 @@ export function RegionRow({
         ease: easeCinematicMut,
       }}
       className={cn(
-        "group flex w-full cursor-pointer items-center gap-4 border-b border-l-[3px] px-4 py-4 text-left backdrop-blur-sm transition-colors duration-300 lg:px-5 lg:py-5",
+        "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left backdrop-blur-sm transition-colors duration-300 lg:px-5 lg:py-5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         hasSelection
-          ? "border-b-border border-l-brand-primary bg-surface/60"
-          : "border-b-border/50 border-l-transparent bg-canvas/80 hover:border-b-border hover:bg-canvas/90",
+          ? "border-b-border bg-surface/60"
+          : "border-b-border/50 bg-canvas/80 hover:border-b-border hover:bg-canvas/90",
       )}
     >
-      {/* Selection indicator */}
-      <span
-        className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-colors duration-300",
-          regionSelectionState === "full"
-            ? "border-brand-primary bg-brand-primary text-white"
-            : regionSelectionState === "partial"
-              ? "border-brand-primary bg-brand-primary/20"
-              : "border-border/80 group-hover:border-foreground/30",
-        )}
-      >
-        {regionSelectionState === "full" && (
-          <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-        )}
-        {regionSelectionState === "partial" && (
-          <Minus className="h-3.5 w-3.5 text-brand-primary" strokeWidth={2.5} />
-        )}
-      </span>
-
       {/* Index number */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
@@ -157,6 +138,32 @@ export function RegionRow({
         hasSelection || isHovered ? "text-foreground-secondary" : "text-stone",
       )}>
         {matchScore}%
+      </span>
+
+      {/* Selection indicator */}
+      <span
+        className={cn(
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-colors duration-300",
+          regionSelectionState === "full"
+            ? "border-brand-primary bg-brand-primary text-white"
+            : regionSelectionState === "partial"
+              ? "border-brand-primary bg-brand-primary/15"
+              : "border-border/80 group-hover:border-foreground/30",
+        )}
+        aria-hidden
+      >
+        {regionSelectionState === "full" && (
+          <m.span
+            initial={prefersReducedMotion ? false : { scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
+            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+          </m.span>
+        )}
+        {regionSelectionState === "partial" && (
+          <span className="h-2 w-2 rounded-full bg-brand-primary" />
+        )}
       </span>
 
     </m.button>

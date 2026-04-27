@@ -32,10 +32,8 @@ export function VibeCard({
         delay: 0.08 + index * 0.06,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className={`group relative flex w-full items-center gap-4 border-l-[3px] py-3 pl-5 pr-4 text-left transition-colors duration-300 sm:gap-5 sm:py-3.5 sm:pl-6 sm:pr-5 ${
-        isSelected
-          ? "border-l-brand-primary bg-surface/60"
-          : "border-l-transparent hover:bg-surface/40"
+      className={`group relative flex w-full items-center gap-4 py-3 pl-5 pr-4 text-left transition-colors duration-300 sm:gap-5 sm:py-3.5 sm:pl-6 sm:pr-5 ${
+        isSelected ? "bg-surface/60" : "hover:bg-surface/40"
       } ${isDisabled && !isSelected ? "cursor-not-allowed opacity-35" : "cursor-pointer"}`}
     >
       {/* Index number */}
