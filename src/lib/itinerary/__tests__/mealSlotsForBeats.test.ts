@@ -41,7 +41,7 @@ function beat(
 }
 
 describe("computeBeatMealSlotInsertions", () => {
-  it("places breakfast slot before the first Morning beat", () => {
+  it("places breakfast slot before the first beat later than 08:00", () => {
     const dayActivities = [
       place("a1", "morning"),
       place("a2", "afternoon"),
@@ -66,7 +66,7 @@ describe("computeBeatMealSlotInsertions", () => {
     expect(breakfast?.beforeBeatId).toBe("a1");
   });
 
-  it("places lunch slot before the first Midday/Afternoon beat", () => {
+  it("places lunch slot before the first beat later than 12:30", () => {
     const dayActivities = [
       place("a1", "morning"),
       place("a2", "morning"),
@@ -91,7 +91,7 @@ describe("computeBeatMealSlotInsertions", () => {
     expect(lunch?.beforeBeatId).toBe("a3");
   });
 
-  it("places dinner slot before the first Evening beat", () => {
+  it("places dinner slot before the first beat later than 19:00", () => {
     const dayActivities = [
       place("a1", "morning"),
       place("a2", "morning"),
@@ -102,7 +102,7 @@ describe("computeBeatMealSlotInsertions", () => {
       beat("a1", "Morning", "09:00"),
       beat("a2", "Morning", "10:30"),
       beat("a3", "Midday", "13:00"),
-      beat("a4", "Evening", "19:00"),
+      beat("a4", "Evening", "19:30"),
     ];
     const insertions = computeBeatMealSlotInsertions({
       dayId: "day-1",
@@ -116,7 +116,7 @@ describe("computeBeatMealSlotInsertions", () => {
     expect(dinner?.beforeBeatId).toBe("a4");
   });
 
-  it("places dinner at end (beforeBeatId=null) when no evening beat exists", () => {
+  it("places dinner at end (beforeBeatId=null) when no beat is later than 19:00", () => {
     const dayActivities = [
       place("a1", "morning"),
       place("a2", "morning"),
@@ -138,6 +138,33 @@ describe("computeBeatMealSlotInsertions", () => {
     const dinner = insertions.find((i) => i.mealType === "dinner");
     expect(dinner).toBeDefined();
     expect(dinner?.beforeBeatId).toBeNull();
+  });
+
+  it("places breakfast before the first beat even when no Morning bucket exists", () => {
+    // Regression: when day starts late (first beat at 12:00), an earlier
+    // implementation looked for a "Morning" partOfDay beat; finding none,
+    // it dropped the breakfast slot to the bottom of the spine. Now slots
+    // position purely by time, so 08:00 lands above the 12:00 beat.
+    const dayActivities = [
+      place("a1", "morning"),
+      place("a2", "afternoon"),
+      place("a3", "afternoon"),
+    ];
+    const beats = [
+      beat("a1", "Midday", "12:00"),
+      beat("a2", "Midday", "13:22"),
+      beat("a3", "Afternoon", "15:00"),
+    ];
+    const insertions = computeBeatMealSlotInsertions({
+      dayId: "day-1",
+      dayIndex: 0,
+      cityId: "tokyo",
+      dayActivities,
+      beats,
+      dismissedPromptIds: new Set(),
+    });
+    const breakfast = insertions.find((i) => i.mealType === "breakfast");
+    expect(breakfast?.beforeBeatId).toBe("a1");
   });
 
   it("suppresses breakfast and dinner slots when accommodationStyle is ryokan", () => {
