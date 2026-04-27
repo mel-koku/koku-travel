@@ -17,6 +17,15 @@ function buildProxyUrl(photoName: string, maxWidthPx = 1200): string {
   return `/api/places/photo?photoName=${encodeURIComponent(photoName)}&maxWidthPx=${maxWidthPx}`;
 }
 
+// Curated rows store a direct URL (e.g. Wikimedia Commons) in `photo_name`;
+// Google rows store an opaque ref that must be served via the proxy. Mirrors
+// the same source-aware mapping in /api/locations/[id]/route.ts.
+function photoUrlFromRow(source: string, photoName: string, maxWidthPx = 1200): string {
+  return source === "curated" ? photoName : buildProxyUrl(photoName, maxWidthPx);
+}
+
+const PHOTO_SOURCES = ["google", "curated"] as const;
+
 /**
  * Returns a map of location_id -> best available hero photo URL. Prefers
  * harvested `location_photos` rows (vetted + attributed), falls back to
@@ -34,9 +43,9 @@ async function fetchHeroPhotosByLocationIds(
     const [photos, locations] = await Promise.all([
       supabase
         .from("location_photos")
-        .select("location_id, photo_name, sort_order")
+        .select("location_id, source, photo_name, sort_order")
         .in("location_id", ids)
-        .eq("source", "google")
+        .in("source", PHOTO_SOURCES)
         .eq("moderation", "approved")
         .order("sort_order", { ascending: true }),
       supabase
@@ -51,10 +60,11 @@ async function fetchHeroPhotosByLocationIds(
     }
     for (const row of (photos.data ?? []) as Array<{
       location_id: string;
+      source: string;
       photo_name: string;
     }>) {
       if (!map.has(row.location_id)) {
-        map.set(row.location_id, buildProxyUrl(row.photo_name));
+        map.set(row.location_id, photoUrlFromRow(row.source, row.photo_name));
       }
     }
     if (locations.error) {
@@ -92,9 +102,9 @@ async function fetchHeroPhotoListByLocationIds(
     const [photos, locations] = await Promise.all([
       supabase
         .from("location_photos")
-        .select("location_id, photo_name, sort_order")
+        .select("location_id, source, photo_name, sort_order")
         .in("location_id", ids)
-        .eq("source", "google")
+        .in("source", PHOTO_SOURCES)
         .eq("moderation", "approved")
         .order("sort_order", { ascending: true }),
       supabase
@@ -109,10 +119,11 @@ async function fetchHeroPhotoListByLocationIds(
     }
     for (const row of (photos.data ?? []) as Array<{
       location_id: string;
+      source: string;
       photo_name: string;
     }>) {
       const list = map.get(row.location_id) ?? [];
-      list.push(buildProxyUrl(row.photo_name));
+      list.push(photoUrlFromRow(row.source, row.photo_name));
       map.set(row.location_id, list);
     }
     if (locations.error) {

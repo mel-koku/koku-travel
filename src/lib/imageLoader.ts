@@ -7,6 +7,7 @@
  *   - cdn.sanity.io: served via Sanity's own ?w/?q/?auto=format pipeline
  *   - /api/places/photo: served via Google Places maxWidthPx (proxy already
  *     forwards the resize request to Google server-side)
+ *   - upload.wikimedia.org: served via Wikimedia's /thumb/ CDN
  *   - /images/**: pre-sized static assets in /public, served direct
  *
  * All other sources (other remote hosts) still flow through /_next/image
@@ -37,6 +38,18 @@ export default function imageLoader({
     const params = new URLSearchParams(queryStart >= 0 ? src.slice(queryStart + 1) : "");
     params.set("maxWidthPx", String(width));
     return `${path}?${params.toString()}`;
+  }
+
+  // Wikimedia Commons: rewrite originals to /thumb/ URLs so resizing runs on
+  // Wikimedia's CDN, not Vercel's. Already-thumb URLs pass through unchanged.
+  if (src.includes("upload.wikimedia.org/wikipedia/commons/")) {
+    if (src.includes("/commons/thumb/")) {
+      return src;
+    }
+    const match = src.match(/^(https:\/\/upload\.wikimedia\.org\/wikipedia\/commons)\/([0-9a-f])\/([0-9a-f]{2})\/(.+)$/);
+    if (!match) return src;
+    const [, base, x, xx, file] = match;
+    return `${base}/thumb/${x}/${xx}/${file}/${width}px-${file}`;
   }
 
   if (src.startsWith("/images/")) {

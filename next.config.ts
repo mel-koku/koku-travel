@@ -44,6 +44,11 @@ const remotePatterns: Array<{
     protocol: "https",
     hostname: "api.dicebear.com",
   },
+  {
+    protocol: "https",
+    hostname: "upload.wikimedia.org",
+    pathname: "/wikipedia/commons/**",
+  },
 ];
 
 if (siteUrl) {

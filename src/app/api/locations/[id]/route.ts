@@ -44,9 +44,10 @@ export async function GET(
       const validatedId = idValidation.data;
 
       // Fetch location + harvested photos in parallel.
-      // `location_photos` holds up to 5 Google photo_name refs per location
-      // (harvested during enrichment). Surfacing them here lights up the
-      // detail/modal gallery and the per-photo attribution credit.
+      // `location_photos` holds up to 5 photo refs per location: Google-source
+      // (photo_name is a Google ref, served via proxy) or curated-source
+      // (photo_name is a direct URL, e.g. Wikimedia Commons). Surfacing them
+      // here lights up the detail/modal gallery and the per-photo credit.
       const supabase = await createClient();
       const [{ data: locationData, error: dbError }, { data: photoRows }] = await Promise.all([
         supabase
@@ -56,9 +57,9 @@ export async function GET(
           .single(),
         supabase
           .from("location_photos")
-          .select("photo_name, width_px, height_px, attribution, attribution_uri")
+          .select("photo_name, source, width_px, height_px, attribution, attribution_uri")
           .eq("location_id", validatedId)
-          .eq("source", "google")
+          .in("source", ["google", "curated"])
           .eq("moderation", "approved")
           .order("sort_order", { ascending: true })
           .limit(5),
@@ -80,16 +81,21 @@ export async function GET(
       // attribution), fall back to the primary hero when the table is empty.
       type PhotoRow = {
         photo_name: string;
+        source: string;
         width_px: number | null;
         height_px: number | null;
         attribution: string | null;
         attribution_uri: string | null;
       };
+      // Google rows: photo_name is an opaque ref, served via /api/places/photo proxy.
+      // Curated rows: photo_name is the full URL (e.g. upload.wikimedia.org/...) — use directly.
       const harvestedPhotos = ((photoRows ?? []) as PhotoRow[]).map((p) => ({
         name: p.photo_name,
         widthPx: p.width_px ?? undefined,
         heightPx: p.height_px ?? undefined,
-        proxyUrl: `/api/places/photo?photoName=${encodeURIComponent(p.photo_name)}&maxWidthPx=1600`,
+        proxyUrl: p.source === "curated"
+          ? p.photo_name
+          : `/api/places/photo?photoName=${encodeURIComponent(p.photo_name)}&maxWidthPx=1600`,
         attributions: p.attribution
           ? [{ displayName: p.attribution, uri: p.attribution_uri ?? undefined }]
           : [],
