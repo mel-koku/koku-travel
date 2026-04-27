@@ -1,9 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Users } from "lucide-react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectFestivalNearMissWarnings } from "@/lib/planning/tripWarnings";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
+import {
+  formatFestivalDateRange,
+  getFestivalById,
+} from "@/data/festivalCalendar";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 function formatFriendlyDate(iso: string): string {
   const date = parseLocalDate(iso);
@@ -44,7 +50,6 @@ export function FestivalNearMissCard() {
         className="flex items-start justify-between gap-3 rounded-lg border border-sage/30 bg-sage/5 px-4 py-3"
       >
         <p className="text-sm text-foreground-secondary">
-          <span aria-hidden="true">✓ </span>
           {isForward
             ? `Trip extended through ${formatFriendlyDate(confirmed.newPivotDate)}.`
             : `Trip now starts ${formatFriendlyDate(confirmed.newPivotDate)}.`}{" "}
@@ -88,6 +93,13 @@ export function FestivalNearMissCard() {
   const newStartDate = warning.actionData?.newStartDate as string | undefined;
   const festivalName =
     (warning.actionData?.festivalName as string | undefined) ?? warning.title;
+  const festival = getFestivalById(festivalId);
+  const dateLabel = festival ? formatFestivalDateRange(festival) : null;
+  const cityLabel = festival ? formatCityName(festival.city) : null;
+  const metaParts = [
+    festival?.isApproximate && dateLabel ? `Around ${dateLabel}` : dateLabel,
+    cityLabel,
+  ].filter(Boolean);
 
   return (
     <div className="rounded-lg border border-sage/30 bg-sage/5 px-4 py-3">
@@ -96,7 +108,23 @@ export function FestivalNearMissCard() {
           <warning.icon className="h-4 w-4 shrink-0 text-foreground-secondary" aria-hidden />
           <div>
             <p className="text-sm font-semibold text-foreground">{warning.title}</p>
-            <p className="mt-1 text-sm text-foreground-secondary">{warning.message}</p>
+            {metaParts.length > 0 && (
+              <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-foreground-secondary">
+                {metaParts.join(" · ")}
+              </p>
+            )}
+            {festival?.description && (
+              <p className="mt-1.5 text-sm text-foreground-secondary">
+                {festival.description}
+              </p>
+            )}
+            <p className="mt-1.5 text-sm text-foreground-secondary">{warning.message}</p>
+            {festival && festival.crowdImpact >= 4 && (
+              <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-foreground-secondary">
+                <Users className="h-3.5 w-3.5" aria-hidden />
+                Heavy crowds expected.
+              </p>
+            )}
           </div>
         </div>
         <button

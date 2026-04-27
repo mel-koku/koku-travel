@@ -1,9 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Users } from "lucide-react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
+import {
+  formatFestivalDateRange,
+  getFestivalById,
+  getFestivalTripDays,
+  type Festival,
+} from "@/data/festivalCalendar";
+import { formatCityName } from "@/lib/itinerary/dayLabel";
 
 /**
  * Festival overlap auto-include CTA (KOK-32).
@@ -12,10 +19,6 @@ import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
  * green opt-in card. Clicking "Weave it in" appends the festival ID to
  * data.mustIncludeFestivals so the next generation pins the festival's
  * suggested location (or drops a dated note) on the festival day.
- *
- * Mirrors KOK-23's FestivalNearMissCard visual treatment: dismiss × in the
- * top-right and a sage-green confirmation state with Undo after the user
- * accepts. The two flows feel like a family.
  */
 export function FestivalIncludeCard() {
   const { data, setData } = useTripBuilder();
@@ -69,7 +72,6 @@ export function FestivalIncludeCard() {
           className="flex items-start justify-between gap-3 rounded-lg border border-sage/30 bg-sage/5 px-4 py-3"
         >
           <p className="text-sm text-foreground-secondary">
-            <span aria-hidden="true">✓ </span>
             We&apos;ll weave {confirmedFestivalName} into your trip on its festival day.
           </p>
           <button
@@ -98,6 +100,7 @@ export function FestivalIncludeCard() {
         const festivalId = (w.actionData?.festivalId as string | undefined) ?? w.id;
         const festivalName =
           (w.actionData?.festivalName as string | undefined) ?? w.title;
+        const festival = getFestivalById(festivalId);
 
         return (
           <div
@@ -114,9 +117,30 @@ export function FestivalIncludeCard() {
                   <p className="text-sm font-semibold text-foreground">
                     {w.title}
                   </p>
-                  <p className="mt-1 text-sm text-foreground-secondary">
+                  {festival && (
+                    <FestivalMetaLine
+                      festival={festival}
+                      tripStart={data.dates?.start}
+                      tripEnd={data.dates?.end}
+                    />
+                  )}
+                  <p className="mt-1.5 text-sm text-foreground-secondary">
                     {w.message}
                   </p>
+                  {festival?.suggestedActivity && (
+                    <p className="mt-1.5 text-sm text-foreground-secondary">
+                      <span className="font-medium text-foreground">
+                        We&apos;d add:
+                      </span>{" "}
+                      {festival.suggestedActivity}.
+                    </p>
+                  )}
+                  {festival && festival.crowdImpact >= 4 && (
+                    <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-foreground-secondary">
+                      <Users className="h-3.5 w-3.5" aria-hidden />
+                      Heavy crowds expected.
+                    </p>
+                  )}
                 </div>
               </div>
               <button
@@ -158,5 +182,43 @@ export function FestivalIncludeCard() {
         );
       })}
     </div>
+  );
+}
+
+function FestivalMetaLine({
+  festival,
+  tripStart,
+  tripEnd,
+}: {
+  festival: Festival;
+  tripStart: string | undefined;
+  tripEnd: string | undefined;
+}) {
+  const dateLabel = formatFestivalDateRange(festival);
+  const cityLabel = formatCityName(festival.city);
+  const tripDays =
+    tripStart && tripEnd
+      ? getFestivalTripDays(festival, tripStart, tripEnd)
+      : null;
+
+  // For approximate festivals the canonical dates may not be the actual
+  // festival days, so a "Day N" label could mislead. Skip it.
+  const dayLabel =
+    tripDays && !festival.isApproximate
+      ? tripDays.firstDay === tripDays.lastDay
+        ? `Day ${tripDays.firstDay}`
+        : `Days ${tripDays.firstDay}–${tripDays.lastDay}`
+      : null;
+
+  const parts = [
+    festival.isApproximate ? `Around ${dateLabel}` : dateLabel,
+    cityLabel,
+    dayLabel,
+  ].filter(Boolean);
+
+  return (
+    <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-foreground-secondary">
+      {parts.join(" · ")}
+    </p>
   );
 }
