@@ -39,6 +39,7 @@ import { AccommodationBookend } from "./AccommodationBookend";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { addActivity, replaceActivity } from "@/services/trip/activityOperations";
+import { createKonbiniActivity, TIME_SLOT_BY_MEAL } from "@/lib/itinerary/konbiniNote";
 
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { logger } from "@/lib/logger";
@@ -107,7 +108,7 @@ export const ItineraryTimeline = ({
   tripId,
   onReorder,
   onReplace,
-  tripBuilderData: _tripBuilderData,
+  tripBuilderData,
   suggestions: _suggestions,
   onAcceptSuggestion: _onAcceptSuggestion,
   onSkipSuggestion: _onSkipSuggestion,
@@ -542,6 +543,15 @@ export const ItineraryTimeline = ({
     [day.id, setModel, isReadOnly],
   );
 
+  const handleAddKonbini = useCallback(
+    (mealType: "breakfast" | "lunch" | "dinner", index: number) => {
+      if (isReadOnly) return;
+      const note = createKonbiniActivity(mealType, TIME_SLOT_BY_MEAL[mealType]);
+      setModel((current) => addActivity(current, day.id, note, index));
+    },
+    [day.id, setModel, isReadOnly],
+  );
+
   const handleEditActivity = useCallback(
     (
       original: Extract<ItineraryActivity, { kind: "place" }>,
@@ -682,6 +692,8 @@ export const ItineraryTimeline = ({
             onReplace={onReplace}
             onAddAtIndex={handleAddAtIndex}
             onEditActivity={handleEditActivity}
+            onAddKonbini={handleAddKonbini}
+            accommodationStyle={tripBuilderData?.accommodationStyle}
             conflictsResult={conflictsResult}
             guide={guide}
             isReadOnly={isReadOnly}

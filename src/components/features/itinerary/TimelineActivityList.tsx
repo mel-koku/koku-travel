@@ -1,4 +1,4 @@
-import { Fragment, memo, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -16,6 +16,9 @@ import type { DayGuide } from "@/types/itineraryGuide";
 import type { Coordinate } from "@/lib/routing/types";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { featureFlags } from "@/lib/env/featureFlags";
+import { computeMealSlotPositions, type MealSlotEntry } from "@/lib/itinerary/mealSlotPositions";
+import { DISMISSED_PROMPTS_PREFIX } from "@/lib/constants/storage";
+import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { AddActivityButton } from "./AddActivityButton";
 import { AddActivitySheet } from "./AddActivitySheet";
 import { GuideSegmentCard } from "./GuideSegmentCard";
@@ -26,6 +29,7 @@ import { AccommodationPicker } from "./AccommodationPicker";
 import { LateArrivalCard } from "./LateArrivalCard";
 import { EarlyArrivalCard } from "./EarlyArrivalCard";
 import { AvailabilityAlert } from "./AvailabilityAlert";
+import { MealSlot } from "./MealSlot";
 import {
   trackCustomLocationAdded,
   trackCustomLocationDeleted,
@@ -109,6 +113,10 @@ type TimelineActivityListProps = {
   onStartLocationChange?: (location: EntryPoint | undefined) => void;
   onEndLocationChange?: (location: EntryPoint | undefined) => void;
   onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
+  /** Insert a konbini-meal note at the given index (no API call). */
+  onAddKonbini?: (mealType: "breakfast" | "lunch" | "dinner", index: number) => void;
+  /** Used to suppress breakfast + dinner slots when meals are included with the stay. */
+  accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
 };
 
 function getAddPlaceAriaLabel(args: {
@@ -168,16 +176,69 @@ export const TimelineActivityList = memo(function TimelineActivityList({
   onStartLocationChange,
   onEndLocationChange,
   onCityAccommodationChange,
+  onAddKonbini,
+  accommodationStyle,
 }: TimelineActivityListProps) {
   const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const [earlyArrivalDismissed, setEarlyArrivalDismissed] = useState(false);
   const [accommodationExpanded, setAccommodationExpanded] = useState(false);
+
+  const dismissalKey = tripId ? `${DISMISSED_PROMPTS_PREFIX}${tripId}` : null;
+  const [dismissedPromptIds, setDismissedPromptIds] = useState<Set<string>>(() => {
+    if (!dismissalKey) return new Set();
+    const stored = getLocal<string[]>(dismissalKey);
+    return stored ? new Set(stored) : new Set();
+  });
+
+  useEffect(() => {
+    if (!dismissalKey) return;
+    setLocal(dismissalKey, [...dismissedPromptIds]);
+  }, [dismissedPromptIds, dismissalKey]);
+
+  const dismissMealSlot = useCallback((promptId: string) => {
+    setDismissedPromptIds((prev) => {
+      const next = new Set(prev);
+      next.add(promptId);
+      return next;
+    });
+  }, []);
 
   const customEnabled = featureFlags.isCustomActivitiesEnabled;
   const [sheetState, setSheetState] = useState<{ index: number } | null>(null);
   const [editing, setEditing] = useState<{
     activity: Extract<ItineraryActivity, { kind: "place" }>;
   } | null>(null);
+
+  const mealSlotsByIndex = useMemo<Map<number, MealSlotEntry>>(() => {
+    if (isReadOnly) return new Map();
+    return computeMealSlotPositions({
+      day,
+      dayIndex,
+      extendedActivities,
+      accommodationStyle,
+      dismissedPromptIds,
+    });
+  }, [day, dayIndex, accommodationStyle, dismissedPromptIds, extendedActivities, isReadOnly]);
+
+  const renderMealSlot = useCallback(
+    (entry: MealSlotEntry) => {
+      const handleAddSpot = () => setSheetState({ index: entry.insertAtIndex });
+      const handleKonbini = entry.hasKonbini && onAddKonbini
+        ? () => onAddKonbini(entry.mealType, entry.insertAtIndex)
+        : undefined;
+      return (
+        <li key={`meal-slot-${entry.promptId}`} className="list-none">
+          <MealSlot
+            mealType={entry.mealType}
+            onAddSpot={handleAddSpot}
+            onKonbini={handleKonbini}
+            onDismiss={() => dismissMealSlot(entry.promptId)}
+          />
+        </li>
+      );
+    },
+    [dismissMealSlot, onAddKonbini],
+  );
 
   if (extendedActivities.length === 0) {
     return (
@@ -374,6 +435,11 @@ export const TimelineActivityList = memo(function TimelineActivityList({
               !isAnchor &&
               isLastActivity;
 
+            const mealSlotBefore = !activeId ? mealSlotsByIndex.get(index) : undefined;
+            const mealSlotAtEnd = !activeId && isLastActivity
+              ? mealSlotsByIndex.get(extendedActivities.length)
+              : undefined;
+
             return (
               <Fragment key={fragmentKey}>
                 {/* End accommodation bookend before departure anchor (leave hotel → airport) */}
@@ -387,6 +453,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     />
                   </li>
                 )}
+                {mealSlotBefore && renderMealSlot(mealSlotBefore)}
                 {/* Inline "+" button before this activity */}
                 {showAddBefore && (
                   <li className="list-none">
@@ -438,6 +505,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
                     <GuideSegmentCard segment={seg} />
                   </li>
                 ))}
+                {mealSlotAtEnd && renderMealSlot(mealSlotAtEnd)}
                 {/* Inline "+" button after the last non-anchor activity */}
                 {showAddAfter && (
                   <li className="list-none">
