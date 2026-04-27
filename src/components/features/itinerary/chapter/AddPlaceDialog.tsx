@@ -8,6 +8,10 @@ import { typography } from "@/lib/typography-system";
 import { easeEditorialMut, durationBase } from "@/lib/motion";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { InlineAddActivity } from "@/components/features/itinerary/chapter/InlineAddActivity";
+import {
+  MealNearbySuggestions,
+  type MealNearbyAnchor,
+} from "@/components/features/itinerary/chapter/MealNearbySuggestions";
 
 export type AddPlaceDialogDay = {
   index: number;
@@ -25,6 +29,19 @@ export type AddPlaceDialogProps = {
     activity: Extract<ItineraryActivity, { kind: "place" }>,
     meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
   ) => void;
+  /** When set, the dialog frames itself as adding a meal — drives the title
+   * and shows nearby food suggestions above the search/custom tabs. */
+  presetMealType?: "breakfast" | "lunch" | "dinner";
+  /** Anchor to search around for nearby suggestions (only used when
+   * presetMealType is also set). Computed by the caller based on the meal:
+   * breakfast → day start point; lunch → last morning stop; dinner → last stop. */
+  nearbyAnchor?: MealNearbyAnchor;
+};
+
+const MEAL_TITLE: Record<"breakfast" | "lunch" | "dinner", string> = {
+  breakfast: "Add breakfast",
+  lunch: "Add lunch",
+  dinner: "Add dinner",
 };
 
 export function AddPlaceDialog({
@@ -33,6 +50,8 @@ export function AddPlaceDialog({
   days,
   defaultDayIndex,
   onAdd,
+  presetMealType,
+  nearbyAnchor,
 }: AddPlaceDialogProps) {
   const [selectedDayIdx, setSelectedDayIdx] = useState(defaultDayIndex);
 
@@ -89,7 +108,7 @@ export function AddPlaceDialog({
               <header className="flex items-start justify-between gap-4 p-6 pb-4 border-b border-border">
                 <div className="flex-1 min-w-0">
                   <h2 className={cn(typography({ intent: "editorial-h3" }), "mb-3")}>
-                    Add a place
+                    {presetMealType ? MEAL_TITLE[presetMealType] : "Add a place"}
                   </h2>
                   <div className="text-sm text-foreground-secondary mt-1">
                     <label className="inline-flex items-center gap-2 flex-wrap">
@@ -116,6 +135,17 @@ export function AddPlaceDialog({
                 </button>
               </header>
               <div className="flex-1 min-h-0 overflow-y-auto p-6 pt-4">
+                {selectedDay && presetMealType && nearbyAnchor && (
+                  <MealNearbySuggestions
+                    mealType={presetMealType}
+                    anchor={nearbyAnchor}
+                    dayActivities={selectedDay.activities}
+                    onPick={(activity) => {
+                      onAdd(selectedDay.index, activity, { addressSource: "none" });
+                      onClose();
+                    }}
+                  />
+                )}
                 {selectedDay && (
                   <InlineAddActivity
                     dayActivities={selectedDay.activities}

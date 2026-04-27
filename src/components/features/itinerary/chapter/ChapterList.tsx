@@ -136,7 +136,7 @@ export type ChapterListProps = {
    * Called when a meal slot's "Add a spot" is clicked. Caller is responsible
    * for opening the catalog/add-place flow scoped to the given day.
    */
-  onAddSpotForMeal?: (dayIndex: number) => void;
+  onAddSpotForMeal?: (dayIndex: number, mealType: "breakfast" | "lunch" | "dinner") => void;
 };
 
 function beatIsBeforeNow(time: string, dayDate: string, now: Date): boolean {
@@ -340,7 +340,7 @@ export function ChapterList({
                 <BeatMealSlot
                   key={`meal-${ins.promptId}`}
                   mealType={ins.mealType}
-                  onAddSpot={() => onAddSpotForMeal?.(idx)}
+                  onAddSpot={() => onAddSpotForMeal?.(idx, ins.mealType)}
                   onDismiss={() => dismissMealSlot(ins.promptId)}
                 />
               );

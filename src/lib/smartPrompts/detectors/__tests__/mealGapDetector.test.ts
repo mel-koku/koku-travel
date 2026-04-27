@@ -112,4 +112,28 @@ describe("detectMealGaps", () => {
       gaps.find((g) => g.action.type === "add_meal" && g.action.mealType === "lunch"),
     ).toBeUndefined();
   });
+
+  it("ignores addressless custom activities when computing coverage", () => {
+    // Regression: a user typed "Aunty's Diner" via the Add custom tab with
+    // mealType "breakfast" but no address/coords. The planner can't route
+    // it, so it never renders in the timeline spine. Counting it as
+    // "covering" breakfast hides the slot the user still needs.
+    const ghost: ItineraryActivity = {
+      kind: "place",
+      id: "custom-ghost",
+      title: "Aunty's Diner",
+      timeOfDay: "morning",
+      mealType: "breakfast",
+      isCustom: true,
+    };
+    const activities: ItineraryActivity[] = [
+      ghost,
+      place("temple", "morning", "10:00", ["temple"]),
+      place("shrine", "afternoon", "14:00", ["shrine"]),
+    ];
+    const gaps = detectMealGaps(day(activities), 0);
+    expect(
+      gaps.find((g) => g.action.type === "add_meal" && g.action.mealType === "breakfast"),
+    ).toBeDefined();
+  });
 });

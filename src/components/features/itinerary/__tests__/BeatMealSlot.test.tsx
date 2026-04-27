@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { BeatMealSlot } from "../chapter/BeatMealSlot";
 
 describe("BeatMealSlot", () => {
-  it("renders breakfast with time, label, Add a spot, and dismiss", () => {
+  it("renders breakfast with contextual eyebrow, label, Add a spot, and dismiss", () => {
     render(
       <BeatMealSlot
         mealType="breakfast"
@@ -12,7 +12,7 @@ describe("BeatMealSlot", () => {
         onDismiss={() => {}}
       />,
     );
-    expect(screen.getByText("08:00")).toBeInTheDocument();
+    expect(screen.getByText("Before your first stop")).toBeInTheDocument();
     expect(screen.getByText(/Breakfast/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Add a spot/i })).toBeInTheDocument();
     expect(
@@ -20,15 +20,17 @@ describe("BeatMealSlot", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders lunch and dinner with their canonical times", () => {
+  it("renders lunch and dinner with neutral position context, no clock time", () => {
     const { rerender } = render(
       <BeatMealSlot mealType="lunch" onAddSpot={() => {}} onDismiss={() => {}} />,
     );
-    expect(screen.getByText("12:30")).toBeInTheDocument();
+    expect(screen.getByText("Midday break")).toBeInTheDocument();
     expect(screen.getByText(/Lunch break/)).toBeInTheDocument();
+    expect(screen.queryByText("12:30")).not.toBeInTheDocument();
     rerender(<BeatMealSlot mealType="dinner" onAddSpot={() => {}} onDismiss={() => {}} />);
-    expect(screen.getByText("19:00")).toBeInTheDocument();
+    expect(screen.getByText("After your last stop")).toBeInTheDocument();
     expect(screen.getByText(/Dinner/)).toBeInTheDocument();
+    expect(screen.queryByText("19:00")).not.toBeInTheDocument();
   });
 
   it("invokes the right callback per button", async () => {

@@ -17,10 +17,17 @@ const LABEL_BY_MEAL = {
   dinner: "Dinner",
 } as const;
 
-const TIME_BY_MEAL = {
-  breakfast: "08:00",
-  lunch: "12:30",
-  dinner: "19:00",
+/**
+ * Neutral position context. We don't show a clock time on an empty slot —
+ * the slot's actual time is set by the planner when the user adds a place,
+ * and forcing a notional time (08:00 / 12:30 / 19:00) read as a commitment
+ * the day didn't actually make (e.g. "Breakfast 08:00" with first activity
+ * at 11:47 implies a four-hour wait that doesn't exist).
+ */
+const CONTEXT_BY_MEAL = {
+  breakfast: "Before your first stop",
+  lunch: "Midday break",
+  dinner: "After your last stop",
 } as const;
 
 export type BeatMealSlotProps = {
@@ -40,7 +47,7 @@ export type BeatMealSlotProps = {
 export function BeatMealSlot({ mealType, onAddSpot, onDismiss }: BeatMealSlotProps) {
   const Icon = ICON_BY_MEAL[mealType];
   const label = LABEL_BY_MEAL[mealType];
-  const time = TIME_BY_MEAL[mealType];
+  const context = CONTEXT_BY_MEAL[mealType];
 
   return (
     <li
@@ -58,7 +65,7 @@ export function BeatMealSlot({ mealType, onAddSpot, onDismiss }: BeatMealSlotPro
       </span>
       <div className="flex items-start justify-between gap-3 text-foreground-secondary">
         <div className="min-w-0">
-          <div className="eyebrow-editorial mb-0.5">{time}</div>
+          <div className="eyebrow-editorial mb-0.5">{context}</div>
           <div className="text-sm text-foreground/85">
             {label}
             <button

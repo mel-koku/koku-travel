@@ -173,6 +173,13 @@ export const ItineraryShell = ({
   });
 
   const [selectedDay, setSelectedDay] = useState(0);
+  // When the user clicks "Add a spot" on a meal slot, this carries the slot's
+  // meal type into the dialog so the new activity gets annotated as breakfast/
+  // lunch/dinner (drives planner ordering + suppresses the meal-gap detector
+  // from firing again on the same day).
+  const [pendingMealContext, setPendingMealContext] = useState<
+    "breakfast" | "lunch" | "dinner" | null
+  >(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   // viewMode is kept as-is (always "timeline") to avoid refactoring downstream conditionals
   // around mobile map / header collapse. Setter is retained but unused after v1 removal.
@@ -641,21 +648,75 @@ export const ItineraryShell = ({
         });
       }
 
-      addActivity(tripId, targetDay.id, newActivity);
+      // If the user came in via a meal slot, annotate the activity so the
+      // planner can place it correctly (mealType drives detector coverage,
+      // timeOfDay drives bucket ordering). Insert at a position consistent
+      // with the bucket so the planner's array-order pass schedules it
+      // before/between/after the existing stops.
+      const annotated: Extract<ItineraryActivity, { kind: "place" }> = pendingMealContext
+        ? {
+            ...newActivity,
+            mealType: pendingMealContext,
+            timeOfDay:
+              pendingMealContext === "breakfast"
+                ? "morning"
+                : pendingMealContext === "lunch"
+                  ? "afternoon"
+                  : "evening",
+          }
+        : newActivity;
+
+      addActivity(tripId, targetDay.id, annotated);
 
       const nextDays = model.days.map((d) => {
         if (d.id !== targetDay.id) return d;
-        return { ...d, activities: [...d.activities, newActivity] };
+        if (!pendingMealContext) {
+          return { ...d, activities: [...d.activities, annotated] };
+        }
+        // Position the meal in array order so the planner's sequential
+        // routing produces a sensible time:
+        //   breakfast → after any arrival anchor, before all other stops
+        //   lunch     → after the last morning-bucket stop
+        //   dinner    → end of day (default append)
+        const places = d.activities.filter(
+          (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+        );
+        let insertIdx = d.activities.length;
+        if (pendingMealContext === "breakfast") {
+          const firstNonAnchor = d.activities.findIndex(
+            (a) => a.kind === "place" && !a.isAnchor,
+          );
+          insertIdx = firstNonAnchor === -1 ? d.activities.length : firstNonAnchor;
+        } else if (pendingMealContext === "lunch") {
+          const lastMorning = [...places]
+            .reverse()
+            .find((p) => {
+              const arr = p.schedule?.arrivalTime;
+              if (arr) {
+                const hour = Number(arr.split(":")[0]);
+                if (!Number.isNaN(hour)) return hour < 12;
+              }
+              return p.timeOfDay === "morning";
+            });
+          if (lastMorning) {
+            const idxInDay = d.activities.findIndex((a) => a.id === lastMorning.id);
+            insertIdx = idxInDay >= 0 ? idxInDay + 1 : d.activities.length;
+          }
+        }
+        const nextActivities = [...d.activities];
+        nextActivities.splice(insertIdx, 0, annotated);
+        return { ...d, activities: nextActivities };
       });
       const nextItinerary = { ...model, days: nextDays };
 
       setModelState(nextItinerary);
+      setPendingMealContext(null);
 
       setTimeout(() => {
         scheduleUserPlanningRef.current?.(nextItinerary);
       }, 0);
     },
-    [tripId, isUsingMock, isReadOnly, model, addActivity, setModelState, scheduleUserPlanningRef],
+    [tripId, isUsingMock, isReadOnly, model, addActivity, setModelState, scheduleUserPlanningRef, pendingMealContext],
   );
 
   // ── Refine day (Adjust button) ──
@@ -958,7 +1019,12 @@ export const ItineraryShell = ({
           {/* Add place dialog — chapter layout */}
           <AddPlaceDialog
             open={addPlaceDialogOpen}
-            onClose={() => setAddPlaceDialogOpen(false)}
+            onClose={() => {
+              setAddPlaceDialogOpen(false);
+              // Clear meal context if user dismissed without adding —
+              // otherwise the next non-meal Add-place would inherit it.
+              setPendingMealContext(null);
+            }}
             days={model.days.map((d, idx) => ({
               index: idx,
               label: `Day ${idx + 1}${d.cityId ? ` · ${formatCityName(d.cityId)}` : ""}`,
@@ -966,6 +1032,57 @@ export const ItineraryShell = ({
             }))}
             defaultDayIndex={safeSelectedDay}
             onAdd={handleAddActivityToDay}
+            presetMealType={pendingMealContext ?? undefined}
+            nearbyAnchor={(() => {
+              if (!pendingMealContext) return undefined;
+              const day = model.days[safeSelectedDay];
+              if (!day) return undefined;
+              const cityLabel = day.cityId ? formatCityName(day.cityId) : undefined;
+              const places = day.activities.filter(
+                (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+              );
+              const nonAnchor = places.filter((p) => !p.isAnchor);
+
+              // Anchor selection by meal:
+              //   breakfast → day start point (hotel) if set, else first stop
+              //   lunch     → last morning stop, else first stop
+              //   dinner    → last stop
+              if (pendingMealContext === "breakfast") {
+                if (resolvedStartLocation?.coordinates) {
+                  return {
+                    lat: resolvedStartLocation.coordinates.lat,
+                    lng: resolvedStartLocation.coordinates.lng,
+                    label: resolvedStartLocation.name,
+                    cityLabel,
+                  };
+                }
+                const first = nonAnchor[0];
+                return first?.coordinates
+                  ? { lat: first.coordinates.lat, lng: first.coordinates.lng, label: first.title, cityLabel }
+                  : undefined;
+              }
+              if (pendingMealContext === "lunch") {
+                const lastMorning = [...nonAnchor]
+                  .reverse()
+                  .find((p) => {
+                    const arr = p.schedule?.arrivalTime;
+                    if (arr) {
+                      const hour = Number(arr.split(":")[0]);
+                      if (!Number.isNaN(hour)) return hour < 12;
+                    }
+                    return p.timeOfDay === "morning";
+                  });
+                const target = lastMorning ?? nonAnchor[0];
+                return target?.coordinates
+                  ? { lat: target.coordinates.lat, lng: target.coordinates.lng, label: target.title, cityLabel }
+                  : undefined;
+              }
+              // dinner
+              const last = nonAnchor[nonAnchor.length - 1];
+              return last?.coordinates
+                ? { lat: last.coordinates.lat, lng: last.coordinates.lng, label: last.title, cityLabel }
+                : undefined;
+            })()}
           />
           {/* Header bar */}
           <div
@@ -1129,8 +1246,9 @@ export const ItineraryShell = ({
                   onDayEndChange={isReadOnly ? undefined : handleEndLocationChange}
                   onSetCityAccommodation={isReadOnly ? undefined : handleCityAccommodationChange}
                   accommodationStyle={tripBuilderData?.accommodationStyle}
-                  onAddSpotForMeal={isReadOnly ? undefined : (dayIndex) => {
+                  onAddSpotForMeal={isReadOnly ? undefined : (dayIndex, mealType) => {
                     setSelectedDay(dayIndex);
+                    setPendingMealContext(mealType);
                     setAddPlaceDialogOpen(true);
                   }}
                   isReadOnly={isReadOnly}
