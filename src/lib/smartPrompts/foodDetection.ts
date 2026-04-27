@@ -46,6 +46,38 @@ const FOOD_TAGS = new Set([
 ]);
 
 /**
+ * Primary classifier tags that indicate a non-food venue. When present,
+ * they override an incidental food tag (e.g. a landmark mis-tagged with
+ * "dining" because it sits on a famous food street).
+ *
+ * Real example: "Nishi Sando Path" was tagged ["dining", "landmark"] in
+ * Supabase, which made the lunch-gap detector think lunch was already
+ * covered. The path is the western approach to a shrine, not a meal.
+ */
+const NON_FOOD_PRIMARY_TAGS = new Set([
+  "temple",
+  "shrine",
+  "landmark",
+  "museum",
+  "park",
+  "garden",
+  "monument",
+  "memorial",
+  "castle",
+  "gate",
+  "bridge",
+  "path",
+  "trail",
+  "viewpoint",
+  "scenic",
+  "natural",
+  "natural_feature",
+  "neighborhood",
+  "district",
+  "market", // ambiguous; food markets should be tagged "food" too — let mealType/explicit food category win there
+]);
+
+/**
  * Tags that explicitly indicate a meal type.
  */
 const MEAL_TYPE_TAGS: Record<string, MealType> = {
@@ -59,10 +91,11 @@ const MEAL_TYPE_TAGS: Record<string, MealType> = {
 /**
  * Check if an activity is a food-related activity.
  *
- * Detection signals:
- * 1. Has explicit mealType set
- * 2. Has "dining" tag
- * 3. Has other food-related tags
+ * Detection signals (in order):
+ * 1. Has explicit mealType set → food
+ * 2. Has a non-food primary tag (temple, shrine, landmark, etc.) → NOT food,
+ *    even if a food tag is also present. Catches mis-tagged catalog rows.
+ * 3. Has a food-related tag → food
  *
  * @param activity - The activity to check
  * @returns true if the activity is food-related
@@ -70,23 +103,32 @@ const MEAL_TYPE_TAGS: Record<string, MealType> = {
 export function isFoodActivity(
   activity: Extract<ItineraryActivity, { kind: "place" }>
 ): boolean {
-  // 1. Has explicit mealType
+  // 1. Explicit mealType is the strongest signal — wins over tag conflicts.
   if (activity.mealType) {
     return true;
   }
 
-  // 2. Check tags for food-related indicators
-  if (activity.tags && activity.tags.length > 0) {
-    for (const tag of activity.tags) {
-      const normalizedTag = tag.toLowerCase();
-      if (FOOD_TAGS.has(normalizedTag)) {
+  if (!activity.tags || activity.tags.length === 0) {
+    return false;
+  }
+
+  const normalizedTags = activity.tags.map((t) => t.toLowerCase());
+
+  // 2. Non-food primary classifier wins. A landmark tagged "dining" is still
+  //    a landmark — only flag as food when explicitly opted in via mealType.
+  if (normalizedTags.some((t) => NON_FOOD_PRIMARY_TAGS.has(t))) {
+    return false;
+  }
+
+  // 3. Check remaining tags for food-related indicators.
+  for (const normalizedTag of normalizedTags) {
+    if (FOOD_TAGS.has(normalizedTag)) {
+      return true;
+    }
+    // Partial match (e.g., "japanese-restaurant", "matcha-cafe").
+    for (const foodTag of FOOD_TAGS) {
+      if (normalizedTag.includes(foodTag)) {
         return true;
-      }
-      // Check for partial matches (e.g., "japanese-restaurant")
-      for (const foodTag of FOOD_TAGS) {
-        if (normalizedTag.includes(foodTag)) {
-          return true;
-        }
       }
     }
   }
