@@ -22,17 +22,33 @@ type Args = {
   dismissedPromptIds: ReadonlySet<string>;
 };
 
+/** Notional clock time each slot represents — used purely for chronological positioning. */
+const SLOT_TIME_MINUTES: Record<MealSlotType, number> = {
+  breakfast: 8 * 60, // 08:00
+  lunch: 12 * 60 + 30, // 12:30
+  dinner: 19 * 60, // 19:00
+};
+
+function timeToMinutes(hhmm: string): number {
+  const parts = hhmm.split(":").map(Number);
+  const h = parts[0] ?? 0;
+  const m = parts[1] ?? 0;
+  return h * 60 + m;
+}
+
 /**
  * Compute where to insert meal slots between `beats` in a chapter day.
  * Slots only fire when `detectMealGaps` already flags a missing meal —
  * detection logic itself is unchanged.
  *
- * Insertion is keyed off `beat.partOfDay`:
- *   - breakfast → before first "Morning" beat
- *   - lunch     → before first "Midday" / "Afternoon" / "Evening" / "Night" beat;
- *                 falls back to `beforeBeatId: null` (end of spine) if none exists
- *   - dinner    → before first "Evening" / "Night" beat;
- *                 falls back to `beforeBeatId: null` (end of spine)
+ * Positioning is purely chronological: each slot has a notional time
+ * (08:00 / 12:30 / 19:00) and lands before the first beat whose clock
+ * time is later. If no beat is later, the slot trails at end of spine.
+ *
+ * Earlier revisions keyed off `beat.partOfDay`, which produced wrong
+ * placements when the day's actual schedule didn't include a "Morning"
+ * or "Evening" bucket — both slots fell through to end-of-spine and
+ * stacked at the bottom.
  *
  * Caller is responsible for rendering — the meal slot never enters
  * `day.activities`.
@@ -71,27 +87,12 @@ export function computeBeatMealSlotInsertions(args: Args): BeatMealSlotInsertion
     if (!addMealByType.has(mealType)) addMealByType.set(mealType, gap.id);
   }
 
-  const firstBeatWith = (predicate: (b: ChapterBeat) => boolean): ChapterBeat | undefined =>
-    beats.find(predicate);
-
   const insertions: BeatMealSlotInsertion[] = [];
   for (const [mealType, promptId] of addMealByType) {
     if (dismissedPromptIds.has(promptId)) continue;
 
-    let beforeBeat: ChapterBeat | undefined;
-    if (mealType === "breakfast") {
-      beforeBeat = firstBeatWith((b) => b.partOfDay === "Morning");
-    } else if (mealType === "lunch") {
-      beforeBeat = firstBeatWith(
-        (b) =>
-          b.partOfDay === "Midday" ||
-          b.partOfDay === "Afternoon" ||
-          b.partOfDay === "Evening" ||
-          b.partOfDay === "Night",
-      );
-    } else {
-      beforeBeat = firstBeatWith((b) => b.partOfDay === "Evening" || b.partOfDay === "Night");
-    }
+    const slotMinutes = SLOT_TIME_MINUTES[mealType];
+    const beforeBeat = beats.find((b) => timeToMinutes(b.time) > slotMinutes);
 
     insertions.push({
       promptId,

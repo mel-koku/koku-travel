@@ -22,7 +22,7 @@ const QUICK_ENTRY_POINTS: Record<string, EntryPoint> = {
 const QUICK_PRESETS = [
   { id: "tokyo", label: "Tokyo", cities: ["tokyo"], airport: "NRT" },
   { id: "kyoto-osaka", label: "Kyoto & Osaka", cities: ["kyoto", "osaka"], airport: "KIX" },
-  { id: "tokyo-kyoto", label: "Tokyo + Kyoto", cities: ["tokyo", "kyoto", "osaka"], airport: "NRT" },
+  { id: "tokyo-kyoto", label: "Tokyo, Kyoto & Osaka", cities: ["tokyo", "kyoto", "osaka"], airport: "NRT", exit: "KIX" },
   { id: "hokkaido", label: "Hokkaido", cities: ["sapporo", "hakodate"], airport: "CTS" },
   { id: "kyushu", label: "Kyushu", cities: ["fukuoka", "nagasaki"], airport: "FUK" },
 ] as const;
@@ -59,6 +59,8 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
       `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     const entryPoint = QUICK_ENTRY_POINTS[preset.airport];
+    const exitAirport = "exit" in preset ? preset.exit : undefined;
+    const exitPoint = exitAirport ? QUICK_ENTRY_POINTS[exitAirport] : undefined;
 
     onQuickStart({
       duration: quickDuration,
@@ -68,7 +70,8 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
       cities,
       style: "balanced",
       entryPoint,
-      sameAsEntry: true,
+      sameAsEntry: !exitPoint,
+      ...(exitPoint ? { exitPoint } : {}),
     });
   }, [onQuickStart, quickPreset, quickDuration]);
 

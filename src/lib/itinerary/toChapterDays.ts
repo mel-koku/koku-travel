@@ -79,34 +79,45 @@ function timeToHour(hhmm: string): number {
  * Resolve the clock time string ("HH:MM") for a beat.
  *
  * Priority:
- *   1. travelFromPrevious.arrivalTime (the moment we arrive)
- *   2. travelToNext.departureTime (when we leave — less ideal but better than nothing)
- *   3. Default per timeOfDay slot
+ *   1. schedule.arrivalTime (planner sets this fresh on every replan — most authoritative)
+ *   2. travelFromPrevious.arrivalTime (the moment we arrive)
+ *   3. travelToNext.departureTime (when we leave — less ideal but better than nothing)
+ *   4. Default per timeOfDay slot
+ *
+ * `schedule` takes priority because it's written unconditionally by the planner;
+ * the travel segments may be stale across reorders for activities at the boundary
+ * of a day (no incoming/outgoing route to overwrite them).
  */
 function pickTime(
   timeOfDay: string,
+  schedule?: { arrivalTime?: string },
   travelFromPrevious?: ItineraryTravelSegment,
   travelToNext?: ItineraryTravelSegment,
 ): string {
+  if (schedule?.arrivalTime) return schedule.arrivalTime;
   if (travelFromPrevious?.arrivalTime) return travelFromPrevious.arrivalTime;
   if (travelToNext?.departureTime) return travelToNext.departureTime;
   return DEFAULT_CLOCK[timeOfDay] ?? "09:00";
 }
 
 /**
- * Map a (time, timeOfDay) pair to the display part-of-day label.
+ * Map a clock time to the display part-of-day label.
  *
- * Rules:
- *   morning   → "Morning"
- *   afternoon → "Midday" if clock < 14:00, else "Afternoon"
- *   evening   → "Night" if clock >= 21:00, else "Evening"
+ * Rules (purely time-based — `activity.timeOfDay` was previously consulted but
+ * could be stale after a re-plan, so we derive directly from the fresh time):
+ *   < 11:00 → "Morning"
+ *   < 14:00 → "Midday"
+ *   < 17:00 → "Afternoon"
+ *   < 21:00 → "Evening"
+ *   else    → "Night"
  */
-function pickPartOfDay(time: string, timeOfDay: string): ChapterBeat["partOfDay"] {
+function pickPartOfDay(time: string): ChapterBeat["partOfDay"] {
   const hour = timeToHour(time);
-  if (timeOfDay === "morning") return "Morning";
-  if (timeOfDay === "afternoon") return hour < 14 ? "Midday" : "Afternoon";
-  // evening
-  return hour >= 21 ? "Night" : "Evening";
+  if (hour < 11) return "Morning";
+  if (hour < 14) return "Midday";
+  if (hour < 17) return "Afternoon";
+  if (hour < 21) return "Evening";
+  return "Night";
 }
 
 // ── Body text selection ───────────────────────────────────────────────────────
@@ -360,10 +371,11 @@ export function toChapterDays(
     const beats: ChapterBeat[] = resolved.map(({ activity, location }, beatIdx) => {
       const time = pickTime(
         activity.timeOfDay,
+        activity.schedule,
         activity.travelFromPrevious,
         activity.travelToNext,
       );
-      const partOfDay = pickPartOfDay(time, activity.timeOfDay);
+      const partOfDay = pickPartOfDay(time);
 
       const chipCtx = {
         beatTime: `${isoDate}T${time}:00+09:00`,

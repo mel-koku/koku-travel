@@ -193,6 +193,88 @@ describe("planItinerary", () => {
     }
   });
 
+  it("clears stale travelFromPrevious on the now-first activity after a reorder", async () => {
+    // Regression: when a route optimizer reorders activities so a stop that
+    // *was* mid-day becomes the first place activity of the day, the first
+    // activity has no incoming route. The spread previously preserved its
+    // stale `travelFromPrevious.arrivalTime` (e.g. "19:54" from when it was
+    // an evening stop), causing the renderer to display the prior time.
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary = createTestItinerary();
+    const firstActivity = itinerary.days[0]?.activities[0];
+    if (firstActivity?.kind === "place") {
+      // Stale evening arrival time from a prior layout
+      firstActivity.travelFromPrevious = {
+        mode: "train",
+        durationMinutes: 12,
+        arrivalTime: "19:54",
+        departureTime: "19:42",
+      };
+    }
+
+    const result = await planItinerary(itinerary, {
+      defaultDayStart: "08:00",
+      transitionBufferMinutes: 10,
+    });
+
+    const replanned = result.days[0]?.activities[0];
+    expect(replanned?.kind).toBe("place");
+    if (replanned?.kind === "place") {
+      // First activity: no resolved route → travelFromPrevious must be cleared.
+      expect(replanned.travelFromPrevious).toBeUndefined();
+      // Schedule reflects the day start.
+      expect(replanned.schedule?.arrivalTime).toBe("08:00");
+    }
+  });
+
+  it("refreshes timeOfDay to match the fresh schedule", async () => {
+    // Regression: `timeOfDay` is set at generation and can mismatch the
+    // post-replan schedule (e.g. a stop tagged "evening" gets rescheduled to
+    // 13:22 but keeps the "evening" tag). Downstream consumers — meal-slot
+    // positions, lifestyle/timing detectors — bucket on `timeOfDay`, so a
+    // stale value pushes them to the wrong slot. Planner now re-derives.
+    mockRequestRoute.mockImplementation(() =>
+      Promise.resolve(buildRoute("walk", 600)),
+    );
+
+    const itinerary = createTestItinerary();
+    // Tag the activities as "evening" (e.g. from a prior layout) and verify
+    // the planner overwrites them.
+    for (const activity of itinerary.days[0]?.activities ?? []) {
+      if (activity.kind === "place") {
+        activity.timeOfDay = "evening";
+      }
+    }
+
+    const result = await planItinerary(itinerary, {
+      defaultDayStart: "08:00",
+      transitionBufferMinutes: 10,
+    });
+
+    const [first, second] = result.days[0]?.activities ?? [];
+    expect(first?.kind).toBe("place");
+    if (first?.kind === "place") {
+      // Scheduled at 08:00 → morning bucket
+      expect(first.timeOfDay).toBe("morning");
+    }
+    expect(second?.kind).toBe("place");
+    if (second?.kind === "place") {
+      // Scheduled at ~10:30 (8 + 2h visit + 10m transit) → still morning
+      expect(second.timeOfDay).toBe("morning");
+    }
+  });
+
   it("keeps walking mode when the walk is short", async () => {
     // Return short distance (<1km) so transit lookup is NOT triggered
     mockRequestRoute.mockImplementation((request: RoutingRequest) => {

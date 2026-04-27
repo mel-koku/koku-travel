@@ -118,6 +118,37 @@ describe("toChapterDays", () => {
     expect(result[0].beats[1].transitToNext).toBeNull();
   });
 
+  it("prefers schedule.arrivalTime over a stale travelFromPrevious.arrivalTime", () => {
+    // Regression: after a re-plan that reorders activities, the first place
+    // activity has no incoming route. Its `travelFromPrevious` may still
+    // carry stale times from a prior layout. The renderer must trust
+    // `schedule.arrivalTime` (planner sets it fresh) over the stale field.
+    const locations = new Map<string, Location>([["loc-a", stubLocation({})]]);
+    const itinerary = {
+      days: [
+        {
+          id: "d0",
+          dateLabel: "Day 1",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "a0",
+              title: "Now-first activity",
+              timeOfDay: "morning",
+              locationId: "loc-a",
+              schedule: { arrivalTime: "08:30", departureTime: "10:00", status: "scheduled" },
+              // Stale field from before reorder — must not win.
+              travelFromPrevious: { mode: "train", durationMinutes: 12, arrivalTime: "19:54" },
+            },
+          ],
+        },
+      ],
+    } as unknown as Itinerary;
+    const result = toChapterDays(itinerary, undefined, locations);
+    expect(result[0].beats[0].time).toBe("08:30");
+  });
+
   it("emits empty string when insiderTip, editorialSummary, and category fallback all miss", () => {
     const locations = new Map<string, Location>([
       ["loc-a", stubLocation({ category: "unknown-category" })],
