@@ -29,6 +29,13 @@ export const FILTER_METADATA_STORAGE_KEY = "yuku:filter-metadata:v3";
 export const DISMISSED_PROMPTS_PREFIX = "yuku:dismissed-prompts:";
 
 /**
+ * LocalStorage key prefix for dismissed inline meal slots (per trip).
+ * Kept separate from DISMISSED_PROMPTS_PREFIX so the drawer's write loop
+ * doesn't silently overwrite meal-slot dismissals (or vice versa).
+ */
+export const DISMISSED_MEAL_SLOTS_PREFIX = "yuku:dismissed-meal-slots:";
+
+/**
  * LocalStorage key for trip confidence checklist
  */
 export const CONFIDENCE_CHECKLIST_STORAGE_KEY = "yuku:trip-checklist";

@@ -17,7 +17,7 @@ import type { Coordinate } from "@/lib/routing/types";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { computeMealSlotPositions, type MealSlotEntry } from "@/lib/itinerary/mealSlotPositions";
-import { DISMISSED_PROMPTS_PREFIX } from "@/lib/constants/storage";
+import { DISMISSED_MEAL_SLOTS_PREFIX } from "@/lib/constants/storage";
 import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { AddActivityButton } from "./AddActivityButton";
 import { AddActivitySheet } from "./AddActivitySheet";
@@ -183,7 +183,7 @@ export const TimelineActivityList = memo(function TimelineActivityList({
   const [earlyArrivalDismissed, setEarlyArrivalDismissed] = useState(false);
   const [accommodationExpanded, setAccommodationExpanded] = useState(false);
 
-  const dismissalKey = tripId ? `${DISMISSED_PROMPTS_PREFIX}${tripId}` : null;
+  const dismissalKey = tripId ? `${DISMISSED_MEAL_SLOTS_PREFIX}${tripId}` : null;
   const [dismissedPromptIds, setDismissedPromptIds] = useState<Set<string>>(() => {
     if (!dismissalKey) return new Set();
     const stored = getLocal<string[]>(dismissalKey);
