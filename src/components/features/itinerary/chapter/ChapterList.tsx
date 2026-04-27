@@ -377,6 +377,7 @@ export function ChapterList({
                           isCurrent={isCurrent}
                           chips={beat.chips}
                           hasMore={beat.hasMore}
+                          sequenceNumber={beatIdx + 1}
                           onExpand={() => onExpandBeat(beat.id)}
                           onMoveUp={isReadOnly ? undefined : () => handleMove(idx, beatIdx, -1, day.beats)}
                           onMoveDown={isReadOnly ? undefined : () => handleMove(idx, beatIdx, 1, day.beats)}

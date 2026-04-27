@@ -37,6 +37,13 @@ export type BeatProps = {
   onReplace?: () => void;
   onNoteChange?: (value: string) => void;
   onRemove?: () => void;
+  /**
+   * 1-based position of this beat among the day's stops. When set, renders
+   * inside the spine dot to match the numbered map pin. Anchors and meal
+   * slots stay tier-2 (small unnumbered dots) so the visual hierarchy reads
+   * "this is stop N" at a glance.
+   */
+  sequenceNumber?: number;
 };
 
 const formatDuration = (raw: number | string | null | undefined): string => {
@@ -67,6 +74,7 @@ export function Beat({
   onReplace,
   onNoteChange,
   onRemove,
+  sequenceNumber,
 }: BeatProps) {
   const duration = formatDuration(
     (location as unknown as { estimatedDuration?: number | string }).estimatedDuration,
@@ -92,13 +100,32 @@ export function Beat({
         isCurrent && "border-l-2 border-brand-primary bg-brand-primary/5 pl-3 -ml-[30px]",
       )}
     >
-      <span
-        aria-hidden
-        className={cn(
-          "absolute left-[-24px] top-[11px] h-[13px] w-[13px] rounded-full border-2 border-foreground",
-          isPast ? "bg-foreground" : "bg-background",
-        )}
-      />
+      {sequenceNumber !== undefined ? (
+        <span
+          aria-hidden
+          className={cn(
+            // Bumped to 22×22 to fit a digit; left offset shifts -3px so the
+            // dot center stays vertically aligned with anchor/meal-slot dots
+            // (those stay 13×13 at left-[-24px]). Border weight matches the
+            // spine line weight so the dot reads as part of the same hairline.
+            "absolute left-[-29px] top-[7px] h-[22px] w-[22px] rounded-full border border-border",
+            "flex items-center justify-center font-mono text-[11px] font-semibold leading-none",
+            isPast
+              ? "bg-foreground text-background"
+              : "bg-background text-foreground",
+          )}
+        >
+          {sequenceNumber}
+        </span>
+      ) : (
+        <span
+          aria-hidden
+          className={cn(
+            "absolute left-[-24px] top-[11px] h-[13px] w-[13px] rounded-full border-2 border-foreground",
+            isPast ? "bg-foreground" : "bg-background",
+          )}
+        />
+      )}
       {/* Entire beat card is clickable — opens the detail panel */}
       <div
         role="button"

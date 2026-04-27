@@ -99,6 +99,10 @@ export function ItineraryMap({
   const activityPoints = useMemo<ActivityPoint[]>(() => {
     const points: ActivityPoint[] = [];
     for (const activity of placeActivities) {
+      // Anchors (airport arrival/departure) render as separate plane-icon
+      // markers — they shouldn't compete with the day's actual stops for
+      // pin numbers (1..N must match the timeline beats 1..N).
+      if (activity.isAnchor) continue;
       const location = locationsMap.get(activity.id) ?? null;
       const coords = resolveCoordinates(activity, location);
       if (!coords) continue;
@@ -107,6 +111,32 @@ export function ItineraryMap({
         title: activity.title,
         coordinates: coords,
         activity,
+      });
+    }
+    return points;
+  }, [placeActivities, locationsMap]);
+
+  // Anchors render as a separate marker layer with a plane icon — kept
+  // off the numbered pin sequence so the timeline and map agree on
+  // "stop 1 = first real activity, not the airport you flew into".
+  type AnchorPoint = {
+    id: string;
+    title: string;
+    coordinates: Coordinates;
+    isArrival: boolean;
+  };
+  const anchorPoints = useMemo<AnchorPoint[]>(() => {
+    const points: AnchorPoint[] = [];
+    for (const activity of placeActivities) {
+      if (!activity.isAnchor) continue;
+      const location = locationsMap.get(activity.id) ?? null;
+      const coords = resolveCoordinates(activity, location);
+      if (!coords) continue;
+      points.push({
+        id: activity.id,
+        title: activity.title,
+        coordinates: coords,
+        isArrival: activity.id.startsWith("anchor-arrival"),
       });
     }
     return points;
@@ -275,10 +305,11 @@ export function ItineraryMap({
       return;
     }
 
-    // Build set of all current marker IDs (activities + accommodations)
+    // Build set of all current marker IDs (activities + accommodations + anchors)
     const currentPointIds = new Set(activityPoints.map((p) => p.id));
     if (startPoint) currentPointIds.add("accom-start");
     if (endPoint) currentPointIds.add("accom-end");
+    for (const a of anchorPoints) currentPointIds.add(a.id);
 
     // Remove markers that are no longer needed
     markersRef.current.forEach((marker, id) => {
@@ -330,6 +361,39 @@ export function ItineraryMap({
       markersRef.current.set(id, marker);
     }
 
+    // Anchor markers (airport plane icon, charcoal). Distinct from numbered
+    // pins so the user reads them as "you flew in/out here", not "stop 1".
+    const ANCHOR_PLANE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`;
+    for (const anchor of anchorPoints) {
+      const existing = markersRef.current.get(anchor.id);
+      if (existing) {
+        existing.setLngLat([anchor.coordinates.lng, anchor.coordinates.lat]);
+        continue;
+      }
+
+      const el = document.createElement("div");
+      el.className = "yuku-mapbox-marker-anchor";
+      Object.assign(el.style, {
+        width: "28px",
+        height: "28px",
+        borderRadius: "50%",
+        backgroundColor: mapColors.charcoal,
+        border: "2.5px solid white",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.35)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transform: anchor.isArrival ? "rotate(0deg)" : "rotate(45deg)",
+      });
+      el.innerHTML = ANCHOR_PLANE_SVG;
+      el.title = anchor.title;
+
+      const marker = new mapboxModule.Marker({ element: el })
+        .setLngLat([anchor.coordinates.lng, anchor.coordinates.lat])
+        .addTo(map);
+      markersRef.current.set(anchor.id, marker);
+    }
+
     // Add or update activity markers
     activityPoints.forEach((point, index) => {
       const existingMarker = markersRef.current.get(point.id);
@@ -372,7 +436,7 @@ export function ItineraryMap({
       markerClickHandlersRef.current.set(point.id, clickHandler);
       markersRef.current.set(point.id, marker);
     });
-  }, [activityPoints, startPoint, endPoint, mapReady, selectedActivityId, onActivityClick]);
+  }, [activityPoints, anchorPoints, startPoint, endPoint, mapReady, selectedActivityId, onActivityClick]);
 
   useEffect(() => {
     const mapboxModule = mapboxModuleRef.current;
