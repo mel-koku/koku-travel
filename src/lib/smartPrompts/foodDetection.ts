@@ -245,6 +245,11 @@ function inferMealTypeFromTimeOfDay(
  * Scans activities to find food activities and infers their meal types,
  * returning a set of meal types that are already covered.
  *
+ * Skips addressless custom activities (no coordinates, no locationId): the
+ * planner can't route them, they don't render in the timeline spine, and
+ * counting them as "covering" a meal hides the gap-detector slot the user
+ * still needs. Treat them as memos, not plans.
+ *
  * @param activities - Array of place activities to scan
  * @returns Set of meal types that are covered by existing food activities
  */
@@ -254,6 +259,9 @@ export function getCoveredMealTypes(
   const covered = new Set<MealType>();
 
   for (const activity of activities) {
+    if (activity.isCustom && !activity.coordinates && !activity.locationId) {
+      continue;
+    }
     const mealType = inferMealType(activity);
     if (mealType && mealType !== "snack") {
       covered.add(mealType);

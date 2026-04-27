@@ -45,6 +45,42 @@ const WEEKDAYS = [
 ] as const;
 
 /**
+ * Expand a parent category group ("food", "culture", etc.) to its
+ * DB-level sub-categories. Mirrors `DATABASE_CATEGORY_TO_PARENT` in
+ * `src/data/categoryHierarchy.ts` — kept inline here so the route
+ * stays self-contained (the data file is client-bundled).
+ */
+function expandParentCategory(parent: string): string[] {
+  switch (parent.toLowerCase()) {
+    case "food":
+      return ["restaurant", "cafe", "bar", "market"];
+    case "culture":
+      return [
+        "shrine",
+        "temple",
+        "museum",
+        "landmark",
+        "culture",
+        "performing_arts",
+        "castle",
+        "historic_site",
+        "theater",
+        "craft",
+      ];
+    case "nature":
+      return ["park", "garden", "beach", "mountain", "onsen", "nature", "wellness"];
+    case "shopping":
+      return ["mall", "street", "specialty", "shopping"];
+    case "view":
+      return ["viewpoint", "tower", "view"];
+    case "entertainment":
+      return ["entertainment", "aquarium", "zoo"];
+    default:
+      return [];
+  }
+}
+
+/**
  * GET /api/locations/nearby?lat=X&lng=Y&radius=1.5&category=restaurant&openNow=true&limit=20
  *
  * Returns locations near a point, optionally filtered to only those open now.
@@ -57,6 +93,7 @@ export const GET = withApiHandler(
     const lng = parseFloat(searchParams.get("lng") ?? "");
     const radiusKm = parseFloat(searchParams.get("radius") ?? "1.5");
     const category = searchParams.get("category");
+    const parentCategory = searchParams.get("parentCategory");
     const openNow = searchParams.get("openNow") === "true";
     const limit = Math.min(parseInt(searchParams.get("limit") ?? "20", 10), 50);
 
@@ -83,6 +120,13 @@ export const GET = withApiHandler(
 
     if (category) {
       query = query.eq("category", category);
+    } else if (parentCategory) {
+      // Expand a parent group (e.g. "food") to its DB sub-categories.
+      // Keeps callers from having to know the 32-value taxonomy.
+      const expanded = expandParentCategory(parentCategory);
+      if (expanded.length > 0) {
+        query = query.in("category", expanded);
+      }
     }
 
     const { data, error } = await query.limit(200); // Fetch extra, then filter + sort client-side

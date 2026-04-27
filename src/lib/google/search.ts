@@ -300,3 +300,120 @@ export async function fetchPlaceCoordinates(placeId: string): Promise<PlaceWithC
     },
   };
 }
+
+/**
+ * Resolved result of a single rich text-search lookup. Mirrors the shape we
+ * need for meal-suggestion cards: identity, address, coordinates, rating,
+ * and a photo resource name we proxy via /api/places/photo.
+ */
+export type ResolvedPlace = {
+  placeId: string;
+  displayName: string;
+  formattedAddress?: string;
+  coordinates: { lat: number; lng: number };
+  rating?: number;
+  ratingCount?: number;
+  primaryType?: string;
+  /** First photo resource name (passed straight to /api/places/photo). */
+  photoName?: string;
+};
+
+const RICH_SEARCH_FIELD_MASK = [
+  "places.id",
+  "places.displayName",
+  "places.formattedAddress",
+  "places.location",
+  "places.rating",
+  "places.userRatingCount",
+  "places.primaryType",
+  "places.photos",
+].join(",");
+
+/**
+ * Resolve a single venue name to a real Google place near a point. Used by
+ * the meal-suggestion route to validate LLM-generated names: if Google can't
+ * find the place near the lat/lng, we drop it (suspected hallucination).
+ */
+export async function resolvePlaceByText(args: {
+  query: string;
+  lat: number;
+  lng: number;
+  /** Search bias radius in meters (default 2000). Tighter bias = stricter match. */
+  radiusMeters?: number;
+  languageCode?: string;
+}): Promise<ResolvedPlace | null> {
+  const apiKey = getApiKey();
+  const { query, lat, lng, radiusMeters = 2000, languageCode = "en" } = args;
+
+  const requestBody = {
+    textQuery: query,
+    languageCode,
+    regionCode: "JP",
+    pageSize: 1,
+    locationBias: {
+      circle: {
+        center: { latitude: lat, longitude: lng },
+        radius: radiusMeters,
+      },
+    },
+  };
+
+  const response = await fetchWithTimeout(
+    `${PLACES_API_BASE_URL}/places:searchText`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": RICH_SEARCH_FIELD_MASK,
+      },
+      body: JSON.stringify(requestBody),
+    },
+    TIMEOUT_10_SECONDS,
+  );
+
+  if (!response.ok) {
+    logger.warn("resolvePlaceByText: searchText non-OK", {
+      status: response.status,
+      query,
+    });
+    return null;
+  }
+
+  const payload = (await response.json()) as {
+    places?: Array<{
+      id?: string;
+      displayName?: { text?: string };
+      formattedAddress?: string;
+      location?: { latitude?: number; longitude?: number };
+      rating?: number;
+      userRatingCount?: number;
+      primaryType?: string;
+      photos?: Array<{ name?: string }>;
+    }>;
+  };
+
+  const place = payload.places?.[0];
+  if (
+    !place?.id ||
+    !place.displayName?.text ||
+    place.location?.latitude === undefined ||
+    place.location.longitude === undefined
+  ) {
+    return null;
+  }
+
+  return {
+    placeId: place.id,
+    displayName: place.displayName.text,
+    formattedAddress: place.formattedAddress,
+    coordinates: {
+      lat: place.location.latitude,
+      lng: place.location.longitude,
+    },
+    rating: place.rating,
+    ratingCount: place.userRatingCount,
+    primaryType: place.primaryType,
+    photoName: place.photos?.[0]?.name,
+  };
+}
