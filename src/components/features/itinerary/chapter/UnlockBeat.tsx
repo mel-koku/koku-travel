@@ -47,7 +47,9 @@ export function UnlockBeat({
             {cityList}{overflow}
           </h3>
           <p className="text-sm text-foreground-body leading-relaxed max-w-[52ch] mb-6">
-            {totalDays - 1} more days, fully routed and scored. Day 1 is yours free. Unlock to see everything.
+            {loginRequired
+              ? `${totalDays - 1} more days, fully routed and scored. Trip Pass is free during our launch.`
+              : `${totalDays - 1} more days, fully routed and scored. Day 1 is yours free. Unlock to see everything.`}
           </p>
 
           <div className="flex items-center gap-4 flex-wrap">
@@ -60,6 +62,15 @@ export function UnlockBeat({
               </span>
             )}
           </div>
+
+          {loginRequired && (
+            <p className="mt-3 text-xs text-foreground-secondary">
+              Sign in required to claim.
+              {typeof launchSlotsRemaining === "number" && launchSlotsRemaining > 0
+                ? ` ${launchSlotsRemaining} free passes remaining.`
+                : ""}
+            </p>
+          )}
         </div>
       </div>
     </div>

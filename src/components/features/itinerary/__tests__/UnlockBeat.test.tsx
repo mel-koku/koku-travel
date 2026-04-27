@@ -57,4 +57,70 @@ describe("UnlockBeat", () => {
     expect(screen.queryByText(/\$19/)).not.toBeInTheDocument();
     expect(screen.queryByText(/launch slots remaining/i)).not.toBeInTheDocument();
   });
+
+  it("body copy mentions the free launch promo when loginRequired", () => {
+    render(
+      <UnlockBeat
+        cities={["Kyoto"]}
+        totalDays={5}
+        priceLabel="$19"
+        launchSlotsRemaining={42}
+        loginRequired
+        onUnlock={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByText(/Trip Pass is free during our launch/i),
+    ).toBeInTheDocument();
+    // Default-state copy should NOT show during the promo.
+    expect(screen.queryByText(/Day 1 is yours free/i)).not.toBeInTheDocument();
+  });
+
+  it("fine-print under CTA explains login + remaining passes when loginRequired", () => {
+    render(
+      <UnlockBeat
+        cities={["Kyoto"]}
+        totalDays={5}
+        priceLabel="$19"
+        launchSlotsRemaining={42}
+        loginRequired
+        onUnlock={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByText(/Sign in required to claim\. 42 free passes remaining\./i),
+    ).toBeInTheDocument();
+  });
+
+  it("fine-print drops the count when slots are unknown", () => {
+    render(
+      <UnlockBeat
+        cities={["Kyoto"]}
+        totalDays={5}
+        priceLabel="$19"
+        loginRequired
+        onUnlock={vi.fn()}
+      />,
+    );
+    // "Sign in required to claim." with no trailing count.
+    const note = screen.getByText(/Sign in required to claim\./i);
+    expect(note).toBeInTheDocument();
+    expect(note.textContent).not.toMatch(/passes remaining/i);
+  });
+
+  it("default (paid) body copy is unchanged", () => {
+    render(
+      <UnlockBeat
+        cities={["Kyoto"]}
+        totalDays={5}
+        priceLabel="$19"
+        onUnlock={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByText(/Day 1 is yours free\. Unlock to see everything\./i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Trip Pass is free during our launch/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sign in required to claim/i)).not.toBeInTheDocument();
+  });
 });
