@@ -42,7 +42,7 @@ export const VIBES: readonly VibeDefinition[] = [
   {
     id: "foodie_paradise",
     name: "Foodie Paradise",
-    description: "Ramen, sushi, izakayas, and street food",
+    description: "Ramen counters, izakaya nights, and market mornings",
     icon: "Utensils",
     interests: ["food"],
   },
