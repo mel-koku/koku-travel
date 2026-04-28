@@ -82,6 +82,72 @@ describe("toChapterDays", () => {
     expect(result[0].beats).toHaveLength(0);
   });
 
+  it("renders a beat for a custom activity with coordinates but no locationId", () => {
+    // Custom activities (Add custom stop, meal-slot suggestions) don't have a
+    // catalog Location — they carry their own title, coordinates, photo, etc.
+    // Without this support they get filtered out of beats and never appear in
+    // the timeline even though the map sees their coordinates. Bug surfaced
+    // by PR #126's meal-slot Doutor suggestions.
+    const itinerary = {
+      days: [
+        {
+          id: "d0",
+          dateLabel: "Day 1",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "custom-doutor-1",
+              title: "Doutor Coffee Ueno",
+              timeOfDay: "morning",
+              durationMin: 30,
+              isCustom: true,
+              mealType: "breakfast",
+              coordinates: { lat: 35.7141, lng: 139.7775 },
+              address: "1-1 Ueno, Taito",
+              notes: "Quick stop for coffee before the day kicks off.",
+              photoUrl: "/photo.jpg",
+            },
+          ],
+        },
+      ],
+    } as unknown as Itinerary;
+
+    const result = toChapterDays(itinerary, undefined, new Map());
+    expect(result[0].beats).toHaveLength(1);
+    expect(result[0].beats[0].id).toBe("custom-doutor-1");
+    expect(result[0].beats[0].location.name).toBe("Doutor Coffee Ueno");
+    expect(result[0].beats[0].location.coordinates).toEqual({ lat: 35.7141, lng: 139.7775 });
+    expect(result[0].beats[0].partOfDay).toBe("Morning");
+  });
+
+  it("still drops catalog activities (with locationId) when the location lookup misses", () => {
+    // Counter-regression: the custom-activity path must not accidentally
+    // rescue catalog activities whose locationId is missing from the map —
+    // that case still indicates a data integrity issue and should drop.
+    const itinerary = {
+      days: [
+        {
+          id: "d0",
+          dateLabel: "Day 1",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "a0",
+              title: "Catalog place",
+              timeOfDay: "morning",
+              durationMin: 60,
+              locationId: "missing-id",
+            },
+          ],
+        },
+      ],
+    } as unknown as Itinerary;
+    const result = toChapterDays(itinerary, undefined, new Map());
+    expect(result[0].beats).toHaveLength(0);
+  });
+
   it("threads travelToNext into transitToNext with minutes and mapped mode", () => {
     const itinerary = {
       days: [

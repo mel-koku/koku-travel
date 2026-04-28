@@ -344,23 +344,51 @@ export function toChapterDays(
       (a): a is PlaceActivity => a.kind === "place",
     );
 
-    // Pair each activity with its resolved location; skip if locationId is absent
+    // Pair each activity with a Location for the beat. Two paths:
+    //   1. Catalog activity (has locationId) → look up in locMap; drop on miss
+    //      (a missing catalog Location is a data integrity issue).
+    //   2. Custom activity (isCustom + coordinates, no locationId) → synthesize
+    //      a minimal Location from the activity's own data so the beat renders.
+    //      Without this, "Add custom stop" and the meal-slot suggestions land
+    //      in `model.days[].activities` (the map sees them) but get filtered
+    //      out of beats and never appear in the timeline.
     const resolved = placeActivities
-      .map((a) => ({
-        activity: a,
-        location: a.locationId ? locMap.get(a.locationId) : undefined,
-      }))
+      .map((a) => {
+        if (a.locationId) {
+          const location = locMap.get(a.locationId);
+          return location ? { activity: a, location, isSynthetic: false } : null;
+        }
+        if (a.isCustom && a.coordinates) {
+          const synthetic: Location = {
+            id: `__custom__:${a.id}`,
+            name: a.title,
+            region: "",
+            city: day.cityId ? cityDisplay(day.cityId) : "",
+            category: a.tags?.[0] ?? "",
+            image: a.photoUrl ?? "",
+            coordinates: a.coordinates,
+            description: a.notes,
+            ...(a.customOperatingHours
+              ? { operatingHours: a.customOperatingHours }
+              : {}),
+          } as Location;
+          return { activity: a, location: synthetic, isSynthetic: true };
+        }
+        return null;
+      })
       .filter(
-        (e): e is { activity: PlaceActivity; location: Location } =>
-          e.location !== undefined,
+        (e): e is { activity: PlaceActivity; location: Location; isSynthetic: boolean } =>
+          e !== null,
       );
 
-    // Detect closures for the day
+    // Detect closures for the day. Only catalog locations have closure data —
+    // synthetic customs would be no-ops at best, but excluding them up front
+    // keeps the closure detector's input set honest.
     const closedIds = new Set<string>();
     let totalClosures = 0;
     if (dateObj !== null) {
       const closures = getClosuresForTripDate(
-        resolved.map((e) => e.location),
+        resolved.filter((e) => !e.isSynthetic).map((e) => e.location),
         dateObj,
       );
       totalClosures = closures.length;
