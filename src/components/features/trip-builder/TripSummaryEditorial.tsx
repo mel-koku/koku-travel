@@ -423,11 +423,14 @@ export function TripSummaryEditorial({
                     {departureWarning.cityName} is about {departureWarning.timeStr} from {departureWarning.airportName}. Consider ending your trip in a city closer to your departure airport to keep your last day relaxed.
                   </p>
                 )}
-                {thinCityWarnings.map((w) => (
-                  <p key={w.cityName} className="mt-2 text-xs text-warning">
-                    {w.cityName} has {w.locationCount} places for {w.days} days. Your itinerary there may feel thin. Consider reducing to {Math.max(1, Math.floor(w.locationCount / 5))} days or adding a nearby city as a day trip.
-                  </p>
-                ))}
+                {thinCityWarnings.map((w) => {
+                  const reduceTo = Math.max(1, Math.floor(w.locationCount / 5));
+                  return (
+                    <p key={w.cityName} className="mt-2 text-xs text-warning">
+                      {w.cityName} has {w.locationCount} places for {w.days} days. Your itinerary there may feel thin. Consider reducing to {reduceTo} day{reduceTo === 1 ? "" : "s"} or adding a nearby city as a day trip.
+                    </p>
+                  );
+                })}
               </>
             ) : (
               <span className="text-stone">Not set</span>
