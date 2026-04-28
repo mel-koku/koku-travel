@@ -15,7 +15,6 @@ export async function getBrowser(): Promise<Browser> {
   cached = await puppeteer.launch({
     args: chromium.args,
     executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
   });
 
   return cached;
