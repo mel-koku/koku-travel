@@ -74,7 +74,7 @@ export default function RootNotFound() {
             opacity: 0.7,
           }}
         >
-          <p style={{ marginBottom: "0.5rem" }}>💡 Travel tip:</p>
+          <p style={{ marginBottom: "0.5rem" }}>Travel tip</p>
           <p>{tip}</p>
         </div>
       </div>

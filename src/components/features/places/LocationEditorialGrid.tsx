@@ -144,7 +144,7 @@ const PlacesCard = memo(function PlacesCard({
       <Link
         href={`/places/${location.id}`}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-        className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-surface transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
+        className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative w-full overflow-hidden aspect-[4/3]">
@@ -170,12 +170,11 @@ const PlacesCard = memo(function PlacesCard({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-xs font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-xs font-medium shadow-[var(--shadow-sm)] transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 ${
                 active
                   ? "bg-brand-primary text-white"
                   : "bg-white/80 text-foreground"
               }`}
-              style={{ boxShadow: "var(--shadow-sm)" }}
             >
               <HeartIcon active={active} animating={heartAnimating} />
               {active ? "Saved" : "Save for trip"}

@@ -112,7 +112,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
-                  className="mt-2 w-full max-w-xs space-y-3 rounded-lg border border-border bg-surface p-5"
+                  className="mt-2 w-full max-w-xs space-y-3 rounded-lg bg-surface p-5 shadow-[var(--shadow-card)]"
                 >
                   {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? (
                     <>

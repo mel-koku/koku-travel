@@ -47,7 +47,7 @@ export const landingPage = defineType({
       title: "Primary CTA Text",
       type: "string",
       fieldset: "hero",
-      initialValue: "Build My Trip",
+      initialValue: "Build my trip",
     }),
     defineField({
       name: "heroSecondaryCtaText",
@@ -380,7 +380,7 @@ export const landingPage = defineType({
       title: "Primary CTA Text",
       type: "string",
       fieldset: "finalCta",
-      initialValue: "Build My Trip",
+      initialValue: "Build my trip",
     }),
     defineField({
       name: "finalCtaSecondaryText",

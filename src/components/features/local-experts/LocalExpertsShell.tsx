@@ -292,7 +292,7 @@ export function LocalExpertsShell() {
               value={filters.query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name or city"
-              className="h-9 w-44 rounded-lg border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-52"
+              className="h-9 w-44 rounded-lg border border-border bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-52"
             />
           </div>
         </div>

@@ -264,7 +264,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
                   <div className="font-medium text-foreground">{airport.name}</div>
                   <div className="text-xs text-stone">{airport.city}, {airport.region}</div>
                 </div>
-                <span className="ml-2 rounded bg-surface px-2 py-0.5 text-xs font-mono text-stone">
+                <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-xs font-mono text-stone">
                   {airport.iataCode}
                 </span>
               </div>
@@ -275,7 +275,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
 
       {/* No Results Message */}
       {showDropdown && searchInput.length >= MIN_SEARCH_LENGTH && filteredAirports.length === 0 && !isLoading && (
-        <div className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-stone">
+        <div className="rounded-lg bg-surface px-4 py-3 text-sm text-stone shadow-[var(--shadow-card)]">
           No airports found matching &ldquo;{searchInput}&rdquo;
         </div>
       )}
@@ -291,7 +291,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
                 </span>
                 <span className="font-medium text-foreground">{selectedAirport.name}</span>
                 {selectedAirport.iataCode && (
-                  <span className="rounded bg-surface px-2 py-0.5 text-xs font-mono text-stone">
+                  <span className="rounded-md bg-surface px-2 py-0.5 text-xs font-mono text-stone">
                     {selectedAirport.iataCode}
                   </span>
                 )}

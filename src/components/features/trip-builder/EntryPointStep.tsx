@@ -541,7 +541,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 </button>
               </div>
 
-              <div className="rounded-lg border border-border bg-surface p-4">
+              <div className="rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
                 <label htmlFor="manual-iata" className="mb-2 block text-sm font-medium text-foreground">
                   Or enter your airport code
                 </label>

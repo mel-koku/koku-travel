@@ -171,7 +171,7 @@ function detectClosedConflict(
     dayIndex,
     title: "Outside Operating Hours",
     message,
-    icon: "⚠️",
+    icon: "alert-triangle",
     details: {
       scheduledTime: schedule.arrivalTime,
       opensAt: operatingWindow.opensAt,
@@ -229,7 +229,7 @@ function detectTravelTimeConflicts(
         dayIndex,
         title: "Travel Time Issue",
         message,
-        icon: "🚃",
+        icon: "train-front",
         details: {
           travelTime,
           gapMinutes,
@@ -278,7 +278,7 @@ function detectOverlappingActivities(
         dayIndex,
         title: "Schedule Overlap",
         message: `Overlaps with ${previous.title} by ${overlapMinutes} min`,
-        icon: "⚠️",
+        icon: "alert-triangle",
         details: {
           overlapMinutes,
           relatedActivityId: previous.id,
@@ -328,7 +328,7 @@ function detectReservationNeeded(
       message: isFineDining
         ? "Fine dining venue - advance reservation strongly recommended"
         : "This venue typically requires reservations",
-      icon: "📞",
+      icon: "phone",
     };
   }
 
@@ -344,7 +344,7 @@ function detectReservationNeeded(
       dayIndex,
       title: "Consider Reserving",
       message: "Popular dinner spot - reservations may be helpful",
-      icon: "📞",
+      icon: "phone",
     };
   }
 

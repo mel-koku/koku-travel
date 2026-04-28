@@ -77,7 +77,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       <button
         type="button"
         onClick={handleDismiss}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded hover:bg-white/20 transition"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-white/20 transition"
         aria-label="Dismiss"
       >
         <svg

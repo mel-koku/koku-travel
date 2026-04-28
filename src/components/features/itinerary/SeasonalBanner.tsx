@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Flower2, Leaf, Sparkles, Snowflake, X } from "lucide-react";
 
-const SEASONAL_EMOJI: Record<string, string> = {
-  "cherry-blossom": "🌸",
-  "plum-blossom": "🌺",
-  "autumn-foliage": "🍁",
-  "winter-illumination": "✨",
-  "summer-festival": "🎆",
+const SEASONAL_ICON: Record<string, LucideIcon> = {
+  "cherry-blossom": Flower2,
+  "plum-blossom": Flower2,
+  "autumn-foliage": Leaf,
+  "winter-illumination": Snowflake,
+  "summer-festival": Sparkles,
 };
 
 type SeasonalBannerProps = {
@@ -24,20 +25,20 @@ export function SeasonalBanner({ highlight }: SeasonalBannerProps) {
 
   if (dismissed) return null;
 
-  const emoji = SEASONAL_EMOJI[highlight.id] ?? "🗾";
+  const Icon = SEASONAL_ICON[highlight.id] ?? Sparkles;
 
   return (
     <div className="flex items-center gap-2 rounded-md bg-surface px-3 py-1.5">
-      <span className="shrink-0 text-sm">{emoji}</span>
+      <Icon className="h-3.5 w-3.5 shrink-0 text-foreground-secondary" aria-hidden="true" />
       <p className="min-w-0 flex-1 truncate text-xs text-foreground-secondary">
         <span className="font-medium text-foreground">{highlight.label}</span>
-        {" \u00B7 "}
+        {" · "}
         {highlight.description}
       </p>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="shrink-0 rounded p-0.5 text-stone transition-colors hover:text-foreground"
+        className="shrink-0 rounded-md p-0.5 text-stone transition-colors hover:text-foreground"
         aria-label="Dismiss"
       >
         <X className="h-3 w-3" />

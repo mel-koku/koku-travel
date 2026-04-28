@@ -603,7 +603,7 @@ export function PlacesMap({
 
   if (!accessToken || !mapboxEnabled) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <p className="text-center text-sm text-foreground-secondary">
           Map requires a Mapbox token.
         </p>
@@ -613,7 +613,7 @@ export function PlacesMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <p className="text-sm text-foreground-secondary text-center">
           {mapError}
         </p>

@@ -36,7 +36,7 @@ export function AskYukuInput({
           onKeyDown={handleKeyDown}
           placeholder="Ask about Japan..."
           disabled={isLoading}
-          className="h-12 flex-1 rounded-lg border border-border bg-surface px-4 text-base text-foreground placeholder:text-foreground-secondary focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
+          className="h-12 flex-1 rounded-lg border border-border bg-background px-4 text-base text-foreground placeholder:text-foreground-secondary focus:border-brand-primary/50 focus:outline-none disabled:opacity-50"
         />
         <button
           onClick={onSubmit}

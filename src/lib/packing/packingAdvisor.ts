@@ -42,14 +42,14 @@ export const PACKING_CATEGORY_LABELS: Record<PackingCategory, string> = {
 };
 
 export const PACKING_CATEGORY_ICONS: Record<PackingCategory, string> = {
-  essentials: "🎒",
-  clothing: "👕",
-  temple_visits: "⛩️",
-  outdoor: "🥾",
-  tech: "📱",
-  comfort: "🧳",
-  food_drink: "🍵",
-  seasonal: "🌦️",
+  essentials: "backpack",
+  clothing: "shirt",
+  temple_visits: "torii-gate",
+  outdoor: "mountain",
+  tech: "smartphone",
+  comfort: "luggage",
+  food_drink: "coffee",
+  seasonal: "cloud-drizzle",
 };
 
 // ---------------------------------------------------------------------------

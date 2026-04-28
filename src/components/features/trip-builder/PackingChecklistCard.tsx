@@ -3,6 +3,7 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { DataIcon } from "@/components/ui/DataIcon";
 import {
   generatePackingChecklist,
   groupByCategory,
@@ -118,7 +119,7 @@ export function PackingChecklistCard({
   const checkedCount = checklist?.items.filter((i) => checked.has(i.id)).length ?? 0;
 
   return (
-    <div className="rounded-lg border border-border bg-surface">
+    <div className="rounded-lg bg-surface shadow-[var(--shadow-card)]">
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
@@ -159,7 +160,7 @@ export function PackingChecklistCard({
                 className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left hover:bg-surface/50"
               >
                 <span className="flex items-center gap-2 text-xs font-medium text-foreground">
-                  <span>{PACKING_CATEGORY_ICONS[category]}</span>
+                  <DataIcon name={PACKING_CATEGORY_ICONS[category]} className="h-3.5 w-3.5 text-foreground-secondary" />
                   {PACKING_CATEGORY_LABELS[category]}
                   <span className="text-stone">
                     ({categoryChecked}/{items.length})
@@ -180,11 +181,11 @@ export function PackingChecklistCard({
                       key={item.id}
                       type="button"
                       onClick={() => toggleCheck(item.id)}
-                      className="flex w-full items-start gap-2 rounded px-1.5 py-1 text-left hover:bg-surface/50"
+                      className="flex w-full items-start gap-2 rounded-md px-1.5 py-1 text-left hover:bg-surface/50"
                     >
                       <div
                         className={cn(
-                          "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
+                          "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-colors",
                           checked.has(item.id)
                             ? "border-sage bg-sage text-white"
                             : "border-border"

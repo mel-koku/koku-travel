@@ -140,7 +140,7 @@ export function OptionsSection(props: OptionsSectionProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)]">
         <button
           type="button"
           onClick={toggleHeader}

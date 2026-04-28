@@ -33,7 +33,7 @@ export function ArrowLineCTA({
         className
       )}
     >
-      <span className="text-sm font-medium uppercase tracking-wider text-foreground-secondary transition-colors group-hover:text-foreground">
+      <span className="text-sm font-medium text-foreground-secondary transition-colors group-hover:text-foreground">
         {label}
       </span>
       {/* Extending arrow line */}

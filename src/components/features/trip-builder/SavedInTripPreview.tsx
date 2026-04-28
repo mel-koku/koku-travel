@@ -35,7 +35,7 @@ export function SavedInTripPreview({
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-border bg-surface p-4">
+      <div className="rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <div className="flex items-center gap-2 text-sm text-stone">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone border-t-transparent" />
           <span>Checking your saved places...</span>

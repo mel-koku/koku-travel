@@ -200,7 +200,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                   transition={{ duration: 0.3, ease: easeReveal }}
                   className="overflow-hidden"
                 >
-                  <div className="rounded-lg border border-border bg-surface p-5 max-w-sm space-y-4">
+                  <div className="rounded-lg bg-surface p-5 max-w-sm space-y-4 shadow-[var(--shadow-card)]">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-foreground">
                         Pick a length and go

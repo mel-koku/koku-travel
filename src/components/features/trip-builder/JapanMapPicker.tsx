@@ -70,7 +70,7 @@ export function JapanMapPicker({
 
   if (isLoading) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-lg border border-border bg-surface">
+      <div className="flex h-32 items-center justify-center rounded-lg bg-surface shadow-[var(--shadow-card)]">
         <div className="flex items-center gap-2 text-stone">
           <svg
             className="h-5 w-5 animate-spin"
@@ -177,7 +177,7 @@ export function JapanMapPicker({
                         </p>
                       </div>
                     </div>
-                    <span className="rounded bg-surface px-2 py-0.5 font-mono text-xs text-stone">
+                    <span className="rounded-md bg-surface px-2 py-0.5 font-mono text-xs text-stone">
                       {airport.iataCode}
                     </span>
                   </button>

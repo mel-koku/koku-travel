@@ -77,7 +77,7 @@ function MapSkeleton() {
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
         </div>
-        <div className="relative flex-1 rounded-lg border border-border bg-surface/30">
+        <div className="relative flex-1 rounded-lg bg-surface/30 shadow-[var(--shadow-card)]">
           <div className="absolute inset-0 flex items-center justify-center">
             <Skeleton className="h-8 w-8 rounded-full" />
           </div>
@@ -121,7 +121,7 @@ export function ItinerarySkeleton() {
           <div className="order-1 flex flex-col overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-card)] xl:order-2">
             <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
               {/* Day header skeleton */}
-              <div className="mb-6 rounded-lg border border-border bg-surface p-4">
+              <div className="mb-6 rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-32" />
                   <Skeleton className="h-4 w-48" />

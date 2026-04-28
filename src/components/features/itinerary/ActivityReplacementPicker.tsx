@@ -107,7 +107,7 @@ export function ActivityReplacementPicker({
                 onClick={() => setSortBy(option)}
                 aria-label={`Sort by ${option}`}
                 aria-pressed={sortBy === option}
-                className={`rounded-sm px-3 py-1.5 text-xs font-medium transition ${
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
                   sortBy === option
                     ? "bg-surface text-foreground shadow-[var(--shadow-sm)]"
                     : "text-foreground-secondary hover:text-foreground"

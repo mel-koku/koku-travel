@@ -187,7 +187,7 @@ function guidanceToActivityTip(guidance: TravelGuidance): ActivityTip {
     title: guidance.title,
     message: guidance.summary,
     priority: guidance.priority,
-    icon: guidance.icon ?? "🙏",
+    icon: guidance.icon ?? "hand-heart",
     isImportant: guidance.priority >= 8,
     pillar: guidance.pillarSlug ?? undefined,
   };
@@ -215,7 +215,7 @@ function generateCrowdTips(
         title: "Early Visit Advantage",
         message: "Visiting in the morning helps avoid peak crowds. Arrive before 10 AM for the best experience.",
         priority: 7,
-        icon: "🌅",
+        icon: "sunrise",
       });
     } else if (activity.timeOfDay === "afternoon") {
       tips.push({
@@ -223,7 +223,7 @@ function generateCrowdTips(
         title: "Peak Hours",
         message: "Afternoon is typically the busiest time. Consider arriving early morning or late afternoon to avoid crowds.",
         priority: 8,
-        icon: "👥",
+        icon: "users",
       });
     }
   }
@@ -240,7 +240,7 @@ function generateCrowdTips(
       title: "Popular Destination",
       message: "This is a highly-rated location and may be crowded. Consider booking tickets in advance if available.",
       priority: 6,
-      icon: "⭐",
+      icon: "star",
     });
   }
 
@@ -265,7 +265,7 @@ function generatePhotoTips(
         title: "Golden Hour Photography",
         message: "Morning light is perfect for photography here. The soft light creates beautiful shadows and highlights.",
         priority: 6,
-        icon: "📸",
+        icon: "camera",
       });
     } else if (activity.timeOfDay === "evening") {
       tips.push({
@@ -273,7 +273,7 @@ function generatePhotoTips(
         title: "Sunset Photography",
         message: "Evening visits offer stunning sunset views. Arrive 30 minutes before sunset for the best lighting.",
         priority: 7,
-        icon: "🌅",
+        icon: "sunset",
       });
     }
   }
@@ -319,7 +319,7 @@ function generateWeatherTips(
         title: "Perfect for Rainy Day",
         message: "This indoor location is ideal for rainy weather. You'll stay dry while exploring.",
         priority: 8,
-        icon: "☔",
+        icon: "umbrella",
       });
     } else {
       tips.push({
@@ -327,7 +327,7 @@ function generateWeatherTips(
         title: "Rain expected",
         message: "Rain is forecast. Grab a clear vinyl umbrella at any konbini (about \u00A5500). Temple paths and stone steps get slippery. Consider shifting outdoor plans earlier or later.",
         priority: 9,
-        icon: "🌧️",
+        icon: "cloud-rain",
       });
     }
   }
@@ -343,7 +343,7 @@ function generateWeatherTips(
         title: "Bundle up",
         message: "Cold today. Temples and shrines have no heating, and you'll be removing shoes on cold wooden floors. Layer up and carry hand warmers (available at any konbini).",
         priority: 7,
-        icon: "🧥",
+        icon: "shirt",
       });
     } else if (avgTemp > 30) {
       tips.push({
@@ -351,7 +351,7 @@ function generateWeatherTips(
         title: "Heat advisory",
         message: "Hot and humid today. Vending machines and konbini are everywhere for cold drinks. Duck into department stores or shopping arcades for AC breaks. Watch for signs of heat exhaustion.",
         priority: 8,
-        icon: "🌡️",
+        icon: "thermometer",
         isImportant: avgTemp > 35,
       });
     }
@@ -379,7 +379,7 @@ function generateWeatherTips(
           ? "Gale-force winds forecast (17+ m/s). Ferries, ropeways, and cable cars often suspend service at this threshold. Check operator status before heading out, and have an indoor backup planned."
           : "Gale-force winds forecast (17+ m/s). Secure loose items, hold umbrellas tightly, and expect train-platform and bridge-crossing delays. Stay alert to typhoon advisories if you're traveling August through October.",
         priority: 9,
-        icon: "🌬️",
+        icon: "wind",
         isImportant: true,
       });
     } else if (wind >= 12) {
@@ -390,7 +390,7 @@ function generateWeatherTips(
           ? "Strong winds forecast (12+ m/s). Cable cars and ropeways sometimes pause in these conditions, and ferry sailings can be bumpy. Check operator updates in the morning."
           : "Strong winds forecast (12+ m/s). Hold hats and camera straps on exposed viewpoints, and expect bridges and high platforms to feel blustery.",
         priority: 7,
-        icon: "💨",
+        icon: "wind",
       });
     } else if (wind >= 7 && isWindSensitive) {
       tips.push({
@@ -398,7 +398,7 @@ function generateWeatherTips(
         title: "Breezy conditions",
         message: "Breezy today (7+ m/s). Not a safety issue, but expect a bumpier ferry, a swaying ropeway cabin, or wind-in-the-face on open viewpoints. Dress for a bit of chill.",
         priority: 5,
-        icon: "🍃",
+        icon: "leaf",
       });
     }
   }
@@ -435,7 +435,7 @@ function generateTimingTips(
         title: "Closed some days",
         message: `Closed on ${closedLabel}. Verify hours before visiting.`,
         priority: 7,
-        icon: "🕐",
+        icon: "clock",
       });
     }
   }
@@ -450,7 +450,7 @@ function generateTimingTips(
         title: "Breakfast Timing",
         message: "Breakfast is typically served until 10-11 AM. Make sure to arrive early.",
         priority: 7,
-        icon: "🍳",
+        icon: "utensils",
       });
     } else if (mealType === "dinner" && activity.timeOfDay === "afternoon") {
       tips.push({
@@ -458,7 +458,7 @@ function generateTimingTips(
         title: "Dinner Timing",
         message: "Dinner service usually starts around 5-6 PM. Consider adjusting your schedule.",
         priority: 7,
-        icon: "🍽️",
+        icon: "utensils",
       });
     }
   }
@@ -534,7 +534,7 @@ function generateLastTrainTips(
     title: "Last train",
     message: `Last trains from ${data.hub} run ${data.cutoff}. Check Google Maps from the venue before your second drink — taxis after midnight run ¥5,000+, and capsule hotels are ¥3,000-4,000 if you miss it.`,
     priority: 8,
-    icon: "🌙",
+    icon: "moon",
   }];
 }
 
@@ -565,7 +565,7 @@ function generateHolidayAwareCrowdTips(
     title: `${significant.name} at ${override.name}`,
     message: `${significant.name} typically multiplies crowds at popular sites by ${significant.crowdMultiplier}x. ${override.peakWarning ?? "Expect long queues and limited access."} Arrive at opening or consider swapping to a quieter day.`,
     priority: 10,
-    icon: "⚠️",
+    icon: "alert-triangle",
     isImportant: true,
   }];
 }
@@ -583,7 +583,7 @@ function generateAccessibilityTips(location: Location): ActivityTip[] {
         title: "Wheelchair Accessible",
         message: "This location is wheelchair accessible. Wheelchair users can enjoy full access.",
         priority: 5,
-        icon: "♿",
+        icon: "accessibility",
       });
     } else {
       tips.push({
@@ -591,7 +591,7 @@ function generateAccessibilityTips(location: Location): ActivityTip[] {
         title: "Accessibility Note",
         message: "This location may have limited wheelchair access. Contact ahead if you have specific accessibility needs.",
         priority: 6,
-        icon: "♿",
+        icon: "accessibility",
       });
     }
 
@@ -601,7 +601,7 @@ function generateAccessibilityTips(location: Location): ActivityTip[] {
         title: "Step-Free Access",
         message: "Step-free access is available, making it easier for those with mobility concerns.",
         priority: 5,
-        icon: "🚶",
+        icon: "footprints",
       });
     }
   }
@@ -624,7 +624,7 @@ function generateBudgetTips(location: Location): ActivityTip[] {
         title: "Premium Experience",
         message: "This is a premium location. Budget accordingly and consider making reservations in advance.",
         priority: 6,
-        icon: "💰",
+        icon: "coins",
       });
     } else if (budget.includes("budget") || budget.includes("free")) {
       tips.push({
@@ -632,7 +632,7 @@ function generateBudgetTips(location: Location): ActivityTip[] {
         title: "Budget-Friendly",
         message: "Great value! This location offers an excellent experience without breaking the bank.",
         priority: 4,
-        icon: "💵",
+        icon: "coins",
       });
     }
   }
@@ -658,7 +658,7 @@ function generateGeneralTips(
         title: "Quick stop",
         message: "A short visit. Good time to grab a vending machine drink or pick up a stamp if they have one.",
         priority: 3,
-        icon: "⏱️",
+        icon: "hourglass",
       });
     } else if (activity.durationMin > 180) {
       tips.push({
@@ -666,7 +666,7 @@ function generateGeneralTips(
         title: "Half-day visit",
         message: "You'll be here a while. Pace yourself, find a bench, and don't rush. Many places have a rest area or tea shop inside.",
         priority: 4,
-        icon: "⏰",
+        icon: "clock",
       });
     }
   }
@@ -678,7 +678,7 @@ function generateGeneralTips(
       title: "Temple and shrine etiquette",
       message: "Remove shoes before entering temple buildings (look for shelves or plastic bags at the entrance). Speak quietly, silence your phone, and follow posted guidelines.",
       priority: 7,
-      icon: "🙏",
+      icon: "hand-heart",
     });
   } else if (category === "onsen" || category === "wellness") {
     tips.push({
@@ -686,7 +686,7 @@ function generateGeneralTips(
       title: "Shoes off",
       message: "Remove shoes at the entrance and use the provided slippers or go in socks. This applies to most onsen, ryokan, and traditional wellness facilities.",
       priority: 7,
-      icon: "👟",
+      icon: "footprints",
     });
   } else if (isTraditionalDining(category, location.tags, activity.tags)) {
     // Only fire for dining venues where tatami seating is genuinely likely.
@@ -697,7 +697,7 @@ function generateGeneralTips(
       title: "Shoe removal likely",
       message: "Traditional dining venues often have tatami seating. Look for a raised genkan or shoe shelves at the entrance and slip off your shoes before stepping up.",
       priority: 6,
-      icon: "👟",
+      icon: "footprints",
     });
   } else if (category === "market") {
     tips.push({
@@ -705,7 +705,7 @@ function generateGeneralTips(
       title: "Market tips",
       message: "Go early for the freshest selection. Bring cash (most stalls are cash-only). Eat at the stall, not while walking. Ask before taking photos of food displays.",
       priority: 6,
-      icon: "🛒",
+      icon: "shopping-cart",
     });
   }
 
@@ -753,7 +753,7 @@ function generateTravelTips(
           title: `${timeLabel} by train`,
           message: `From ${previousActivityName}.`,
           priority: 8,
-          icon: "🚃",
+          icon: "train-front",
           isImportant: durationMinutes >= 45,
         });
       } else if (mode === "walk") {
@@ -762,7 +762,7 @@ function generateTravelTips(
           title: `${timeLabel} walk`,
           message: `Good walking shoes recommended. ${durationMinutes >= 30 ? "Consider taking transit if you prefer." : ""}`,
           priority: 7,
-          icon: "🚶",
+          icon: "footprints",
         });
       } else if (mode === "bus") {
         tips.push({
@@ -770,7 +770,7 @@ function generateTravelTips(
           title: `${timeLabel} by bus`,
           message: `Check bus schedules in advance.`,
           priority: 7,
-          icon: "🚌",
+          icon: "bus",
         });
       }
     }
@@ -795,7 +795,7 @@ function generateTravelTips(
           title: `${transferCount} transfer${transferCount > 1 ? "s" : ""}`,
           message: "Allow extra time for transfers. Follow station signage carefully.",
           priority: 7,
-          icon: "🔄",
+          icon: "refresh-cw",
         });
       }
     }
@@ -828,7 +828,7 @@ function generatePaymentTips(
       title: "Cash Recommended",
       message: "Many traditional shops and street vendors prefer cash. Convenience store ATMs are widely available.",
       priority: 6,
-      icon: "💵",
+      icon: "coins",
     });
   }
 
@@ -839,7 +839,7 @@ function generatePaymentTips(
       title: "Small Change",
       message: "Bring coins (especially 5 yen coins for shrines) for offerings and fortune papers (omikuji).",
       priority: 5,
-      icon: "🪙",
+      icon: "coins",
     });
   }
 
@@ -878,7 +878,7 @@ function generateReservationTips(
       title: "Reservation required",
       message: "Top kaiseki and omakase venues typically book out 1-3 months ahead. If you're set on this one, call or email as soon as your dates are fixed — waitlist spots do open up.",
       priority: 9,
-      icon: "📞",
+      icon: "phone",
       isImportant: true,
     });
   } else if (isTier2) {
@@ -887,7 +887,7 @@ function generateReservationTips(
       title: "Reservation recommended",
       message: "For fine dining, 2-4 weeks ahead is usually enough. Concierge desks and OMAKASE.in can help if the restaurant's site is Japanese-only.",
       priority: 9,
-      icon: "📞",
+      icon: "phone",
       isImportant: true,
     });
   } else if (isTier3) {
@@ -896,7 +896,7 @@ function generateReservationTips(
       title: "Reservation recommended",
       message: "Popular with locals and travelers. A few days ahead is usually enough; walk-ins sometimes work on weekdays before 6 PM.",
       priority: 9,
-      icon: "📞",
+      icon: "phone",
       isImportant: true,
     });
   }
@@ -908,7 +908,7 @@ function generateReservationTips(
       title: "Consider Advance Tickets",
       message: "This popular attraction may have lines. Online tickets can save time.",
       priority: 7,
-      icon: "🎟️",
+      icon: "ticket",
     });
   }
 

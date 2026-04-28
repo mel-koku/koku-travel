@@ -11,7 +11,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
-import { PlaneLanding, PlaneTakeoff } from "lucide-react";
+import { Lightbulb, PlaneLanding, PlaneTakeoff } from "lucide-react";
 import {
   getShortOverview,
   getLocationRating,
@@ -640,12 +640,12 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                         type="time"
                         value={tempManualTime}
                         onChange={(e) => setTempManualTime(e.target.value)}
-                        className="h-12 rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                        className="h-12 rounded-md border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       />
                       <button
                         type="button"
                         onClick={handleSetManualTime}
-                        className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
+                        className="rounded-md bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
                       >
                         Set
                       </button>
@@ -740,8 +740,9 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       </p>
                     </div>
                   ) : (
-                    <p className="text-[11px] text-stone hover:text-foreground-secondary transition-colors">
-                      {"💡"} Insider tip available
+                    <p className="inline-flex items-center gap-1 text-[11px] text-stone hover:text-foreground-secondary transition-colors">
+                      <Lightbulb className="h-3 w-3" aria-hidden="true" />
+                      Insider tip available
                     </p>
                   )}
                 </button>

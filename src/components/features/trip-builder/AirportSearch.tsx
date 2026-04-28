@@ -76,7 +76,7 @@ export function AirportSearch({
                     <p className="text-sm font-medium text-foreground">{airport.name}</p>
                     <p className="text-xs text-stone">{airport.city}</p>
                   </div>
-                  <span className="rounded bg-surface px-2 py-0.5 font-mono text-xs text-stone">
+                  <span className="rounded-md bg-surface px-2 py-0.5 font-mono text-xs text-stone">
                     {airport.iataCode}
                   </span>
                 </button>

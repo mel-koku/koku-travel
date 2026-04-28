@@ -146,7 +146,7 @@ export function AskYukuTripPlanCard({ data, onClose }: AskYukuTripPlanCardProps)
         onClick={handleStartPlanning}
         className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-brand-primary text-sm font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Build My Trip
+        Build my trip
       </button>
     </div>
   );

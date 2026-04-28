@@ -26,6 +26,7 @@ import {
   RelationshipsSection,
 } from "./HierarchySections";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { DataIcon } from "@/components/ui/DataIcon";
 
 type LocationExpandedProps = {
   location: Location;
@@ -458,7 +459,12 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                     key={tip.id}
                     className="flex gap-2.5 rounded-lg bg-sage/5 border border-sage/10 p-3"
                   >
-                    {tip.icon && <span className="text-base shrink-0">{tip.icon}</span>}
+                    {tip.icon && (
+                      <DataIcon
+                        name={tip.icon}
+                        className="h-4 w-4 shrink-0 text-foreground-secondary mt-0.5"
+                      />
+                    )}
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground">{tip.title}</p>
                       <p className="text-xs text-foreground-secondary mt-0.5">{tip.summary}</p>

@@ -142,7 +142,7 @@ export function AskYukuSuggestions({
           <button
             key={s.text}
             onClick={() => onSelect(s.text)}
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground transition-colors hover:border-brand-primary/30 hover:text-brand-primary active:scale-[0.98]"
+            className="rounded-lg bg-surface px-3 py-2 text-sm text-foreground shadow-[var(--shadow-sm)] transition-all hover:text-brand-primary hover:shadow-[var(--shadow-card)] active:scale-[0.98]"
           >
             {s.text}
           </button>

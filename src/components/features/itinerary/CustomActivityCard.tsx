@@ -46,7 +46,7 @@ export function CustomActivityCard({ activity, onEdit, onDelete }: Props) {
               {activity.schedule?.arrivalTime && <>{activity.schedule.arrivalTime} · </>}
               {formatDuration(activity.durationMin ?? 60)}
               {" · "}
-              <span className="inline-block rounded bg-sand px-1 text-[10px] font-medium uppercase text-foreground-secondary">
+              <span className="inline-block rounded-md bg-sand px-1 text-[10px] font-medium uppercase text-foreground-secondary">
                 Custom
               </span>
             </div>

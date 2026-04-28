@@ -142,7 +142,7 @@ export function RailPassSection({ itinerary, tripStartDate }: RailPassSectionPro
   return (
     <div className="space-y-2">
       <h3 className="eyebrow-editorial">Rail Pass</h3>
-      <div className="rounded-lg border border-border bg-surface/30">
+      <div className="rounded-lg bg-surface/30 shadow-[var(--shadow-card)]">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
