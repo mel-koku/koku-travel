@@ -199,7 +199,7 @@ export function SignInClient({ content }: SignInClientProps) {
               disabled={!supabase}
               className="w-full h-12 rounded-lg border border-border bg-background px-4 text-sm font-semibold text-foreground transition-all hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {content?.signInSubmitText ?? "Send Sign-in Link"}
+              {content?.signInSubmitText ?? "Send sign-in link"}
             </button>
 
             {status && (

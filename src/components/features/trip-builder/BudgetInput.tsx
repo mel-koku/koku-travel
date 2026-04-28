@@ -188,7 +188,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
                     : "bg-background text-foreground-secondary hover:bg-surface"
                 )}
               >
-                {mode === "perDay" ? "Per Day" : "Total"}
+                {mode === "perDay" ? "Per day" : "Total"}
               </button>
             );
           })}

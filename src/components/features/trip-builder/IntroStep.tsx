@@ -80,7 +80,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
   const description =
     sanityConfig?.introDescription ??
     "Tell us how you want to spend your days. We\u2019ll handle routing, timing, and the details.";
-  const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
+  const ctaText = sanityConfig?.introCtaText ?? "Start planning";
   const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
   const accentImage =
     sanityConfig?.introAccentImage?.url ?? "/images/regions/kansai-hero.jpg";
@@ -180,7 +180,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                 }}
                 className="h-14 w-full cursor-pointer rounded-lg border border-border bg-transparent px-10 text-sm font-semibold text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
               >
-                Skip the Details
+                Skip the details
               </button>
             )}
           </m.div>
