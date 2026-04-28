@@ -121,6 +121,38 @@ describe("toChapterDays", () => {
     expect(result[0].beats[0].partOfDay).toBe("Morning");
   });
 
+  it("does not set hasMore on a synthetic-Location beat (no catalog detail to show)", () => {
+    // The detail drawer is keyed by the catalog Location; for a custom
+    // activity there's nothing to open. hasMore must stay false so the
+    // "More" affordance doesn't render — a click would silently no-op.
+    const itinerary = {
+      days: [
+        {
+          id: "d0",
+          dateLabel: "Day 1",
+          cityId: "tokyo",
+          activities: [
+            {
+              kind: "place",
+              id: "custom-doutor-1",
+              title: "Doutor Coffee Ueno",
+              timeOfDay: "morning",
+              durationMin: 30,
+              isCustom: true,
+              mealType: "breakfast",
+              coordinates: { lat: 35.7141, lng: 139.7775 },
+              notes: "A real-looking note that would otherwise trigger hasMore.",
+            },
+          ],
+        },
+      ],
+    } as unknown as Itinerary;
+
+    const result = toChapterDays(itinerary, undefined, new Map());
+    expect(result[0].beats).toHaveLength(1);
+    expect(result[0].beats[0].hasMore).toBe(false);
+  });
+
   it("still drops catalog activities (with locationId) when the location lookup misses", () => {
     // Counter-regression: the custom-activity path must not accidentally
     // rescue catalog activities whose locationId is missing from the map —

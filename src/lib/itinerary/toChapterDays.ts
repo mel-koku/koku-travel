@@ -396,7 +396,7 @@ export function toChapterDays(
     }
 
     // Build beats
-    const beats: ChapterBeat[] = resolved.map(({ activity, location }, beatIdx) => {
+    const beats: ChapterBeat[] = resolved.map(({ activity, location, isSynthetic }, beatIdx) => {
       const time = pickTime(
         activity.timeOfDay,
         activity.schedule,
@@ -464,9 +464,13 @@ export function toChapterDays(
         body: bodyFor(location),
         note: activity.kind === "place" ? activity.notes : undefined,
         chips,
-        hasMore: Boolean(
-          location.description || activity.description,
-        ),
+        // Synthetic-Location beats (custom activities) have no catalog row to
+        // render in the detail drawer — `handleExpandBeat` looks up the
+        // catalog Location and silently no-ops on a miss. Hide "More" so the
+        // affordance doesn't promise something it can't deliver.
+        hasMore: isSynthetic
+          ? false
+          : Boolean(location.description || activity.description),
         transitToNext: mapTransit(activity.travelToNext, transitOrigin, transitDestination),
       };
     });
