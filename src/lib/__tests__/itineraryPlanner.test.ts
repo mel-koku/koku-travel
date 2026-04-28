@@ -112,6 +112,7 @@ const createTestItinerary = (): Itinerary => ({
   timezone: "Asia/Tokyo",
   days: [
     {
+      id: "day-1",
       dateLabel: "Kyoto Day",
       timezone: "Asia/Tokyo",
       weekday: "tuesday",
@@ -272,6 +273,446 @@ describe("planItinerary", () => {
     if (second?.kind === "place") {
       // Scheduled at ~10:30 (8 + 2h visit + 10m transit) → still morning
       expect(second.timeOfDay).toBe("morning");
+    }
+  });
+
+  it("computes airport→hotel transit segment on Day 1 when both anchor and hotel are set", async () => {
+    // Regression: when Day 1 has an arrival anchor (NRT) AND a hotel set as
+    // the day's startPoint, the planner must route NRT→hotel as a real travel
+    // segment instead of jumping `prevCoords`. The leg consumes time on the
+    // day clock and renders as a map line via anchor.travelToNext.
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 3600, "Take the Skyliner from NRT")); // 60 min
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    // Build an itinerary whose Day 1 starts with an arrival anchor at NRT
+    // (Narita), followed by a single Kyoto stop (fixture data).
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          bounds: { startTime: "08:00", endTime: "20:00" },
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita International Airport",
+              isAnchor: true,
+              coordinates: { lat: 35.7647, lng: 140.3863 },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              schedule: {
+                arrivalTime: "08:00",
+                departureTime: "08:30",
+                status: "scheduled",
+              },
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+          ],
+        },
+      ],
+    };
+
+    // Hotel ~70km from NRT (real-world airport→central Tokyo distance).
+    const hotelCoords = { lat: 35.6895, lng: 139.6917 };
+    const dayId = itinerary.days[0]!.id;
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "08:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const plannedDay = result.days[0]!;
+    const [anchor, stop1] = plannedDay.activities;
+
+    expect(anchor?.kind).toBe("place");
+    if (anchor?.kind === "place") {
+      // Anchor preserves its pre-set schedule.
+      expect(anchor.isAnchor).toBe(true);
+      expect(anchor.schedule?.arrivalTime).toBe("08:00");
+      expect(anchor.schedule?.departureTime).toBe("08:30");
+      // Anchor's outgoing segment is the airport→hotel transit.
+      expect(anchor.travelToNext).toBeDefined();
+      expect(anchor.travelToNext?.mode).toBe("train");
+      expect(anchor.travelToNext?.durationMinutes).toBe(60);
+      // Departs 08:40 (anchor depart 08:30 + 10-min transition buffer),
+      // arrives 09:40 (after 60-min transit).
+      expect(anchor.travelToNext?.departureTime).toBe("08:40");
+      expect(anchor.travelToNext?.arrivalTime).toBe("09:40");
+    }
+
+    // Cursor advanced by transit duration → stop1 schedule reflects the full
+    // airport→hotel→stop1 chain (not airport→stop1 directly).
+    expect(stop1?.kind).toBe("place");
+    if (stop1?.kind === "place") {
+      // stop1.travelFromPrevious is the hotel→stop1 leg (departs after the
+      // transit settled at 09:40, so 09:40 + walk-to-transit-fallback duration).
+      expect(stop1.travelFromPrevious?.departureTime).toBe("09:40");
+      // Schedule arrival is well after 08:00, confirming the transit was
+      // accounted for on the day clock.
+      const arrivalMin =
+        Number(stop1.schedule?.arrivalTime?.split(":")[0]) * 60 +
+        Number(stop1.schedule?.arrivalTime?.split(":")[1]);
+      expect(arrivalMin).toBeGreaterThan(9 * 60 + 40);
+    }
+  });
+
+  it("does not synthesize an airport→hotel leg when hotel startPoint is absent", async () => {
+    // Counter-regression: arrival anchor with no hotel startPoint should leave
+    // anchor.travelToNext set by the regular routing path (anchor→stop1), not
+    // a fabricated airport→hotel segment.
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          bounds: { startTime: "08:00", endTime: "20:00" },
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita",
+              isAnchor: true,
+              coordinates: { lat: 35.7647, lng: 140.3863 },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              schedule: {
+                arrivalTime: "08:00",
+                departureTime: "08:30",
+                status: "scheduled",
+              },
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+          ],
+        },
+      ],
+    };
+
+    // No dayEntryPoints argument → no startPoint → no airport→hotel leg.
+    const result = await planItinerary(itinerary, {
+      defaultDayStart: "08:00",
+      transitionBufferMinutes: 10,
+    });
+
+    const [anchor, stop1] = result.days[0]!.activities;
+
+    // The anchor's travelToNext is set by the regular routing path (the
+    // anchor→stop1 leg, which comes from prevCoords=anchor → stop1 routing).
+    // Critically, it's NOT the synthetic airport→hotel transit (60 min in
+    // the previous test); it should match the anchor→stop1 mock route.
+    expect(anchor?.kind).toBe("place");
+    if (anchor?.kind === "place" && stop1?.kind === "place") {
+      expect(anchor.travelToNext).toBeDefined();
+      // anchor.travelToNext should equal stop1.travelFromPrevious (the
+      // anchor→stop1 leg). Both reference the same routed segment.
+      expect(anchor.travelToNext).toEqual(stop1.travelFromPrevious);
+    }
+  });
+
+  it("does not wrap cursor past midnight when transit lookup fails for the airport→hotel pair", async () => {
+    // Repro for the wrap-around bug observed in production (PR #125 revert):
+    //
+    // When NAVITIME (or whichever transit provider) fails to return a transit
+    // route for the synthetic airport→hotel pair, the resolution layer falls
+    // back to the walk result. For a 70km airport-to-hotel, that walk is
+    // ~840min. cursorMinutes += 840 advances the day clock past midnight, and
+    // formatTime() wraps subsequent activity arrival times into the next-day
+    // hours (e.g. "00:08", "01:07"). Cursor monotonicity must hold.
+    //
+    // Mock: walk fetch returns a 14h walk for the long airport→hotel pair
+    // (70km at walking speed) and 30min for short pairs. Transit fetch returns
+    // a successful transit shape but with NO transit steps — this triggers
+    // the planner's `hasTransitSteps` gate to fall back to walk.
+    // Airport coords for matching "this is the airport→hotel leg". The wrap
+    // bug is specific to this synthetic pair — every other leg in the day is a
+    // normal hotel-to-stop or stop-to-stop pair.
+    const NRT_LAT = 35.7647;
+    const NRT_LNG = 140.3863;
+    const isFromNrt = (lat: number, lng: number) =>
+      Math.abs(lat - NRT_LAT) < 0.001 && Math.abs(lng - NRT_LNG) < 0.001;
+
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      const fromAirport = isFromNrt(request.origin.lat, request.origin.lng);
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          // Airport→hotel walk fallback: 14h for ~70km. Otherwise 30min walk.
+          return Promise.resolve(buildRoute("walk", fromAirport ? 50400 : 1800));
+        case "transit":
+          // No instruction → no transit step → hasTransitSteps === false
+          // → planner treats this as transit-failed and falls back to walk.
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          bounds: { startTime: "08:00", endTime: "20:00" },
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita",
+              isAnchor: true,
+              coordinates: { lat: 35.7647, lng: 140.3863 },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              schedule: {
+                arrivalTime: "08:00",
+                departureTime: "08:30",
+                status: "scheduled",
+              },
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+            {
+              kind: "place",
+              id: "day1-activity-2",
+              title: "Nishiki Market",
+              timeOfDay: "afternoon",
+              durationMin: 90,
+              locationId: "kyoto-nishiki-market",
+              tags: ["food"],
+            },
+          ],
+        },
+      ],
+    };
+
+    // Hotel ~70km from NRT (e.g. central Tokyo).
+    const hotelCoords = { lat: 35.6895, lng: 139.6917 };
+    const dayId = itinerary.days[0]!.id;
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "08:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const activities = result.days[0]!.activities;
+    const placeActivities = activities.filter(
+      (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+    );
+
+    // Invariant: arrival times across Day 1 must be monotonically increasing
+    // within the same day (no wrap past midnight). A schedule that crosses
+    // midnight indicates the cursor was advanced by an unrealistic walk
+    // fallback for an unwalkable airport→hotel distance.
+    const arrivalMinutes = placeActivities.map((a) => {
+      const t = a.schedule?.arrivalTime ?? "00:00";
+      const [h, m] = t.split(":").map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    });
+    for (let i = 1; i < arrivalMinutes.length; i++) {
+      expect(arrivalMinutes[i]).toBeGreaterThanOrEqual(arrivalMinutes[i - 1]!);
+    }
+
+    // Stronger bound: even with transit failures, no Day 1 stop should be
+    // scheduled past 22:00 — that indicates the airport→hotel "walk" fallback
+    // consumed the entire day clock.
+    for (const arrival of arrivalMinutes) {
+      expect(arrival).toBeLessThan(22 * 60);
+    }
+
+    // The anchor's travelToNext must not be the unrealistic walk fallback.
+    // Either the segment was dropped (undefined) or — in the future — replaced
+    // with a heuristic estimate. Either way, no 14-hour walks.
+    const anchor = placeActivities[0];
+    if (anchor?.travelToNext) {
+      expect(anchor.travelToNext.durationMinutes).toBeLessThanOrEqual(180);
+    }
+  });
+
+  it("first-plan path (no pre-set anchor schedule) also routes airport→hotel without wrap-around", async () => {
+    // Counter-coverage for the hypothesis in the redo handoff: the original
+    // PR's tests only exercised the re-plan branch (anchor with pre-set
+    // schedule). The first-plan branch — used by the engine's initial
+    // `generateTripFromBuilderData` call where the arrival anchor is injected
+    // *without* a schedule — was never test-covered, and the handoff flagged
+    // it as a candidate site for a separate bug. Verify it produces a
+    // sensible schedule (no past-midnight wrap) under the same transit-fail
+    // conditions.
+    const NRT_LAT = 35.7647;
+    const NRT_LNG = 140.3863;
+    const isFromNrt = (lat: number, lng: number) =>
+      Math.abs(lat - NRT_LAT) < 0.001 && Math.abs(lng - NRT_LNG) < 0.001;
+
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      const fromAirport = isFromNrt(request.origin.lat, request.origin.lng);
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", fromAirport ? 50400 : 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary: Itinerary = {
+      timezone: "Asia/Tokyo",
+      days: [
+        {
+          id: "day-1",
+          dateLabel: "Arrival Day",
+          timezone: "Asia/Tokyo",
+          weekday: "tuesday",
+          // Note: no `bounds` set — first-plan path mirrors what the engine
+          // produces when arrivalTime is unknown (no schedule pre-set on the
+          // anchor either).
+          activities: [
+            {
+              kind: "place",
+              id: "anchor-arrival-nrt",
+              title: "Arrive at Narita",
+              isAnchor: true,
+              coordinates: { lat: NRT_LAT, lng: NRT_LNG },
+              durationMin: 30,
+              tags: ["airport"],
+              timeOfDay: "morning",
+              // No schedule — exercises the first-plan branch
+            },
+            {
+              kind: "place",
+              id: "day1-activity-1",
+              title: "Fushimi Inari Taisha",
+              timeOfDay: "morning",
+              durationMin: 120,
+              locationId: "kyoto-fushimi-inari-taisha",
+              tags: ["culture"],
+            },
+          ],
+        },
+      ],
+    };
+
+    const hotelCoords = { lat: 35.6895, lng: 139.6917 };
+    const dayId = itinerary.days[0]!.id;
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "09:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const placeActivities = result.days[0]!.activities.filter(
+      (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+    );
+
+    const arrivalMinutes = placeActivities.map((a) => {
+      const t = a.schedule?.arrivalTime ?? "00:00";
+      const [h, m] = t.split(":").map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    });
+    for (let i = 1; i < arrivalMinutes.length; i++) {
+      expect(arrivalMinutes[i]).toBeGreaterThanOrEqual(arrivalMinutes[i - 1]!);
+    }
+    for (const arrival of arrivalMinutes) {
+      expect(arrival).toBeLessThan(22 * 60);
+    }
+  });
+
+  it("does not synthesize an airport→hotel leg when no arrival anchor is present", async () => {
+    // Counter-regression: a normal mid-trip day with a hotel startPoint but
+    // no arrival anchor should NOT produce a synthetic airport→hotel
+    // segment. The synthetic pair is gated on the first place activity being
+    // an arrival anchor.
+    mockRequestRoute.mockImplementation((request: RoutingRequest) => {
+      switch (request.mode) {
+        case "walk":
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800));
+        case "transit":
+          return Promise.resolve(buildRoute("transit", 1200, "Take transit to destination"));
+        default:
+          return Promise.resolve(buildRoute(request.mode, 1400));
+      }
+    });
+
+    const itinerary = createTestItinerary();
+    const dayId = itinerary.days[0]!.id;
+
+    // Hotel set but the day starts with a regular (non-anchor) place.
+    const hotelCoords = { lat: 35.0050, lng: 135.7600 };
+    const result = await planItinerary(
+      itinerary,
+      { defaultDayStart: "08:00", transitionBufferMinutes: 10 },
+      { [dayId!]: { startPoint: { coordinates: hotelCoords } } },
+    );
+
+    const [first] = result.days[0]!.activities;
+
+    // First activity is a regular place; it has travelFromPrevious (hotel→
+    // first) but the anchor branch never fires, so no synthetic leg exists.
+    expect(first?.kind).toBe("place");
+    if (first?.kind === "place") {
+      expect(first.isAnchor).toBeUndefined();
+      // travelFromPrevious is the regular hotel→stop1 leg (transit 20 min).
+      expect(first.travelFromPrevious?.mode).toBe("train");
+      expect(first.travelFromPrevious?.durationMinutes).toBe(20);
+      // No anchor → no synthetic airport→hotel chain. Schedule arrival aligns
+      // with day start + travel duration (not + 60-min skyliner transit).
+      expect(first.schedule?.arrivalTime).toBe("08:20");
     }
   });
 
