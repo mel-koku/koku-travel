@@ -75,7 +75,6 @@ function SortableCityItem({
   compositeId,
   onRemove,
   onDuplicate,
-  variant,
   days,
   onIncrement,
   onDecrement,
@@ -87,7 +86,6 @@ function SortableCityItem({
   compositeId: string;
   onRemove: (index: number) => void;
   onDuplicate?: (index: number) => void;
-  variant: "a" | "b";
   days?: number;
   onIncrement?: () => void;
   onDecrement?: () => void;
@@ -109,7 +107,6 @@ function SortableCityItem({
     transition: transition ?? undefined,
   };
 
-  const isA = variant === "a";
   const showStepper = days !== undefined;
 
   return (
@@ -118,12 +115,8 @@ function SortableCityItem({
       style={style}
       className={`group flex items-center gap-2 rounded-lg px-3 py-2 transition-shadow ${
         isDragging
-          ? isA
-            ? "z-10 shadow-[var(--shadow-elevated)] bg-surface border border-brand-primary/30"
-            : "z-10 shadow-[var(--shadow-elevated)] bg-white border border-[var(--primary)]/30"
-          : isA
-            ? "bg-surface/60 border border-border/50"
-            : "bg-white border border-[var(--border)]"
+          ? "z-10 shadow-[var(--shadow-elevated)] bg-surface border border-brand-primary/30"
+          : "bg-surface/60 border border-border/50"
       }`}
     >
       {/* Drag handle — keyboard target. attributes + listeners must be
@@ -136,28 +129,16 @@ function SortableCityItem({
         aria-label={`Reorder ${city.name}. Press Space to lift, then use arrow keys to move.`}
         className="flex shrink-0 cursor-grab items-center rounded-md active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
       >
-        <GripVertical
-          className={`h-4 w-4 ${
-            isA ? "text-stone" : "text-[var(--muted-foreground)]"
-          }`}
-        />
+        <GripVertical className="h-4 w-4 text-stone" />
       </button>
 
       {/* City info */}
       <div className="flex-1 min-w-0">
-        <span
-          className={`text-sm font-medium ${
-            isA ? "text-foreground" : "text-[var(--foreground)]"
-          }`}
-        >
+        <span className="text-sm font-medium text-foreground">
           {city.name}
         </span>
         {city.regionName && (
-          <span
-            className={`ml-1.5 text-xs ${
-              isA ? "text-stone" : "text-[var(--muted-foreground)]"
-            }`}
-          >
+          <span className="ml-1.5 text-xs text-stone">
             {city.regionName}
           </span>
         )}
@@ -173,19 +154,13 @@ function SortableCityItem({
             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
               !canDecrement
                 ? "opacity-30 cursor-not-allowed"
-                : isA
-                  ? "hover:bg-brand-primary/10 text-stone hover:text-foreground"
-                  : "hover:bg-[var(--primary)]/10 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                : "hover:bg-brand-primary/10 text-stone hover:text-foreground"
             }`}
             aria-label={`Fewer days in ${city.name}`}
           >
             <Minus className="h-3 w-3" />
           </button>
-          <span
-            className={`min-w-[2.5rem] text-center font-mono text-xs tabular-nums ${
-              isA ? "text-foreground" : "text-[var(--foreground)]"
-            }`}
-          >
+          <span className="min-w-[2.5rem] text-center font-mono text-xs tabular-nums text-foreground">
             {days}d
           </span>
           <button
@@ -195,9 +170,7 @@ function SortableCityItem({
             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
               !canIncrement
                 ? "opacity-30 cursor-not-allowed"
-                : isA
-                  ? "hover:bg-brand-primary/10 text-stone hover:text-foreground"
-                  : "hover:bg-[var(--primary)]/10 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                : "hover:bg-brand-primary/10 text-stone hover:text-foreground"
             }`}
             aria-label={`More days in ${city.name}`}
           >
@@ -215,9 +188,7 @@ function SortableCityItem({
           className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
             !canDuplicate
               ? "opacity-30 cursor-not-allowed"
-              : isA
-                ? "hover:bg-brand-primary/10 text-stone hover:text-foreground"
-                : "hover:bg-[var(--primary)]/10 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+              : "hover:bg-brand-primary/10 text-stone hover:text-foreground"
           }`}
           aria-label={`Duplicate ${city.name}`}
           title="Return to this city"
@@ -230,20 +201,10 @@ function SortableCityItem({
       <button
         type="button"
         onClick={() => onRemove(city.index)}
-        className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
-          isA
-            ? "hover:bg-brand-primary/10"
-            : "hover:bg-[var(--primary)]/10"
-        }`}
+        className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-brand-primary/10"
         aria-label={`Remove ${city.name}`}
       >
-        <X
-          className={`h-3 w-3 ${
-            isA
-              ? "text-stone hover:text-foreground"
-              : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          }`}
-        />
+        <X className="h-3 w-3 text-stone hover:text-foreground" />
       </button>
     </div>
   );
@@ -254,40 +215,22 @@ function SortableCityItem({
 function PendingCityItem({
   city,
   onUndo,
-  variant,
 }: {
   city: CityDisplay;
   onUndo: () => void;
-  variant: "a" | "b";
 }) {
-  const isA = variant === "a";
-
   return (
-    <div
-      className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
-        isA
-          ? "opacity-40 bg-surface/30 border border-border/30"
-          : "opacity-40 bg-white/60 border border-[var(--border)]/30"
-      }`}
-    >
+    <div className="flex items-center gap-2 rounded-lg px-3 py-2 opacity-40 bg-surface/30 border border-border/30">
       {/* Spacer matching drag handle width */}
       <div className="w-4" />
 
       {/* City info */}
       <div className="flex-1 min-w-0">
-        <span
-          className={`text-sm font-medium ${
-            isA ? "text-foreground" : "text-[var(--foreground)]"
-          }`}
-        >
+        <span className="text-sm font-medium text-foreground">
           {city.name}
         </span>
         {city.regionName && (
-          <span
-            className={`ml-1.5 text-xs ${
-              isA ? "text-stone" : "text-[var(--muted-foreground)]"
-            }`}
-          >
+          <span className="ml-1.5 text-xs text-stone">
             {city.regionName}
           </span>
         )}
@@ -297,9 +240,7 @@ function PendingCityItem({
       <button
         type="button"
         onClick={onUndo}
-        className={`text-xs font-medium ${
-          isA ? "text-brand-primary" : "text-[var(--primary)]"
-        }`}
+        className="text-xs font-medium text-brand-primary"
       >
         Undo
       </button>
@@ -313,7 +254,6 @@ export type SortableCityListProps = {
   cities: CityId[];
   onReorder: (newCities: CityId[], newCityDays?: number[]) => void;
   onRemove: (index: number) => void;
-  variant?: "a" | "b";
   cityDays?: number[];
   onDaysChange?: (index: number, days: number) => void;
   totalDays?: number;
@@ -326,7 +266,6 @@ export function SortableCityList({
   cities,
   onReorder,
   onRemove,
-  variant = "a",
   cityDays,
   onDaysChange,
   totalDays,
@@ -437,8 +376,6 @@ export function SortableCityList({
 
   if (cities.length === 0) return null;
 
-  const isA = variant === "a";
-
   // Only show steppers when cityDays is provided, 2+ active cities, and no pending removes
   const activeCount = activeIndices.length;
   const showSteppers = !!cityDays && !!onDaysChange && activeCount >= 2 && !hasPending;
@@ -451,11 +388,7 @@ export function SortableCityList({
   return (
     <div className="mt-3">
       {cities.length >= 2 && (
-        <p
-          className={`mb-2 text-xs ${
-            isA ? "text-stone" : "text-[var(--muted-foreground)]"
-          }`}
-        >
+        <p className="mb-2 text-xs text-stone">
           Drag to set your route order
         </p>
       )}
@@ -486,7 +419,6 @@ export function SortableCityList({
                       <PendingCityItem
                         city={city}
                         onUndo={() => handleUndo(city.index)}
-                        variant={variant}
                       />
                     </m.div>
                   );
@@ -515,7 +447,6 @@ export function SortableCityList({
                       compositeId={cId}
                       onRemove={handleRemove}
                       onDuplicate={onDuplicate}
-                      variant={variant}
                       days={days}
                       canDecrement={showSteppers && (days ?? 0) > 1}
                       canIncrement={showSteppers && (adjacentDays ?? 0) > 1}
@@ -544,9 +475,7 @@ export function SortableCityList({
       {!!displayCityDays && !!onDaysChange && activeCount >= 2 && totalDays !== undefined && allocatedDays !== undefined && (
         <p
           className={`mt-2 text-xs font-mono tabular-nums ${
-            allocatedDays === totalDays
-              ? isA ? "text-success" : "text-[var(--success)]"
-              : isA ? "text-warning" : "text-[var(--warning)]"
+            allocatedDays === totalDays ? "text-success" : "text-warning"
           }`}
         >
           {allocatedDays}/{totalDays} days allocated

@@ -396,7 +396,6 @@ export function TripSummaryEditorial({
                   cities={data.cities ?? []}
                   onReorder={handleCityReorder}
                   onRemove={handleCityRemove}
-                  variant="a"
                   cityDays={effectiveCityDays}
                   onDaysChange={handleDaysChange}
                   totalDays={data.duration}
