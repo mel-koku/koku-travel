@@ -29,6 +29,13 @@ export type BeatProps = {
   isCurrent?: boolean;
   chips: BeatChip[];
   hasMore?: boolean;
+  /**
+   * True when the beat was built from a custom (user-added) activity. Drives
+   * UX gates that only apply to user-authored stops — currently the note
+   * panel defaults open since the user explicitly added the stop and is
+   * likely to want to annotate it.
+   */
+  isCustom?: boolean;
   onExpand: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
@@ -66,6 +73,7 @@ export function Beat({
   isCurrent = false,
   chips,
   hasMore = false,
+  isCustom = false,
   onExpand,
   onMoveUp,
   onMoveDown,
@@ -82,8 +90,13 @@ export function Beat({
 
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const hasNote = Boolean(note && note.trim().length > 0);
-  const [noteDraftOpen, setNoteDraftOpen] = useState(hasNote);
-  const [noteExpanded, setNoteExpanded] = useState(!hasNote);
+  // Default the note panel + textarea to open for custom (user-added) stops:
+  // the user explicitly added the place and is likely to want to annotate
+  // it, so don't make them click to reveal the field. Catalog stops keep
+  // the prior behavior — panel hidden until a note exists, textarea
+  // collapsed to the one-line summary once saved.
+  const [noteDraftOpen, setNoteDraftOpen] = useState(isCustom || hasNote);
+  const [noteExpanded, setNoteExpanded] = useState(isCustom || !hasNote);
   const [draft, setDraft] = useState(note ?? "");
   const hasAnyMenuAction = Boolean(onReplace || onNoteChange || onRemove);
 
@@ -205,7 +218,7 @@ export function Beat({
                 onKeyDown={(e) => e.stopPropagation()}
               >
                 <div className={`flex items-center justify-between ${noteExpanded ? "mb-2" : ""}`}>
-                  <div className="eyebrow-editorial">Your note</div>
+                  <div className="eyebrow-editorial">Note</div>
                   <div className="flex items-center gap-1">
                     {hasNote && (
                       <button

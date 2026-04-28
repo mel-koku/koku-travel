@@ -83,6 +83,60 @@ export type OptimizeRouteResult = {
   orderChanged: boolean;
 };
 
+const ARRIVAL_ANCHOR_PREFIX = "anchor-arrival";
+const DEPARTURE_ANCHOR_PREFIX = "anchor-departure";
+
+/**
+ * Activities whose array position must NOT be moved by the optimizer.
+ * - Anchors (arrival/departure airport): represent fixed flight events. Their
+ *   day position is determined by flight time, not geography. Arrival belongs
+ *   at the start of the day; departure at the end.
+ * - Meal-tagged activities (mealType set): the meal-slot handler placed them
+ *   at the chronologically-correct position (breakfast → start, lunch → after
+ *   last morning stop, dinner → end). Geographic optimization must not undo
+ *   that — a 09:00 breakfast can't render after a 15:40 sightseeing stop.
+ */
+function isPinnedActivity(activity: ItineraryActivity): boolean {
+  if (activity.kind !== "place") return false;
+  if (activity.isAnchor === true) return true;
+  if (activity.mealType != null) return true;
+  return false;
+}
+
+/**
+ * Move arrival anchor to position 0 and departure anchor to the last position
+ * (relative to other place activities). This runs before optimization so the
+ * subsequent reassembly sees anchors at their canonical ends. Notes between
+ * places are preserved relative to the place activities they sit between.
+ */
+function pinAnchorsToEnds(activities: ItineraryActivity[]): ItineraryActivity[] {
+  const arrivalIdx = activities.findIndex(
+    (a) =>
+      a.kind === "place" &&
+      a.isAnchor === true &&
+      a.id.startsWith(ARRIVAL_ANCHOR_PREFIX),
+  );
+  const departureIdx = activities.findIndex(
+    (a) =>
+      a.kind === "place" &&
+      a.isAnchor === true &&
+      a.id.startsWith(DEPARTURE_ANCHOR_PREFIX),
+  );
+  if (arrivalIdx === -1 && departureIdx === -1) return activities;
+
+  const arrival = arrivalIdx !== -1 ? activities[arrivalIdx] : null;
+  const departure = departureIdx !== -1 ? activities[departureIdx] : null;
+  const others = activities.filter(
+    (_, i) => i !== arrivalIdx && i !== departureIdx,
+  );
+
+  const result: ItineraryActivity[] = [];
+  if (arrival) result.push(arrival);
+  result.push(...others);
+  if (departure) result.push(departure);
+  return result;
+}
+
 /**
  * Optimize the route order of activities using nearest neighbor algorithm
  * with start and end point constraints.
@@ -93,11 +147,11 @@ export type OptimizeRouteResult = {
  * @returns Optimization result with order and statistics
  */
 export function optimizeRouteOrder(
-  activities: ItineraryActivity[],
+  inputActivities: ItineraryActivity[],
   startPoint?: EntryPoint,
   endPoint?: EntryPoint,
 ): OptimizeRouteResult {
-  const originalOrder = activities.map((a) => a.id);
+  const originalOrder = inputActivities.map((a) => a.id);
   if (!startPoint) {
     // If no start point, return original order
     return {
@@ -107,6 +161,11 @@ export function optimizeRouteOrder(
       orderChanged: false,
     };
   }
+
+  // Pre-pass: pull arrival anchor to position 0 and departure anchor to the
+  // last position. The reassembly below will respect those positions since
+  // anchors are also classified as pinned.
+  const activities = pinAnchorsToEnds(inputActivities);
 
   // Separate place activities from notes
   const placeActivities = activities.filter(
@@ -145,10 +204,40 @@ export function optimizeRouteOrder(
   const startCoords = startPoint.coordinates;
   const endCoords = endPoint?.coordinates;
 
+  // Only optimize activities that aren't pinned. Pinned activities (anchors,
+  // meal-tagged) keep their input position; nearest-neighbor decides the
+  // order of the remaining stops between them.
+  const movableWithCoords = activitiesWithCoords.filter(
+    (a) => !isPinnedActivity(a),
+  );
+
+  // When pinned activities sit at the start of the day's array, the first
+  // movable should be optimized as the nearest neighbor to the LAST trailing
+  // pinned activity, not to the day's startPoint. Real example: Day 1 with
+  // arrival anchor (NRT) pinned at position 0 and breakfast pinned at
+  // position 1 — the next stop (movable[0]) should be picked nearest to the
+  // breakfast spot, not nearest to the hotel that startPoint represents.
+  // Symmetrically, when pinned activities sit at the END (e.g. departure
+  // airport), 2-opt's effective end-anchor should be the leading pinned
+  // activity's coords, not endPoint.
+  let effectiveStartCoords = startCoords;
+  for (const a of placeActivities) {
+    if (!isPinnedActivity(a)) break;
+    const c = activityCoords.get(a.id);
+    if (c) effectiveStartCoords = c;
+  }
+  let effectiveEndCoords = endCoords;
+  for (let i = placeActivities.length - 1; i >= 0; i--) {
+    const a = placeActivities[i];
+    if (!a || !isPinnedActivity(a)) break;
+    const c = activityCoords.get(a.id);
+    if (c) effectiveEndCoords = c;
+  }
+
   // Build optimized order using nearest neighbor algorithm
   const optimized: string[] = [];
-  const remaining = new Set(activitiesWithCoords.map((a) => a.id));
-  let currentCoords = startCoords;
+  const remaining = new Set(movableWithCoords.map((a) => a.id));
+  let currentCoords = effectiveStartCoords;
 
   // Find the first activity (nearest to start point)
   while (remaining.size > 0) {
@@ -181,7 +270,12 @@ export function optimizeRouteOrder(
 
   // Apply 2-opt local search to uncross paths and handle circular routes (start=end)
   if (optimized.length > 2) {
-    const improved = twoOptImprove(optimized, activityCoords, startCoords, endCoords);
+    const improved = twoOptImprove(
+      optimized,
+      activityCoords,
+      effectiveStartCoords,
+      effectiveEndCoords,
+    );
     optimized.length = 0;
     optimized.push(...improved);
   }
@@ -192,9 +286,12 @@ export function optimizeRouteOrder(
     originalPositions.set(a.id, index);
   });
 
-  // Separate activities with and without coordinates
-  const activitiesWithoutCoords = placeActivities.filter((a) => activityCoords.get(a.id) === null);
-  const withoutCoordsIds = activitiesWithoutCoords
+  // Separate movable activities without coordinates (still need to land
+  // somewhere in the final order, but the nearest-neighbor pass skipped them).
+  const movableWithoutCoords = placeActivities.filter(
+    (a) => !isPinnedActivity(a) && activityCoords.get(a.id) === null,
+  );
+  const withoutCoordsIds = movableWithoutCoords
     .map((a) => a.id)
     .sort((a, b) => {
       const posA = originalPositions.get(a) ?? Infinity;
@@ -202,34 +299,33 @@ export function optimizeRouteOrder(
       return posA - posB;
     });
 
-  // Combine optimized place activities with activities without coordinates
-  const allPlaceActivities = [...optimized, ...withoutCoordsIds];
+  // The movable IDs in their final optimized order.
+  const movableOrder = [...optimized, ...withoutCoordsIds];
+  const movableSet = new Set(movableOrder);
 
-  // Create a set for quick lookup
-  const placeActivitySet = new Set(allPlaceActivities);
-
-  // Build final order: replace place activities with optimized order, keep notes in place
+  // Build final order by walking the (anchor-pinned) input array. At each
+  // position: pinned activities + notes keep their id; movable place
+  // activities pull from `movableOrder` in sequence.
   const finalOrder: string[] = [];
-  const placeActivityIterator = allPlaceActivities[Symbol.iterator]();
-  let nextPlaceActivity = placeActivityIterator.next();
+  const movableIterator = movableOrder[Symbol.iterator]();
+  let nextMovable = movableIterator.next();
 
   for (const activity of activities) {
-    if (placeActivitySet.has(activity.id)) {
-      // Replace place activity with next from optimized order
-      if (!nextPlaceActivity.done && nextPlaceActivity.value) {
-        finalOrder.push(nextPlaceActivity.value);
-        nextPlaceActivity = placeActivityIterator.next();
+    if (movableSet.has(activity.id)) {
+      if (!nextMovable.done && nextMovable.value) {
+        finalOrder.push(nextMovable.value);
+        nextMovable = movableIterator.next();
       }
     } else {
-      // Keep note activities in their original position
+      // Pinned place activities (anchors, mealType) and notes stay put.
       finalOrder.push(activity.id);
     }
   }
 
-  // Add any remaining place activities (shouldn't happen, but safety check)
-  while (!nextPlaceActivity.done && nextPlaceActivity.value) {
-    finalOrder.push(nextPlaceActivity.value);
-    nextPlaceActivity = placeActivityIterator.next();
+  // Drain any leftover movables (shouldn't happen, safety net).
+  while (!nextMovable.done && nextMovable.value) {
+    finalOrder.push(nextMovable.value);
+    nextMovable = movableIterator.next();
   }
 
   // Check if order actually changed
