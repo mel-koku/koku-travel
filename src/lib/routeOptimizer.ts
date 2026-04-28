@@ -151,7 +151,17 @@ export function optimizeRouteOrder(
   startPoint?: EntryPoint,
   endPoint?: EntryPoint,
 ): OptimizeRouteResult {
-  const originalOrder = inputActivities.map((a) => a.id);
+  // Pre-pass: pull arrival anchor to position 0 and departure anchor to the
+  // last position. The reassembly below will respect those positions since
+  // anchors are also classified as pinned.
+  //
+  // originalOrder is captured AFTER pinning so anchor relocation alone never
+  // flips orderChanged — the pin is structural (anchors represent fixed
+  // flight events), not an optimizer decision. Callers gate work on
+  // orderChanged; without this, every replan that moves an anchor by even
+  // one slot triggers an unnecessary rebuild + persist cycle.
+  const activities = pinAnchorsToEnds(inputActivities);
+  const originalOrder = activities.map((a) => a.id);
   if (!startPoint) {
     // If no start point, return original order
     return {
@@ -161,11 +171,6 @@ export function optimizeRouteOrder(
       orderChanged: false,
     };
   }
-
-  // Pre-pass: pull arrival anchor to position 0 and departure anchor to the
-  // last position. The reassembly below will respect those positions since
-  // anchors are also classified as pinned.
-  const activities = pinAnchorsToEnds(inputActivities);
 
   // Separate place activities from notes
   const placeActivities = activities.filter(

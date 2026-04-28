@@ -128,6 +128,30 @@ describe("optimizeRouteOrder", () => {
     expect(result.order[1]).toBe("near-nrt");
   });
 
+  it("does not flip orderChanged when pinAnchorsToEnds is the only mover", () => {
+    // Stale model state: arrival anchor sits at the end of the input array
+    // (not position 0). pinAnchorsToEnds relocates it to position 0, but the
+    // movable stops are already in nearest-neighbor order from the anchor.
+    // Anchor relocation alone is structural — the optimizer made no movable
+    // decisions, so callers should see orderChanged=false and skip the
+    // rebuild/persist cycle.
+    const NRT = { lat: 35.7647, lng: 140.3863 };
+    const activities = [
+      place("near-nrt", 35.7600, 140.3800), // ~6km from NRT
+      place("middle", 35.7400, 140.0800), // ~30km from NRT
+      place("near-apa", 35.7142, 139.7780), // ~50m from APA, ~70km from NRT
+      place("anchor-arrival-nrt", NRT.lat, NRT.lng, { isAnchor: true }),
+    ];
+    const result = optimizeRouteOrder(activities, APA, APA);
+    expect(result.order).toEqual([
+      "anchor-arrival-nrt",
+      "near-nrt",
+      "middle",
+      "near-apa",
+    ]);
+    expect(result.orderChanged).toBe(false);
+  });
+
   it("preserves notes in their original positions among reordered places", () => {
     const noteAct: ItineraryActivity = {
       kind: "note",
