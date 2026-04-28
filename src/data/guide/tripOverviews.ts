@@ -17,21 +17,21 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kyoto+osaka:spring",
     content:
       "You've picked the golden combo. Kyoto's ancient beauty meets Osaka's electric energy, and you're doing it during cherry blossom season. Expect serene temple gardens draped in pink alongside lively food alleys. This is Japan at its most striking.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-2",
     key: "kyoto+osaka:fall",
     content:
       "Kyoto in autumn is a painter's dream, and pairing it with Osaka means you get fiery red maples by day and sizzling street food by night. Two cities, two completely different vibes, one exceptional trip.",
-    icon: "🍁",
+    icon: "leaf",
   },
   {
     id: "to-3",
     key: "kyoto+osaka:any",
     content:
       "Tradition and energy, side by side. Kyoto's temples and tea houses balance perfectly against Osaka's neon-lit food scene. These two cities are only 15 minutes apart by train but feel like different worlds. That's exactly the point.",
-    icon: "✨",
+    icon: "sparkles",
   },
 
   // ─── kyoto + nara ──────────────────────────────────────────────────
@@ -40,14 +40,14 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kyoto+nara:spring",
     content:
       "Kyoto and Nara in spring is about as serene as Japan gets. Cherry blossoms over ancient temples, friendly deer in sprawling parks, and a pace of life that lets you actually breathe it all in. Bring a camera. You'll need it.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-5",
     key: "kyoto+nara:any",
     content:
       "Two of Japan's most ancient capitals, one trip. Kyoto dazzles with refined elegance while Nara charms with its laid-back atmosphere and famously bold deer. Together, they tell the story of Japan's cultural heart.",
-    icon: "🦌",
+    icon: "trees",
   },
 
   // ─── kyoto + nara + osaka ──────────────────────────────────────────
@@ -56,21 +56,21 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kyoto+nara+osaka:spring",
     content:
       "The Kansai triple crown during cherry blossom season. You really went all in. Kyoto's temples in pink, Nara's deer parks in bloom, and Osaka's food streets buzzing with spring energy. This is the trip people dream about.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-7",
     key: "kyoto+nara+osaka:fall",
     content:
       "Autumn in Kansai means three distinct moods within a 90-minute train ride: Kyoto's maple-lined temple paths, Nara's golden park canopy with its deer, and Osaka's cooler-weather street food scene around Dotonbori.",
-    icon: "🍁",
+    icon: "leaf",
   },
   {
     id: "to-8",
     key: "kyoto+nara+osaka:any",
     content:
       "You've got the full Kansai experience ahead. Ancient temples, roaming deer, and the best street food in Japan. Kyoto, Nara, and Osaka each bring something completely different, and together they make the perfect trip.",
-    icon: "⛩️",
+    icon: "torii-gate",
   },
 
   // ─── osaka + tokyo ─────────────────────────────────────────────────
@@ -79,21 +79,21 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "osaka+tokyo:spring",
     content:
       "Japan's two biggest personalities, connected by bullet train and united by cherry blossoms. Tokyo's skyscraper-framed sakura and Osaka's riverside blooms each have their own magic. Add world-class food in both cities and you've got a trip that delivers on every level.",
-    icon: "🚄",
+    icon: "train-front",
   },
   {
     id: "to-10",
     key: "osaka+tokyo:fall",
     content:
       "East meets west. Tokyo's cutting-edge cool alongside Osaka's warm, unfiltered energy, all wrapped in autumn colors. The shinkansen ride between them is an experience in itself. Two cities, double the adventure.",
-    icon: "🍁",
+    icon: "leaf",
   },
   {
     id: "to-11",
     key: "osaka+tokyo:any",
     content:
       "The tale of two cities. Tokyo is polished, futuristic, endlessly surprising. Osaka is loud, proud, and will feed you until you can't move. Together, they give you the full spectrum of modern Japan.",
-    icon: "🚄",
+    icon: "train-front",
   },
 
   // ─── kobe + kyoto + osaka ──────────────────────────────────────────
@@ -102,7 +102,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kobe+kyoto+osaka:any",
     content:
       "Kansai's greatest hits. Kyoto's timeless beauty, Osaka's legendary food culture, and Kobe's sophisticated harbor-city charm. All three cities sit within easy reach of each other, making this one of the most rewarding routes in Japan.",
-    icon: "✨",
+    icon: "sparkles",
   },
 
   // ─── hiroshima + kyoto + osaka ─────────────────────────────────────
@@ -111,7 +111,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "hiroshima+kyoto+osaka:any",
     content:
       "This route takes you from Osaka's street food energy through Kyoto's refined beauty to Hiroshima's powerful history and rebirth. A single route that covers Japan's past, present, and the resilience that connects them.",
-    icon: "🕊️",
+    icon: "bird",
   },
 
   // ─── kyoto + osaka + tokyo ─────────────────────────────────────────
@@ -120,14 +120,14 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kyoto+osaka+tokyo:spring",
     content:
       "The classic Japan trio in cherry blossom season. This is the trip that tops every list for a reason. Ancient Kyoto, delicious Osaka, electric Tokyo, all connected by the world's best train system and draped in pink.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-15",
     key: "kyoto+osaka+tokyo:any",
     content:
       "Tokyo, Kyoto, and Osaka. The golden triangle of Japan travel. You'll go from neon skyscrapers to zen gardens to sizzling takoyaki stands, and every transition will feel like stepping into a different world. This is Japan at its best.",
-    icon: "🗾",
+    icon: "map",
   },
 
   // ─── solo city: tokyo ──────────────────────────────────────────────
@@ -136,14 +136,14 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "tokyo:spring",
     content:
       "Tokyo in spring is pure magic. Cherry blossoms line the canals, parks turn into hanami picnic grounds, and the whole city takes on a softer glow. You'll have ultramodern marvels and centuries-old gardens competing for your attention every single day.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-17",
     key: "tokyo:any",
     content:
       "Tokyo is a city that defies simple description. Ultramodern skyscrapers tower over quiet shrine gardens, and Michelin-starred restaurants sit next to 500-yen ramen counters. You could visit a hundred times and still find something new.",
-    icon: "🗼",
+    icon: "landmark",
   },
 
   // ─── solo city: kyoto ──────────────────────────────────────────────
@@ -152,21 +152,21 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kyoto:spring",
     content:
       "A full trip dedicated to Kyoto in spring. You're doing it right. Cherry blossoms over bamboo groves, stone paths through pink-canopied gardens, and matcha everything. This city was made for slow, beautiful days like the ones ahead.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-19",
     key: "kyoto:fall",
     content:
       "Kyoto in autumn might be the most beautiful place on earth. Every temple, every garden, every winding street becomes a canvas of red, gold, and orange. Take your time. This city rewards those who linger.",
-    icon: "🍁",
+    icon: "leaf",
   },
   {
     id: "to-20",
     key: "kyoto:any",
     content:
       "A trip devoted entirely to Kyoto means you'll get past the famous spots and into the quiet back streets, walled gardens, and neighborhood temples that reward the curious. This city has layers, and you're about to see them.",
-    icon: "⛩️",
+    icon: "torii-gate",
   },
 
   // ─── solo city: osaka ──────────────────────────────────────────────
@@ -175,7 +175,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "osaka:any",
     content:
       "Osaka doesn't hold back, and neither should you. This city is all about flavor. Exceptional street food, a nightlife scene that pulses with energy, and locals who are famously warm and funny. Come hungry, leave happy.",
-    icon: "🐙",
+    icon: "fish",
   },
 
   // ─── solo city: fukuoka ────────────────────────────────────────────
@@ -184,7 +184,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "fukuoka:any",
     content:
       "Fukuoka is Japan's most underrated city. Relaxed, coastal, with some of the country's finest ramen and yatai food stalls along the river. The kind of place that makes you feel at home instantly.",
-    icon: "🍜",
+    icon: "soup",
   },
 
   // ─── solo city: kanazawa ───────────────────────────────────────────
@@ -193,7 +193,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "kanazawa:any",
     content:
       "Kanazawa is one of Japan's best-preserved castle towns. Immaculate gardens, historic tea districts, and a thriving crafts scene. It has the beauty of Kyoto with a fraction of the crowds.",
-    icon: "🏯",
+    icon: "castle",
   },
 
   // ─── solo city: hiroshima ──────────────────────────────────────────
@@ -202,7 +202,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "hiroshima:any",
     content:
       "Hiroshima is a city of profound history and remarkable resilience. Beyond its powerful Peace Memorial, you'll find a lively, forward-looking city with exceptional okonomiyaki, easy access to Miyajima Island, and some of the friendliest people in Japan.",
-    icon: "🕊️",
+    icon: "bird",
   },
 
   // ─── solo city: sapporo ────────────────────────────────────────────
@@ -211,14 +211,14 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "sapporo:winter",
     content:
       "Sapporo in winter is a wonderland. The famous Snow Festival, world-class skiing nearby, steaming bowls of miso ramen, and the kind of cozy, snowy atmosphere that makes everything feel a little warmer.",
-    icon: "❄️",
+    icon: "snowflake",
   },
   {
     id: "to-26",
     key: "sapporo:any",
     content:
       "Sapporo brings a completely different flavor to Japan. Wide boulevards, craft beer culture, the freshest seafood you'll ever taste, and Hokkaido's dramatic natural landscape right at the doorstep. This is Japan's wild north.",
-    icon: "🍺",
+    icon: "beer",
   },
 
   // ─── solo city: naha (okinawa) ─────────────────────────────────────
@@ -227,7 +227,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "naha:any",
     content:
       "Naha and Okinawa feel like a different country. Turquoise waters, subtropical warmth, a unique Ryukyuan culture, and a pace of life that's refreshingly slow. This is Japan at its most unhurried.",
-    icon: "🏝️",
+    icon: "trees",
   },
 
   // ─── generic fallbacks ─────────────────────────────────────────────
@@ -236,20 +236,20 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
     key: "generic:spring",
     content:
       "You're heading to Japan during cherry blossom season. One of the most beautiful times to visit anywhere on the planet. Every park, riverbank, and temple path becomes a fleeting masterpiece. Your trip is lined up and ready to bloom.",
-    icon: "🌸",
+    icon: "flower",
   },
   {
     id: "to-29",
     key: "generic:fall",
     content:
       "Autumn in Japan is pure magic. Crisp air, fiery foliage, and a warmth to the food and culture that perfectly matches the season. Your itinerary is set, and every day ahead has something worth remembering.",
-    icon: "🍁",
+    icon: "leaf",
   },
   {
     id: "to-30",
     key: "generic:any",
     content:
       "Your Japan adventure is mapped out and ready to go. Each day ahead is packed with experiences, from centuries-old traditions to cutting-edge culture. Let's make it count.",
-    icon: "🇯🇵",
+    icon: "sparkles",
   },
 ];

@@ -54,7 +54,7 @@ export function getTripLevelTips(
       title: "Get an IC Card",
       summary:
         "Get an IC card (Suica, PASMO, ICOCA, or any regional card) at any station. They all work nationwide on trains, buses, and convenience stores.",
-      icon: "\uD83D\uDE83",
+      icon: "train-front",
     });
   }
 
@@ -65,7 +65,7 @@ export function getTripLevelTips(
       title: "Escalator etiquette",
       summary:
         "Stand on the left in Tokyo (right in Osaka/Kyoto). Keep the other side clear for people walking past.",
-      icon: "\uD83D\uDEB6",
+      icon: "footprints",
     });
   }
 
@@ -76,7 +76,7 @@ export function getTripLevelTips(
       title: "Goshuin etiquette",
       summary:
         "Many temples and shrines offer goshuin (\u5FA1\u6731\u5370), hand-brushed calligraphy stamps. Bring a goshuincho (stamp book) and present it open to the correct page. Typical cost: \u00A5300-500.",
-      icon: "\uD83D\uDCD6",
+      icon: "book-open",
     });
   }
 
@@ -98,7 +98,7 @@ export function getTripLevelTips(
           id: `trip-holiday-${holiday.id}`,
           title: holiday.name,
           summary: `${holiday.description} Expect larger crowds at popular destinations during this period.`,
-          icon: "\uD83D\uDD34",
+          icon: "alert-triangle",
         });
       }
     }
@@ -119,7 +119,7 @@ export function getTripLevelTips(
           id: "trip-seasonal-food",
           title: "What's in season",
           summary: formatSeasonalFoodTip(uniqueFoods.slice(0, 6)),
-          icon: "\uD83C\uDF7D\uFE0F",
+          icon: "utensils",
         });
       }
     }
@@ -140,7 +140,7 @@ export function getTripLevelTips(
       id: "trip-cash-only",
       title: "Bring cash",
       summary: `${names.join(", ")}${cashOnlyActivities.length > 4 ? ` and ${cashOnlyActivities.length - 4} more` : ""} ${cashOnlyActivities.length === 1 ? "is" : "are"} cash-only. Withdraw yen at any 7-Eleven or post office ATM.`,
-      icon: "\uD83D\uDCB4",
+      icon: "japanese-yen",
     });
   }
 
@@ -151,7 +151,7 @@ export function getTripLevelTips(
     title: "Money in Japan",
     summary:
       "Skip the city exchange booths. 7-Eleven and Japan Post ATMs accept foreign cards and use the mid-market rate, usually better than any cash exchange. Airport counters are fine if you want some yen on arrival. Visa and Mastercard are widely accepted in cities (less so rural); Amex is spotty outside department stores. If a card terminal offers to charge in your home currency, always say JPY — \"pay in yen\" avoids a 3-5% dynamic conversion fee. And no tipping, anywhere.",
-    icon: "\uD83D\uDCB4",
+    icon: "japanese-yen",
   });
 
   return tips;
