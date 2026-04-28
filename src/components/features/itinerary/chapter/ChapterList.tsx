@@ -31,6 +31,14 @@ export type ChapterBeat = {
   note?: string;
   chips: BeatChip[];
   hasMore: boolean;
+  /**
+   * True when the beat was built from a custom (user-added) activity that
+   * has no catalog Location backing it — toChapterDays synthesized the
+   * Location from the activity's own data. Used to gate UI affordances that
+   * only make sense for catalog stops (e.g. the note panel defaults open
+   * for customs since the user explicitly added them).
+   */
+  isCustom?: boolean;
   transitToNext: {
     minutes: number;
     mode: "walk" | "train" | "car" | "bus" | "transit";
@@ -377,6 +385,7 @@ export function ChapterList({
                           isCurrent={isCurrent}
                           chips={beat.chips}
                           hasMore={beat.hasMore}
+                          isCustom={beat.isCustom}
                           sequenceNumber={beatIdx + 1}
                           onExpand={() => onExpandBeat(beat.id)}
                           onMoveUp={isReadOnly ? undefined : () => handleMove(idx, beatIdx, -1, day.beats)}

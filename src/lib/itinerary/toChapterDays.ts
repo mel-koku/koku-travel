@@ -471,6 +471,7 @@ export function toChapterDays(
         hasMore: isSynthetic
           ? false
           : Boolean(location.description || activity.description),
+        isCustom: isSynthetic,
         transitToNext: mapTransit(activity.travelToNext, transitOrigin, transitDestination),
       };
     });

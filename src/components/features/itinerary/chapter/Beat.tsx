@@ -29,6 +29,13 @@ export type BeatProps = {
   isCurrent?: boolean;
   chips: BeatChip[];
   hasMore?: boolean;
+  /**
+   * True when the beat was built from a custom (user-added) activity. Drives
+   * UX gates that only apply to user-authored stops — currently the note
+   * panel defaults open since the user explicitly added the stop and is
+   * likely to want to annotate it.
+   */
+  isCustom?: boolean;
   onExpand: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
@@ -66,6 +73,7 @@ export function Beat({
   isCurrent = false,
   chips,
   hasMore = false,
+  isCustom = false,
   onExpand,
   onMoveUp,
   onMoveDown,
@@ -82,12 +90,13 @@ export function Beat({
 
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const hasNote = Boolean(note && note.trim().length > 0);
-  // Default the note panel + textarea to open on every beat with note
-  // editing available, regardless of whether a note already exists. Users
-  // shouldn't have to click to reveal the field — typing into the visible
-  // textarea is the common path.
-  const [noteDraftOpen, setNoteDraftOpen] = useState(true);
-  const [noteExpanded, setNoteExpanded] = useState(true);
+  // Default the note panel + textarea to open for custom (user-added) stops:
+  // the user explicitly added the place and is likely to want to annotate
+  // it, so don't make them click to reveal the field. Catalog stops keep
+  // the prior behavior — panel hidden until a note exists, textarea
+  // collapsed to the one-line summary once saved.
+  const [noteDraftOpen, setNoteDraftOpen] = useState(isCustom || hasNote);
+  const [noteExpanded, setNoteExpanded] = useState(isCustom || !hasNote);
   const [draft, setDraft] = useState(note ?? "");
   const hasAnyMenuAction = Boolean(onReplace || onNoteChange || onRemove);
 
@@ -266,6 +275,7 @@ export function Beat({
                       e.preventDefault();
                       e.stopPropagation();
                       setDraft(note ?? "");
+                      setNoteDraftOpen(hasNote);
                     }}
                     className="text-xs text-foreground-secondary hover:text-foreground transition-colors px-2 py-1"
                   >
@@ -277,6 +287,7 @@ export function Beat({
                       e.preventDefault();
                       e.stopPropagation();
                       onNoteChange(draft.trim());
+                      if (draft.trim().length === 0) setNoteDraftOpen(false);
                     }}
                     className="text-xs font-medium text-brand-primary hover:text-brand-secondary transition-colors px-2 py-1"
                   >
