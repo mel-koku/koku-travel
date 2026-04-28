@@ -31,6 +31,15 @@ const TOKYO_QUAKE = {
   ],
 };
 
+// Trip dates relative to today so the fixture ages gracefully — a hardcoded
+// 2026-04-18..2026-04-28 fixture broke once "today" caught up to the end date,
+// because the route's date gate is comparing real `now` to the parsed range.
+const formatYmd = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const today = new Date();
+const TRIP_START = formatYmd(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 5));
+const TRIP_END = formatYmd(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5));
+
 const ORIGINAL_FETCH = global.fetch;
 
 describe("GET /api/alerts/earthquakes", () => {
@@ -53,7 +62,7 @@ describe("GET /api/alerts/earthquakes", () => {
         id: "trip-123",
         userId: "test-user",
         builderData: {
-          dates: { start: "2026-04-18", end: "2026-04-28" },
+          dates: { start: TRIP_START, end: TRIP_END },
           cities: ["tokyo"],
         },
       } as unknown as Awaited<ReturnType<typeof fetchTripById>>["data"],
@@ -98,7 +107,7 @@ describe("GET /api/alerts/earthquakes — failure modes", () => {
       data: {
         id: "trip-123",
         userId: "test-user",
-        builderData: { dates: { start: "2026-04-18", end: "2026-04-28" }, cities: ["tokyo"] },
+        builderData: { dates: { start: TRIP_START, end: TRIP_END }, cities: ["tokyo"] },
       } as unknown as Awaited<ReturnType<typeof fetchTripById>>["data"],
     });
     global.fetch = vi.fn(() => new Promise((_r, reject) => setTimeout(() => reject(new Error("aborted")), 10))) as typeof fetch;
@@ -115,7 +124,7 @@ describe("GET /api/alerts/earthquakes — failure modes", () => {
       data: {
         id: "trip-123",
         userId: "test-user",
-        builderData: { dates: { start: "2026-04-18", end: "2026-04-28" }, cities: ["tokyo"] },
+        builderData: { dates: { start: TRIP_START, end: TRIP_END }, cities: ["tokyo"] },
       } as unknown as Awaited<ReturnType<typeof fetchTripById>>["data"],
     });
     global.fetch = vi.fn(async () => new Response("boom", { status: 500 })) as typeof fetch;
@@ -132,7 +141,7 @@ describe("GET /api/alerts/earthquakes — failure modes", () => {
       data: {
         id: "trip-123",
         userId: "test-user",
-        builderData: { dates: { start: "2026-04-18", end: "2026-04-28" }, cities: ["tokyo"] },
+        builderData: { dates: { start: TRIP_START, end: TRIP_END }, cities: ["tokyo"] },
       } as unknown as Awaited<ReturnType<typeof fetchTripById>>["data"],
     });
     global.fetch = vi.fn(async () => new Response("not json", { status: 200 })) as typeof fetch;
