@@ -417,7 +417,7 @@ function StepShell({
         </div>
         <div className="min-h-[1.25rem]">
           {showHint && disabledHint && (
-            <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
+            <p id="step-disabled-hint-mobile" className="mb-1.5 text-center text-xs font-medium text-error animate-in fade-in duration-200" role="alert">
               {disabledHint}
             </p>
           )}
