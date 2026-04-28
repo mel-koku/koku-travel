@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
+  KeyboardSensor,
   PointerSensor,
   TouchSensor,
   closestCenter,
@@ -12,9 +13,10 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
   arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
@@ -114,7 +116,6 @@ function SortableCityItem({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
       className={`group flex items-center gap-2 rounded-lg px-3 py-2 transition-shadow ${
         isDragging
           ? isA
@@ -125,17 +126,22 @@ function SortableCityItem({
             : "bg-white border border-[var(--border)]"
       }`}
     >
-      {/* Drag handle */}
-      <div
-        className="flex cursor-grab items-center active:cursor-grabbing"
+      {/* Drag handle — keyboard target. attributes + listeners must be
+          co-located on a focusable element, else the KeyboardSensor's
+          space/arrow handlers never fire. */}
+      <button
+        type="button"
+        {...attributes}
         {...(listeners as Record<string, unknown>)}
+        aria-label={`Reorder ${city.name}. Press Space to lift, then use arrow keys to move.`}
+        className="flex shrink-0 cursor-grab items-center rounded-md active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
       >
         <GripVertical
           className={`h-4 w-4 ${
             isA ? "text-stone" : "text-[var(--muted-foreground)]"
           }`}
         />
-      </div>
+      </button>
 
       {/* City info */}
       <div className="flex-1 min-w-0">
@@ -333,7 +339,13 @@ export function SortableCityList({
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: { delay: 200, tolerance: 5 },
   });
-  const sensors = useSensors(pointerSensor, touchSensor);
+  // Keyboard reorder: focus the drag handle, press Space to lift, Arrow keys
+  // to move, Space to drop, Escape to cancel. Without this sensor, keyboard
+  // users could focus the handle but not actually reorder.
+  const keyboardSensor = useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates,
+  });
+  const sensors = useSensors(pointerSensor, touchSensor, keyboardSensor);
 
   // --- Undo-on-remove state (by index) ---
   const [pendingRemoves, setPendingRemoves] = useState<Set<number>>(new Set());
