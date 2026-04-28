@@ -82,8 +82,12 @@ export function Beat({
 
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const hasNote = Boolean(note && note.trim().length > 0);
-  const [noteDraftOpen, setNoteDraftOpen] = useState(hasNote);
-  const [noteExpanded, setNoteExpanded] = useState(!hasNote);
+  // Default the note panel + textarea to open on every beat with note
+  // editing available, regardless of whether a note already exists. Users
+  // shouldn't have to click to reveal the field — typing into the visible
+  // textarea is the common path.
+  const [noteDraftOpen, setNoteDraftOpen] = useState(true);
+  const [noteExpanded, setNoteExpanded] = useState(true);
   const [draft, setDraft] = useState(note ?? "");
   const hasAnyMenuAction = Boolean(onReplace || onNoteChange || onRemove);
 
@@ -205,7 +209,7 @@ export function Beat({
                 onKeyDown={(e) => e.stopPropagation()}
               >
                 <div className={`flex items-center justify-between ${noteExpanded ? "mb-2" : ""}`}>
-                  <div className="eyebrow-editorial">Your note</div>
+                  <div className="eyebrow-editorial">Note</div>
                   <div className="flex items-center gap-1">
                     {hasNote && (
                       <button
@@ -262,7 +266,6 @@ export function Beat({
                       e.preventDefault();
                       e.stopPropagation();
                       setDraft(note ?? "");
-                      setNoteDraftOpen(hasNote);
                     }}
                     className="text-xs text-foreground-secondary hover:text-foreground transition-colors px-2 py-1"
                   >
@@ -274,7 +277,6 @@ export function Beat({
                       e.preventDefault();
                       e.stopPropagation();
                       onNoteChange(draft.trim());
-                      if (draft.trim().length === 0) setNoteDraftOpen(false);
                     }}
                     className="text-xs font-medium text-brand-primary hover:text-brand-secondary transition-colors px-2 py-1"
                   >
