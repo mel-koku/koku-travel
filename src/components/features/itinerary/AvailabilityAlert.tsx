@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Clock, Phone } from "lucide-react";
+import { AlertTriangle, Check, Clock, HelpCircle, Phone } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import type { DayAvailabilityIssues, BatchAvailabilityResult } from "@/lib/availability/availabilityService";
@@ -133,12 +133,13 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
   };
 
   const statusIcons = {
-    closed: "🚫",
-    busy: "⏰",
-    requires_reservation: "📞",
-    open: "✓",
-    unknown: "?",
+    closed: AlertTriangle,
+    busy: Clock,
+    requires_reservation: Phone,
+    open: Check,
+    unknown: HelpCircle,
   };
+  const StatusIcon = statusIcons[issue.status];
 
   return (
     <div
@@ -149,7 +150,7 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2 min-w-0">
-          <span className="text-sm">{statusIcons[issue.status]}</span>
+          <StatusIcon className="h-3.5 w-3.5 shrink-0 mt-0.5 text-foreground-secondary" aria-hidden="true" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-foreground-secondary">
               {issue.message}

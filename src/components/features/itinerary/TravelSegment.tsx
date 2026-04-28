@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Bus, Footprints, TrainFront, Waves, type LucideIcon } from "lucide-react";
 import type { ItineraryTravelSegment, TransitStep } from "@/types/itinerary";
 import { TravelModeSelector } from "./TravelModeSelector";
 import type { Coordinate } from "@/lib/routing/types";
@@ -18,21 +19,22 @@ type TravelSegmentProps = {
   gapMinutes?: number;
 };
 
-const VEHICLE_ICON: Record<string, string> = {
-  HEAVY_RAIL: "\uD83D\uDE83",
-  RAIL: "\uD83D\uDE83",
-  SUBWAY: "\uD83D\uDE87",
-  METRO_RAIL: "\uD83D\uDE87",
-  TRAM: "\uD83D\uDE8B",
-  LIGHT_RAIL: "\uD83D\uDE8B",
-  BUS: "\uD83D\uDE8C",
-  FERRY: "\u26F4\uFE0F",
+const VEHICLE_ICON: Record<string, LucideIcon> = {
+  HEAVY_RAIL: TrainFront,
+  RAIL: TrainFront,
+  SUBWAY: TrainFront,
+  METRO_RAIL: TrainFront,
+  TRAM: TrainFront,
+  LIGHT_RAIL: TrainFront,
+  BUS: Bus,
+  // No Ferry glyph in pinned lucide; Waves is the closest semantic match.
+  FERRY: Waves,
 };
 
 function TransferIndicator({ stationName }: { stationName?: string }) {
   return (
     <div className="flex items-center gap-2 py-0.5 pl-1">
-      <span className="rounded bg-sand/60 px-1.5 py-px text-[10px] font-medium uppercase tracking-wide text-foreground-secondary">
+      <span className="rounded-md bg-sand/60 px-1.5 py-px text-[10px] font-medium uppercase tracking-wide text-foreground-secondary">
         Transfer{stationName ? ` at ${stationName}` : ""}
       </span>
     </div>
@@ -66,15 +68,15 @@ function TransitStepRow({ step }: { step: TransitStep }) {
     const label = step.walkInstruction ?? `Walk ${step.walkMinutes ?? ""}min`;
     return (
       <div className="flex items-center gap-2 py-1">
-        <span className="text-xs">{"\uD83D\uDEB6"}</span>
+        <Footprints aria-hidden="true" className="h-3.5 w-3.5 text-foreground-secondary" />
         <span className="text-xs text-foreground-secondary">{label}</span>
       </div>
     );
   }
 
-  const icon = step.vehicleType
-    ? VEHICLE_ICON[step.vehicleType.toUpperCase()] ?? "\uD83D\uDE83"
-    : "\uD83D\uDE83";
+  const Icon = step.vehicleType
+    ? VEHICLE_ICON[step.vehicleType.toUpperCase()] ?? TrainFront
+    : TrainFront;
 
   const routeParts: string[] = [];
   if (step.departureStop && step.arrivalStop) {
@@ -98,7 +100,7 @@ function TransitStepRow({ step }: { step: TransitStep }) {
 
   return (
     <div className="flex items-start gap-2 py-1">
-      <span className="text-xs">{icon}</span>
+      <Icon aria-hidden="true" className="h-3.5 w-3.5 text-foreground-secondary" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           {step.lineColor && (
@@ -112,7 +114,7 @@ function TransitStepRow({ step }: { step: TransitStep }) {
             {step.lineName || step.lineShortName}
           </span>
           {step.trainType && step.trainType !== "Local" && (
-            <span className="rounded bg-sand/80 px-1 py-px text-[10px] font-medium text-foreground-secondary">
+            <span className="rounded-md bg-sand/80 px-1 py-px text-[10px] font-medium text-foreground-secondary">
               {step.trainType}
             </span>
           )}
@@ -333,7 +335,7 @@ export function TravelSegment({
                 <div key={i}>
                   {transferStation !== false && (
                     <div className="relative pl-6">
-                      <div className="absolute left-1 top-1.5 h-2.25 w-2.25 rounded-sm border-2 border-sage bg-background" />
+                      <div className="absolute left-1 top-1.5 h-2.25 w-2.25 rounded-full border-2 border-sage bg-background" />
                       <TransferIndicator
                         stationName={transferStation || undefined}
                       />

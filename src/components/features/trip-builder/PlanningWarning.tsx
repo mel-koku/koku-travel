@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { PlanningWarning } from "@/lib/planning/tripWarnings";
 
 export type PlanningWarningCardProps = {
@@ -95,7 +96,7 @@ export function PlanningWarningsList({ warnings, className, onAction }: Planning
   return (
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-2">
-        <h3 className="font-semibold text-foreground">Travel Tips</h3>
+        <h3 className={cn(typography({ intent: "utility-h2" }), "text-base")}>Travel Tips</h3>
         <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-foreground-secondary">
           {warnings.length}
         </span>

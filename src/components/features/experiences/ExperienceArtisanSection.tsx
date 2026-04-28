@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AvailabilityCalendar } from "@/components/features/local-experts/AvailabilityCalendar";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { ExperiencePerson } from "@/types/person";
 
 const HEADING_BY_TYPE: Record<string, string> = {
@@ -60,7 +62,7 @@ export function ExperienceArtisanSection({ people, experienceSlug }: Props) {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className={cn(typography({ intent: "utility-h2" }), "text-lg")}>
                       {person.name}
                     </h3>
                     {person.name_japanese && (

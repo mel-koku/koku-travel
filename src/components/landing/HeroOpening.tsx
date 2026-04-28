@@ -32,7 +32,7 @@ export function HeroOpening({ locationCount, content, isFreePromo = false }: Her
     content?.heroDescription ??
     "Tell us your dates and vibe. We build a routed itinerary with real transit times across {locationCount}+ places in all 47 prefectures."
   ).replace("{locationCount}", locationCount.toLocaleString());
-  const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
+  const primaryCta = content?.heroPrimaryCtaText ?? "Build my trip";
   const freePreviewNote = isFreePromo
     ? "Free during our launch. See your trip before you decide."
     : "Day 1 is free. See your trip before you decide.";

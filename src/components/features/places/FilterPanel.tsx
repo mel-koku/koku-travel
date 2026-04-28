@@ -512,7 +512,7 @@ function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, chil
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-2">
-          <h3 className="text-xs font-semibold text-stone uppercase tracking-wider group-hover:text-foreground-secondary transition">
+          <h3 className={cn(typography({ intent: "utility-label" }), "text-xs text-stone group-hover:text-foreground-secondary transition")}>
             {label}
           </h3>
           {activeCount > 0 && !isExpanded && (

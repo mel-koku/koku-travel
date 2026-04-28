@@ -98,7 +98,7 @@ export function DayTripSection({
         {groupedByCity.map(([cityId, { cityName, items }]) => {
           const isOpen = expandedCity === cityId;
           return (
-            <div key={cityId} className="rounded-lg border border-border bg-surface/30">
+            <div key={cityId} className="rounded-lg bg-surface/30 shadow-[var(--shadow-card)]">
               <button
                 type="button"
                 onClick={() => setExpandedCity(isOpen ? null : cityId)}
@@ -124,7 +124,7 @@ export function DayTripSection({
 
           return (
             <div key={s.id}>
-              <div className="group rounded-lg border border-border bg-surface/30 p-3 transition hover:shadow-[var(--shadow-card)]">
+              <div className="group rounded-lg bg-surface/30 p-3 transition hover:shadow-[var(--shadow-card)]">
                 <div className="flex gap-3">
                   {/* Thumbnail */}
                   {s.image && (
@@ -155,12 +155,12 @@ export function DayTripSection({
                         {loadingLocationId === s.targetLocationId ? "Loading..." : s.targetLocationName}
                       </button>
                       {s.isUnescoSite && (
-                        <span className="shrink-0 rounded bg-accent/10 px-1 py-px text-[10px] font-medium text-accent">
+                        <span className="shrink-0 rounded-md bg-accent/10 px-1 py-px text-[10px] font-medium text-accent">
                           UNESCO
                         </span>
                       )}
                       {s.isHiddenGem && (
-                        <span className="shrink-0 rounded bg-sage/10 px-1 py-px text-[10px] font-medium text-sage">
+                        <span className="shrink-0 rounded-md bg-sage/10 px-1 py-px text-[10px] font-medium text-sage">
                           Local Pick
                         </span>
                       )}

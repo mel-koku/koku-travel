@@ -166,9 +166,9 @@ export function AccountClient({ content }: AccountClientProps) {
               {supabaseUnavailable && (
                 <div className="rounded-lg border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
                   Cloud sync is disabled because Supabase credentials are not configured. Set
-                  <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
+                  <code className="mx-1 rounded-md bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
                   and
-                  <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">
+                  <code className="mx-1 rounded-md bg-brand-secondary/10 px-1 py-0.5">
                     NEXT_PUBLIC_SUPABASE_ANON_KEY
                   </code>
                   to enable account features.

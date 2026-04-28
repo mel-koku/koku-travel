@@ -37,7 +37,7 @@ export function UnlockBeat({
       />
 
       {/* Card */}
-      <div className="rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] overflow-hidden">
+      <div className="rounded-lg bg-surface shadow-[var(--shadow-card)] overflow-hidden">
         {/* Top accent strip */}
         <div className="h-1 bg-brand-primary" />
 

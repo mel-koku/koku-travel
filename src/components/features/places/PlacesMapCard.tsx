@@ -37,12 +37,11 @@ export const PlacesMapCard = memo(
         <Link
           href={`/places/${location.id}`}
           onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-          className={`flex items-center gap-2 rounded-lg bg-background pl-2 pr-3 py-2.5 min-h-[44px] transition ${
+          className={`flex items-center gap-2 rounded-lg bg-background pl-2 pr-3 py-2.5 min-h-[44px] shadow-[var(--shadow-sm)] transition ${
             isHighlighted
               ? "ring-1 ring-brand-primary/40 bg-background"
               : "hover:bg-surface hover:shadow-[var(--shadow-card)]"
           }`}
-          style={{ boxShadow: "var(--shadow-sm)" }}
         >
           {thumb && (
             <div className="relative h-8 w-8 shrink-0 rounded-lg overflow-hidden">

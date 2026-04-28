@@ -58,7 +58,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
           tabIndex={0}
           onClick={() => onSelect?.(location)}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect?.(location); }}
-          className="flex w-full cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left shadow-[var(--shadow-sm)] transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="flex w-full cursor-pointer items-center gap-3 rounded-lg bg-surface p-3 text-left shadow-[var(--shadow-sm)] transition-all duration-300 hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-canvas">
             <Image
@@ -119,7 +119,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: durationBase, ease: easeReveal }}
     >
-      <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
+      <div className={`overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
         <div className="relative">
           <div
             role="button"

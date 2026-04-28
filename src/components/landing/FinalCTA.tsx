@@ -60,7 +60,7 @@ export function FinalCTA({ content, isFreePromo = false }: FinalCTAProps) {
             className="mt-10"
           >
             <Button asChild href="/trip-builder" variant="primary" size="hero">
-              {content?.finalCtaPrimaryText ?? "Build My Trip"}
+              {content?.finalCtaPrimaryText ?? "Build my trip"}
             </Button>
             <p className="mt-4 text-xs text-white/60">
               {isFreePromo

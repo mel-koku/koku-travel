@@ -433,7 +433,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                               {/* Checkbox indicator */}
                               <div
                                 className={cn(
-                                  "flex h-5 w-5 items-center justify-center rounded border transition",
+                                  "flex h-5 w-5 items-center justify-center rounded-md border transition",
                                   isSelected
                                     ? "border-brand-primary bg-brand-primary"
                                     : "border-border bg-background"

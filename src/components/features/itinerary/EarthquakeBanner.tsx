@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { EarthquakeAlert } from "@/lib/alerts/usgs";
 import type { KnownRegionId } from "@/types/trip";
 import { logTipEvent } from "@/lib/telemetry/tipEvents";
@@ -76,7 +78,7 @@ export function EarthquakeBanner({ alert, region, tripId }: EarthquakeBannerProp
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h2 id={headingId} className="text-base font-semibold text-foreground">
+          <h2 id={headingId} className={cn(typography({ intent: "utility-h2" }), "text-base")}>
             {`Magnitude ${alert.magnitude} Earthquake Near ${alert.nearestCity}`}
           </h2>
           <p data-testid="earthquake-banner-body" className="mt-1 text-sm text-foreground-secondary">

@@ -18,7 +18,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "outdoor",
     label: "Outdoor & Adventure",
-    emoji: "🏔",
+    emoji: "mountain",
     description: "Kayaking, cycling, hiking, diving, snow sports",
     image: `${SUPABASE_PHOTOS}/iriomote-okinawa-ef0ecfd5/primary.png`,
     specialties: [
@@ -38,7 +38,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "cultural-tours",
     label: "Cultural Tours",
-    emoji: "🏯",
+    emoji: "landmark",
     description: "Guided walks, local neighbourhoods, market visits",
     image: `${SUPABASE_PHOTOS}/the-owari-chubu-f41442d3/primary.jpg`,
     specialties: [
@@ -54,7 +54,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "food-cooking",
     label: "Food & Cooking",
-    emoji: "🍜",
+    emoji: "utensils",
     description: "Cooking classes, sake, soba, sushi, farm visits",
     image: `${SUPABASE_PHOTOS}/nijo-market-hokkaido-163f6eaf/primary.jpg`,
     specialties: [
@@ -70,7 +70,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "pottery",
     label: "Pottery & Ceramics",
-    emoji: "🏺",
+    emoji: "pottery",
     description: "Wheel throwing, glazing, kintsugi repair",
     image: `${SUPABASE_PHOTOS}/locations/mashiko-pottery-studio-tsukamoto-kanto-c3d74c12/primary.jpg`,
     specialties: [
@@ -85,7 +85,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "textiles",
     label: "Dyeing & Textiles",
-    emoji: "🧵",
+    emoji: "scissors",
     description: "Indigo dyeing, shibori, weaving, natural dyes",
     image: `${SUPABASE_PHOTOS}/arimatsu-shibori-district-chubu-92b4bd51/primary.jpeg`,
     specialties: [
@@ -102,7 +102,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "ink-arts",
     label: "Calligraphy & Ink",
-    emoji: "✒️",
+    emoji: "feather",
     description: "Shodo, sumi-e painting, seal carving",
     image: `${SUPABASE_PHOTOS}/locations/hozenji-temple-kansai-58d20329/primary.jpg`,
     specialties: ["Shodo", "Sumi ink painting", "Seal carving", "Calligraphy"],
@@ -110,7 +110,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "wood-paper",
     label: "Wood & Paper",
-    emoji: "🪵",
+    emoji: "tree",
     description: "Kumiko joinery, washi papermaking, woodcraft",
     image: `${SUPABASE_PHOTOS}/locations/echizen-washi-village-chubu-f5427ba3/primary.jpg`,
     specialties: [
@@ -133,7 +133,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "lacquer-glass",
     label: "Lacquer & Glass",
-    emoji: "✨",
+    emoji: "sparkles",
     description: "Urushi lacquerware, Edo Kiriko glasswork, ironware",
     image: `${SUPABASE_PHOTOS}/wajima-museum-of-urushi-art-chubu-d05eb064/primary.jpg`,
     specialties: [
@@ -153,7 +153,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "zen-wellness",
     label: "Zen & Wellness",
-    emoji: "🍃",
+    emoji: "leaf",
     description: "Meditation, forest bathing, tea ceremony, gardens",
     image: `${SUPABASE_PHOTOS}/locations/nanzen-ji-temple-garden-kansai-48ebc30a/primary.jpg`,
     specialties: [
@@ -169,7 +169,7 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   {
     id: "martial-arts",
     label: "Martial Arts",
-    emoji: "⛩",
+    emoji: "torii-gate",
     description: "Samurai experience, ninja training, karate",
     image: `${SUPABASE_PHOTOS}/chiran-samurai-district-kyushu-9ed18f12/primary.jpg`,
     specialties: ["Samurai arts", "Ninja training", "Karate"],

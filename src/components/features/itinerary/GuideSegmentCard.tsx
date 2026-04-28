@@ -108,7 +108,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
           <button
             type="button"
             onClick={handleDismiss}
-            className="mt-0.5 shrink-0 rounded p-0.5 text-stone/40 transition-colors hover:text-foreground"
+            className="mt-0.5 shrink-0 rounded-md p-0.5 text-stone/40 transition-colors hover:text-foreground"
             aria-label={`Dismiss ${style.label}`}
           >
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

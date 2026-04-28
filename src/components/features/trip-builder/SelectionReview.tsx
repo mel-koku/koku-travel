@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES } from "@/data/vibes";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 export type SelectionReviewProps = {
@@ -70,7 +71,7 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
   return (
     <div className="rounded-lg border border-border bg-background">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-medium text-foreground">Your Trip Summary</h3>
+        <h3 className={cn(typography({ intent: "utility-h2" }), "text-sm font-medium")}>Your Trip Summary</h3>
         {onEdit && (
           <button
             type="button"

@@ -137,7 +137,7 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <div className="rounded-lg bg-surface p-5 shadow-[var(--shadow-card)]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="eyebrow-editorial">Check availability</p>

@@ -13,7 +13,7 @@ const navItems = [
   { number: "02", label: "Guides", href: "/guides" },
   { number: "03", label: "Pricing", href: "/pricing" },
   { number: "04", label: "Concierge", href: "/concierge" },
-  { number: "05", label: "Build My Trip", href: "/trip-builder" },
+  { number: "05", label: "Build my trip", href: "/trip-builder" },
 ];
 
 type MenuNavProps = {

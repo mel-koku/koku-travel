@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { ItineraryPreview } from "./ItineraryPreview";
 import { RegionMap } from "./RegionMap";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 export type LivePreviewProps = {
@@ -70,7 +71,7 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
             />
           </svg>
-          <h3 className="mt-4 text-sm font-medium text-foreground">
+          <h3 className={cn(typography({ intent: "utility-h2" }), "mt-4 text-sm font-medium")}>
             Itinerary preview
           </h3>
           <p className="mt-2 text-sm text-stone">
@@ -85,7 +86,7 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
     <div className={cn("flex h-full flex-col", className)}>
       {/* Summary Header */}
       <div className="border-b border-border bg-background px-4 py-3">
-        <h3 className="text-sm font-medium text-foreground">Trip Preview</h3>
+        <h3 className={cn(typography({ intent: "utility-h2" }), "text-sm font-medium")}>Trip Preview</h3>
         {tripSummary && (
           <p className="mt-0.5 text-xs text-stone">{tripSummary}</p>
         )}

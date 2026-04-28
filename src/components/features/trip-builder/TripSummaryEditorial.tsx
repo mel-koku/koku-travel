@@ -324,7 +324,7 @@ export function TripSummaryEditorial({
                   <span>
                     <span className="text-stone">In:</span>{" "}
                     {data.entryPoint.name}
-                    <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                    <span className="ml-2 rounded-md bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
                       {data.entryPoint.iataCode}
                     </span>
                     {data.arrivalTime && (
@@ -340,7 +340,7 @@ export function TripSummaryEditorial({
                     ) : data.exitPoint ? (
                       <>
                         {data.exitPoint.name}
-                        <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                        <span className="ml-2 rounded-md bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
                           {data.exitPoint.iataCode}
                         </span>
                       </>
@@ -512,7 +512,7 @@ function InlineAccommodationInput({
         <button
           type="button"
           onClick={() => onChange(undefined)}
-          className="shrink-0 rounded p-0.5 text-stone transition-colors hover:text-foreground-secondary"
+          className="shrink-0 rounded-md p-0.5 text-stone transition-colors hover:text-foreground-secondary"
         >
           <X className="h-3 w-3" />
         </button>

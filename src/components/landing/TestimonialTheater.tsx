@@ -141,13 +141,13 @@ function TestimonialSection({ testimonials }: { testimonials: TestimonialData[] 
       {/* Remaining testimonials */}
       {rest.length > 0 && (
         <ScrollReveal delay={0.1}>
-          <div className="py-12 sm:py-20 lg:py-28">
+          <div className="py-12 sm:py-16 lg:py-20">
             <div className="mx-auto max-w-7xl px-6">
               <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
                 {rest.map((testimonial, i) => (
                   <div
                     key={i}
-                    className="rounded-lg border border-border bg-surface p-7 shadow-[var(--shadow-card)]"
+                    className="rounded-lg bg-surface p-7 shadow-[var(--shadow-card)]"
                   >
                     <blockquote>
                       <p className={cn(typography({ intent: "editorial-quote" }), "text-base leading-relaxed")}>

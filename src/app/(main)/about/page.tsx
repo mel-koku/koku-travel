@@ -67,7 +67,7 @@ const FALLBACK = {
   ctaHeading: "Plan your next trip",
   ctaDescription:
     "Tell us where you want to go and how you like to travel. Day 1 is free. See your trip before you decide.",
-  ctaButtonText: "Build My Trip",
+  ctaButtonText: "Build my trip",
 } as const;
 
 // ── Line illustration fallback ─────────────────────
@@ -339,7 +339,7 @@ export default async function AboutPage() {
             <div className={cn(
               teamMembers.length === 1
                 ? "mx-auto max-w-sm"
-                : "grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3"
+                : "grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3"
             )}>
               {teamMembers.map((member) => {
                 const name = member.name ?? "Team Member";

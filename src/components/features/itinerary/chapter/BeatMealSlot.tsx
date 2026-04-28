@@ -71,7 +71,7 @@ export function BeatMealSlot({ mealType, onAddSpot, onDismiss }: BeatMealSlotPro
             <button
               type="button"
               onClick={onAddSpot}
-              className="ml-3 text-sm font-medium text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
+              className="ml-3 text-sm font-medium text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-md"
             >
               Add a spot
             </button>

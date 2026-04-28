@@ -505,7 +505,7 @@ export function ItineraryMap({
       : (
         <>
           Map requires a Mapbox token. Set{" "}
-          <code className="rounded bg-surface px-1 py-0.5 text-xs font-mono">
+          <code className="rounded-md bg-surface px-1 py-0.5 text-xs font-mono">
             NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
           </code>{" "}
           in your environment variables.
@@ -513,7 +513,7 @@ export function ItineraryMap({
       );
 
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <p className="text-center text-sm text-foreground-secondary">
           {errorMessage}
         </p>
@@ -523,7 +523,7 @@ export function ItineraryMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <p className="text-sm text-foreground-secondary text-center">{mapError}</p>
       </div>
     );
@@ -531,7 +531,7 @@ export function ItineraryMap({
 
   if (activityPoints.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-lg border border-border bg-surface p-4">
+      <div className="flex h-full w-full items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
         <p className="text-sm text-foreground-secondary text-center">No mappable activities.</p>
       </div>
     );

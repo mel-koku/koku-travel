@@ -42,7 +42,7 @@ export function ExperienceCard({ experience, index, eager = false, compact = fal
     <Wrapper {...wrapperProps}>
       <Link
         href={`/guides/${experience.slug}`}
-        className="group block overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]"
+        className="group block overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)] transition-all duration-300 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden">

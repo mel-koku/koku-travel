@@ -27,7 +27,7 @@ export function GuestSignInPrompt({ onDismiss }: GuestSignInPromptProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3, ease: easeReveal }}
-          className="rounded-lg border border-border bg-surface p-5"
+          className="rounded-lg bg-surface p-5 shadow-[var(--shadow-card)]"
         >
           <div className="flex items-start gap-4">
             <div className="flex-1 space-y-3">

@@ -236,7 +236,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
 
       {/* No results */}
       {showDropdown && searchInput.trim().length > 0 && filteredCities.length === 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-stone">
+        <div className="absolute z-50 mt-1 w-full rounded-lg bg-surface px-4 py-3 text-sm text-stone shadow-[var(--shadow-card)]">
           No cities found matching &ldquo;{searchInput}&rdquo;
         </div>
       )}

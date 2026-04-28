@@ -13,6 +13,7 @@ import {
   resolvePersonCategoryId,
   getCategoryById,
 } from "@/lib/activityCategories";
+import { DataIcon } from "@/components/ui/DataIcon";
 import { InquiryForm } from "./InquiryForm";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
 import { usePersonAvailability } from "@/hooks/useAvailability";
@@ -103,7 +104,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div className="flex items-center gap-2">
                 {category && (
-                  <span className="text-base leading-none">{category.emoji}</span>
+                  <DataIcon name={category.emoji} className="h-4 w-4 text-foreground-secondary" />
                 )}
                 <span className="eyebrow-editorial">
                   {category?.label ?? "Local Expert"}

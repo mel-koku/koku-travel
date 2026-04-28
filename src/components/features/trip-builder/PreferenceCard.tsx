@@ -52,7 +52,7 @@ export function PreferenceCard({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-surface",
+        "overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)]",
         className
       )}
     >

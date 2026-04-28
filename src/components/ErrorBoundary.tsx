@@ -88,7 +88,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               This section failed to load. Refresh or try again.
             </p>
             {process.env.NODE_ENV !== "production" && this.state.error && (
-              <div className="mb-4 rounded border border-destructive/30 bg-destructive/15 p-3 text-left">
+              <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/15 p-3 text-left">
                 <p className="text-xs font-mono text-destructive">
                   {this.state.error.message}
                 </p>

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { EXPERIENCE_TYPES } from "@/data/experienceTypes";
 import { CRAFT_TYPES, type CraftTypeId } from "@/data/craftTypes";
 import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
@@ -105,7 +106,7 @@ export function ExperienceFilterPanel({
             data-lenis-prevent
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-              <h2 className="text-base font-semibold text-foreground">Refine</h2>
+              <h2 className={cn(typography({ intent: "utility-h2" }), "text-base")}>Refine</h2>
               <button
                 onClick={onClose}
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground-secondary hover:bg-surface transition-colors"

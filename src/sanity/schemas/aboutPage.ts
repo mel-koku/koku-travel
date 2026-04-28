@@ -204,7 +204,7 @@ export const aboutPage = defineType({
       title: "Button Text",
       type: "string",
       fieldset: "cta",
-      initialValue: "Build My Trip",
+      initialValue: "Build my trip",
     }),
   ],
   preview: {

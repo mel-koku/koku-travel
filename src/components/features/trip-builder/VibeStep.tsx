@@ -124,7 +124,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.15 }}
-          className="overflow-hidden rounded-lg border border-border bg-card divide-y divide-border"
+          className="overflow-hidden rounded-lg bg-card divide-y divide-border shadow-[var(--shadow-card)]"
         >
           {TRIP_BUILDER_VIBES.map((vibe, i) => renderVibe(vibe, i))}
         </m.div>

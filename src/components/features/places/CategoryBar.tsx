@@ -124,7 +124,7 @@ export function CategoryBar({
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder="Search places..."
-                className="w-full h-12 rounded-lg border border-border bg-surface/50 pl-9 pr-12 text-base text-foreground placeholder:text-stone shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
+                className="w-full h-12 rounded-lg border border-border bg-background pl-9 pr-12 text-base text-foreground placeholder:text-stone shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
               />
               <button
                 type="submit"

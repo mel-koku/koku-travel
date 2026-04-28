@@ -9,7 +9,7 @@ export default function Loading() {
           <div className="h-5 w-64 max-w-full rounded-lg bg-surface animate-pulse" />
         </div>
         {/* Grid skeleton */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="space-y-3">
               <div className="aspect-[4/3] rounded-lg bg-surface animate-pulse" />

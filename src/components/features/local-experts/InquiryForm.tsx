@@ -48,7 +48,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
 
   if (!isSignedIn) {
     return (
-      <div className="rounded-lg border border-border bg-canvas p-5 text-center">
+      <div className="rounded-lg bg-canvas p-5 text-center shadow-[var(--shadow-card)]">
         <p className="text-sm font-medium text-foreground">
           Request a booking with {person.name.split(" ")[0]}
         </p>
@@ -91,7 +91,7 @@ export function InquiryForm({ person, prefilledDate }: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-canvas p-5">
+    <div className="rounded-lg bg-canvas p-5 shadow-[var(--shadow-card)]">
       <p className="text-sm font-semibold text-foreground">
         Request a booking
       </p>

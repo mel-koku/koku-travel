@@ -174,7 +174,7 @@ export function TripReview({ tripId }: { tripId: string }) {
         <StatCard icon={<MapPin className="h-5 w-5 text-brand-primary" />} label="Cities" value={data.cities.length} />
         <StatCard icon={<Compass className="h-5 w-5 text-brand-primary" />} label="Activities" value={data.totalActivities} />
         {data.avgRating !== null && (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-4">
+          <div className="flex flex-col items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
             <Star className="h-5 w-5 text-brand-secondary" />
             <p className="mt-2 font-mono text-2xl font-bold text-foreground">{data.avgRating}</p>
             <p className="mt-1 text-xs text-stone">Avg rating</p>
@@ -199,7 +199,7 @@ export function TripReview({ tripId }: { tripId: string }) {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 + i * 0.1, ease }}
-                className="rounded-lg border border-border bg-surface p-5"
+                className="rounded-lg bg-surface p-5 shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs text-stone">#{i + 1}</span>
@@ -225,7 +225,7 @@ export function TripReview({ tripId }: { tripId: string }) {
             {data.perCity.map((city) => (
               <div
                 key={city.cityId}
-                className="rounded-lg border border-border bg-surface p-5"
+                className="rounded-lg bg-surface p-5 shadow-[var(--shadow-card)]"
               >
                 <p className="text-sm font-semibold text-foreground">{getCityName(city.cityId)}</p>
                 <div className="mt-3 flex items-center justify-between">
@@ -268,7 +268,7 @@ function StatCard({
   value: number;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-4">
+    <div className="flex flex-col items-center justify-center rounded-lg bg-surface p-4 shadow-[var(--shadow-card)]">
       {icon}
       <p className="mt-2 font-mono text-2xl font-bold text-foreground">
         <AnimatedCounter value={value} />

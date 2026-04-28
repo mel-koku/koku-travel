@@ -235,7 +235,7 @@ export default async function PricingPage() {
           </ScrollReveal>
           <ScrollReveal delay={0.16}>
             <Button asChild href="/trip-builder" variant="primary" size="hero">
-              Build My Trip
+              Build my trip
             </Button>
           </ScrollReveal>
           <ScrollReveal delay={0.24}>

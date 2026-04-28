@@ -160,7 +160,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           <h3 className="eyebrow-editorial">
             Before You Go
           </h3>
-          <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
+          <div className="rounded-lg bg-surface/30 divide-y divide-border/50 shadow-[var(--shadow-card)]">
             {health.checklist.map((item) => (
               <ChecklistRow
                 key={item.id}
@@ -222,7 +222,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           <h3 className="eyebrow-editorial">
             Accessibility
           </h3>
-          <div className="rounded-lg border border-border bg-surface/30 p-3 space-y-2">
+          <div className="rounded-lg bg-surface/30 p-3 space-y-2 shadow-[var(--shadow-card)]">
             <p className="text-sm text-foreground">
               {accessibility.accessibleCount} of {accessibility.totalActivities} activities
               have confirmed wheelchair access
@@ -244,7 +244,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             )}
           </div>
           {accessibility.checklist.length > 0 && (
-            <div className="rounded-lg border border-border bg-surface/30 divide-y divide-border/50">
+            <div className="rounded-lg bg-surface/30 divide-y divide-border/50 shadow-[var(--shadow-card)]">
               {accessibility.checklist.map((item) => (
                 <ChecklistRow
                   key={item.id}
@@ -267,7 +267,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         <h3 className="eyebrow-editorial">
           Yuku Concierge
         </h3>
-        <div className="rounded-lg border border-border bg-canvas p-4">
+        <div className="rounded-lg bg-canvas p-4 shadow-[var(--shadow-card)]">
           <p className="text-sm text-foreground leading-relaxed">
             Prefer we handle it end to end? Our concierge designs bespoke trips with a native Japanese coordinator on the ground. Reservations, logistics, and real-time support while you travel.
           </p>
@@ -289,7 +289,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground shadow-[var(--shadow-sm)] hover:bg-surface hover:shadow-[var(--shadow-card)] transition"
           >
             {copiedToast ? (
               <>
@@ -310,7 +310,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </button>
           <button
             onClick={handleCSV}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground shadow-[var(--shadow-sm)] hover:bg-surface hover:shadow-[var(--shadow-card)] transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -319,7 +319,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+            className="flex items-center gap-1.5 rounded-lg bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground shadow-[var(--shadow-sm)] hover:bg-surface hover:shadow-[var(--shadow-card)] transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -416,7 +416,7 @@ function ChecklistRow({
           type="checkbox"
           checked={checked}
           onChange={onToggle}
-          className="h-4 w-4 shrink-0 rounded border-border text-brand-primary focus:ring-brand-primary/20 accent-brand-primary"
+          className="h-4 w-4 shrink-0 rounded-md border-border text-brand-primary focus:ring-brand-primary/20 accent-brand-primary"
         />
         <div className="flex-1 min-w-0">
           <p className={`text-sm ${checked ? "text-stone line-through" : "text-foreground"}`}>

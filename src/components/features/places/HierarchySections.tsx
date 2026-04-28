@@ -134,7 +134,7 @@ function SubExperienceCard({
   return (
     <div className="rounded-lg bg-surface p-4 space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-sans text-sm font-semibold text-foreground">
+        <h3 className={cn(typography({ intent: "utility-h2" }), "text-sm font-semibold")}>
           {item.name}
         </h3>
         {item.timeEstimate && (

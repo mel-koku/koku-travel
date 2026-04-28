@@ -219,7 +219,7 @@ export function Beat({
                           setNoteExpanded(false);
                         }}
                         aria-label="Delete note"
-                        className="flex h-6 w-6 items-center justify-center rounded text-foreground-secondary hover:bg-background hover:text-error transition-colors"
+                        className="flex h-6 w-6 items-center justify-center rounded-md text-foreground-secondary hover:bg-background hover:text-error transition-colors"
                       >
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
                           <path d="M2 3h8M4.5 3V2a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1M3 3l.5 7a1 1 0 0 0 1 .95h3a1 1 0 0 0 1-.95L9 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -235,7 +235,7 @@ export function Beat({
                       }}
                       aria-label={noteExpanded ? "Collapse note" : "Expand note"}
                       aria-expanded={noteExpanded}
-                      className="flex h-6 w-6 items-center justify-center rounded text-foreground-secondary hover:bg-background hover:text-foreground transition-colors"
+                      className="flex h-6 w-6 items-center justify-center rounded-md text-foreground-secondary hover:bg-background hover:text-foreground transition-colors"
                     >
                       <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
                         <path d="M2 6h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

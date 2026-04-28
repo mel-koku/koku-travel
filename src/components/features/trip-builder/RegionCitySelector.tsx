@@ -117,7 +117,7 @@ export function RegionCitySelector({
                 {/* Checkbox */}
                 <span
                   className={cn(
-                    "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-colors",
                     isSelected
                       ? "border-brand-primary bg-brand-primary"
                       : "border-border"
