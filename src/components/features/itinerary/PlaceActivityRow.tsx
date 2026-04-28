@@ -11,7 +11,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
-import { Lightbulb, PlaneLanding, PlaneTakeoff } from "lucide-react";
+import { Lightbulb, PlaneLanding, PlaneTakeoff, TrainFront } from "lucide-react";
 import {
   getShortOverview,
   getLocationRating,
@@ -716,7 +716,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-stone">
                   {placeLocation?.nearestStation && (
                     <span className="flex items-center gap-1">
-                      <span>{"🚉"}</span>
+                      <TrainFront className="h-3 w-3" aria-hidden="true" />
                       {placeLocation.nearestStation}
                     </span>
                   )}

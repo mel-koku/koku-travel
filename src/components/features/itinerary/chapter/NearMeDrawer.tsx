@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronLeft, Clock, Train } from "lucide-react";
+import { ChevronLeft, Clock, Star, Train } from "lucide-react";
 import { SlideDrawer } from "./SlideDrawer";
 import { NearMeMap, type NearbyLocation } from "./NearMeMap";
 import { cn } from "@/lib/utils";
@@ -52,10 +52,7 @@ function NearMeDetail({
   const priceLabel = priceLevelLabel(location.priceLevel);
   // Prefer the full editorial description; fall back to the card blurb
   const bodyText = location.description ?? location.shortDescription;
-  const metaParts: string[] = [location.category ?? ""];
-  if (location.rating) metaParts.push(`★ ${location.rating.toFixed(1)}`);
-  if (priceLabel) metaParts.push(priceLabel);
-  metaParts.push(formatDistance(location.distance));
+  const distanceLabel = formatDistance(location.distance);
 
   return (
     <div className="space-y-4 pb-2">
@@ -84,8 +81,25 @@ function NearMeDetail({
       {/* Name + meta */}
       <div>
         <p className="text-base font-medium text-foreground">{location.name}</p>
-        <p className="mt-0.5 text-sm text-foreground-secondary capitalize">
-          {metaParts.join(" · ")}
+        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-sm text-foreground-secondary capitalize">
+          {location.category && <span>{location.category}</span>}
+          {location.rating != null && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span className="inline-flex items-center gap-0.5">
+                <Star className="h-3 w-3 fill-warning text-warning" aria-hidden="true" />
+                {location.rating.toFixed(1)}
+              </span>
+            </>
+          )}
+          {priceLabel && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{priceLabel}</span>
+            </>
+          )}
+          <span aria-hidden="true">·</span>
+          <span>{distanceLabel}</span>
         </p>
         {(location.neighborhood || location.estimatedDuration) && (
           <p className="mt-0.5 text-xs text-foreground-secondary">
@@ -180,11 +194,19 @@ function NearMeListRow({
       </div>
       <div className="flex-1 min-w-0 space-y-0.5">
         <p className="text-sm font-medium text-foreground line-clamp-1">{location.name}</p>
-        <p className="text-xs text-foreground-secondary capitalize">
-          {location.category}
-          {location.rating ? ` · ★ ${location.rating.toFixed(1)}` : ""}
-          {" · "}
-          {formatDistance(location.distance)}
+        <p className="flex flex-wrap items-center gap-x-1 text-xs text-foreground-secondary capitalize">
+          <span>{location.category}</span>
+          {location.rating != null && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span className="inline-flex items-center gap-0.5">
+                <Star className="h-3 w-3 fill-warning text-warning" aria-hidden="true" />
+                {location.rating.toFixed(1)}
+              </span>
+            </>
+          )}
+          <span aria-hidden="true">·</span>
+          <span>{formatDistance(location.distance)}</span>
         </p>
       </div>
       {isAdded && (

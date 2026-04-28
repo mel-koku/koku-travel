@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { m } from "framer-motion";
+import { Star } from "lucide-react";
 import { CATEGORY_CHIPS } from "@/lib/constants/discoverCategories";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 import type { DiscoverCategoryId } from "@/lib/constants/discoverCategories";
@@ -206,8 +207,11 @@ export function ItineraryDiscoverPanel({
                         <span>{formatDistance(loc.distance)}</span>
                         {loc.rating != null && (
                           <>
-                            <span>·</span>
-                            <span>★ {loc.rating.toFixed(1)}</span>
+                            <span aria-hidden="true">·</span>
+                            <span className="inline-flex items-center gap-0.5">
+                              <Star className="h-3 w-3 fill-warning text-warning" aria-hidden="true" />
+                              {loc.rating.toFixed(1)}
+                            </span>
                           </>
                         )}
                       </div>
