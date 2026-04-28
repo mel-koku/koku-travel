@@ -120,3 +120,41 @@ describe("Fix 2 — augment-on-divergence coverage check", () => {
     expect(isExitRegionCoveredBySelections(selected, "kanto", childMap)).toBe(false);
   });
 });
+
+describe("Fix 3 — planning cities are never childCityMap entries", () => {
+  // The source `cityInterests.json` lists planning cities (Kyoto, Tokyo, etc.)
+  // under multiple parents' `childCities`. Without filtering, Map.set's
+  // last-wins overwrite mis-attributes Kyoto→Tottori (Chugoku) and similar,
+  // which made unselected regions show a partial-selection pill.
+  test("getChildCityMapping omits known planning cities", () => {
+    const childMap = getChildCityMapping();
+    for (const region of REGIONS) {
+      for (const city of region.cities) {
+        expect(childMap.has(city.id)).toBe(false);
+      }
+    }
+  });
+
+  test("Kyoto-only selection leaves Chugoku 'none', not 'partial'", () => {
+    const childMap = getChildCityMapping();
+    const selected = new Set<CityId>(["kyoto"] as CityId[]);
+    expect(regionHasDynamicSelected(selected, "chugoku", childMap)).toBe(false);
+  });
+
+  test("Tokyo + Kyoto selection doesn't bleed into any third region", () => {
+    const childMap = getChildCityMapping();
+    const selected = new Set<CityId>(["tokyo", "kyoto"] as CityId[]);
+    const otherRegions: KnownRegionId[] = [
+      "chubu",
+      "kyushu",
+      "hokkaido",
+      "tohoku",
+      "chugoku",
+      "shikoku",
+      "okinawa",
+    ];
+    for (const region of otherRegions) {
+      expect(regionHasDynamicSelected(selected, region, childMap)).toBe(false);
+    }
+  });
+});

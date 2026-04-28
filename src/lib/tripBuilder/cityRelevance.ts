@@ -248,9 +248,18 @@ export function getChildCityMapping(): Map<string, { planningCity: string; child
   const mapping = new Map<string, { planningCity: string; childName: string }>();
   const childCities = (data as Record<string, unknown>).childCities as Record<string, string[]> | undefined;
   if (!childCities) return mapping;
+  // Defense-in-depth: never let a top-level planning city become a "child"
+  // entry. Past regenerations of cityInterests.json listed major cities
+  // (Kyoto under Tottori, etc.) under multiple parents, and Map.set's
+  // last-wins overwrite mis-attributed them — e.g. selecting Kyoto flipped
+  // Chugoku's region pill. Filtering here keeps the invariant if a future
+  // regeneration reintroduces the pattern.
+  const planningCities = new Set(Object.keys(data.cities ?? {}));
   for (const [planningCity, children] of Object.entries(childCities)) {
     for (const child of children) {
-      mapping.set(child.toLowerCase(), { planningCity, childName: child });
+      const lower = child.toLowerCase();
+      if (planningCities.has(lower)) continue;
+      mapping.set(lower, { planningCity, childName: child });
     }
   }
   return mapping;
