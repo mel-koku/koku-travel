@@ -211,10 +211,33 @@ export function optimizeRouteOrder(
     (a) => !isPinnedActivity(a),
   );
 
+  // When pinned activities sit at the start of the day's array, the first
+  // movable should be optimized as the nearest neighbor to the LAST trailing
+  // pinned activity, not to the day's startPoint. Real example: Day 1 with
+  // arrival anchor (NRT) pinned at position 0 and breakfast pinned at
+  // position 1 — the next stop (movable[0]) should be picked nearest to the
+  // breakfast spot, not nearest to the hotel that startPoint represents.
+  // Symmetrically, when pinned activities sit at the END (e.g. departure
+  // airport), 2-opt's effective end-anchor should be the leading pinned
+  // activity's coords, not endPoint.
+  let effectiveStartCoords = startCoords;
+  for (const a of placeActivities) {
+    if (!isPinnedActivity(a)) break;
+    const c = activityCoords.get(a.id);
+    if (c) effectiveStartCoords = c;
+  }
+  let effectiveEndCoords = endCoords;
+  for (let i = placeActivities.length - 1; i >= 0; i--) {
+    const a = placeActivities[i];
+    if (!a || !isPinnedActivity(a)) break;
+    const c = activityCoords.get(a.id);
+    if (c) effectiveEndCoords = c;
+  }
+
   // Build optimized order using nearest neighbor algorithm
   const optimized: string[] = [];
   const remaining = new Set(movableWithCoords.map((a) => a.id));
-  let currentCoords = startCoords;
+  let currentCoords = effectiveStartCoords;
 
   // Find the first activity (nearest to start point)
   while (remaining.size > 0) {
@@ -247,7 +270,12 @@ export function optimizeRouteOrder(
 
   // Apply 2-opt local search to uncross paths and handle circular routes (start=end)
   if (optimized.length > 2) {
-    const improved = twoOptImprove(optimized, activityCoords, startCoords, endCoords);
+    const improved = twoOptImprove(
+      optimized,
+      activityCoords,
+      effectiveStartCoords,
+      effectiveEndCoords,
+    );
     optimized.length = 0;
     optimized.push(...improved);
   }

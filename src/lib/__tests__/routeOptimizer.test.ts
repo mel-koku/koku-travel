@@ -107,6 +107,27 @@ describe("optimizeRouteOrder", () => {
     );
   });
 
+  it("optimizes movables from the trailing pinned activity, not from startPoint", () => {
+    // When an arrival anchor (or any pinned activity) is at position 0, the
+    // first movable should be optimized as the nearest neighbor to the
+    // anchor's coords, not to the day's startPoint (which may be a hotel
+    // far from the airport). Without this, on Day 1 with NRT pinned at 0,
+    // nearest-neighbor picks "stop nearest to APA hotel" instead of
+    // "stop nearest to NRT" — backward routing.
+    const NRT = { lat: 35.7647, lng: 140.3863 };
+    // Three movables, varying distances from APA Hotel and NRT.
+    const activities = [
+      place("anchor-arrival-nrt", NRT.lat, NRT.lng, { isAnchor: true }),
+      place("near-apa", 35.7142, 139.7775), // ~50m from APA, ~70km from NRT
+      place("near-nrt", 35.7600, 140.3800), // ~6km from NRT, far from APA
+      place("middle", 35.7400, 140.0800), // between APA and NRT
+    ];
+    const result = optimizeRouteOrder(activities, APA, APA);
+    expect(result.order[0]).toBe("anchor-arrival-nrt");
+    // Movable nearest to NRT should be picked first, not movable nearest to APA.
+    expect(result.order[1]).toBe("near-nrt");
+  });
+
   it("preserves notes in their original positions among reordered places", () => {
     const noteAct: ItineraryActivity = {
       kind: "note",
