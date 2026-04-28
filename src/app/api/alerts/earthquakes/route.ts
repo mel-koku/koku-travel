@@ -24,8 +24,16 @@ function parseTripDates(start: string | undefined, end: string | undefined): { s
   const [ey, em, ed] = end.split("-").map(Number);
   if (!sy || !sm || !sd || !ey || !em || !ed) return null;
   return {
-    startDate: new Date(sy, sm - 1, sd),
-    endDate: new Date(ey, em - 1, ed),
+    // Start of trip = first instant of the start date.
+    startDate: new Date(sy, sm - 1, sd, 0, 0, 0, 0),
+    // End of trip = last instant of the end date. Constructing at midnight
+    // (00:00:00.000) made the trip "expired" throughout its actual last day —
+    // by the time `now` advances past midnight on the end date, the gate
+    // `now > endDate` flips true and the user stops getting alerts on a day
+    // they're still travelling. Earthquake alerts (and any caller of this
+    // helper) want the trip to stay active through 23:59:59.999 of the end
+    // date.
+    endDate: new Date(ey, em - 1, ed, 23, 59, 59, 999),
   };
 }
 
