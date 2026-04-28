@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography-system";
@@ -139,19 +139,30 @@ export function Beat({
           )}
         />
       )}
-      {/* Entire beat card is clickable — opens the detail panel */}
+      {/* Catalog beats: card is clickable and opens the detail panel.
+          Custom beats: detail lookup no-ops upstream, so the card stays
+          non-interactive at the markup level — no role/tabindex/aria-label,
+          no hover or focus affordance. */}
       <div
-        role="button"
-        tabIndex={0}
-        onClick={onExpand}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onExpand();
-          }
-        }}
-        aria-label={`Open details for ${location.name}`}
-        className="block w-full text-left -mx-2 px-2 py-1 rounded-md hover:bg-canvas/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        {...(isCustom
+          ? {}
+          : {
+              role: "button" as const,
+              tabIndex: 0,
+              onClick: onExpand,
+              onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onExpand();
+                }
+              },
+              "aria-label": `Open details for ${location.name}`,
+            })}
+        className={cn(
+          "block w-full text-left -mx-2 px-2 py-1 rounded-md",
+          !isCustom &&
+            "hover:bg-canvas/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
+        )}
       >
         <div className="flex gap-5 items-start">
           <div className="flex-1 min-w-0">
