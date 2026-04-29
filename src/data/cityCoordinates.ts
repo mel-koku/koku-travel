@@ -57,6 +57,7 @@ export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
   noboribetsu: { lat: 42.4929, lon: 141.1481 },  // Noboribetsu Onsen town center
   furano:      { lat: 43.3416, lon: 142.3833 },  // Furano station
   shiretoko:   { lat: 44.0732, lon: 144.9990 },  // Utoro gateway town
+  niseko:      { lat: 42.8625, lon: 140.6928 },  // Hirafu village, the international resort hub
   // Tohoku
   sendai:        { lat: 38.2682, lon: 140.8694 },
   morioka:       { lat: 39.7036, lon: 141.1527 },
