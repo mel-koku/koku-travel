@@ -47,7 +47,8 @@ export type KnownCityId =
   | "arita" | "imari" | "kurokawa" | "takachiho"  // Kyushu
   | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"
   | "toyako" | "noboribetsu" | "furano" | "shiretoko"  // Hokkaido
-  | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"  // Tohoku
+  | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"
+  | "ginzan" | "zao" | "tazawako" | "hiraizumi"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori" | "shimonoseki"  // Chugoku
   | "matsuyama" | "takamatsu" | "tokushima" | "kochi" | "iyavalley"  // Shikoku
   | "naha" | "ishigaki" | "miyako" | "amami";  // Okinawa

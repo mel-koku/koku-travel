@@ -507,6 +507,46 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Visit Aizu-Wakamatsu's Tsuruga Castle, samurai heritage, and sake breweries. The proud heart of Fukushima Prefecture.",
   },
+  ginzan: {
+    id: "ginzan",
+    name: "Ginzan Onsen",
+    nameJapanese: "銀山温泉",
+    tagline: "Wooden ryokan along a Taisho-era river, one car-free street wide",
+    description:
+      "A single street of three- and four-story wooden ryokan facing each other across a hot-spring river deep in the Yamagata mountains. The buildings date to the 1910s and 1920s when the village rebuilt after a flood, with intricate carved kote-e plaster reliefs on every facade. Cars stop at the village entrance. Gas lamps light the river at dusk and snow piles waist-deep through the long winter, when the village earns its visual reputation as one of the country's most photographed onsen towns. The silver mine that gave Ginzan its name closed in 1689; the abandoned tunnels are open to walk through behind the village.",
+    ogDescription:
+      "Stay at Ginzan Onsen, the Taisho-era wooden ryokan village along a hot-spring river, deep in the Yamagata mountains.",
+  },
+  zao: {
+    id: "zao",
+    name: "Zao",
+    nameJapanese: "蔵王",
+    tagline: "Snow monsters, ski powder, and a milky-blue volcanic crater lake",
+    description:
+      "The Zao mountain straddling Yamagata and Miyagi runs three seasons of identity. Winter brings the juhyo, the ice-and-snow rime that fully encases the alpine fir forest into the surreal shapes locals call snow monsters; the ropeway from Zao Onsen reaches the viewing terrace at the summit. Summer opens the trail to Okama, the brilliant turquoise crater lake on Mt. Katta. Below the slopes, Zao Onsen's bath culture goes back 1,900 years; Zao Dai-Rotenburo, the largest open-air bath, sits in the river valley and holds 200 bathers at once. Zao Fox Village, an hour east on the Miyagi side, lets visitors hand-feed about 100 free-roaming Hokkaido foxes.",
+    ogDescription:
+      "Visit Zao for the winter snow monsters, the Okama crater lake, the largest outdoor onsen in Tohoku, and Zao Fox Village.",
+  },
+  tazawako: {
+    id: "tazawako",
+    name: "Lake Tazawa",
+    nameJapanese: "田沢湖",
+    tagline: "Japan's deepest lake, Nyuto Onsen, and the legend of Princess Tatsuko",
+    description:
+      "Lake Tazawa is the deepest in Japan at 423 meters, with water so clear the visibility runs to 15 meters. The bronze statue of Princess Tatsuko on the western shore — the woman who became the lake's dragon-spirit guardian — is the iconic photograph. Goza-no-Ishi Shrine on the north shore has a torii standing in the water. The real overnight draw is Nyuto Onsen up the mountain, a cluster of seven historic ryokan including Tsurunoyu, where the milky white outdoor bath has been continuously soaked in since the 1600s. Skiing at Tazawako Ski Resort sits between the lake and the onsen.",
+    ogDescription:
+      "Visit Lake Tazawa for Japan's deepest blue lake, Princess Tatsuko's statue, and the seven ryokan of Nyuto Onsen.",
+  },
+  hiraizumi: {
+    id: "hiraizumi",
+    name: "Hiraizumi",
+    nameJapanese: "平泉",
+    tagline: "UNESCO Pure Land Buddhism — gold-leaf hall, mirror pond, garden temples",
+    description:
+      "In the 12th century the Northern Fujiwara clan built a Buddhist Pure Land on this Iwate plain to rival the imperial capital, and it stayed standing long enough to inscribe Hiraizumi as a UNESCO World Heritage site. Chuson-ji's Konjikido — a small hall built entirely from gold leaf, mother-of-pearl, and lacquer over a black-stained interior — survives from 1124 inside its protective concrete shell. Motsu-ji preserves Japan's most complete surviving Pure Land garden, with the original 12th-century pond still mirroring the temple. Takkoku-no-Iwaya, a temple carved into a cliff face, sits 6km west. Geibikei Gorge's hand-poled flatboats run east of town.",
+    ogDescription:
+      "Discover Hiraizumi's UNESCO Pure Land Buddhism. Konjikido golden hall, Motsu-ji garden, and the gorge boat ride.",
+  },
 
   // --- Chugoku ---
   hiroshima: {

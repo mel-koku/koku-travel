@@ -64,6 +64,10 @@ export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
   akita:         { lat: 39.7186, lon: 140.1024 },
   yamagata:      { lat: 38.2404, lon: 140.3636 },
   aizuwakamatsu: { lat: 37.4945, lon: 139.9296 },
+  ginzan:        { lat: 38.5720, lon: 140.5288 },  // Ginzan Onsen wooden ryokan strip
+  zao:           { lat: 38.1672, lon: 140.3942 },  // Zao Onsen village
+  tazawako:      { lat: 39.7169, lon: 140.6545 },  // Lake Tazawa east shore
+  hiraizumi:     { lat: 38.9891, lon: 141.1104 },  // Chuson-ji area
   // Chugoku
   hiroshima:    { lat: 34.3853, lon: 132.4553 },
   okayama:      { lat: 34.6617, lon: 133.9352 },
