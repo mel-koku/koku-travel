@@ -53,6 +53,10 @@ export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
   kushiro:   { lat: 42.9849, lon: 144.3814 },
   abashiri:  { lat: 44.0209, lon: 144.2734 },
   wakkanai:  { lat: 45.4155, lon: 141.6731 },
+  toyako:      { lat: 42.5667, lon: 140.8500 },  // Lake Toya south shore (onsen town)
+  noboribetsu: { lat: 42.4929, lon: 141.1481 },  // Noboribetsu Onsen town center
+  furano:      { lat: 43.3416, lon: 142.3833 },  // Furano station
+  shiretoko:   { lat: 44.0732, lon: 144.9990 },  // Utoro gateway town
   // Tohoku
   sendai:        { lat: 38.2682, lon: 140.8694 },
   morioka:       { lat: 39.7036, lon: 141.1527 },

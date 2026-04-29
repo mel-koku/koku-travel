@@ -45,7 +45,8 @@ export type KnownCityId =
   | "nagoya" | "kanazawa" | "takayama" | "nagano" | "niigata" | "ise" | "toyama"  // Chubu
   | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita" | "yakushima" | "miyazaki" | "kitakyushu"
   | "arita" | "imari" | "kurokawa" | "takachiho"  // Kyushu
-  | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"  // Hokkaido
+  | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"
+  | "toyako" | "noboribetsu" | "furano" | "shiretoko"  // Hokkaido
   | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori" | "shimonoseki"  // Chugoku
   | "matsuyama" | "takamatsu" | "tokushima" | "kochi" | "iyavalley"  // Shikoku

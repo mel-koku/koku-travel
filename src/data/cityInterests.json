@@ -1295,7 +1295,6 @@
       "Kamoenai",
       "Kutchan",
       "Kyogoku",
-      "Noboribetsu",
       "Otaru",
       "Rusutsu",
       "Shakotan",
@@ -1303,7 +1302,6 @@
       "Shiraoi",
       "Sobetsu",
       "Tomakomai",
-      "Toyako",
       "Yoichi"
     ],
     "niigata": [
@@ -1375,19 +1373,16 @@
       "Zentsuji"
     ],
     "asahikawa": [
-      "Biei",
       "Bifuka",
-      "Furano",
       "Higashikawa",
       "Hokuryu",
-      "Kamifurano",
       "Kamikawa",
       "Kamishihoro",
-      "Nakafurano",
       "Shimizu",
       "Shimukappu",
       "Tomamae"
     ],
+    "furano": ["Biei", "Kamifurano", "Nakafurano"],
     "nagoya": [
       "Achi",
       "Ena",
