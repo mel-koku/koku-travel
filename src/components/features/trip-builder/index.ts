@@ -32,11 +32,7 @@ export type { BudgetInputProps, BudgetMode, BudgetValue } from "./BudgetInput";
 export { SavedInTripPreview } from "./SavedInTripPreview";
 export type { SavedInTripPreviewProps } from "./SavedInTripPreview";
 
-// Legacy components (still used elsewhere)
-export { EssentialsForm } from "./EssentialsForm";
-export { EntryPointSelector } from "./EntryPointSelector";
-export type { EntryPointSelectorProps } from "./EntryPointSelector";
-
+// Legacy components
 export { CityList } from "./CityList";
 export { SelectionReview } from "./SelectionReview";
 export { PreferenceCards } from "./PreferenceCards";
@@ -45,6 +41,3 @@ export { PreferenceCards } from "./PreferenceCards";
 export { LivePreview } from "./LivePreview";
 export { ItineraryPreview } from "./ItineraryPreview";
 export { TripMap } from "./TripMap";
-
-// Mobile components
-export { MobileBottomSheet, PreviewToggleButton } from "./MobileBottomSheet";
