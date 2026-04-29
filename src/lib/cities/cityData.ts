@@ -302,6 +302,46 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Visit Kitakyushu's Kokura Castle, Kawachi Fujien wisteria, and Kanmon Strait. The gateway between Kyushu and Honshu.",
   },
+  arita: {
+    id: "arita",
+    name: "Arita",
+    nameJapanese: "有田",
+    tagline: "Birthplace of Japanese porcelain",
+    description:
+      "Japanese porcelain began in Arita when Korean potter Yi Sam-pyeong discovered porcelain stone at Izumiyama Quarry in the early 1600s. Four centuries later the Kakiemon, Imaemon, Gen-emon, and Fukagawa-Seiji kilns are still firing, the Tonbai walls hide their workshops behind kiln-brick alleys, and Tozan Shrine guards the kiln-god with a torii made of white porcelain. The annual Ceramic Fair runs Golden Week and turns the whole town into a kilometer-long market.",
+    ogDescription:
+      "Visit Arita, the birthplace of Japanese porcelain. Four centuries of working kilns, Izumiyama Quarry, and a kilometer-long ceramic fair every spring.",
+  },
+  imari: {
+    id: "imari",
+    name: "Imari",
+    nameJapanese: "伊万里",
+    tagline: "Secret Nabeshima kilns in a hidden valley",
+    description:
+      "The shipping port that gave its name to Japan's early porcelain exports, though the real destination is Okawachiyama up the valley, where 30 working kilns occupy a narrow gorge that the Nabeshima clan chose for its defensible terrain. Korean potters' descendants still fire here. The Nabeshima Hanyo Park preserves the climbing-kiln ruins, and the Imari Nabeshima Ware Hall doubles as a tasting room for the contemporary kilns.",
+    ogDescription:
+      "Visit Imari's Okawachiyama secret kiln village. 30 active kilns, climbing-kiln ruins, and Japan's most defensible porcelain valley.",
+  },
+  kurokawa: {
+    id: "kurokawa",
+    name: "Kurokawa Onsen",
+    nameJapanese: "黒川温泉",
+    tagline: "Wooden ryokan and 26 baths in a single river valley",
+    description:
+      "A small mountain onsen village in the Aso highlands of Kumamoto, where 30 ryokan share a single river and a wooden bath-pass system that lets visitors walk between three baths in a day. Every ryokan opens its outdoor baths to outside guests. Cave baths, riverside baths, and forest baths fill the half-kilometer between the public Jizoyu and Anayu bath houses. The village resists modern signage and chain stores, keeping the night quiet enough to hear the river.",
+    ogDescription:
+      "Visit Kurokawa Onsen's 26 ryokan baths in the Aso highlands. Cave baths, riverside soaks, and Japan's most-walked onsen village.",
+  },
+  takachiho: {
+    id: "takachiho",
+    name: "Takachiho",
+    nameJapanese: "高千穂",
+    tagline: "Where the sun goddess hid in a cave",
+    description:
+      "Mountain town in northern Miyazaki tied to Japan's foundational creation myth. The sun goddess Amaterasu retreated into a cave near here, and the village's nightly kagura performance reenacts how the other gods coaxed her out. The gorge, traversed by rowboat, runs past Manai Falls. Takachiho Shrine, Kushifuru Shrine, and Aratate Shrine each anchor a piece of the myth-cycle, and most visitors stay overnight for the kagura.",
+    ogDescription:
+      "Discover Takachiho's mythological gorge, nightly kagura dance, and the cave where the sun goddess Amaterasu hid.",
+  },
 
   // --- Hokkaido ---
   sapporo: {

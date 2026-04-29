@@ -42,6 +42,10 @@ export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
   yakushima:  { lat: 30.3911, lon: 130.6578 },
   miyazaki:   { lat: 31.9111, lon: 131.4239 },
   kitakyushu: { lat: 33.8834, lon: 130.8750 },
+  arita:      { lat: 33.2050, lon: 129.9160 },
+  imari:      { lat: 33.2350, lon: 129.8930 },  // Okawachiyama valley, where the kiln content lives
+  kurokawa:   { lat: 33.0780, lon: 131.1416 },
+  takachiho:  { lat: 32.7110, lon: 131.3100 },
   // Hokkaido
   sapporo:   { lat: 43.0618, lon: 141.3545 },
   hakodate:  { lat: 41.7688, lon: 140.7288 },
