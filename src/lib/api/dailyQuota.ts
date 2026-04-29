@@ -25,6 +25,11 @@ export type DailyQuotaConfig = {
   maxPerDay: number;
 };
 
+export type DailyQuotaCheckOptions = {
+  /** Whether the caller is unauthenticated. When true, error copy nudges sign-in. */
+  isAnonymous?: boolean;
+};
+
 /** Redis client (initialized lazily, shared across calls) */
 let redisClient: Redis | null = null;
 let redisInitialized = false;
@@ -74,11 +79,13 @@ function getResetTimestamp(): number {
  *
  * @param identifier - User ID (authenticated) or IP address (anonymous)
  * @param config - Quota configuration (name + maxPerDay)
+ * @param options - Optional caller context (e.g., whether the request is unauthenticated)
  * @returns null if allowed, or a 429 NextResponse if quota exceeded
  */
 export async function checkDailyQuota(
   identifier: string,
   config: DailyQuotaConfig,
+  options: DailyQuotaCheckOptions = {},
 ): Promise<NextResponse | null> {
   initializeRedis();
 
@@ -109,13 +116,22 @@ export async function checkDailyQuota(
         quota: config.name,
         count,
         limit: config.maxPerDay,
+        isAnonymous: options.isAnonymous ?? false,
       });
+
+      // Anonymous callers share an IP-keyed quota that depletes fast on shared
+      // networks (hotels, airports, cafés). Signing in moves them to a per-user
+      // quota and recovers their access immediately, so we nudge that path.
+      const errorMessage = options.isAnonymous
+        ? "You've reached today's limit for anonymous use. Sign in to keep planning, or come back tomorrow."
+        : "You've reached today's generation limit. Try again tomorrow.";
 
       return NextResponse.json(
         {
-          error: "Daily usage limit reached. Try again tomorrow.",
+          error: errorMessage,
           code: "DAILY_QUOTA_EXCEEDED",
           retryAfter,
+          isAnonymous: options.isAnonymous ?? false,
         },
         {
           status: 429,

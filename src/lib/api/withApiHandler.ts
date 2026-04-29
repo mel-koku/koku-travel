@@ -105,7 +105,9 @@ export function withApiHandler(handler: HandlerFn, options: HandlerOptions = {})
     // Daily quota check (after auth so we can key by userId when available)
     if (options.dailyQuota) {
       const identifier = user?.id || finalContext.ip;
-      const quotaResponse = await checkDailyQuota(identifier, options.dailyQuota);
+      const quotaResponse = await checkDailyQuota(identifier, options.dailyQuota, {
+        isAnonymous: !user,
+      });
       if (quotaResponse) {
         return addRequestContextHeaders(quotaResponse, finalContext);
       }
