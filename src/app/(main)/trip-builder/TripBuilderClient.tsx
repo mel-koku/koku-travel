@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
@@ -31,7 +32,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
   const { data, reset } = useTripBuilder();
   const { createTrip, saved, setCityAccommodation, userPreferences, setUserPreferences } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; showSignIn: boolean } | null>(null);
   const [successData, setSuccessData] = useState<{ tripName: string; tripId: string } | null>(null);
   const [isGuest, setIsGuest] = useState(true);
   const supabaseClient = createClient();
@@ -76,7 +77,12 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to generate itinerary (${response.status})`);
+        setError({
+          message: errorData.error || `Failed to generate itinerary (${response.status})`,
+          showSignIn: response.status === 429 && errorData.isAnonymous === true,
+        });
+        setIsGenerating(false);
+        return;
       }
 
       const result: PlanApiResponse = await response.json();
@@ -128,7 +134,10 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       reset();
       setSuccessData({ tripName, tripId });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      setError({
+        message: err instanceof Error ? err.message : "An unexpected error occurred",
+        showSignIn: false,
+      });
       setIsGenerating(false);
     }
   }, [data, createTrip, reset, saved, setCityAccommodation, userPreferences, setUserPreferences]);
@@ -165,11 +174,20 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-sm">{error}</span>
+            <span className="text-sm">{error.message}</span>
+            {error.showSignIn && (
+              <Link
+                href="/signin?next=/trip-builder"
+                className="ml-1 rounded-md bg-white/15 px-3 py-1 text-xs font-medium hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                Sign in
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setError(null)}
               className="ml-2 rounded-md p-1 hover:bg-error/80"
+              aria-label="Dismiss"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
