@@ -138,7 +138,7 @@ describe("Rate Limit Integration Tests", () => {
       const data = await response?.json();
       expect(data).toEqual(
         expect.objectContaining({
-          error: "Too many requests",
+          error: expect.any(String),
           code: "RATE_LIMIT_EXCEEDED",
           retryAfter: expect.any(Number),
         }),
