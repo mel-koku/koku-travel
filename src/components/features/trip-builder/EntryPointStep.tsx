@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Plane } from "lucide-react";
+import { PlaneLanding, PlaneTakeoff } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
@@ -13,7 +13,6 @@ import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
-import { PlaneLanding } from "lucide-react";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
@@ -350,7 +349,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-accent">
-                      <Plane className="h-5 w-5" />
+                      <PlaneLanding className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{data.entryPoint.name}</p>
@@ -438,7 +437,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-accent">
-                                  <PlaneLanding className="h-5 w-5" />
+                                  <PlaneTakeoff className="h-5 w-5" />
                                 </div>
                                 <div>
                                   <p className="font-medium text-foreground">{data.exitPoint.name}</p>

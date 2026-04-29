@@ -188,7 +188,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
                     : "bg-background text-foreground-secondary hover:bg-surface"
                 )}
               >
-                {mode === "perDay" ? "Per Day" : "Total"}
+                {mode === "perDay" ? "Per day" : "Total"}
               </button>
             );
           })}
@@ -214,7 +214,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
         {/* Low budget warning */}
         {showLowBudgetWarning && (
           <p className="text-sm text-warning">
-            That&apos;s a tight budget for Japan &mdash; totally doable, worth knowing.
+            That&apos;s a tight budget for Japan. Totally doable, worth knowing.
           </p>
         )}
       </div>

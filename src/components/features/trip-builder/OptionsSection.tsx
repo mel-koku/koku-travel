@@ -29,8 +29,8 @@ const DIETARY_OPTIONS = [
   { id: "vegan", label: "Vegan" },
   { id: "halal", label: "Halal" },
   { id: "kosher", label: "Kosher" },
-  { id: "gluten-free", label: "Gluten-Free" },
-  { id: "dairy-free", label: "Dairy-Free" },
+  { id: "gluten-free", label: "Gluten-free" },
+  { id: "dairy-free", label: "Dairy-free" },
 ];
 
 const PACE_OPTIONS = [
