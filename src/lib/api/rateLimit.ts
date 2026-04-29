@@ -248,6 +248,23 @@ async function checkRateLimitInMemory(
 }
 
 /**
+ * Builds a user-facing 429 message. Adds a sign-in nudge when the limit that
+ * fired is keyed for unauthenticated callers, since signing in moves them to
+ * a higher per-user limit and unblocks them immediately.
+ */
+function buildRateLimitMessage(config: RateLimitConfig, retryAfterSeconds: number): string {
+  const wait = retryAfterSeconds <= 1
+    ? "a moment"
+    : retryAfterSeconds < 60
+      ? `${retryAfterSeconds} seconds`
+      : "a minute";
+  if (config.keySuffix === "unauth") {
+    return `Just a moment. Sign in for higher limits, or try again in ${wait}.`;
+  }
+  return `Just a moment. Try again in ${wait}.`;
+}
+
+/**
  * Checks if a request should be rate limited
  * Uses Upstash Redis if available, otherwise falls back to in-memory rate limiting
  *
@@ -278,12 +295,12 @@ export async function checkRateLimit(
     const ratelimit = getUpstashRatelimit(effectiveConfig);
     if (ratelimit) {
       const result = await ratelimit.limit(ip);
-      
+
       if (!result.success) {
         const retryAfter = Math.ceil((result.reset - Date.now()) / 1000);
         return NextResponse.json(
           {
-            error: "Too many requests",
+            error: buildRateLimitMessage(effectiveConfig, retryAfter),
             code: "RATE_LIMIT_EXCEEDED",
             retryAfter,
           },
@@ -316,7 +333,7 @@ export async function checkRateLimit(
   if (!result.allowed) {
     return NextResponse.json(
       {
-        error: "Too many requests",
+        error: buildRateLimitMessage(effectiveConfig, result.retryAfter ?? 60),
         code: "RATE_LIMIT_EXCEEDED",
         retryAfter: result.retryAfter,
       },
