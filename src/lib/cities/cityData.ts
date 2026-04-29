@@ -404,6 +404,46 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Visit Wakkanai, Japan's northernmost city. See Cape Soya, Rishiri Island, and the wild shores of Hokkaido's far north.",
   },
+  toyako: {
+    id: "toyako",
+    name: "Lake Toya",
+    nameJapanese: "洞爺湖",
+    tagline: "Caldera lake onsen with active volcanoes overhead",
+    description:
+      "A perfectly circular caldera lake on the Pacific side of southwestern Hokkaido, designated a UNESCO Geopark for the geological story written across its shoreline. Ryokan and hot-spring hotels run along the southern shore at Toyako Onsen, and on summer nights launch fireworks over the lake from a pier. Mt. Usu still smokes; its 1977 and 2000 eruptions are documented at the Volcano Science Museum, and a chairlift climbs to a ridge view of the active crater. The 1944 lava dome Showa Shinzan rose from a wheat field over two years and is still warm to the touch.",
+    ogDescription:
+      "Visit Lake Toya's caldera shoreline, active Mt. Usu, the warm Showa Shinzan lava dome, and the summer fireworks pier.",
+  },
+  noboribetsu: {
+    id: "noboribetsu",
+    name: "Noboribetsu Onsen",
+    nameJapanese: "登別温泉",
+    tagline: "Hokkaido's most powerful onsen, named for the steam rising from Hell Valley",
+    description:
+      "A small mountain onsen town named for Jigokudani, the 450-meter sulfurous crater that supplies the village's nine separate spring waters. Boardwalks above the valley let visitors walk through the steam plumes. Beyond the bath houses, Date Jidai Mura recreates an Edo-period samurai village with daily ninja shows, Bear Park on Mt. Shihorei keeps a colony of Hokkaido brown bears, and the 100-degree pond Oyunuma feeds a natural foot bath in the forest below it. The Pacific cliff line at Cape Chikyu is a 30-minute drive south.",
+    ogDescription:
+      "Stay at Noboribetsu Onsen for Jigokudani's steaming Hell Valley, Oyunuma foot bath, Edo samurai village, and Hokkaido bear park.",
+  },
+  furano: {
+    id: "furano",
+    name: "Furano",
+    nameJapanese: "富良野",
+    tagline: "Lavender hills, dairy farms, and powder snow on the same plateau",
+    description:
+      "A dispersed farming and resort area in central Hokkaido that fills with lavender each July at Farm Tomita, with patchwork canola and sunflower fields through summer, and with international skiers in winter. Neighboring Biei adds the Blue Pond, the rolling Patchwork Road, and Shirahige Falls. The town itself is small, but the scattered cheese factory, wine factory, and Ningle Terrace artisan village give visitors enough to fill a day even off-season. Tokachidake and Fukiage open-air rotenburo sit a short drive up the mountain.",
+    ogDescription:
+      "Visit Furano's lavender fields, Biei's Blue Pond and Patchwork Road, and the cheese, wine, and powder-snow seasons in between.",
+  },
+  shiretoko: {
+    id: "shiretoko",
+    name: "Shiretoko",
+    nameJapanese: "知床",
+    tagline: "UNESCO peninsula where bears outnumber tourists",
+    description:
+      "A volcanic peninsula in northeastern Hokkaido inscribed by UNESCO in 2005 for the marine and terrestrial ecosystem driven by sea ice that drifts down from the Sea of Okhotsk. The road into the peninsula ends at Shiretoko Five Lakes, where boardwalks circle five small lakes through brown bear habitat. Drift-ice cruises from Utoro run February through March; sightseeing cruises in summer get close to the cliffside Furepe and Oshinkoshin waterfalls. The peninsula has two gateway towns, Utoro on the western shore and Rausu on the east, connected by Shiretoko Pass, which closes for snow.",
+    ogDescription:
+      "Discover Shiretoko's UNESCO peninsula. Five Lakes boardwalks, drift-ice cruises from Utoro, and brown-bear coastal wilderness.",
+  },
 
   // --- Tohoku ---
   sendai: {
