@@ -5,7 +5,6 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
-import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
 import { featureFlags } from "@/lib/env/featureFlags";
 
 /**
@@ -41,21 +40,15 @@ export const GET = withApiHandler(
       });
     }
 
-    const tripId = request.headers.get("x-trip-id") ?? "unknown";
-
-    if (!featureFlags.enableGooglePlaces || !googlePlacesLimiter.canMakeCall(tripId)) {
+    if (!featureFlags.enableGooglePlaces || featureFlags.cheapMode) {
       return serviceUnavailable(
-        "Google Places API calls are disabled or rate limit exceeded for this trip.",
-        {
-          requestId: context.requestId,
-          callCount: googlePlacesLimiter.getCallCount(tripId),
-        },
+        "Google Places API calls are disabled.",
+        { requestId: context.requestId },
       );
     }
 
     try {
       const result = await fetchPlaceDetailsByPlaceId(validatedPlaceId, name ?? undefined);
-      googlePlacesLimiter.recordCall(tripId);
 
       if (!result) {
         return badRequest(`Place not found for placeId: ${validatedPlaceId}`, undefined, {
