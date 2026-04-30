@@ -20,7 +20,8 @@ const SEARCH_GC_TIME = 15 * 60 * 1000;
  */
 export const locationSearchKeys = {
   all: ["location-search"] as const,
-  search: (input: string) => [...locationSearchKeys.all, input] as const,
+  search: (input: string, currentCity?: string, tripCities?: string[]) =>
+    [...locationSearchKeys.all, input, currentCity ?? "", (tripCities ?? []).slice().sort().join(",")] as const,
 };
 
 export type LocationSearchOptions = {
@@ -38,6 +39,17 @@ export type LocationSearchOptions = {
    * Future: 'api' will use Google Places API for broader coverage.
    */
   source?: "database" | "api";
+  /**
+   * Current day's city for trip-context ranking. Results matching this city
+   * are tagged `cityTier: "current"` and surface first.
+   */
+  currentCity?: string;
+  /**
+   * All cities in the current trip. Results matching these (excluding
+   * `currentCity`) are tagged `cityTier: "trip"` and rank below current-city
+   * matches but above unrelated results.
+   */
+  tripCities?: string[];
 };
 
 /**
@@ -45,12 +57,16 @@ export type LocationSearchOptions = {
  */
 async function fetchLocationSearch(
   input: string,
-  limit: number
+  limit: number,
+  currentCity?: string,
+  tripCities?: string[],
 ): Promise<LocationSearchResult[]> {
   const params = new URLSearchParams({
     q: input,
     limit: limit.toString(),
   });
+  if (currentCity) params.set("currentCity", currentCity);
+  if (tripCities && tripCities.length > 0) params.set("tripCities", tripCities.join(","));
 
   const response = await fetch(`/api/locations/search?${params.toString()}`);
 
@@ -115,6 +131,8 @@ export function useLocationSearch(
     // source is accepted but currently only 'database' is implemented
     // Future: implement 'api' source for Google Places API
     source: _source = "database",
+    currentCity,
+    tripCities,
   } = options ?? {};
 
   // Debounce the input value
@@ -133,8 +151,8 @@ export function useLocationSearch(
     enabled && debouncedInput.trim().length >= minInputLength;
 
   const query = useQuery({
-    queryKey: locationSearchKeys.search(debouncedInput),
-    queryFn: () => fetchLocationSearch(debouncedInput.trim(), limit),
+    queryKey: locationSearchKeys.search(debouncedInput, currentCity, tripCities),
+    queryFn: () => fetchLocationSearch(debouncedInput.trim(), limit, currentCity, tripCities),
     enabled: shouldFetch,
     staleTime: SEARCH_STALE_TIME,
     gcTime: SEARCH_GC_TIME,

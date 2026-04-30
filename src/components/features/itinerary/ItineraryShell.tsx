@@ -1027,6 +1027,7 @@ export const ItineraryShell = ({
               index: idx,
               label: `Day ${idx + 1}${d.cityId ? ` · ${formatCityName(d.cityId)}` : ""}`,
               activities: d.activities,
+              city: d.cityId ? formatCityName(d.cityId) : undefined,
             }))}
             defaultDayIndex={safeSelectedDay}
             onAdd={handleAddActivityToDay}

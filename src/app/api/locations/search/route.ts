@@ -34,6 +34,13 @@ function resolveSearchPhoto(
 }
 
 /**
+ * Relevance tier of a search result relative to the user's current trip context.
+ * Used by the UI to de-emphasize "other" results with a softer opacity while
+ * keeping them accessible (rank, don't filter).
+ */
+export type CityTier = "current" | "trip" | "other";
+
+/**
  * Lightweight search result for autocomplete
  * Only includes fields needed for display and selection
  */
@@ -48,13 +55,57 @@ export type LocationSearchResult = {
   rating?: number;
   parentId?: string;
   parentName?: string;
+  /** Relevance tier vs the trip context passed in `currentCity` / `tripCities`. */
+  cityTier?: CityTier;
 };
 
 /** Maximum number of results to return */
 const MAX_RESULTS = 10;
 
+/**
+ * Over-fetch cap when trip context is provided so the post-sort can surface
+ * city-matched results that wouldn't have appeared in the alphabetical top-10.
+ */
+const RANKED_FETCH_LIMIT = 30;
+
 /** Minimum query length */
 const MIN_QUERY_LENGTH = 2;
+
+/**
+ * Compute the relevance tier of a city name vs the trip's context.
+ * Case-insensitive comparison so "Tokyo" matches "tokyo".
+ */
+function tierFor(
+  city: string,
+  currentCity: string | undefined,
+  tripCities: Set<string>,
+): CityTier {
+  const normalized = city.toLowerCase();
+  if (currentCity && normalized === currentCity.toLowerCase()) return "current";
+  if (tripCities.has(normalized)) return "trip";
+  return "other";
+}
+
+/**
+ * Stable sort by relevance tier, preserving the upstream alpha order within
+ * each tier. `current` first, then `trip`, then `other`.
+ */
+function rankByTier(
+  results: LocationSearchResult[],
+  currentCity: string | undefined,
+  tripCities: Set<string>,
+): LocationSearchResult[] {
+  const tierWeight: Record<CityTier, number> = { current: 0, trip: 1, other: 2 };
+  return results
+    .map((r, idx) => ({ r: { ...r, cityTier: tierFor(r.city, currentCity, tripCities) }, idx }))
+    .sort((a, b) => {
+      const wa = tierWeight[a.r.cityTier!];
+      const wb = tierWeight[b.r.cityTier!];
+      if (wa !== wb) return wa - wb;
+      return a.idx - b.idx;
+    })
+    .map(({ r }) => r);
+}
 
 /**
  * GET /api/locations/search
@@ -63,9 +114,18 @@ const MIN_QUERY_LENGTH = 2;
  * Query parameters:
  * - q: Search query (required, min 2 characters)
  * - limit: Max results (default: 10, max: 10)
+ * - currentCity: Optional. Trip's current-day city. Results matching this city
+ *   are ranked first and tagged `cityTier: "current"`.
+ * - tripCities: Optional comma-separated list of all the trip's cities. Results
+ *   matching any of these (excluding currentCity) are ranked second and tagged
+ *   `cityTier: "trip"`. Everything else is `cityTier: "other"`.
  *
  * Searches across: name, city, region, category
  * Excludes: permanently closed locations
+ *
+ * When `currentCity` or `tripCities` are set, the route over-fetches up to 30
+ * rows and post-sorts by tier so city matches surface even when they wouldn't
+ * have appeared in the alphabetical top-10.
  *
  * @returns Array of LocationSearchResult
  */
@@ -79,6 +139,15 @@ export const GET = withApiHandler(
       ? MAX_RESULTS
       : Math.min(Math.max(1, parsedLimit), MAX_RESULTS);
 
+    const currentCity = searchParams.get("currentCity")?.trim() || undefined;
+    const tripCitiesRaw = searchParams.get("tripCities")?.trim();
+    const tripCities = new Set(
+      (tripCitiesRaw ? tripCitiesRaw.split(",") : [])
+        .map((c) => c.trim().toLowerCase())
+        .filter(Boolean),
+    );
+    const hasContext = Boolean(currentCity) || tripCities.size > 0;
+
     // Validate query parameter
     if (!query || query.length < MIN_QUERY_LENGTH) {
       return badRequest(
@@ -89,6 +158,10 @@ export const GET = withApiHandler(
 
     const supabase = await createClient();
 
+    // Over-fetch when ranking by trip context so city matches can surface even
+    // if they wouldn't have appeared in the alphabetical top-N.
+    const fetchLimit = hasContext ? RANKED_FETCH_LIMIT : limit;
+
     // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
     const baseQuery = applyActiveLocationFilters(
       supabase.from("locations").select("id, name, city, region, category, place_id, image, primary_photo_url, rating, parent_id")
@@ -96,7 +169,7 @@ export const GET = withApiHandler(
 
     const { data, error } = await applySearchFilter(baseQuery, query)
       .order("name", { ascending: true })
-      .limit(limit);
+      .limit(fetchLimit);
 
     if (error) {
       logger.error("Failed to search locations", error, {
@@ -140,7 +213,7 @@ export const GET = withApiHandler(
       if (queryEmbedding) {
         const { data: semanticResults } = await supabase.rpc("semantic_search_locations", {
           query_embedding: queryEmbedding,
-          match_count: limit,
+          match_count: fetchLimit,
           similarity_threshold: 0.3,
         });
 
@@ -166,14 +239,22 @@ export const GET = withApiHandler(
               parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
             }));
           results.push(...newResults);
-          results.splice(limit); // trim to limit
         }
       }
     }
 
-    return NextResponse.json(results, {
+    // Rank by trip context when provided, then trim to user's limit. When no
+    // context is passed, results stay in their original alpha order (the
+    // existing behavior pre-PR-C).
+    const ranked = hasContext
+      ? rankByTier(results, currentCity, tripCities).slice(0, limit)
+      : results.slice(0, limit);
+
+    return NextResponse.json(ranked, {
       status: 200,
       headers: {
+        // Cache key includes the trip context via query string, so different
+        // trips don't poison each other's cache.
         "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=120",
       },
     });
