@@ -4,6 +4,10 @@ import { useState } from "react";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { CustomActivityForm } from "@/components/features/itinerary/CustomActivityForm";
 import { LocationSearchBar } from "@/components/features/itinerary/LocationSearchBar";
+import {
+  trackAddPlaceCompleted,
+  trackAddPlaceNoResultsCta,
+} from "@/lib/analytics/addPlace";
 
 export type InlineAddActivityProps = {
   dayActivities: ItineraryActivity[];
@@ -24,6 +28,21 @@ export function InlineAddActivity({
   tripCities,
 }: InlineAddActivityProps) {
   const [tab, setTab] = useState<"catalog" | "custom">("catalog");
+  // Pre-fills the custom form's title when the user reaches it via the
+  // empty-state CTA in the catalog tab. Cleared on manual tab-switch so it
+  // doesn't carry over between unrelated uses of the modal.
+  const [customPrefillTitle, setCustomPrefillTitle] = useState<string>("");
+
+  const switchToCustom = () => {
+    setCustomPrefillTitle("");
+    setTab("custom");
+  };
+
+  const handleAddCustomFromQuery = (query: string) => {
+    trackAddPlaceNoResultsCta({ query });
+    setCustomPrefillTitle(query);
+    setTab("custom");
+  };
 
   return (
     <div>
@@ -37,10 +56,10 @@ export function InlineAddActivity({
         </button>
         <button
           type="button"
-          onClick={() => setTab("custom")}
+          onClick={switchToCustom}
           className={`flex-1 min-h-11 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary ${tab === "custom" ? "border-b-2 border-brand-primary font-medium text-foreground" : "text-foreground-secondary"}`}
         >
-          Add custom
+          Add your own
         </button>
       </div>
       {tab === "catalog" ? (
@@ -49,13 +68,17 @@ export function InlineAddActivity({
           defaultExpanded
           currentDayCity={currentDayCity}
           tripCities={tripCities}
+          onAddCustomFromQuery={handleAddCustomFromQuery}
           onAddActivity={(activity) => {
+            trackAddPlaceCompleted({ source: "catalog" });
             onAdd(activity, { addressSource: "mapbox" });
           }}
         />
       ) : (
         <CustomActivityForm
+          initial={customPrefillTitle ? { title: customPrefillTitle } : undefined}
           onSubmit={(activity, meta) => {
+            trackAddPlaceCompleted({ source: "custom" });
             onAdd(activity, meta);
           }}
           onCancel={() => setTab("catalog")}
