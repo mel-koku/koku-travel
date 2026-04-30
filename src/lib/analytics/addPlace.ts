@@ -38,3 +38,29 @@ export function trackAddPlaceNoResultsCta(props: {
 }): void {
   getGtag()?.("event", "add_place_no_results_cta", props);
 }
+
+/**
+ * Fires when the user clicks the "Search smarter ✨" button to trigger LLM
+ * query rewriting (Tier 3 of the smart-search cascade). Tracks per-call
+ * Vertex spend and how often catalog + fuzzy + semantic together miss what
+ * the LLM ultimately catches.
+ */
+export function trackSmartSearchTriggered(props: {
+  query: string;
+}): void {
+  getGtag()?.("event", "add_place_smart_search_triggered", props);
+}
+
+/**
+ * Fires when the smart-search call returns one or more results. `hadResults`
+ * distinguishes "LLM understood and catalog matched" from "LLM understood
+ * but catalog still empty" (the latter is signal that the catalog needs the
+ * place added).
+ */
+export function trackSmartSearchCompleted(props: {
+  query: string;
+  candidateCount: number;
+  hadResults: boolean;
+}): void {
+  getGtag()?.("event", "add_place_smart_search_completed", props);
+}

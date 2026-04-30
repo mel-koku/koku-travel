@@ -2,13 +2,24 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, X, Star, Check } from "lucide-react";
+import { Plus, Search, Loader2, X, Star, Check, Sparkles } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
+import type { LocationSearchResult } from "@/app/api/locations/search/route";
 import { logger } from "@/lib/logger";
+import {
+  trackSmartSearchTriggered,
+  trackSmartSearchCompleted,
+} from "@/lib/analytics/addPlace";
+
+type SmartSearchResponse = {
+  results: LocationSearchResult[];
+  interpretedAs: string[];
+  originalQuery: string;
+};
 
 type LocationSearchBarProps = {
   /** Current day's activities (for duplicate detection + timeOfDay inference) */
@@ -52,6 +63,10 @@ export function LocationSearchBar({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [query, setQuery] = useState("");
   const [fetchingId, setFetchingId] = useState<string | null>(null);
+  const [smartSearch, setSmartSearch] = useState<{
+    state: "idle" | "loading" | "done" | "error";
+    response?: SmartSearchResponse;
+  }>({ state: "idle" });
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +89,12 @@ export function LocationSearchBar({
       return () => clearTimeout(timer);
     }
   }, [isExpanded]);
+
+  // Reset smart search whenever the user types — stale rewrites for a previous
+  // query shouldn't bleed into the new one.
+  useEffect(() => {
+    setSmartSearch({ state: "idle" });
+  }, [query]);
 
   // Click-outside to close dropdown (skipped when parent owns dismissal)
   useEffect(() => {
@@ -108,6 +129,43 @@ export function LocationSearchBar({
     [dayActivities],
   );
 
+  const runSmartSearch = useCallback(async () => {
+    const trimmed = query.trim();
+    if (!trimmed || smartSearch.state === "loading") return;
+
+    trackSmartSearchTriggered({ query: trimmed });
+    setSmartSearch({ state: "loading" });
+
+    try {
+      const res = await fetch("/api/locations/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: trimmed,
+          limit: 8,
+          currentCity: currentDayCity,
+          tripCities,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`smart search failed: ${res.status}`);
+      }
+      const response = (await res.json()) as SmartSearchResponse;
+      trackSmartSearchCompleted({
+        query: trimmed,
+        candidateCount: response.interpretedAs.length,
+        hadResults: response.results.length > 0,
+      });
+      setSmartSearch({ state: "done", response });
+    } catch (error) {
+      logger.warn("smart search failed", {
+        error: error instanceof Error ? error.message : String(error),
+        query: trimmed,
+      });
+      setSmartSearch({ state: "error" });
+    }
+  }, [query, smartSearch.state, currentDayCity, tripCities]);
+
   const handleSelect = useCallback(
     async (result: { id: string; name: string }) => {
       if (fetchingId) return;
@@ -133,6 +191,29 @@ export function LocationSearchBar({
   );
 
   const showDropdown = isExpanded && query.trim().length >= 2;
+
+  // When smart-search has filled the gap, prefer those results over the empty
+  // keyword/fuzzy/semantic set — the user explicitly asked for the LLM
+  // interpretation and that's the relevant signal.
+  const displayResults =
+    smartSearch.state === "done" &&
+    smartSearch.response &&
+    smartSearch.response.results.length > 0
+      ? smartSearch.response.results
+      : results;
+
+  // Strip candidate interpretations that just echo the user's typed query —
+  // showing "Showing results for: Amerika-Mura" when the user already typed
+  // "amerika-mura" is noise. Case-insensitive comparison; trim both sides.
+  const meaningfulInterpretations =
+    smartSearch.state === "done" && smartSearch.response
+      ? (() => {
+          const original = smartSearch.response.originalQuery.toLowerCase().trim();
+          return smartSearch.response.interpretedAs.filter(
+            (c) => c.toLowerCase().trim() !== original,
+          );
+        })()
+      : [];
 
   return (
     <div ref={containerRef} className="relative">
@@ -195,26 +276,85 @@ export function LocationSearchBar({
                   transition={{ duration: 0.12, ease: [...easeReveal] as [number, number, number, number] }}
                   className="mt-2"
                 >
-                  {isNotFound && (
-                    <div className="px-1 py-6 text-center">
-                      <div className="text-sm text-stone">
-                        No locations found for &ldquo;{query}&rdquo;
+                  {/* Smart-search interpretation banner — shown when LLM
+                      rewrite returned candidates that meaningfully reframe
+                      the user's query. Skipped when the only interpretation
+                      verbatim-matches the typed query (would just be noise). */}
+                  {smartSearch.state === "done" &&
+                    smartSearch.response &&
+                    smartSearch.response.results.length > 0 &&
+                    meaningfulInterpretations.length > 0 && (
+                      <div className="mb-2 flex items-start gap-2 rounded-md bg-canvas px-3 py-2 text-xs text-foreground-secondary">
+                        <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                        <div>
+                          Showing results for{" "}
+                          <span className="font-medium text-foreground">
+                            {meaningfulInterpretations.join(", ")}
+                          </span>
+                        </div>
                       </div>
-                      {onAddCustomFromQuery && (
-                        <button
-                          type="button"
-                          onClick={() => onAddCustomFromQuery(query.trim())}
-                          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
-                        >
-                          Add &ldquo;{query.trim()}&rdquo; as your own
-                          <span aria-hidden="true">→</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
+                    )}
+
+                  {/* Empty state — only when keyword/fuzzy/semantic returned 0
+                      AND smart-search hasn't already filled the gap. */}
+                  {isNotFound &&
+                    !(
+                      smartSearch.state === "done" &&
+                      smartSearch.response &&
+                      smartSearch.response.results.length > 0
+                    ) && (
+                      <div className="px-1 py-6 text-center">
+                        <div className="text-sm text-stone">
+                          No locations found for &ldquo;{query}&rdquo;
+                          {smartSearch.state === "done" &&
+                            smartSearch.response &&
+                            smartSearch.response.results.length === 0 && (
+                              <span className="ml-1">— smart search came up empty too.</span>
+                            )}
+                        </div>
+
+                        {/* Smart-search button — hidden once smart search has
+                            completed (results or no results, the user has
+                            already used their one shot). */}
+                        {smartSearch.state === "idle" && (
+                          <button
+                            type="button"
+                            onClick={runSmartSearch}
+                            className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-brand-primary/10 px-3 py-1.5 text-sm font-medium text-brand-primary hover:bg-brand-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                          >
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Search smarter
+                          </button>
+                        )}
+                        {smartSearch.state === "loading" && (
+                          <div className="mt-3 inline-flex items-center gap-2 text-sm text-foreground-secondary">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Searching smarter…
+                          </div>
+                        )}
+                        {smartSearch.state === "error" && (
+                          <div className="mt-3 text-sm text-warning">
+                            Smart search couldn&apos;t reach the server. Try again, or add your own below.
+                          </div>
+                        )}
+
+                        {onAddCustomFromQuery && (
+                          <div className="mt-3">
+                            <button
+                              type="button"
+                              onClick={() => onAddCustomFromQuery(query.trim())}
+                              className="inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
+                            >
+                              Add &ldquo;{query.trim()}&rdquo; as your own
+                              <span aria-hidden="true">→</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                   <ul className="divide-y divide-border">
-                    {results?.map((result) => {
+                    {displayResults?.map((result) => {
                       const duplicate = isDuplicate(result.id);
                       const isFetching = fetchingId === result.id;
                       // Soft fade for results outside the trip's cities. Keeps
