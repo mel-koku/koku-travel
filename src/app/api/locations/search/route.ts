@@ -8,6 +8,30 @@ import { applySearchFilter, shouldTrySemanticSearch } from "@/lib/supabase/searc
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { embedText } from "@/lib/server/embeddingService";
 import { parseSearchQuery } from "@/lib/search/queryParser";
+import { resizePhotoUrl } from "@/lib/google/transformations";
+
+/** Pixel width for search-row thumbnails (rendered at 56×56 with 2× DPR headroom). */
+const SEARCH_THUMB_WIDTH = 200;
+
+/**
+ * Resolve the right photo for a search row.
+ *
+ * Prefers `primary_photo_url` (canonical post-2026-04-14 — a proxy URL like
+ * `/api/places/photo?photoName=...&maxWidthPx=1200`, resized down to thumbnail
+ * width). Falls back to the legacy `image` column, which `resizePhotoUrl` strips
+ * to `undefined` if it points at the now-private `location-photos` bucket so the
+ * UI falls through to its letter-avatar placeholder.
+ */
+function resolveSearchPhoto(
+  primaryPhotoUrl: string | null | undefined,
+  image: string | null | undefined,
+): string | undefined {
+  return (
+    resizePhotoUrl(primaryPhotoUrl ?? undefined, SEARCH_THUMB_WIDTH) ??
+    resizePhotoUrl(image ?? undefined, SEARCH_THUMB_WIDTH) ??
+    undefined
+  );
+}
 
 /**
  * Lightweight search result for autocomplete
@@ -67,7 +91,7 @@ export const GET = withApiHandler(
 
     // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
     const baseQuery = applyActiveLocationFilters(
-      supabase.from("locations").select("id, name, city, region, category, place_id, image, rating, parent_id")
+      supabase.from("locations").select("id, name, city, region, category, place_id, image, primary_photo_url, rating, parent_id")
     );
 
     const { data, error } = await applySearchFilter(baseQuery, query)
@@ -103,7 +127,7 @@ export const GET = withApiHandler(
       region: row.region,
       category: row.category,
       placeId: row.place_id ?? "",
-      image: row.image || undefined,
+      image: resolveSearchPhoto(row.primary_photo_url, row.image),
       rating: row.rating ?? undefined,
       parentId: row.parent_id ?? undefined,
       parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
@@ -134,7 +158,9 @@ export const GET = withApiHandler(
               region: row.region,
               category: row.category,
               placeId: row.place_id ?? "",
-              image: row.image || undefined,
+              // semantic_search_locations RPC may not return primary_photo_url
+              // — pass it anyway so it surfaces if the RPC is later updated.
+              image: resolveSearchPhoto(row.primary_photo_url, row.image),
               rating: row.rating ?? undefined,
               parentId: row.parent_id ?? undefined,
               parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
