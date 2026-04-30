@@ -206,41 +206,88 @@ export const GET = withApiHandler(
       parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
     }));
 
-    // Semantic search fallback for natural language queries with few keyword results
+    // Smart-search fallback layers: when keyword (FTS) underperforms (< 3
+    // results), fire trigram fuzzy match + semantic embedding search in
+    // parallel to backfill. Both are gated on the result count so happy-path
+    // queries don't pay extra latency.
+    //
+    // - Fuzzy match (pg_trgm via fuzzy_search_locations RPC): catches typos
+    //   and Japanese-name transliterations that FTS misses, e.g. "amemura" →
+    //   "Amerika-Mura". Free, deterministic, ~50ms.
+    // - Semantic search (Vertex embeddings via semantic_search_locations RPC):
+    //   catches conceptual queries and misremembered names. ~$0.0001 per
+    //   query (one Vertex embedding call), ~250ms.
     const parsed = parseSearchQuery(query);
-    if (results.length < 3 && shouldTrySemanticSearch(query, parsed.hasStructuredIntent)) {
-      const queryEmbedding = await embedText(query);
-      if (queryEmbedding) {
-        const { data: semanticResults } = await supabase.rpc("semantic_search_locations", {
+    if (results.length < 3) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runFuzzy = async (): Promise<any[] | null> => {
+        try {
+          const { data, error } = await supabase.rpc("fuzzy_search_locations", {
+            search_query: query,
+            match_limit: fetchLimit,
+            similarity_threshold: 0.3,
+          });
+          if (error) {
+            // Migration may not yet be applied in this environment. Log and
+            // fall through — semantic search alone still works.
+            logger.warn("fuzzy_search_locations RPC unavailable", {
+              error: error.message,
+              requestId: context.requestId,
+            });
+            return null;
+          }
+          return data;
+        } catch (err) {
+          logger.warn("fuzzy_search_locations RPC threw", {
+            error: err instanceof Error ? err.message : String(err),
+            requestId: context.requestId,
+          });
+          return null;
+        }
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runSemantic = async (): Promise<any[] | null> => {
+        if (!shouldTrySemanticSearch(query, parsed.hasStructuredIntent)) return null;
+        const queryEmbedding = await embedText(query);
+        if (!queryEmbedding) return null;
+        const { data } = await supabase.rpc("semantic_search_locations", {
           query_embedding: queryEmbedding,
           match_count: fetchLimit,
           similarity_threshold: 0.3,
         });
+        return data;
+      };
 
-        if (semanticResults && semanticResults.length > 0) {
-          // Merge: keyword results first, then semantic results not already present
-          const existingIds = new Set(results.map((r) => r.id));
-          const newResults: LocationSearchResult[] = semanticResults
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .filter((r: any) => !existingIds.has(r.id))
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((row: any) => ({
-              id: row.id,
-              name: row.name,
-              city: row.city,
-              region: row.region,
-              category: row.category,
-              placeId: row.place_id ?? "",
-              // semantic_search_locations RPC may not return primary_photo_url
-              // — pass it anyway so it surfaces if the RPC is later updated.
-              image: resolveSearchPhoto(row.primary_photo_url, row.image),
-              rating: row.rating ?? undefined,
-              parentId: row.parent_id ?? undefined,
-              parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
-            }));
-          results.push(...newResults);
+      const [fuzzyRows, semanticRows] = await Promise.all([runFuzzy(), runSemantic()]);
+
+      const existingIds = new Set(results.map((r) => r.id));
+
+      // Merge fuzzy first (deterministic, often the user's actual intent),
+      // then semantic (conceptual fallback).
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mergeRpcRows = (rows: any[] | null) => {
+        if (!rows || rows.length === 0) return;
+        for (const row of rows) {
+          if (existingIds.has(row.id)) continue;
+          existingIds.add(row.id);
+          results.push({
+            id: row.id,
+            name: row.name,
+            city: row.city,
+            region: row.region,
+            category: row.category,
+            placeId: row.place_id ?? "",
+            image: resolveSearchPhoto(row.primary_photo_url, row.image),
+            rating: row.rating ?? undefined,
+            parentId: row.parent_id ?? undefined,
+            parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
+          });
         }
-      }
+      };
+
+      mergeRpcRows(fuzzyRows);
+      mergeRpcRows(semanticRows);
     }
 
     // Rank by trip context when provided, then trim to user's limit. When no

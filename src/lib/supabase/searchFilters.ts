@@ -2,12 +2,21 @@ import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "./search";
 
 /**
  * Returns true if the query should fall through to semantic search.
- * Heuristic: 3+ word queries with no structured keyword intent.
+ *
+ * Fires for any non-trivial free-text query (≥2 chars) without structured
+ * intent. Single-word queries benefit too — a misspelled or transliterated
+ * place name often maps cleanly to its real entry via embedding similarity.
+ *
+ * Structured queries (e.g. parsed filters like "shrines in kyoto") skip
+ * semantic — the structured path is more precise. Only the free-text fallback
+ * uses semantic.
+ *
+ * Loosened from `wordCount >= 3` (2026-04-30): tightening to multi-word missed
+ * the most common typo case (1-word place-name searches).
  */
 export function shouldTrySemanticSearch(query: string, hasStructuredIntent: boolean): boolean {
   if (hasStructuredIntent) return false;
-  const wordCount = query.trim().split(/\s+/).length;
-  return wordCount >= 3;
+  return query.trim().length >= 2;
 }
 
 /**
