@@ -32,6 +32,13 @@ type LocationSearchBarProps = {
    * Results outside both lists fade visually to de-emphasize.
    */
   tripCities?: string[];
+  /**
+   * Optional callback fired when the user clicks the "Add as custom place"
+   * CTA inside the empty-state of catalog search. Receives the query text so
+   * the parent can switch to the custom tab and pre-fill the title.
+   * When omitted, the CTA isn't rendered.
+   */
+  onAddCustomFromQuery?: (query: string) => void;
 };
 
 export function LocationSearchBar({
@@ -40,6 +47,7 @@ export function LocationSearchBar({
   defaultExpanded = false,
   currentDayCity,
   tripCities,
+  onAddCustomFromQuery,
 }: LocationSearchBarProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [query, setQuery] = useState("");
@@ -188,8 +196,20 @@ export function LocationSearchBar({
                   className="mt-2"
                 >
                   {isNotFound && (
-                    <div className="px-1 py-4 text-center text-sm text-stone">
-                      No locations found for &ldquo;{query}&rdquo;
+                    <div className="px-1 py-6 text-center">
+                      <div className="text-sm text-stone">
+                        No locations found for &ldquo;{query}&rdquo;
+                      </div>
+                      {onAddCustomFromQuery && (
+                        <button
+                          type="button"
+                          onClick={() => onAddCustomFromQuery(query.trim())}
+                          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
+                        >
+                          Add &ldquo;{query.trim()}&rdquo; as your own
+                          <span aria-hidden="true">→</span>
+                        </button>
+                      )}
                     </div>
                   )}
 
