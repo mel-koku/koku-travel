@@ -17,6 +17,12 @@ export type AddPlaceDialogDay = {
   index: number;
   label: string;
   activities: ItineraryActivity[];
+  /**
+   * Display city name for the day (e.g. "Tokyo"). Used to rank catalog search
+   * results so day-relevant locations surface first. Optional — days without
+   * an assigned city skip context ranking.
+   */
+  city?: string;
 };
 
 export type AddPlaceDialogProps = {
@@ -149,6 +155,10 @@ export function AddPlaceDialog({
                 {selectedDay && (
                   <InlineAddActivity
                     dayActivities={selectedDay.activities}
+                    currentDayCity={selectedDay.city}
+                    tripCities={Array.from(
+                      new Set(days.map((d) => d.city).filter((c): c is string => Boolean(c))),
+                    )}
                     onAdd={(activity, meta) => {
                       onAdd(selectedDay.index, activity, meta);
                       onClose();

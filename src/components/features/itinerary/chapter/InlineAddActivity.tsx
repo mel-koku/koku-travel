@@ -11,9 +11,18 @@ export type InlineAddActivityProps = {
     activity: Extract<ItineraryActivity, { kind: "place" }>,
     meta: { addressSource: "mapbox" | "google" | "as-is" | "none" },
   ) => void;
+  /** Current day's city for trip-context-aware catalog ranking. */
+  currentDayCity?: string;
+  /** All cities in the trip — used to surface results outside the current day's city but still in-trip. */
+  tripCities?: string[];
 };
 
-export function InlineAddActivity({ dayActivities, onAdd }: InlineAddActivityProps) {
+export function InlineAddActivity({
+  dayActivities,
+  onAdd,
+  currentDayCity,
+  tripCities,
+}: InlineAddActivityProps) {
   const [tab, setTab] = useState<"catalog" | "custom">("catalog");
 
   return (
@@ -38,6 +47,8 @@ export function InlineAddActivity({ dayActivities, onAdd }: InlineAddActivityPro
         <LocationSearchBar
           dayActivities={dayActivities}
           defaultExpanded
+          currentDayCity={currentDayCity}
+          tripCities={tripCities}
           onAddActivity={(activity) => {
             onAdd(activity, { addressSource: "mapbox" });
           }}

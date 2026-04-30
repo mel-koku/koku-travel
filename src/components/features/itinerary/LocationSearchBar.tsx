@@ -21,12 +21,25 @@ type LocationSearchBarProps = {
    * (the parent container — e.g. a modal — owns dismissal).
    */
   defaultExpanded?: boolean;
+  /**
+   * Current day's city for trip-context ranking. Results in this city rank
+   * highest. Optional — without it, results stay in their default order.
+   */
+  currentDayCity?: string;
+  /**
+   * All cities in the current trip. Results in any of these (other than the
+   * current day's) rank below current-city matches but above unrelated results.
+   * Results outside both lists fade visually to de-emphasize.
+   */
+  tripCities?: string[];
 };
 
 export function LocationSearchBar({
   dayActivities,
   onAddActivity,
   defaultExpanded = false,
+  currentDayCity,
+  tripCities,
 }: LocationSearchBarProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [query, setQuery] = useState("");
@@ -36,6 +49,8 @@ export function LocationSearchBar({
 
   const { data: results, isLoading, isNotFound, isDebouncing } = useLocationSearch(query, {
     limit: 8,
+    currentCity: currentDayCity,
+    tripCities,
   });
 
   const collapse = useCallback(() => {
@@ -182,6 +197,10 @@ export function LocationSearchBar({
                     {results?.map((result) => {
                       const duplicate = isDuplicate(result.id);
                       const isFetching = fetchingId === result.id;
+                      // Soft fade for results outside the trip's cities. Keeps
+                      // them accessible (rank, don't filter) while signalling
+                      // they're less relevant to the current day.
+                      const fadeFar = result.cityTier === "other";
 
                       return (
                         <li key={result.id}>
@@ -189,7 +208,7 @@ export function LocationSearchBar({
                             type="button"
                             disabled={!!fetchingId}
                             onClick={() => handleSelect(result)}
-                            className="flex w-full items-center gap-3 rounded-md px-2 py-3 text-left text-foreground transition-colors hover:bg-canvas disabled:opacity-60"
+                            className={`flex w-full items-center gap-3 rounded-md px-2 py-3 text-left text-foreground transition-colors hover:bg-canvas hover:opacity-100 disabled:opacity-60 ${fadeFar ? "opacity-60" : ""}`}
                           >
                             {/* Thumbnail (56×56) with overlay check for duplicates */}
                             <div className="relative shrink-0">
