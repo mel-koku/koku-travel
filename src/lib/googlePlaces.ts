@@ -34,9 +34,12 @@ import {
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 
 /**
- * Slim field mask for runtime API calls (location details modal, entry points).
- * ~13 fields — excludes reviews, photo metadata, enrichment fields (already in DB).
- * Saves ~60% per Place Details call vs the full mask.
+ * Slim runtime mask kept inside Google's Advanced billing tier.
+ * Excludes Preferred-tier fields (editorialSummary, internationalPhoneNumber,
+ * regularOpeningHours) — those are already populated in DB columns
+ * (editorial_summary, phone_number, operating_hours) from prior enrichment,
+ * and runtime UI serves them via /api/locations/[id]. Trade-off: opening hours
+ * can go stale between enrichment refreshes.
  */
 const RUNTIME_FIELD_MASK = [
   "id",
@@ -46,11 +49,8 @@ const RUNTIME_FIELD_MASK = [
   "location",
   "rating",
   "userRatingCount",
-  "editorialSummary",
   "websiteUri",
-  "internationalPhoneNumber",
   "googleMapsUri",
-  "regularOpeningHours.weekdayDescriptions",
   "photos.name",
 ].join(",");
 
