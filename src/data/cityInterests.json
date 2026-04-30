@@ -1202,10 +1202,8 @@
     "aomori": [
       "Fukaura",
       "Goshogawara",
-      "Hachimantai",
       "Hachinohe",
       "Hirosaki",
-      "Kazuno",
       "Kuroishi",
       "Misawa",
       "Nakatsugaru",
@@ -1218,6 +1216,7 @@
       "Tsugaru",
       "Tsuruta"
     ],
+    "hachimantai": ["Kazuno", "Senboku"],
     "nagano": [
       "Agatsuma",
       "Annaka",
@@ -1459,19 +1458,15 @@
     ],
     "shimonoseki": ["Hagi", "Hofu", "Mine", "Nagato", "Ube", "Yamaguchi"],
     "morioka": [
-      "Hachimantai",
       "Hanamaki",
       "Ichinohe",
       "Ichinoseki",
       "Iwaizumi",
       "Kamaishi",
-      "Kazuno",
       "Kuji",
       "Ofunato",
       "Oshu",
       "Rikuzentakata",
-      "Semboku",
-      "Senboku",
       "Shizukuishi",
       "Takizawa",
       "Tanohata",

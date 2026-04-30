@@ -48,7 +48,7 @@ export type KnownCityId =
   | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"
   | "toyako" | "noboribetsu" | "furano" | "shiretoko" | "niseko"  // Hokkaido
   | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"
-  | "ginzan" | "zao" | "tazawako" | "hiraizumi"  // Tohoku
+  | "ginzan" | "zao" | "tazawako" | "hiraizumi" | "hachimantai"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori" | "shimonoseki"  // Chugoku
   | "matsuyama" | "takamatsu" | "tokushima" | "kochi" | "iyavalley"  // Shikoku
   | "naha" | "ishigaki" | "miyako" | "amami";  // Okinawa
