@@ -114,7 +114,6 @@ export type ChapterListProps = {
   onReviewAdvisories: () => void;
   unlockProps?: {
     priceLabel: string;
-    launchSlotsRemaining?: number;
     onUnlock: () => void;
     cities: string[];
     totalDays: number;
@@ -314,7 +313,6 @@ export function ChapterList({
                   cities={unlockProps.cities}
                   totalDays={unlockProps.totalDays}
                   priceLabel={unlockProps.priceLabel}
-                  launchSlotsRemaining={unlockProps.launchSlotsRemaining}
                   loginRequired={unlockProps.loginRequired}
                   onUnlock={unlockProps.onUnlock}
                 />

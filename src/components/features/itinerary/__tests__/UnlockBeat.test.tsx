@@ -48,14 +48,12 @@ describe("UnlockBeat", () => {
         cities={["Kyoto", "Nara"]}
         totalDays={7}
         priceLabel="$19"
-        launchSlotsRemaining={42}
         loginRequired
         onUnlock={vi.fn()}
       />,
     );
     expect(screen.getByRole("button", { name: /log in to see full itinerary/i })).toBeInTheDocument();
     expect(screen.queryByText(/\$19/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/launch slots remaining/i)).not.toBeInTheDocument();
   });
 
   it("body copy mentions the free launch promo when loginRequired", () => {
@@ -64,7 +62,6 @@ describe("UnlockBeat", () => {
         cities={["Kyoto"]}
         totalDays={5}
         priceLabel="$19"
-        launchSlotsRemaining={42}
         loginRequired
         onUnlock={vi.fn()}
       />,
@@ -76,23 +73,7 @@ describe("UnlockBeat", () => {
     expect(screen.queryByText(/Day 1 is yours free/i)).not.toBeInTheDocument();
   });
 
-  it("fine-print under CTA explains login + remaining passes when loginRequired", () => {
-    render(
-      <UnlockBeat
-        cities={["Kyoto"]}
-        totalDays={5}
-        priceLabel="$19"
-        launchSlotsRemaining={42}
-        loginRequired
-        onUnlock={vi.fn()}
-      />,
-    );
-    expect(
-      screen.getByText(/Sign in required to claim\. 42 free passes remaining\./i),
-    ).toBeInTheDocument();
-  });
-
-  it("fine-print drops the count when slots are unknown", () => {
+  it("fine-print under CTA explains login when loginRequired", () => {
     render(
       <UnlockBeat
         cities={["Kyoto"]}
@@ -102,10 +83,10 @@ describe("UnlockBeat", () => {
         onUnlock={vi.fn()}
       />,
     );
-    // "Sign in required to claim." with no trailing count.
     const note = screen.getByText(/Sign in required to claim\./i);
     expect(note).toBeInTheDocument();
     expect(note.textContent).not.toMatch(/passes remaining/i);
+    expect(note.textContent).not.toMatch(/\d+/);
   });
 
   it("default (paid) body copy is unchanged", () => {

@@ -30,7 +30,6 @@ import type { PagesContent } from "@/types/sanitySiteContent";
 type ItineraryClientProps = {
   content?: PagesContent;
   launchPricing?: boolean;
-  launchSlotsRemaining?: number;
 };
 
 /** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
@@ -49,7 +48,7 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: { content?: PagesContent; launchPricing?: boolean; launchSlotsRemaining?: number }) {
+function ItineraryPageContent({ content, launchPricing }: { content?: PagesContent; launchPricing?: boolean }) {
   const searchParams = useSearchParams();
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary, rehydrateTripContent, user, refreshFromSupabase } = useAppState();
@@ -456,7 +455,6 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
           tripUnlocked={!!selectedTrip?.unlockedAt}
           isGuest={!user.email}
           launchPricing={launchPricing}
-          launchSlotsRemaining={launchSlotsRemaining}
         />
       </ErrorBoundary>
 
@@ -483,10 +481,10 @@ function ItineraryPageContent({ content, launchPricing, launchSlotsRemaining }: 
   );
 }
 
-export function ItineraryClient({ content, launchPricing, launchSlotsRemaining }: ItineraryClientProps) {
+export function ItineraryClient({ content, launchPricing }: ItineraryClientProps) {
   return (
     <Suspense fallback={<ItinerarySkeleton />}>
-      <ItineraryPageContent content={content} launchPricing={launchPricing} launchSlotsRemaining={launchSlotsRemaining} />
+      <ItineraryPageContent content={content} launchPricing={launchPricing} />
     </Suspense>
   );
 }

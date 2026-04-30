@@ -116,7 +116,6 @@ type ItineraryShellProps = {
   tripUnlocked?: boolean;
   isGuest?: boolean;
   launchPricing?: boolean;
-  launchSlotsRemaining?: number;
 };
 
 export const ItineraryShell = ({
@@ -149,7 +148,6 @@ export const ItineraryShell = ({
   tripUnlocked,
   isGuest: _isGuest,
   launchPricing,
-  launchSlotsRemaining,
 }: ItineraryShellProps) => {
   const { user, reorderActivities, replaceActivity, addActivity, updateDayActivities, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo, deleteActivity } = useAppState();
 
@@ -1224,7 +1222,6 @@ export const ItineraryShell = ({
                   onReviewAdvisories={() => setAdvisoriesDrawerOpen(true)}
                   unlockProps={{
                     priceLabel: `$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`,
-                    launchSlotsRemaining: launchPricing ? launchSlotsRemaining : undefined,
                     onUnlock: onUnlockClick ?? (() => {}),
                     cities: [...new Set(model.days.slice(1).map((d) => d.cityId).filter((c): c is string => Boolean(c)))],
                     totalDays: model.days.length,
@@ -1261,7 +1258,6 @@ export const ItineraryShell = ({
                   cities={[...new Set(model.days.slice(1).map((d) => d.cityId).filter(Boolean))] as string[]}
                   totalDays={model.days.length}
                   priceLabel={`$${launchPricing ? 19 : getTierPriceDollars(getTripTier(model.days.length))}`}
-                  launchSlotsRemaining={launchPricing ? launchSlotsRemaining : undefined}
                   loginRequired={showLoginToUnlock}
                   onUnlock={onUnlockClick ?? (() => {})}
                 />

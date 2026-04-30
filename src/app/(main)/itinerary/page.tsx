@@ -5,7 +5,7 @@ import { getPagesContent } from "@/lib/sanity/contentService";
 import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 
-async function getLaunchSlots(): Promise<number | null> {
+async function getLaunchPricingActive(): Promise<boolean> {
   try {
     const supabase = getServiceRoleClient();
     const { data } = await supabase
@@ -13,9 +13,9 @@ async function getLaunchSlots(): Promise<number | null> {
       .select("remaining_slots")
       .eq("id", "default")
       .single();
-    return data?.remaining_slots ?? null;
+    return !!data && data.remaining_slots > 0;
   } catch {
-    return null;
+    return false;
   }
 }
 
@@ -38,18 +38,15 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ItineraryPage() {
-  const [content, launchSlotsRemaining] = await Promise.all([
+  const [content, launchPricing] = await Promise.all([
     getPagesContent(),
-    getLaunchSlots(),
+    getLaunchPricingActive(),
   ]);
-
-  const launchPricing = (launchSlotsRemaining ?? 0) > 0;
 
   return (
     <ItineraryClient
       content={content ?? undefined}
       launchPricing={launchPricing}
-      launchSlotsRemaining={launchSlotsRemaining ?? undefined}
     />
   );
 }

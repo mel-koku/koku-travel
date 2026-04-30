@@ -33,32 +33,25 @@ const features = [
   "Shareable itinerary link",
 ];
 
-async function getLaunchSlots(): Promise<{
-  remaining: number;
-  total: number;
-} | null> {
+async function getLaunchPricingActive(): Promise<boolean> {
   try {
     const supabase = getServiceRoleClient();
     const { data } = await supabase
       .from("launch_pricing")
-      .select("remaining_slots, total_slots")
+      .select("remaining_slots")
       .eq("id", "default")
       .single();
-    if (!data) return null;
-    return { remaining: data.remaining_slots, total: data.total_slots };
+    return !!data && data.remaining_slots > 0;
   } catch {
-    return null;
+    return false;
   }
 }
 
 export default async function PricingPage() {
-  const launchSlots = await getLaunchSlots();
-  const showLaunchBanner =
-    launchSlots !== null && launchSlots.remaining > 0;
+  const launchPricingActive = await getLaunchPricingActive();
+  const showLaunchBanner = launchPricingActive;
   const isFreePromo =
-    process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" &&
-    launchSlots !== null &&
-    launchSlots.remaining > 0;
+    process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" && launchPricingActive;
 
   return (
     <main className="min-h-[100dvh]">
@@ -102,8 +95,7 @@ export default async function PricingPage() {
                   "mb-8 text-center text-brand-primary",
                 )}
               >
-                Trip Pass is free for our first {launchSlots.total} travellers.{" "}
-                {launchSlots.remaining} remaining.
+                Trip Pass is free during our launch.
               </p>
             </ScrollReveal>
           ) : showLaunchBanner ? (
@@ -114,7 +106,7 @@ export default async function PricingPage() {
                   "mb-8 text-center text-brand-primary",
                 )}
               >
-                Launch pricing: {launchSlots.remaining} of {launchSlots.total} Passes at $19
+                Launch pricing: every Trip Pass is $19.
               </p>
             </ScrollReveal>
           ) : null}

@@ -116,9 +116,9 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                 >
                   {process.env.NEXT_PUBLIC_FREE_FULL_ACCESS === "true" ? (
                     <>
-                      <p className="eyebrow-editorial text-center text-brand-primary">Limited Launch Offer</p>
+                      <p className="eyebrow-editorial text-center text-brand-primary">Launch Offer</p>
                       <p className="text-center text-xs text-foreground-secondary">
-                        Sign in to unlock all days free. First 300 trips only.
+                        Trip Pass is free during our launch. Sign in to unlock all days.
                       </p>
                     </>
                   ) : (
