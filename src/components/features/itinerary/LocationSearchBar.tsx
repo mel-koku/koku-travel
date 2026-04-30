@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, X, Star } from "lucide-react";
+import { Plus, Search, Loader2, X, Star, Check } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
@@ -162,7 +162,7 @@ export function LocationSearchBar({
               )}
             </div>
 
-            {/* Dropdown results */}
+            {/* Inline results — modal body owns scroll, no popover treatment */}
             <AnimatePresence>
               {showDropdown && (
                 <m.div
@@ -170,74 +170,79 @@ export function LocationSearchBar({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.12, ease: [...easeReveal] as [number, number, number, number] }}
-                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-lg border border-border bg-surface shadow-[var(--shadow-elevated)]"
+                  className="mt-2"
                 >
                   {isNotFound && (
-                    <div className="px-3 py-4 text-center text-sm text-stone">
+                    <div className="px-1 py-4 text-center text-sm text-stone">
                       No locations found for &ldquo;{query}&rdquo;
                     </div>
                   )}
 
-                  {results?.map((result) => {
-                    const duplicate = isDuplicate(result.id);
-                    const isFetching = fetchingId === result.id;
+                  <ul className="divide-y divide-border">
+                    {results?.map((result) => {
+                      const duplicate = isDuplicate(result.id);
+                      const isFetching = fetchingId === result.id;
 
-                    return (
-                      <button
-                        key={result.id}
-                        type="button"
-                        disabled={!!fetchingId}
-                        onClick={() => handleSelect(result)}
-                        className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-foreground transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-canvas disabled:opacity-60"
-                      >
-                        {/* Thumbnail */}
-                        {result.image ? (
-                          // 32x32 search result thumbnail, external URL.
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={result.image}
-                            alt=""
-                            className="h-8 w-8 shrink-0 rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sage/10 text-xs font-medium text-sage">
-                            {result.name.charAt(0)}
-                          </div>
-                        )}
+                      return (
+                        <li key={result.id}>
+                          <button
+                            type="button"
+                            disabled={!!fetchingId}
+                            onClick={() => handleSelect(result)}
+                            className="flex w-full items-center gap-3 rounded-md px-2 py-3 text-left text-foreground transition-colors hover:bg-canvas disabled:opacity-60"
+                          >
+                            {/* Thumbnail (56×56) with overlay check for duplicates */}
+                            <div className="relative shrink-0">
+                              {result.image ? (
+                                // 56×56 search result thumbnail, external URL.
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={result.image}
+                                  alt=""
+                                  className="h-14 w-14 rounded-lg object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-sage/10 text-base font-medium text-sage">
+                                  {result.name.charAt(0)}
+                                </div>
+                              )}
+                              {duplicate && (
+                                <span
+                                  aria-label="Already added to this day"
+                                  className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-success text-white shadow-[var(--shadow-sm)]"
+                                >
+                                  <Check className="h-3 w-3" strokeWidth={3} />
+                                </span>
+                              )}
+                            </div>
 
-                        {/* Text */}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="truncate text-sm font-medium">
-                              {result.name}
-                            </span>
-                            {duplicate && (
-                              <span className="shrink-0 rounded-full bg-warning/10 px-1.5 py-0.5 text-[10px] font-medium text-warning">
-                                Already added
+                            {/* Text — name + Category · City */}
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-medium">
+                                {result.name}
+                              </div>
+                              <div className="mt-0.5 truncate text-xs text-stone">
+                                <span className="capitalize">{result.category}</span>
+                                <span aria-hidden="true"> · </span>
+                                <span>{result.city}</span>
+                              </div>
+                            </div>
+
+                            {/* Right side: rating pill (de-emphasized) + loading */}
+                            {result.rating != null && !isFetching && (
+                              <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-canvas px-2 py-0.5 text-xs text-foreground-secondary">
+                                <Star className="h-3 w-3 fill-current" />
+                                {result.rating.toFixed(1)}
                               </span>
                             )}
-                          </div>
-                          <div className="flex items-center gap-1.5 text-xs text-stone">
-                            <span className="truncate">{result.parentName ? `${result.city} · in ${result.parentName}` : result.city}</span>
-                            <span aria-hidden="true">&middot;</span>
-                            <span className="capitalize">{result.category}</span>
-                            {result.rating != null && (
-                              <>
-                                <span aria-hidden="true">&middot;</span>
-                                <Star className="h-3 w-3 fill-current" />
-                                <span>{result.rating.toFixed(1)}</span>
-                              </>
+                            {isFetching && (
+                              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sage" />
                             )}
-                          </div>
-                        </div>
-
-                        {/* Loading indicator */}
-                        {isFetching && (
-                          <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sage" />
-                        )}
-                      </button>
-                    );
-                  })}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </m.div>
               )}
             </AnimatePresence>

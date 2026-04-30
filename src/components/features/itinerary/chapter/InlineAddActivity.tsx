@@ -17,8 +17,8 @@ export function InlineAddActivity({ dayActivities, onAdd }: InlineAddActivityPro
   const [tab, setTab] = useState<"catalog" | "custom">("catalog");
 
   return (
-    <div className="rounded-md border border-border bg-surface p-3">
-      <div className="mb-3 flex border-b border-border">
+    <div>
+      <div className="mb-4 flex border-b border-border">
         <button
           type="button"
           onClick={() => setTab("catalog")}
