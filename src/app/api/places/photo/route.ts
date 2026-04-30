@@ -5,6 +5,7 @@ import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";
 import { photoNameSchema } from "@/lib/api/schemas";
 import { badRequest, serviceUnavailable } from "@/lib/api/errors";
 import { withApiHandler } from "@/lib/api/withApiHandler";
+import { featureFlags } from "@/lib/env/featureFlags";
 
 const MAX_DIMENSION = 4000;
 
@@ -19,6 +20,10 @@ export const GET = withApiHandler(
 
     if (!photoNameParam) {
       return badRequest("Missing required query parameter 'photoName'.");
+    }
+
+    if (!featureFlags.enableGooglePlaces) {
+      return serviceUnavailable("Google Places API calls are disabled.");
     }
 
     const photoNameValidation = photoNameSchema.safeParse(photoNameParam);
