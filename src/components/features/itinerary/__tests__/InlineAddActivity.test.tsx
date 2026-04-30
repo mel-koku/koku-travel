@@ -22,14 +22,14 @@ describe("InlineAddActivity", () => {
 
   it("switches to custom tab on click", () => {
     render(<InlineAddActivity dayActivities={[]} onAdd={() => {}} />);
-    fireEvent.click(screen.getByRole("button", { name: /add custom/i }));
+    fireEvent.click(screen.getByRole("button", { name: /add your own/i }));
     expect(screen.getByTestId("custom-activity-form")).toBeInTheDocument();
     expect(screen.queryByTestId("location-search-bar")).toBeNull();
   });
 
   it("switches back to catalog on cancel", () => {
     render(<InlineAddActivity dayActivities={[]} onAdd={() => {}} />);
-    fireEvent.click(screen.getByRole("button", { name: /add custom/i }));
+    fireEvent.click(screen.getByRole("button", { name: /add your own/i }));
     fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
     expect(screen.getByTestId("location-search-bar")).toBeInTheDocument();
   });
