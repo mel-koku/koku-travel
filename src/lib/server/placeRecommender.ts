@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "./llmProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -228,6 +228,7 @@ First, determine the **commandType**:
     });
 
     clearTimeout(timeout);
+    logVertexUsage("place-recommender", result);
 
     logger.info("Place intent extraction completed", {
       query,

@@ -14,7 +14,7 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { getSeason } from "@/lib/utils/seasonUtils";
 import { env } from "@/lib/env";
-import { callVertex, settleInOrder } from "./_llmBatchPrimitives";
+import { callVertex, callVertexGroundedText, settleInOrder } from "./_llmBatchPrimitives";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { GeneratedBriefings, DayBriefing } from "@/types/llmConstraints";
@@ -35,6 +35,7 @@ export function buildDayBriefingPrompt(
   dayIndex: number,
   totalDays: number,
   builderData: TripBuilderData,
+  options: { grounded?: boolean } = {},
 ): string {
   const isFirstDay = dayIndex === 0;
   const isLastDay = dayIndex === totalDays - 1;
@@ -91,8 +92,9 @@ amazing, incredible, unforgettable, bustling, vibrant, traditional (as generic f
 
 ## Voice
 Write like a concierge who already knows this traveler. One sentence that a traveler will actually remember when they step outside this morning.
-
-Return JSON with a single field: briefing.`;
+${options.grounded
+  ? `\n## Grounding\nYou have Google Search access. Use it to check today's specifics — current closures, weather advisories, festival timing — for ${day.cityId ?? "this city"} on the trip's planned date. Only mention what materially affects today's plan; never recite generic city info.\n\nReturn only the briefing text. No preamble. No JSON. No markdown. No source list — citations are tracked separately.`
+  : `\nReturn JSON with a single field: briefing.`}`;
 }
 
 /**
@@ -151,17 +153,29 @@ export async function* runBriefingBatch(
     GLOBAL_DEADLINE_MS,
   );
 
+  const grounded = env.isBriefingGroundingEnabled;
+
   try {
     const dayPromises: Promise<BriefingBatchOutcome>[] = days.map(
       (day, dayIndex) => {
-        const prompt = buildDayBriefingPrompt(day, dayIndex, days.length, builderData);
-        return callVertex(
-          prompt,
-          buildBriefingDaySchema(),
-          PER_CALL_TIMEOUT_MS,
-          batchController.signal,
-          onUsage,
-        ).then(
+        const prompt = buildDayBriefingPrompt(day, dayIndex, days.length, builderData, { grounded });
+        const callPromise: Promise<DayBriefingPayload> = grounded
+          ? callVertexGroundedText(
+              prompt,
+              PER_CALL_TIMEOUT_MS,
+              batchController.signal,
+              onUsage,
+              "daily-briefing-grounded",
+            ).then((text) => ({ briefing: text.trim() }))
+          : callVertex(
+              prompt,
+              buildBriefingDaySchema(),
+              PER_CALL_TIMEOUT_MS,
+              batchController.signal,
+              onUsage,
+              "daily-briefing",
+            );
+        return callPromise.then(
           (result): BriefingBatchOutcome => ({
             kind: "day",
             dayId: day.id,

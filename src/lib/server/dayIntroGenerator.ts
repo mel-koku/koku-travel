@@ -8,7 +8,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "./llmProvider";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -119,6 +119,7 @@ Return a JSON object mapping each day ID to its intro string.`;
       prompt,
     });
 
+    logVertexUsage("day-intro-fallback", result);
     logger.info("Generated AI day intros", {
       dayCount: dayIds.length,
     });

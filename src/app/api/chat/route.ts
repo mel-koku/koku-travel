@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { getModel, VERTEX_CHAT_OPTIONS } from "@/lib/server/llmProvider";
+import { getModel, VERTEX_CHAT_OPTIONS, logVertexUsage } from "@/lib/server/llmProvider";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
@@ -146,7 +146,8 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       // Client disconnect (tab close, navigation) aborts the Vertex stream so
       // tokens stop flowing instead of running to completion against /dev/null.
       abortSignal: request.signal,
-      onFinish: ({ usage }) => {
+      onFinish: ({ usage, providerMetadata }) => {
+        logVertexUsage("chat", { usage, providerMetadata }, { requestId: context.requestId });
         reconcileCost(reservationId, {
           promptTokens: usage?.inputTokens ?? 0,
           completionTokens: usage?.outputTokens ?? 0,
