@@ -444,6 +444,16 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Discover Shiretoko's UNESCO peninsula. Five Lakes boardwalks, drift-ice cruises from Utoro, and brown-bear coastal wilderness.",
   },
+  niseko: {
+    id: "niseko",
+    name: "Niseko",
+    nameJapanese: "ニセコ",
+    tagline: "Powder-snow ski village under Mt. Yotei, year-round mountain onsen and dairy country",
+    description:
+      "Niseko sits 100 km southwest of Sapporo on the eastern flank of the Niseko mountain range, where four ski resorts (Hirafu, Hanazono, Niseko Village, and Annupuri) connect across a single summit ridge to form Niseko United. Winter is the international draw, with consistent dry powder from December through April and an après-ski village concentrated at Hirafu. Summer reopens the gondolas for ridge hiking and the Niseko Recreation Forest boardwalks across Shinsen-numa marsh. The foothills below the mountain hold the Goshiki, Konbu, and Yukichichibu onsen, the Takahashi Farm dairy works, and the long view across to Mt. Yotei, the 1,898-meter volcano known locally as Ezo Fuji.",
+    ogDescription:
+      "Visit Niseko for international powder snow at Niseko United, summer hiking on Mt. Annupuri, mountain onsen, and the dairy country below Mt. Yotei.",
+  },
 
   // --- Tohoku ---
   sendai: {

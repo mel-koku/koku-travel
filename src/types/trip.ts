@@ -46,7 +46,7 @@ export type KnownCityId =
   | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita" | "yakushima" | "miyazaki" | "kitakyushu"
   | "arita" | "imari" | "kurokawa" | "takachiho"  // Kyushu
   | "sapporo" | "hakodate" | "asahikawa" | "kushiro" | "abashiri" | "wakkanai"
-  | "toyako" | "noboribetsu" | "furano" | "shiretoko"  // Hokkaido
+  | "toyako" | "noboribetsu" | "furano" | "shiretoko" | "niseko"  // Hokkaido
   | "sendai" | "morioka" | "aomori" | "akita" | "yamagata" | "aizuwakamatsu"
   | "ginzan" | "zao" | "tazawako" | "hiraizumi"  // Tohoku
   | "hiroshima" | "okayama" | "matsue" | "tottori" | "shimonoseki"  // Chugoku

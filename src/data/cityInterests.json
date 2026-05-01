@@ -1293,8 +1293,6 @@
       "Date",
       "Ishikari",
       "Kamoenai",
-      "Kutchan",
-      "Kyogoku",
       "Otaru",
       "Rusutsu",
       "Shakotan",
@@ -1304,6 +1302,7 @@
       "Tomakomai",
       "Yoichi"
     ],
+    "niseko": ["Kutchan", "Kyogoku", "Rankoshi"],
     "niigata": [
       "Agano",
       "Gosen",
