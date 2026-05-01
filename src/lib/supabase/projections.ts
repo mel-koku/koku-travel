@@ -520,6 +520,65 @@ export type LocationListingDbRow = Pick<LocationDbRow,
 >;
 
 /**
+ * Columns needed for /api/locations/nearby (21 columns).
+ * Slim projection — coordinate filtering + open-now check + card display fields.
+ * Distinct from `LOCATION_LISTING_COLUMNS`: no place_id/min_budget/google_types/business_status/
+ * accessibility_options/dietary_options/service_options/payment_types/dietary_flags/insider_tip/
+ * is_featured/jta_approved/is_unesco_site/parent_id/parent_mode/tags. Adds is_hidden_gem +
+ * operating_hours which listing doesn't carry.
+ */
+export const LOCATION_NEARBY_COLUMNS = `
+  id,
+  name,
+  region,
+  city,
+  prefecture,
+  category,
+  image,
+  rating,
+  review_count,
+  estimated_duration,
+  primary_photo_url,
+  coordinates,
+  google_primary_type,
+  price_level,
+  is_hidden_gem,
+  name_japanese,
+  nearest_station,
+  cash_only,
+  reservation_info,
+  operating_hours,
+  short_description
+`.replace(/\s+/g, "");
+
+/**
+ * Subset of LocationDbRow for /api/locations/nearby.
+ */
+export type LocationNearbyDbRow = Pick<LocationDbRow,
+  | "id"
+  | "name"
+  | "region"
+  | "city"
+  | "prefecture"
+  | "category"
+  | "image"
+  | "rating"
+  | "review_count"
+  | "estimated_duration"
+  | "primary_photo_url"
+  | "coordinates"
+  | "google_primary_type"
+  | "price_level"
+  | "is_hidden_gem"
+  | "name_japanese"
+  | "nearest_station"
+  | "cash_only"
+  | "reservation_info"
+  | "operating_hours"
+  | "short_description"
+>;
+
+/**
  * Database row type for sub_experiences table.
  * Schema lives in supabase/migrations/20260406100000_add_location_hierarchy.sql.
  */
