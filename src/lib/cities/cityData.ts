@@ -557,6 +557,16 @@ export const CITY_PAGE_DATA: Record<KnownCityId, CityPageData> = {
     ogDescription:
       "Discover Hiraizumi's UNESCO Pure Land Buddhism. Konjikido golden hall, Motsu-ji garden, and the gorge boat ride.",
   },
+  hachimantai: {
+    id: "hachimantai",
+    name: "Hachimantai",
+    nameJapanese: "八幡平",
+    tagline: "Volcanic onsen plateau on the Iwate-Akita border, with the late-spring Dragon Eye snow ring",
+    description:
+      "Hachimantai sits in Towada-Hachimantai National Park on a volcanic plateau between 1,000 and 1,600 meters, straddling the Iwate-Akita border. Four small ryokan strips spread across the slopes: Toshichi at 1,400 meters is the highest hot spring in Tohoku, Goshogake on the Akita side runs a 2-kilometer boardwalk past mud volcanoes and sulfur vents, Fukenoyu has the area's oldest spring opened 400 years ago, and Matsukawa is the most rustic and remote on the Iwate side. The Hachimantai Aspite Line crosses the summit between mid-April and early November, with the late-spring snow corridor a draw. The Hachimantai Dragon Eye, a circular pattern in the snowmelt around Kagami-numa pond, opens for about a week in late May.",
+    ogDescription:
+      "Visit Hachimantai's volcanic onsen plateau. Goshogake mud volcanoes, Fukenoyu's 400-year springs, the Aspite Line summit, and the Dragon Eye late-spring snowmelt.",
+  },
 
   // --- Chugoku ---
   hiroshima: {

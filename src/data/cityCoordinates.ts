@@ -69,6 +69,7 @@ export const CITY_COORDINATES: Record<KnownCityId, CityCoordinates> = {
   zao:           { lat: 38.1672, lon: 140.3942 },  // Zao Onsen village
   tazawako:      { lat: 39.7169, lon: 140.6545 },  // Lake Tazawa east shore
   hiraizumi:     { lat: 38.9891, lon: 141.1104 },  // Chuson-ji area
+  hachimantai:   { lat: 39.9400, lon: 140.8550 },  // Plateau center between Iwate and Akita
   // Chugoku
   hiroshima:    { lat: 34.3853, lon: 132.4553 },
   okayama:      { lat: 34.6617, lon: 133.9352 },
