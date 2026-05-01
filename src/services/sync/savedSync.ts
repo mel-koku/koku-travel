@@ -80,25 +80,37 @@ export async function fetchSavedWithLocationId(
 }
 
 /**
- * Looks up the internal location_id from the locations table by place_id
+ * Looks up the internal location_id from the locations table.
+ *
+ * Tries `locations.place_id` (Google place ID) first, then falls back to
+ * `locations.id` (our internal slug). The fallback covers callers that pass
+ * the slug as the `placeId` arg — without it, the favorite would be saved
+ * with `location_id = NULL` even when the location is in our DB.
  */
 async function lookupLocationId(
   supabase: SupabaseClient,
   placeId: string,
 ): Promise<string | undefined> {
   try {
-    const { data, error } = await supabase
+    const { data: byPlaceId } = await supabase
       .from("locations")
       .select("id")
       .eq("place_id", placeId)
       .limit(1)
       .maybeSingle();
 
-    if (error || !data) {
-      return undefined;
+    if (byPlaceId) {
+      return byPlaceId.id as string;
     }
 
-    return data.id as string;
+    const { data: byId } = await supabase
+      .from("locations")
+      .select("id")
+      .eq("id", placeId)
+      .limit(1)
+      .maybeSingle();
+
+    return (byId?.id as string) ?? undefined;
   } catch {
     return undefined;
   }
