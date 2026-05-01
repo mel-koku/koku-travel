@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 export function WizardChrome() {
   const router = useRouter();
@@ -16,21 +17,14 @@ export function WizardChrome() {
 
   return (
     <div className="fixed inset-x-0 top-0 z-50 border-b border-border/10 bg-background pt-[env(safe-area-inset-top)]">
-      <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <span className="flex items-baseline gap-1.5">
-          <span className="font-serif text-2xl tracking-[-0.03em] text-foreground sm:text-3xl">
-            Yuku
-          </span>
-          <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-            Japan
-          </span>
-        </span>
+      <div className="flex h-14 items-center justify-center px-4 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() => router.push("/")}
           aria-label="Close trip builder"
-          className="eyebrow-editorial py-2 transition-colors hover:text-foreground"
+          className="eyebrow-editorial inline-flex items-center gap-1.5 py-2 transition-colors hover:text-foreground"
         >
+          <X className="h-3.5 w-3.5" aria-hidden="true" />
           Close
         </button>
       </div>
