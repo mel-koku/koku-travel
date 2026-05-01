@@ -6,6 +6,7 @@ import { badRequest } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
+import { gateOnDailyCost } from "@/lib/api/costGate";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { getRedisClient } from "@/lib/cache/itineraryCache";
 import { z } from "zod";
@@ -364,6 +365,15 @@ export const POST = withApiHandler(
         }
       }
 
+      // Cache missed — gate Vertex spend before LLM refinement.
+      const costDenialModern = await gateOnDailyCost({
+        costKey: user?.id ?? context.ip ?? "unknown",
+        estimate: "itineraryRefine",
+        routeName: "/api/itinerary/refine",
+        requestId: context.requestId,
+      });
+      if (costDenialModern) return costDenialModern;
+
       // Perform actual refinement using refineDay function. Release the reserved
       // slot if it throws so the user isn't billed for a failed LLM call.
       let refinedDay: TripDay;
@@ -500,6 +510,15 @@ export const POST = withApiHandler(
         requestId: context.requestId,
       });
     }
+
+    // Legacy path has no cache — gate Vertex spend before LLM refinement.
+    const costDenialLegacy = await gateOnDailyCost({
+      costKey: user?.id ?? context.ip ?? "unknown",
+      estimate: "itineraryRefine",
+      routeName: "/api/itinerary/refine",
+      requestId: context.requestId,
+    });
+    if (costDenialLegacy) return costDenialLegacy;
 
     const originalItineraryDay = itinerary.days[dayIndex];
     const refinedDay = await refineDay({ trip, dayIndex, type: refinementType });
