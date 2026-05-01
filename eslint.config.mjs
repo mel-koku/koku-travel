@@ -44,6 +44,9 @@ const eslintConfig = defineConfig([
     // Allow console in scripts (development tools)
     "scripts/**",
     ".github/scripts/**",
+    // GCP Cloud Functions / other infra deployed outside the Next.js app —
+    // CommonJS + console.log are normal and required for Cloud Logging.
+    "infra/**",
     // Scraped data dumps, never shipped
     "tmp/**",
     // Local AI tooling state: worktree caches, transcripts, notes
