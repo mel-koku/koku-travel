@@ -1,0 +1,13 @@
+{
+  "name": "billing-kill-switch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pub/Sub-triggered Cloud Function that detaches GCP billing on budget overshoot.",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "@google-cloud/billing": "^5.0.0"
+  }
+}
