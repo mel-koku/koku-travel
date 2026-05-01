@@ -35,7 +35,9 @@ AS $$
 BEGIN
   -- Set the trigram similarity threshold for the % operator. Default in
   -- Postgres is 0.3; we expose it as a parameter for tuning per call.
-  PERFORM set_limit(similarity_threshold);
+  -- pg_trgm's set_limit() takes `real`; cast from the function's `float`
+  -- param (which is `double precision`) to avoid a runtime type-mismatch.
+  PERFORM set_limit(similarity_threshold::real);
 
   RETURN QUERY
   SELECT
