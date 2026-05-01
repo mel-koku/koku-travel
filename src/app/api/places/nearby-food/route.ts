@@ -8,6 +8,7 @@ import { badRequest, serviceUnavailable } from "@/lib/api/errors";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
+import { gateOnDailyCost } from "@/lib/api/costGate";
 import { logger } from "@/lib/logger";
 
 export const maxDuration = 30;
@@ -154,7 +155,7 @@ Return JSON matching the schema.`;
 }
 
 export const POST = withApiHandler(
-  async (request: NextRequest, { context }) => {
+  async (request: NextRequest, { context, user }) => {
     if (request.headers.get("content-length")) {
       const length = Number(request.headers.get("content-length"));
       if (length > NEARBY_FOOD_MAX_BODY_SIZE) {
@@ -205,6 +206,15 @@ export const POST = withApiHandler(
         { headers: { "Cache-Control": "private, max-age=900" } },
       );
     }
+
+    // Cache missed — gate Vertex spend before LLM call.
+    const costDenial = await gateOnDailyCost({
+      costKey: user?.id ?? context.ip ?? "unknown",
+      estimate: "nearbyFood",
+      routeName: "/api/places/nearby-food",
+      requestId: context.requestId,
+    });
+    if (costDenial) return costDenial;
 
     const model = getModel();
     if (!model) {

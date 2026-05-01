@@ -11,6 +11,7 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
 import { badRequest, internalError, gatewayTimeout } from "@/lib/api/errors";
 import { getCachedItinerary, cacheItinerary } from "@/lib/cache/itineraryCache";
+import { gateOnDailyCost } from "@/lib/api/costGate";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /**
@@ -128,6 +129,16 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
         },
       });
     }
+
+    // Cache missed — gate Vertex spend before generation. Pessimistic estimate
+    // (see costGate.ts COST_ESTIMATES.itineraryPlan); real calls are cheaper.
+    const costDenial = await gateOnDailyCost({
+      costKey: user?.id ?? context.ip ?? "unknown",
+      estimate: "itineraryPlan",
+      routeName: "/api/itinerary/plan",
+      requestId: context.requestId,
+    });
+    if (costDenial) return costDenial;
 
     // Generate trip ID if not provided
     const finalTripId = tripId ?? `trip-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;

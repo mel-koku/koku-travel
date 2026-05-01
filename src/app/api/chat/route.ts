@@ -143,6 +143,9 @@ export const POST = withApiHandler(async (request: NextRequest, { context, user 
       maxOutputTokens: 2048,
       maxRetries: 1,
       stopWhen: stepCountIs(3),
+      // Client disconnect (tab close, navigation) aborts the Vertex stream so
+      // tokens stop flowing instead of running to completion against /dev/null.
+      abortSignal: request.signal,
       onFinish: ({ usage }) => {
         reconcileCost(reservationId, {
           promptTokens: usage?.inputTokens ?? 0,
