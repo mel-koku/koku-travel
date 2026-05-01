@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
 import { RATE_LIMITS, DAILY_QUOTAS } from "@/lib/api/rateLimits";
 import { withApiHandler } from "@/lib/api/withApiHandler";
+import { gateOnDailyCost } from "@/lib/api/costGate";
 import { validateRequestBody, aiRecommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
@@ -36,7 +37,7 @@ interface AiRecommendation {
  * Uses Gemini to extract intent, then queries + scores locations.
  */
 export const POST = withApiHandler(
-  async (request, { context }) => {
+  async (request, { context, user }) => {
     // Validate body
     const validation = await validateRequestBody(request, aiRecommendRequestSchema);
     if (!validation.success) {
@@ -55,6 +56,15 @@ export const POST = withApiHandler(
     } = validation.data;
 
     const supabase = await createClient();
+
+    // No cache on this route — gate Vertex spend before the LLM call.
+    const costDenial = await gateOnDailyCost({
+      costKey: user?.id ?? context.ip ?? "unknown",
+      estimate: "aiRecommend",
+      routeName: "/api/itinerary/ai-recommend",
+      requestId: context.requestId,
+    });
+    if (costDenial) return costDenial;
 
     // Extract intent via Gemini (5s timeout, returns null on failure)
     const intent = await extractPlaceIntent({
