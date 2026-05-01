@@ -75,6 +75,11 @@ updates:
       # Ignore major updates for critical infrastructure
       - dependency-name: "mapbox-gl"
         update-types: ["version-update:semver-major"]
+      # ESLint 10 requires Node ^20.19 / ^22.13 / >=24 and breaks the lint
+      # step until @typescript-eslint and eslint-config-next ship compatible
+      # versions (KOK-44). Revisit once the ecosystem catches up.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
