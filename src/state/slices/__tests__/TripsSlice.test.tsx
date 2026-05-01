@@ -15,11 +15,28 @@ describe("TripsSlice", () => {
         name: "Tokyo trip",
         itinerary: { days: [] } as never,
         builderData: {} as never,
-      });
+      }).id;
     });
     expect(id).toBeTruthy();
     expect(result.current.state.trips).toHaveLength(1);
     expect(result.current.state.trips[0].name).toBe("Tokyo trip");
+  });
+
+  it("createTrip returns the full StoredTrip (not just the id) so callers can sync immediately without waiting for ref to update", () => {
+    const { result } = renderHook(() => useTrips(), { wrapper });
+    let returned: ReturnType<typeof result.current.actions.createTrip> | undefined;
+    act(() => {
+      returned = result.current.actions.createTrip({
+        name: "Tokyo trip",
+        itinerary: { days: [] } as never,
+        builderData: {} as never,
+      });
+    });
+    expect(returned).toBeDefined();
+    expect(returned!.id).toBeTruthy();
+    expect(returned!.name).toBe("Tokyo trip");
+    expect(returned!.createdAt).toBeTruthy();
+    expect(returned!.updatedAt).toBeTruthy();
   });
 
   it("renames a trip", () => {
@@ -30,7 +47,7 @@ describe("TripsSlice", () => {
         name: "Tokyo trip",
         itinerary: { days: [] } as never,
         builderData: {} as never,
-      });
+      }).id;
     });
     act(() => result.current.actions.renameTrip(id, "Kyoto trip"));
     expect(result.current.state.trips[0].name).toBe("Kyoto trip");
@@ -44,7 +61,7 @@ describe("TripsSlice", () => {
         name: "To delete",
         itinerary: { days: [] } as never,
         builderData: {} as never,
-      });
+      }).id;
     });
     act(() => result.current.actions.deleteTrip(id));
     expect(result.current.state.trips).toHaveLength(0);
@@ -66,7 +83,7 @@ describe("TripsSlice", () => {
         name: "Tokyo trip",
         itinerary: { days: [] } as never,
         builderData: {} as never,
-      });
+      }).id;
     });
     act(() => {
       result.current.actions.updateTripPrepState(id, { "passport-validity": true });
