@@ -235,6 +235,16 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
     tripsRef.current = trips.state.trips;
   }, [trips.state.trips]);
 
+  // Ref tracking current user preferences for debounced sync callbacks.
+  // Without this, the setUserPreferences debounce captures the closure's
+  // snapshot of prefs.state at call time. Any state update between the
+  // call and the 2s fire (e.g. learned_vibes update from trip completion,
+  // or hydration from Supabase) is silently dropped on the next save.
+  const userPreferencesRef = useRef(prefs.state.userPreferences);
+  useEffect(() => {
+    userPreferencesRef.current = prefs.state.userPreferences;
+  }, [prefs.state.userPreferences]);
+
 
 
   // Ref to track loading bookmarks set for guard
@@ -513,9 +523,7 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
       if (supabase) {
         if (prefsSyncTimeout.current) clearTimeout(prefsSyncTimeout.current);
         prefsSyncTimeout.current = setTimeout(() => {
-          // Read latest from prefs state
-          const next = { ...prefs.state.userPreferences, ...patch };
-          void syncPreferencesSave(supabase, next);
+          void syncPreferencesSave(supabase, userPreferencesRef.current);
           prefsSyncTimeout.current = null;
         }, 2000);
       }
