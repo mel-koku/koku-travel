@@ -548,25 +548,15 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
   // -----------------------------------------------------------------------
   const createTrip = useCallback(
     (input: CreateTripInput) => {
-      const id = trips.actions.createTrip(input);
+      // Slice returns the full StoredTrip so we can sync immediately
+      // without waiting for tripsRef to catch up after the dispatch.
+      const trip = trips.actions.createTrip(input);
 
-      // Sync to Supabase
       if (supabase) {
-        // getTripById will reflect the new trip after dispatch
-        // We need to get the trip record. Since createTrip in the slice returns the ID,
-        // we reconstruct the trip from the input.
-        // Actually, createTrip in TripsSlice calls createTripRecord internally and returns the ID.
-        // We need to sync the actual record. Let's get it after the next render...
-        // For immediate sync, schedule a microtask to read the latest trips
-        queueMicrotask(() => {
-          const trip = tripsRef.current.find((t) => t.id === id);
-          if (trip) {
-            void syncTripSave(supabase, trip);
-          }
-        });
+        void syncTripSave(supabase, trip);
       }
 
-      return id;
+      return trip.id;
     },
     [supabase, trips.actions],
   );
@@ -615,15 +605,24 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
 
   const renameTrip = useCallback(
     (tripId: string, name: string) => {
+      // Read the existing trip from the ref BEFORE dispatching, then build
+      // the renamed shape locally for the sync. After dispatch the ref
+      // hasn't yet updated, so reading it then would silently no-op.
+      const existing = tripsRef.current.find((t) => t.id === tripId);
+
       trips.actions.renameTrip(tripId, name);
 
-      if (supabase) {
-        queueMicrotask(() => {
-          const trip = tripsRef.current.find((t) => t.id === tripId);
-          if (trip) {
-            void syncTripSave(supabase, trip);
-          }
-        });
+      if (supabase && existing) {
+        const trimmed = name.trim();
+        // Match the slice's no-op semantics: empty trim or unchanged name
+        // skips the dispatch, so we skip the sync too.
+        if (trimmed.length === 0 || trimmed === existing.name) return;
+        const renamed: StoredTrip = {
+          ...existing,
+          name: trimmed,
+          updatedAt: new Date().toISOString(),
+        };
+        void syncTripSave(supabase, renamed);
       }
     },
     [supabase, trips.actions],
@@ -650,15 +649,16 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
 
   const restoreTrip = useCallback(
     (trip: StoredTrip) => {
+      // Mirror the slice's no-op semantics: restoreTripOp returns null when
+      // a trip with this id already exists, so dispatch + sync should both
+      // be skipped to avoid an idempotent-but-wasteful round-trip.
+      const alreadyExists = tripsRef.current.some((t) => t.id === trip.id);
+      if (alreadyExists) return;
+
       trips.actions.restoreTrip(trip);
 
       if (supabase) {
-        queueMicrotask(() => {
-          const restoredTrip = tripsRef.current.find((t) => t.id === trip.id);
-          if (restoredTrip) {
-            void syncTripSave(supabase, restoredTrip);
-          }
-        });
+        void syncTripSave(supabase, trip);
       }
     },
     [supabase, trips.actions],

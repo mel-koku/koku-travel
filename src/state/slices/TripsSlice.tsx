@@ -39,7 +39,7 @@ export type TripsState = {
 };
 
 export type TripsActions = {
-  createTrip: (input: CreateTripInput) => string;
+  createTrip: (input: CreateTripInput) => StoredTrip;
   updateTripItinerary: (tripId: string, itinerary: Itinerary) => void;
   rehydrateTripContent: (
     tripId: string,
@@ -308,10 +308,10 @@ export function TripsProvider({ children }: { children: ReactNode }) {
 
   const actions = useMemo<TripsActions>(
     () => ({
-      createTrip: (input: CreateTripInput): string => {
+      createTrip: (input: CreateTripInput): StoredTrip => {
         const trip = createTripRecord(input);
         dispatch({ type: "CREATE_TRIP", trip });
-        return trip.id;
+        return trip;
       },
       updateTripItinerary: (tripId: string, itinerary: Itinerary) =>
         dispatch({ type: "UPDATE_TRIP_ITINERARY", tripId, itinerary }),
