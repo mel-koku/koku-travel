@@ -353,28 +353,40 @@ function SyncOrchestrator({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined" || !supabase) return;
 
-    const flushPendingSyncs = () => {
+    // Returns a Promise that resolves once all flushed syncs settle, so
+    // visibilitychange handlers can await delivery while the tab is still
+    // alive (just hidden). beforeunload can't block unload, so the Promise
+    // is best-effort there — keepalive: true on the underlying fetch is the
+    // only true guarantee, which would require wrapping the Supabase client.
+    const flushPendingSyncs = (): Promise<void> => {
       const pending = tripSyncTimeouts.current;
-      if (pending.size === 0) return;
+      if (pending.size === 0) return Promise.resolve();
 
       const currentTrips = tripsRef.current;
+      const inflight: Promise<unknown>[] = [];
       pending.forEach((timeout, tripId) => {
         clearTimeout(timeout);
         const trip = currentTrips.find((t) => t.id === tripId);
         if (trip) {
-          void syncTripSave(supabase, trip);
+          inflight.push(syncTripSave(supabase, trip));
         }
       });
       pending.clear();
+      return Promise.allSettled(inflight).then(() => undefined);
     };
 
     const handleBeforeUnload = () => {
-      flushPendingSyncs();
+      // Async work in beforeunload isn't awaited by the browser — fire and
+      // hope the requests complete before the tab is killed.
+      void flushPendingSyncs();
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        flushPendingSyncs();
+        // Page is hidden but not (yet) unloading — kick off syncs and let
+        // the Promise resolve in the background. The handler returning
+        // doesn't cancel the in-flight fetches.
+        void flushPendingSyncs();
       }
     };
 
