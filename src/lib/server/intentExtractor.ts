@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "./llmProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { intentExtractionSchema } from "./llmSchemas";
@@ -168,6 +168,7 @@ Important:
     });
 
     clearTimeout(timeout);
+    logVertexUsage("intent-extractor", result);
 
     // Clamp category weights to valid range
     const clamped = { ...result.object };

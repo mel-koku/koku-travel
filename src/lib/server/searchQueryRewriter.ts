@@ -15,7 +15,7 @@ import "server-only";
 
 import { generateObject } from "ai";
 import { z } from "zod";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "./llmProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
@@ -96,6 +96,7 @@ Lean toward the user's trip context when ambiguous: places in their current city
       abortSignal: controller.signal,
     });
     clearTimeout(timeout);
+    logVertexUsage("search-query-rewriter", result);
 
     const candidates = result.object.candidates
       .map((c) => c.trim())

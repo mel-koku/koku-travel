@@ -363,6 +363,7 @@ export async function* runGuideProseBatch(
       PER_CALL_TIMEOUT_MS,
       batchController.signal,
       onUsage,
+      "guide-prose-header",
     ).then(
       (result): BatchOutcome => ({ kind: "header", result }),
       (error): BatchOutcome => ({ kind: "header-failed", error }),
@@ -403,6 +404,7 @@ export async function* runGuideProseBatch(
         PER_CALL_TIMEOUT_MS,
         batchController.signal,
         onUsage,
+        "guide-prose-day",
       ).then(
         (result): BatchOutcome => ({
           kind: "day",

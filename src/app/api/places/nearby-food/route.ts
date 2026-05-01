@@ -3,7 +3,7 @@ import { z } from "zod";
 import { generateObject } from "ai";
 
 import { resolvePlaceByText, type ResolvedPlace } from "@/lib/google/search";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "@/lib/server/llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "@/lib/server/llmProvider";
 import { badRequest, serviceUnavailable } from "@/lib/api/errors";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { withApiHandler } from "@/lib/api/withApiHandler";
@@ -240,6 +240,7 @@ export const POST = withApiHandler(
         abortSignal: controller.signal,
       });
       clearTimeout(timeout);
+      logVertexUsage("nearby-food", result);
       venues = result.object.venues;
     } catch (error) {
       logger.warn("nearby-food: LLM venue generation failed", {

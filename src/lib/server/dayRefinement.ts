@@ -11,7 +11,7 @@ import "server-only";
  */
 
 import { generateObject } from "ai";
-import { getModel, VERTEX_PROVIDER_OPTIONS } from "./llmProvider";
+import { getModel, VERTEX_PROVIDER_OPTIONS, logVertexUsage } from "./llmProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { dayRefinementSchema } from "./llmSchemas";
@@ -145,6 +145,7 @@ ${runnerUpContext}
     });
 
     clearTimeout(timeout);
+    logVertexUsage("day-refinement", result);
 
     const refinement = result.object as DayRefinementResult;
 

@@ -40,6 +40,7 @@ type EnvConfig = {
   GOOGLE_VERTEX_PROJECT?: string;
   GOOGLE_VERTEX_LOCATION?: string;
   ENABLE_CHAT?: string;
+  ENABLE_BRIEFING_GROUNDING?: string;
   GUIDE_PROSE_PER_CALL_TIMEOUT_MS?: string;
   DAILY_BRIEFING_PER_CALL_TIMEOUT_MS?: string;
   LLM_PROVIDER?: string;
@@ -119,6 +120,7 @@ function createLenientConfig(): EnvConfig {
     GOOGLE_VERTEX_PROJECT: process.env.GOOGLE_VERTEX_PROJECT,
     GOOGLE_VERTEX_LOCATION: process.env.GOOGLE_VERTEX_LOCATION,
     ENABLE_CHAT: process.env.ENABLE_CHAT,
+    ENABLE_BRIEFING_GROUNDING: process.env.ENABLE_BRIEFING_GROUNDING,
     GUIDE_PROSE_PER_CALL_TIMEOUT_MS: process.env.GUIDE_PROSE_PER_CALL_TIMEOUT_MS,
     DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: process.env.DAILY_BRIEFING_PER_CALL_TIMEOUT_MS,
     NAVITIME_RAPIDAPI_KEY: process.env.NAVITIME_RAPIDAPI_KEY,
@@ -194,6 +196,7 @@ function validateEnv(): EnvConfig {
     GOOGLE_VERTEX_PROJECT: getOptionalEnv("GOOGLE_VERTEX_PROJECT"),
     GOOGLE_VERTEX_LOCATION: getOptionalEnv("GOOGLE_VERTEX_LOCATION"),
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
+    ENABLE_BRIEFING_GROUNDING: getOptionalEnv("ENABLE_BRIEFING_GROUNDING"),
     GUIDE_PROSE_PER_CALL_TIMEOUT_MS: getOptionalEnv("GUIDE_PROSE_PER_CALL_TIMEOUT_MS"),
     DAILY_BRIEFING_PER_CALL_TIMEOUT_MS: getOptionalEnv("DAILY_BRIEFING_PER_CALL_TIMEOUT_MS"),
     NAVITIME_RAPIDAPI_KEY: getOptionalEnv("NAVITIME_RAPIDAPI_KEY"),
@@ -275,6 +278,16 @@ export const env = {
   },
   get isChatEnabled() {
     return envConfig.ENABLE_CHAT !== "false";
+  },
+  /**
+   * Off by default. When `"true"`, daily briefings are generated via Vertex's
+   * `googleSearch` grounding tool to surface current-world facts (closures,
+   * weather advisories, festival dates) instead of training-cutoff defaults.
+   * Costs ~$35 per 1k grounded requests on top of token spend — fine at
+   * launch volume, watch as traffic scales.
+   */
+  get isBriefingGroundingEnabled() {
+    return envConfig.ENABLE_BRIEFING_GROUNDING === "true";
   },
   /**
    * Per-call Vertex timeout for guide prose generation, in milliseconds.

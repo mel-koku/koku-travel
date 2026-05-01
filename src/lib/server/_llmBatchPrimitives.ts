@@ -1,8 +1,8 @@
 import "server-only";
 
-import { generateObject } from "ai";
+import { generateObject, generateText } from "ai";
 import { z } from "zod";
-import { vertex, VERTEX_GENERATE_OPTIONS } from "./vertexProvider";
+import { vertex, VERTEX_GENERATE_OPTIONS, logVertexUsage } from "./vertexProvider";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
@@ -148,6 +148,7 @@ export async function callVertex<T>(
   timeoutMs: number,
   batchSignal?: AbortSignal,
   onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  source: string = "batch-primitive",
 ): Promise<T> {
   const perCallTimeout = AbortSignal.timeout(timeoutMs);
   const combined = batchSignal
@@ -162,6 +163,7 @@ export async function callVertex<T>(
       prompt,
       abortSignal: combined,
     });
+    logVertexUsage(source, result);
     if (onUsage) {
       onUsage({
         promptTokens: result.usage?.inputTokens ?? 0,
@@ -178,6 +180,73 @@ export async function callVertex<T>(
     }
     // Legitimate per-call failure -- log with full diagnostic details.
     logger.warn("Guide prose call failed", {
+      error: getErrorMessage(err),
+      ...extractApiErrorDetails(err),
+    });
+    throw err;
+  }
+}
+
+/**
+ * Vertex call variant for free-form text with `googleSearch` grounding enabled.
+ * Returns the model's plain-text output instead of a parsed JSON object.
+ *
+ * Vertex's grounding tool is mutually exclusive with structured output / response
+ * schemas — that's why this lives alongside {@link callVertex} rather than
+ * extending it. Callers must accept that the response is a free-form string;
+ * shape constraints belong in the prompt, not in a Zod schema.
+ *
+ * Cost note: each grounded request is billed ~$35/1k on top of token spend.
+ * Gate behind a feature flag at the call site.
+ *
+ * @internal Exported for testing.
+ */
+export async function callVertexGroundedText(
+  prompt: string,
+  timeoutMs: number,
+  batchSignal?: AbortSignal,
+  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  source: string = "batch-primitive-grounded",
+): Promise<string> {
+  const perCallTimeout = AbortSignal.timeout(timeoutMs);
+  const combined = batchSignal
+    ? AbortSignal.any([perCallTimeout, batchSignal])
+    : perCallTimeout;
+
+  try {
+    // `vertex.tools.googleSearch({})` returns ProviderToolFactory<{}, ...>
+    // which TS doesn't unify with generateText's stricter ToolSet constraint
+    // (`FlexibleSchema<never>` for inputSchema). Runtime shape is correct;
+    // the cast bridges a known SDK type-export gap.
+    const result = await generateText({
+      model: vertex("gemini-2.5-flash"),
+      providerOptions: VERTEX_GENERATE_OPTIONS,
+      tools: { google_search: vertex.tools.googleSearch({}) } as never,
+      prompt,
+      abortSignal: combined,
+    });
+    const groundingMeta =
+      result.providerMetadata?.google?.groundingMetadata as
+        | { webSearchQueries?: unknown[] | null }
+        | null
+        | undefined;
+    logVertexUsage(source, result, {
+      grounded: true,
+      groundingQueryCount: groundingMeta?.webSearchQueries?.length ?? 0,
+    });
+    if (onUsage) {
+      onUsage({
+        promptTokens: result.usage?.inputTokens ?? 0,
+        completionTokens: result.usage?.outputTokens ?? 0,
+      });
+    }
+    return result.text;
+  } catch (err) {
+    if (batchSignal?.aborted && !perCallTimeout.aborted) {
+      throw err;
+    }
+    logger.warn("Grounded vertex call failed", {
+      source,
       error: getErrorMessage(err),
       ...extractApiErrorDetails(err),
     });

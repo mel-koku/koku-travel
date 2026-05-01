@@ -1,5 +1,6 @@
 import "server-only";
 import { createVertex } from "@ai-sdk/google-vertex";
+import { logger } from "@/lib/logger";
 
 function buildVertexProvider() {
   const project = process.env.GOOGLE_VERTEX_PROJECT;
@@ -80,3 +81,48 @@ export const VERTEX_CHAT_OPTIONS = {
     thinkingConfig: { thinkingBudget: 512 },
   },
 } as const;
+
+/**
+ * Shape of the result-like value passed to {@link logVertexUsage}.
+ * Both `generateObject` / `generateText` results and the `streamText`
+ * onFinish payload conform to this — the optional chaining handles either.
+ */
+type VertexUsageResultLike = {
+  usage?: { inputTokens?: number; outputTokens?: number } | null;
+  providerMetadata?: {
+    google?: {
+      usageMetadata?: {
+        cachedContentTokenCount?: number | null;
+        thoughtsTokenCount?: number | null;
+      } | null;
+    };
+  } | null;
+};
+
+/**
+ * Logs a structured `llm.usage` event with token counts and Vertex-specific
+ * cache-hit / thinking-budget metadata. Used to settle the implicit-caching
+ * question and to monitor thinkingBudget burn at scale. Pass the same
+ * `source` value across calls so log queries can aggregate per pipeline pass.
+ *
+ * Safe to call with mocked results in tests — every field is optional and
+ * missing values report as 0.
+ */
+export function logVertexUsage(
+  source: string,
+  result: VertexUsageResultLike,
+  extra?: Record<string, unknown>,
+): void {
+  const cached =
+    result.providerMetadata?.google?.usageMetadata?.cachedContentTokenCount ?? 0;
+  const thoughts =
+    result.providerMetadata?.google?.usageMetadata?.thoughtsTokenCount ?? 0;
+  logger.info("llm.usage", {
+    source,
+    inputTokens: result.usage?.inputTokens ?? 0,
+    outputTokens: result.usage?.outputTokens ?? 0,
+    cachedTokens: cached,
+    thoughtsTokens: thoughts,
+    ...extra,
+  });
+}

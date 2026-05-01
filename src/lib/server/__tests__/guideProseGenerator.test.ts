@@ -5,6 +5,7 @@ vi.mock("ai", () => ({ generateObject: vi.fn() }));
 vi.mock("@/lib/server/vertexProvider", () => ({
   vertex: vi.fn().mockReturnValue({}),
   VERTEX_GENERATE_OPTIONS: { google: { streamFunctionCallArguments: false } },
+  logVertexUsage: vi.fn(),
 }));
 vi.mock("@/lib/logger", () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
