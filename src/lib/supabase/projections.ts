@@ -11,6 +11,7 @@ import type {
   LocationVisitRecommendation,
   LocationTransitMode,
   SeasonalType,
+  SubExperienceType,
 } from "@/types/location";
 
 /**
@@ -517,3 +518,39 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "parent_id"
   | "parent_mode"
 >;
+
+/**
+ * Database row type for sub_experiences table.
+ * Schema lives in supabase/migrations/20260406100000_add_location_hierarchy.sql.
+ */
+export type SubExperienceDbRow = {
+  id: string;
+  location_id: string;
+  name: string;
+  description: string;
+  time_estimate: number | null;
+  tip: string | null;
+  image: string | null;
+  sort_order: number;
+  sub_type: SubExperienceType;
+  time_context: string | null;
+};
+
+/**
+ * Columns needed to render a sub-experience card on a parent location detail page.
+ * Mirrors every field consumed by `transformDbRowToSubExperience`; adding a column
+ * to `sub_experiences` requires updating the projection here so callsites surface
+ * the new field instead of silently masking it via `select("*")`.
+ */
+export const SUB_EXPERIENCE_COLUMNS = `
+  id,
+  location_id,
+  name,
+  description,
+  time_estimate,
+  tip,
+  image,
+  sort_order,
+  sub_type,
+  time_context
+`.replace(/\s+/g, "");
