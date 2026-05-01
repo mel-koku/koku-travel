@@ -170,7 +170,8 @@ vi.mock("@/lib/supabase/server", () => ({
   })),
 }));
 
-import { fetchHierarchyContext } from "../hierarchyService";
+import { fetchHierarchyContext, transformDbRowToSubExperience } from "../hierarchyService";
+import type { SubExperienceDbRow } from "@/lib/supabase/projections";
 
 const baseLocation: Location = {
   id: "kinkakuji-kansai-abc",
@@ -314,5 +315,58 @@ describe("fetchHierarchyContext", () => {
 
     const ctx = await fetchHierarchyContext(child);
     expect(ctx.nearby.map((n) => n.id)).toEqual(["ryoanji-kansai-xyz"]);
+  });
+});
+
+describe("transformDbRowToSubExperience", () => {
+  it("maps every snake_case column to its camelCase UI field", () => {
+    const row: SubExperienceDbRow = {
+      id: "kinkakuji-pavilion-stop",
+      location_id: "kinkakuji-kansai-abc",
+      name: "Golden Pavilion view",
+      description: "Stand at the south edge of the pond.",
+      time_estimate: 15,
+      tip: "Arrive before 9 AM to skip tour groups.",
+      image: "/sub/golden.jpg",
+      sort_order: 2,
+      sub_type: "highlight",
+      time_context: "morning",
+    };
+
+    expect(transformDbRowToSubExperience(row)).toEqual({
+      id: "kinkakuji-pavilion-stop",
+      locationId: "kinkakuji-kansai-abc",
+      name: "Golden Pavilion view",
+      description: "Stand at the south edge of the pond.",
+      timeEstimate: 15,
+      tip: "Arrive before 9 AM to skip tour groups.",
+      image: "/sub/golden.jpg",
+      sortOrder: 2,
+      subType: "highlight",
+      timeContext: "morning",
+    });
+  });
+
+  it("converts NULL nullable columns to undefined on the UI shape", () => {
+    const row: SubExperienceDbRow = {
+      id: "ryoanji-stone-1",
+      location_id: "ryoanji-kansai-xyz",
+      name: "Rock garden",
+      description: "Fifteen stones; you can never see all of them at once.",
+      time_estimate: null,
+      tip: null,
+      image: null,
+      sort_order: 0,
+      sub_type: "route_stop",
+      time_context: null,
+    };
+
+    const ui = transformDbRowToSubExperience(row);
+    expect(ui.timeEstimate).toBeUndefined();
+    expect(ui.tip).toBeUndefined();
+    expect(ui.image).toBeUndefined();
+    expect(ui.timeContext).toBeUndefined();
+    expect(ui.sortOrder).toBe(0);
+    expect(ui.subType).toBe("route_stop");
   });
 });

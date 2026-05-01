@@ -1,8 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { LOCATION_LISTING_COLUMNS } from "@/lib/supabase/projections";
+import {
+  LOCATION_LISTING_COLUMNS,
+  SUB_EXPERIENCE_COLUMNS,
+} from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "./locationService";
 import type { Location, SubExperience, LocationRelationship } from "@/types/location";
-import type { LocationListingDbRow } from "@/lib/supabase/projections";
+import type {
+  LocationListingDbRow,
+  SubExperienceDbRow,
+} from "@/lib/supabase/projections";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { logger } from "@/lib/logger";
@@ -37,25 +43,8 @@ export async function fetchChildLocations(parentId: string): Promise<Location[]>
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
 }
 
-/**
- * Fetches sub-experiences for a location.
- * Returns them sorted by sort_order.
- */
-export async function fetchSubExperiences(locationId: string): Promise<SubExperience[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("sub_experiences")
-    .select("*")
-    .eq("location_id", locationId)
-    .order("sort_order", { ascending: true });
-
-  if (error || !data) {
-    if (error) logger.error("[fetchSubExperiences] query failed", error, { locationId });
-    return [];
-  }
-
-  return data.map((row) => ({
+export function transformDbRowToSubExperience(row: SubExperienceDbRow): SubExperience {
+  return {
     id: row.id,
     locationId: row.location_id,
     name: row.name,
@@ -66,7 +55,28 @@ export async function fetchSubExperiences(locationId: string): Promise<SubExperi
     sortOrder: row.sort_order,
     subType: row.sub_type,
     timeContext: row.time_context ?? undefined,
-  }));
+  };
+}
+
+/**
+ * Fetches sub-experiences for a location.
+ * Returns them sorted by sort_order.
+ */
+export async function fetchSubExperiences(locationId: string): Promise<SubExperience[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("sub_experiences")
+    .select(SUB_EXPERIENCE_COLUMNS)
+    .eq("location_id", locationId)
+    .order("sort_order", { ascending: true });
+
+  if (error || !data) {
+    if (error) logger.error("[fetchSubExperiences] query failed", error, { locationId });
+    return [];
+  }
+
+  return (data as unknown as SubExperienceDbRow[]).map(transformDbRowToSubExperience);
 }
 
 /**
