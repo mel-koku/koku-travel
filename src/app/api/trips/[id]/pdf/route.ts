@@ -4,6 +4,7 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTripById } from "@/services/sync/tripSync";
 import { badRequest, notFound } from "@/lib/api/errors";
+import { isUuid } from "@/lib/api/validation";
 import { logger } from "@/lib/logger";
 import { signPrintToken } from "@/lib/pdf/printToken";
 import { getBrowser } from "@/lib/pdf/browser";
@@ -46,6 +47,10 @@ export async function POST(
 
       if (!tripId) {
         return badRequest("Missing trip id", undefined, { requestId: context.requestId });
+      }
+
+      if (!isUuid(tripId)) {
+        return badRequest("Invalid trip ID format", undefined, { requestId: context.requestId });
       }
 
       const supabase = await createClient();
