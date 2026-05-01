@@ -18,6 +18,7 @@ vi.mock("ai", () => ({
 vi.mock("@/lib/server/llmProvider", () => ({
   getModel: vi.fn().mockReturnValue("mock-model"),
   VERTEX_PROVIDER_OPTIONS: { google: { streamFunctionCallArguments: false } },
+  logVertexUsage: vi.fn(),
 }));
 vi.mock("@/lib/logger", () => ({
   logger: { info: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn() },

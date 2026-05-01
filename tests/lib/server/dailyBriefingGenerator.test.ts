@@ -17,6 +17,7 @@ vi.mock("@ai-sdk/google-vertex", () => ({
 vi.mock("@/lib/server/vertexProvider", () => ({
   vertex: vi.fn().mockReturnValue({}),
   VERTEX_GENERATE_OPTIONS: { google: { streamFunctionCallArguments: false } },
+  logVertexUsage: vi.fn(),
 }));
 vi.mock("@/lib/logger", () => ({
   logger: { info: vi.fn(), debug: vi.fn(), warn: vi.fn(), error: vi.fn() },
