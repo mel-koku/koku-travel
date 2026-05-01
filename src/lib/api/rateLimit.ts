@@ -353,26 +353,3 @@ export async function checkRateLimit(
   return null;
 }
 
-/**
- * Rate limit middleware wrapper for API routes
- * Usage:
- * ```typescript
- * export async function GET(request: NextRequest) {
- *   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 50, windowMs: 60000 });
- *   if (rateLimitResponse) return rateLimitResponse;
- *   // ... rest of handler
- * }
- * ```
- */
-export function withRateLimit(
-  handler: (request: NextRequest, ...args: unknown[]) => Promise<NextResponse>,
-  config?: RateLimitConfig,
-) {
-  return async (request: NextRequest, ...args: unknown[]) => {
-    const rateLimitResponse = await checkRateLimit(request, config);
-    if (rateLimitResponse) {
-      return rateLimitResponse;
-    }
-    return handler(request, ...args);
-  };
-}

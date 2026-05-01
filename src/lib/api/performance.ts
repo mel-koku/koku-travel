@@ -1,5 +1,4 @@
 import { logger } from "../logger";
-import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { RequestContext } from "./middleware";
 
 /**
@@ -82,59 +81,3 @@ export function trackApiPerformance(
   }
 }
 
-/**
- * Wraps an API route handler to track performance
- */
-export function withPerformanceTracking<T extends unknown[]>(
-  handler: (...args: T) => Promise<Response>,
-  route: string,
-  method: string,
-) {
-  return async (...args: T): Promise<Response> => {
-    const startTime = Date.now();
-    let statusCode = 500;
-
-    try {
-      const response = await handler(...args);
-      statusCode = response.status;
-      return response;
-    } catch (error) {
-      statusCode = 500;
-      throw error;
-    } finally {
-      const duration = Date.now() - startTime;
-      
-      // Extract context from args if available
-      const context = args[0] && typeof args[0] === "object" && "nextUrl" in args[0]
-        ? undefined // RequestContext would need to be passed separately
-        : undefined;
-
-      trackApiPerformance(route, method, duration, statusCode, context);
-    }
-  };
-}
-
-/**
- * Helper to measure async operation duration
- */
-export async function measureDuration<T>(
-  operation: () => Promise<T>,
-  label: string,
-): Promise<T> {
-  const startTime = Date.now();
-  try {
-    const result = await operation();
-    const duration = Date.now() - startTime;
-    if (process.env.NODE_ENV === "development") {
-      logger.debug(`Operation duration: ${label}`, { duration: `${duration}ms` });
-    }
-    return result;
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    logger.warn(`Operation failed: ${label}`, {
-      duration: `${duration}ms`,
-      error: getErrorMessage(error),
-    });
-    throw error;
-  }
-}
