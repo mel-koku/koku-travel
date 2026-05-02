@@ -33,9 +33,10 @@ type PlacesLanesProps = {
   locations: Location[];
   onSelect: (location: Location) => void;
   onCitySelect: (citySlug: string) => void;
+  onOpenSearch: () => void;
 };
 
-export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesProps) {
+export function PlacesLanes({ locations, onSelect, onCitySelect, onOpenSearch }: PlacesLanesProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const iconic = useMemo(() => {
@@ -91,6 +92,15 @@ export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesPr
           {FEATURED_CITIES.map((city) => (
             <CityTile key={city.slug} city={city} onSelect={onCitySelect} />
           ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="link-reveal text-sm font-medium text-foreground-secondary transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 rounded-sm"
+          >
+            More cities →
+          </button>
         </div>
       </Lane>
 
