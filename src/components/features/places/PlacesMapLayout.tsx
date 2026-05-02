@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationFast, easeReveal } from "@/lib/motion";
 import { PlacesMap, type MapBounds } from "./PlacesMap";
 import { PlacesMapCard } from "./PlacesMapCard";
+import { MapAnchorStrip } from "./MapAnchorStrip";
 import { AskYukuChat } from "@/components/features/ask-yuku/AskYukuChat";
 import type { Location } from "@/types/location";
 
@@ -198,6 +199,10 @@ export function PlacesMapLayout({
               anchorKey={anchorKey}
             />
           </ErrorBoundary>
+
+          {/* Anchor strip: small uppercase pill that names the active spatial
+              filter (city / prefecture / near-me / saved). Hidden for "all". */}
+          <MapAnchorStrip anchorKey={anchorKey} />
 
           {/* Mobile: horizontal snap-scroll strip at bottom */}
           <div className="absolute bottom-3 left-0 right-0 z-10 md:hidden">
