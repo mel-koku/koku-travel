@@ -14,13 +14,21 @@ import { transformDbRowToLocation } from "@/lib/locations/locationService";
 
 const MAX_IDS = 60;
 const NEARBY_RADIUS_KM = 1.0;
+// Stricter than /api/locations/similar's 0.3: that endpoint runs on user opt-in
+// (detail page); here pairs are surfaced unprompted on the lanes/grid brand
+// surface, so we only want strong matches.
+const SIMILAR_PAIR_THRESHOLD = 0.45;
 
 export type LocationPair = {
   id: string;
   name: string;
   parentName?: string;
-  /** "cluster" = curated; "nearby" = spatial-proximity fallback. */
-  kind: "cluster" | "nearby";
+  /**
+   * "cluster" = curated relationship row;
+   * "nearby" = ≤1km spatial-proximity fallback;
+   * "similar" = pgvector cosine fallback when neither curated nor nearby exists.
+   */
+  kind: "cluster" | "nearby" | "similar";
   /** Walking minutes to the paired place. Only set when kind === "nearby". */
   walkMinutes?: number;
 };
@@ -35,11 +43,12 @@ export type LocationPairsResponse = Record<string, LocationPair | null>;
  * Cascade:
  *   1. Curated `location_relationships.cluster` row → kind: "cluster"
  *   2. Spatial proximity within 1km → kind: "nearby" + walkMinutes
- *   3. Otherwise null (UI omits the line)
+ *   3. pgvector cosine similarity (top-1 above threshold) → kind: "similar"
+ *   4. Otherwise null (UI omits the line)
  *
- * Container parents (`parent_mode='container'`) skip the nearby fallback —
- * their children are nearby by definition; surfacing "Near Yanaka" inside
- * Yanaka would be redundant.
+ * Container parents (`parent_mode='container'`) skip both fallbacks —
+ * their children are nearby/similar by definition; surfacing "Near Yanaka"
+ * inside Yanaka would be redundant.
  */
 export const GET = withApiHandler(
   async (request, { context }) => {
@@ -136,6 +145,9 @@ export const GET = withApiHandler(
       string,
       { relatedId: string; name: string; parentId: string | null; walkMinutes: number }
     >();
+    // Track which sources we've already loaded + filtered for non-container so
+    // Pass 3 can reuse the same set without re-querying.
+    const nonContainerSourceIds = new Set<string>();
     let nearbyDurationMs = 0;
     let nearbySourceCount = 0;
 
@@ -155,11 +167,13 @@ export const GET = withApiHandler(
       } else {
         const sources = (sourceRows as unknown as LocationListingDbRow[] | null ?? [])
           .map(transformDbRowToLocation)
-          .filter((s) => s.parentMode !== "container" && s.coordinates);
-        nearbySourceCount = sources.length;
+          .filter((s) => s.parentMode !== "container");
+        sources.forEach((s) => nonContainerSourceIds.add(s.id));
+        const sourcesWithCoords = sources.filter((s) => s.coordinates);
+        nearbySourceCount = sourcesWithCoords.length;
 
         const nearbyResults = await Promise.all(
-          sources.map(async (source) => {
+          sourcesWithCoords.map(async (source) => {
             const nearby = await fetchNearbyLocations(source, NEARBY_RADIUS_KM, 1);
             return { sourceId: source.id, nearby: nearby[0] ?? null };
           }),
@@ -178,12 +192,71 @@ export const GET = withApiHandler(
       nearbyDurationMs = Date.now() - nearbyStart;
     }
 
+    // Pass 3: pgvector cosine similarity for IDs still without a pair.
+    // Reuses pre-computed embeddings (zero new API cost). Restricts targets to
+    // top-level peers (the RPC's parent_id IS NULL filter) which fits the
+    // "in the same spirit" framing.
+    const idsWithoutAnyPair = idsWithoutCluster.filter(
+      (id) => !nearbyPairBySource.has(id) && nonContainerSourceIds.has(id),
+    );
+    const similarPairBySource = new Map<
+      string,
+      { relatedId: string; name: string; parentId: string | null }
+    >();
+    let similarDurationMs = 0;
+
+    if (idsWithoutAnyPair.length > 0) {
+      const similarStart = Date.now();
+      const { data: embeddingRows, error: embeddingError } = await supabase
+        .from("locations")
+        .select("id, embedding")
+        .in("id", idsWithoutAnyPair);
+
+      if (embeddingError) {
+        logger.warn("[/api/locations/pairs] embedding lookup failed; skipping similar", {
+          error: embeddingError.message,
+          requestId: context.requestId,
+        });
+      } else {
+        const sourcesWithEmbedding = (embeddingRows ?? []).filter(
+          (row): row is { id: string; embedding: string } =>
+            Boolean(row.embedding),
+        );
+
+        const similarResults = await Promise.all(
+          sourcesWithEmbedding.map(async (source) => {
+            const { data, error } = await supabase.rpc("similar_locations", {
+              query_embedding: source.embedding,
+              exclude_id: source.id,
+              match_count: 1,
+              similarity_threshold: SIMILAR_PAIR_THRESHOLD,
+            });
+            if (error || !data || data.length === 0) {
+              return { sourceId: source.id, match: null };
+            }
+            return { sourceId: source.id, match: data[0] };
+          }),
+        );
+
+        for (const { sourceId, match } of similarResults) {
+          if (!match) continue;
+          similarPairBySource.set(sourceId, {
+            relatedId: match.id,
+            name: match.name,
+            parentId: match.parent_id ?? null,
+          });
+        }
+      }
+      similarDurationMs = Date.now() - similarStart;
+    }
+
     // Resolve all parent names in one pass.
     const allParentIds = [
       ...new Set(
         [
           ...[...clusterRelatedById.values()].map((v) => v.parentId),
           ...[...nearbyPairBySource.values()].map((v) => v.parentId),
+          ...[...similarPairBySource.values()].map((v) => v.parentId),
         ].filter((v): v is string => Boolean(v)),
       ),
     ];
@@ -196,10 +269,11 @@ export const GET = withApiHandler(
       parents?.forEach((p) => parentNameMap.set(p.id, p.name));
     }
 
-    // Assemble response: cluster wins, nearby is fallback.
+    // Assemble response: cluster wins, nearby is fallback, similar is last.
     const response: LocationPairsResponse = {};
     let clusterMatches = 0;
     let nearbyMatches = 0;
+    let similarMatches = 0;
     for (const id of ids) {
       const cluster = clusterPairBySource.get(id);
       if (cluster) {
@@ -227,6 +301,17 @@ export const GET = withApiHandler(
         nearbyMatches += 1;
         continue;
       }
+      const similar = similarPairBySource.get(id);
+      if (similar) {
+        response[id] = {
+          id: similar.relatedId,
+          name: similar.name,
+          parentName: similar.parentId ? parentNameMap.get(similar.parentId) : undefined,
+          kind: "similar",
+        };
+        similarMatches += 1;
+        continue;
+      }
       response[id] = null;
     }
 
@@ -234,8 +319,10 @@ export const GET = withApiHandler(
       requestedIds: ids.length,
       clusterMatches,
       nearbyMatches,
+      similarMatches,
       nearbySourceCount,
       nearbyDurationMs,
+      similarDurationMs,
       totalDurationMs: Date.now() - startedAt,
       requestId: context.requestId,
     });

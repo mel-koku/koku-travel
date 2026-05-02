@@ -240,19 +240,27 @@ const PlacesCard = memo(function PlacesCard({
             {summary}
           </p>
 
-          {/* Pair line — curated cluster wins, spatial-proximity fallback fills the rest.
+          {/* Pair line — curated cluster wins, then ≤1km spatial fallback,
+              then pgvector cosine similarity ("in the same spirit").
               Suppressed when the card already carries a JTA or UNESCO badge to avoid
               meta-line crowding. */}
           {pair && !location.jtaApproved && !location.isUnescoSite && (
             <p className="text-xs text-foreground-secondary">
-              {pair.kind === "cluster" ? (
+              {pair.kind === "cluster" && (
                 <>
                   <span className="text-stone">Pairs with </span>
                   <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
                 </>
-              ) : (
+              )}
+              {pair.kind === "nearby" && (
                 <>
                   <span className="text-stone">{pair.walkMinutes} min walk to </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              )}
+              {pair.kind === "similar" && (
+                <>
+                  <span className="text-stone">In the same spirit: </span>
                   <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
                 </>
               )}
