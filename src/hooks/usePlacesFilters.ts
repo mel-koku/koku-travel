@@ -7,7 +7,7 @@ import { locationMatchesVibes } from "@/data/vibeFilterMapping";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
-import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
+import { locationHasSeasonalTag, getCurrentMonth, getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import {
@@ -192,6 +192,14 @@ export function usePlacesFilters(
 
     const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
 
+    // When the in-season filter is active, the active SeasonalHighlight may
+    // narrow by region (e.g. cherry-blossom-late → Tohoku + Hokkaido).
+    // Looked up once per filter pass so the banner CTA + the listing agree.
+    const activeHighlight = selectedCategory === "in_season" ? getActiveSeasonalHighlight() : null;
+    const seasonalRegionSet = activeHighlight?.regions
+      ? new Set(activeHighlight.regions.map((r) => r.toLowerCase()))
+      : null;
+
     return enhancedLocations.filter((location) => {
       let matchesQuery: boolean;
       const matchesServerSearch = serverMatchIds?.has(location.id) ?? false;
@@ -286,7 +294,8 @@ export function usePlacesFilters(
       const matchesCategory = !selectedCategory
         ? true
         : selectedCategory === "in_season"
-          ? locationHasSeasonalTag(location.tags, getCurrentMonth())
+          ? locationHasSeasonalTag(location.tags, getCurrentMonth()) &&
+            (!seasonalRegionSet || seasonalRegionSet.has((location.region ?? "").toLowerCase()))
           : location.category === selectedCategory;
 
       const matchesJta = !jtaApprovedOnly

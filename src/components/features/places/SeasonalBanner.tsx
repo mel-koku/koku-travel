@@ -24,7 +24,14 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
   const matchCount = useMemo(() => {
     if (!highlight) return 0;
     const month = getCurrentMonth();
-    return locations.filter((loc) => locationHasSeasonalTag(loc.tags, month)).length;
+    const regionSet = highlight.regions
+      ? new Set(highlight.regions.map((r) => r.toLowerCase()))
+      : null;
+    return locations.filter((loc) => {
+      if (!locationHasSeasonalTag(loc.tags, month)) return false;
+      if (regionSet && !regionSet.has((loc.region ?? "").toLowerCase())) return false;
+      return true;
+    }).length;
   }, [highlight, locations]);
 
   if (!highlight || matchCount === 0) return null;

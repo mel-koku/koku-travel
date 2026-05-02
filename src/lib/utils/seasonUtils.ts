@@ -153,6 +153,13 @@ export type SeasonalHighlight = {
   startDay: number;
   endMonth: number;
   endDay: number;
+  /**
+   * Optional regional constraint (case-insensitive match against
+   * Location.region). When set, the banner count + the in-season filter
+   * narrow to locations in these regions — so a "Late-blooming sakura in
+   * Tohoku and Hokkaido" banner doesn't surface Kyoto temples.
+   */
+  regions?: string[];
 };
 
 export const SEASONAL_HIGHLIGHTS: SeasonalHighlight[] = [
@@ -181,6 +188,7 @@ export const SEASONAL_HIGHLIGHTS: SeasonalHighlight[] = [
     startDay: 21,
     endMonth: 5,
     endDay: 12,
+    regions: ["Tohoku", "Hokkaido"],
   },
   {
     id: "plum-blossom",
