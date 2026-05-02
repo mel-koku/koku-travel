@@ -640,7 +640,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
           anchorKey={anchorKey}
         />
       ) : isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-16">
           {/*
            * Match PLACES_PAGE_SIZE (36) AND the real card's rendered height so the
            * grid doesn't change size when cards swap in. Measured real cards
@@ -671,7 +671,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       ) : (
         <main
           ref={gridSectionRef}
-          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20"
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-16"
         >
           <LocationEditorialGrid
             locations={visibleLocations}

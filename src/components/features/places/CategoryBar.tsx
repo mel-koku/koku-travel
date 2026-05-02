@@ -117,7 +117,7 @@ export function CategoryBar({
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 py-5">
             {/* Count */}
             {totalCount != null && (
               <span className="hidden sm:inline shrink-0 text-sm text-stone">
