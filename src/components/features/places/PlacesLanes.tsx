@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { m, useReducedMotion } from "framer-motion";
 
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { typography } from "@/lib/typography-system";
 import { easeReveal, durationBase } from "@/lib/motion";
+import { cn } from "@/lib/cn";
 import type { Location } from "@/types/location";
 
 const ICONIC_CATEGORIES = new Set([
@@ -69,8 +70,8 @@ export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesPr
     >
       {iconic.length > 0 && (
         <Lane
-          eyebrow="Iconic Japan"
-          intro="The places that anchor a first trip."
+          eyebrow="The greats"
+          intro="The five or six places that justify the flight."
           motionProps={fadeIn}
         >
           <HorizontalRail>
@@ -82,8 +83,8 @@ export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesPr
       )}
 
       <Lane
-        eyebrow="Cities"
-        intro="Pick a base. We'll narrow the rest."
+        eyebrow="Where to base yourself"
+        intro="Choose where to begin. We'll shape the rest around it."
         motionProps={fadeIn}
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
@@ -96,7 +97,7 @@ export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesPr
       {containers.length > 0 && (
         <Lane
           eyebrow="Districts and clusters"
-          intro="Walking neighborhoods, hot-spring towns, gallery rows."
+          intro="Walking neighborhoods, hot-spring towns, lantern-lit lanes."
           motionProps={fadeIn}
         >
           <HorizontalRail>
@@ -130,7 +131,9 @@ function Lane({
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="eyebrow-editorial">{eyebrow}</p>
-          <p className={`${typography({ intent: "utility-body-muted" })} mt-1`}>{intro}</p>
+          <p className={cn(typography({ intent: "editorial-h3" }), "mt-1 text-foreground-body")}>
+            {intro}
+          </p>
         </div>
       </div>
       {children}
@@ -156,30 +159,49 @@ function PlaceTile({
   variant?: "place" | "container";
 }) {
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 600);
+  const [imageFailed, setImageFailed] = useState(false);
   const subtitle = variant === "container"
     ? location.region
     : `${location.city}, ${location.region}`;
+  const showImage = Boolean(imageSrc) && !imageFailed;
 
   return (
     <button
       type="button"
       onClick={() => onSelect(location)}
-      className="group relative w-44 shrink-0 snap-start overflow-hidden rounded-lg bg-surface text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:w-56"
+      className="group relative w-44 shrink-0 snap-start overflow-hidden rounded-lg bg-canvas text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:w-56"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-canvas">
-        {imageSrc ? (
+        {showImage ? (
           <Image
-            src={imageSrc}
-            alt={location.name}
+            src={imageSrc!}
+            alt=""
             fill
             sizes="(min-width:1024px) 224px, 176px"
             className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
+            onError={() => setImageFailed(true)}
           />
-        ) : null}
-        <div className="absolute inset-0 scrim-50" />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-canvas via-sand to-canvas" aria-hidden="true" />
+        )}
+        <div className={cn("absolute inset-0", showImage ? "scrim-50" : "scrim-20")} />
         <div className="absolute inset-x-0 bottom-0 p-3">
-          <p className="line-clamp-2 text-sm font-medium text-white">{location.name}</p>
-          <p className="text-[11px] uppercase tracking-wide text-white/80">{subtitle}</p>
+          <p
+            className={cn(
+              "line-clamp-2 font-serif text-base font-medium leading-tight",
+              showImage ? "text-white" : "text-foreground",
+            )}
+          >
+            {location.name}
+          </p>
+          <p
+            className={cn(
+              "mt-0.5 text-[11px] uppercase tracking-wide",
+              showImage ? "text-white/80" : "text-foreground-secondary",
+            )}
+          >
+            {subtitle}
+          </p>
         </div>
       </div>
     </button>
@@ -208,8 +230,8 @@ function CityTile({
       />
       <div className="absolute inset-0 scrim-60" />
       <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-        <p className="text-base font-medium text-white sm:text-lg">{city.label}</p>
-        <p className="text-[11px] uppercase tracking-wide text-white/80">{city.region}</p>
+        <p className="font-serif text-xl font-medium leading-tight text-white sm:text-2xl">{city.label}</p>
+        <p className="mt-0.5 text-[11px] uppercase tracking-wide text-white/80">{city.region}</p>
       </div>
     </button>
   );
