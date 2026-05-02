@@ -39,10 +39,17 @@ type PlacesLanesProps = {
 export function PlacesLanes({ locations, onSelect, onCitySelect, onOpenSearch }: PlacesLanesProps) {
   const prefersReducedMotion = useReducedMotion();
 
+  // resizePhotoUrl strips legacy location-photos bucket URLs to undefined,
+  // so a location can have l.image set but produce no usable image. Only
+  // include locations whose photo actually resolves — otherwise the lane
+  // fills with gradient placeholders for famous places.
+  const hasResolvablePhoto = (l: Location) =>
+    Boolean(resizePhotoUrl(l.primaryPhotoUrl ?? l.image, 600));
+
   const iconic = useMemo(() => {
     return locations
       .filter((l) => ICONIC_CATEGORIES.has(l.category) || l.isUnescoSite || l.isFeatured)
-      .filter((l) => l.primaryPhotoUrl || l.image)
+      .filter(hasResolvablePhoto)
       .sort((a, b) => {
         const scoreA = (a.rating ?? 0) * Math.log10((a.reviewCount ?? 0) + 10);
         const scoreB = (b.rating ?? 0) * Math.log10((b.reviewCount ?? 0) + 10);
@@ -54,7 +61,7 @@ export function PlacesLanes({ locations, onSelect, onCitySelect, onOpenSearch }:
   const containers = useMemo(() => {
     return locations
       .filter((l) => l.parentMode === "container")
-      .filter((l) => l.primaryPhotoUrl || l.image)
+      .filter(hasResolvablePhoto)
       .slice(0, 12);
   }, [locations]);
 
