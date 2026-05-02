@@ -4,18 +4,12 @@ import { withApiHandler } from "@/lib/api/withApiHandler";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 import { isValidLocationId } from "@/lib/api/validation";
+import {
+  LOCATION_PRINT_COLUMNS,
+  type LocationPrintDbRow,
+} from "@/lib/supabase/projections";
 
 const MAX_IDS = 200;
-
-const PRINT_COLUMNS = `id, name_japanese, nearest_station, cash_only, reservation_info`;
-
-type PrintEnrichmentRow = {
-  id: string;
-  name_japanese: string | null;
-  nearest_station: string | null;
-  cash_only: boolean | null;
-  reservation_info: string | null;
-};
 
 const RESERVATION_LEVELS = new Set(["required", "recommended"]);
 
@@ -63,7 +57,7 @@ export const GET = withApiHandler(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("locations")
-      .select(PRINT_COLUMNS)
+      .select(LOCATION_PRINT_COLUMNS)
       .in("id", ids);
 
     if (error || !data) {
@@ -71,7 +65,7 @@ export const GET = withApiHandler(
     }
 
     const enrichment: PrintEnrichmentMap = {};
-    for (const row of data as PrintEnrichmentRow[]) {
+    for (const row of data as unknown as LocationPrintDbRow[]) {
       enrichment[row.id] = {
         nameJapanese: row.name_japanese ?? undefined,
         nearestStation: row.nearest_station ?? undefined,
