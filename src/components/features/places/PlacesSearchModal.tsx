@@ -67,21 +67,32 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
 
   if (!isBrowser || !isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
   return createPortal(
-    <div
-      className="fixed left-0 right-0 bottom-0 z-40 bg-background"
-      style={{ top: "var(--header-h, 64px)" }}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search places"
-      data-lenis-prevent
-    >
-      <div ref={panelRef} className="relative flex h-full flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[60]" data-lenis-prevent>
+      {/* Backdrop — blurs the page behind the panel and dismisses on click. */}
+      <div
+        className="absolute inset-0 bg-charcoal/40 backdrop-blur-sm"
+        onMouseDown={handleBackdropClick}
+        role="presentation"
+      />
+      {/* Panel — centered with viewport padding so it reads as a dialog,
+          not a full-page replacement. */}
+      <div
+        ref={panelRef}
+        className="absolute inset-4 sm:inset-8 lg:inset-12 flex flex-col overflow-hidden rounded-lg bg-background shadow-[var(--shadow-elevated)]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search places"
+      >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close search"
-          className="absolute right-3 top-3 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>

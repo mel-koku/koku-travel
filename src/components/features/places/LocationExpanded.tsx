@@ -233,7 +233,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     <>
       {/* Backdrop */}
       <m.div
-        className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-charcoal/40 backdrop-blur-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -241,10 +241,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         onClick={onClose}
       />
 
-      {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay */}
+      {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay.
+          Sits at z-[70] so it stacks above the /places search modal (z-[60]). */}
       <m.div
         data-lenis-prevent
-        className="fixed z-50 bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
+        className="fixed z-[70] bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
           inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[95vw] sm:border-l sm:border-border"
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
