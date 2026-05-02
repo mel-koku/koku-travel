@@ -99,7 +99,7 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="flex-1 overflow-y-auto pr-16 sm:pr-20 pb-4">{children}</div>
+        <div className="relative flex-1 overflow-y-auto pr-16 sm:pr-20 pb-4">{children}</div>
       </div>
     </div>,
     document.body,

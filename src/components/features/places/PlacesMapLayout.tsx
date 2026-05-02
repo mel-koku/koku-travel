@@ -167,10 +167,13 @@ export function PlacesMapLayout({
 
   return (
     <>
-      {/* Full-viewport map with floating pills */}
+      {/* Map fills its positioned ancestor (the modal scroll container on
+          /places, the page on legacy callers — both work because absolute
+          falls back through the tree). top offset still tracks
+          --category-bar-h so the map starts below the sticky CategoryBar. */}
       <div
         data-lenis-prevent
-        className="fixed inset-x-0 bottom-0 z-20"
+        className="absolute inset-x-0 bottom-0 z-20"
         style={{ top: "calc(var(--header-h) + var(--category-bar-h, 56px))" }}
       >
         <div className="relative h-full">
