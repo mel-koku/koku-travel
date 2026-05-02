@@ -579,6 +579,30 @@ export type LocationNearbyDbRow = Pick<LocationDbRow,
 >;
 
 /**
+ * Columns needed for /api/locations/print-enrichment (5 columns).
+ * Minimal projection — print page only needs Japanese name + station + cash-only +
+ * reservation flag, joined to a list of location IDs.
+ */
+export const LOCATION_PRINT_COLUMNS = `
+  id,
+  name_japanese,
+  nearest_station,
+  cash_only,
+  reservation_info
+`.replace(/\s+/g, "");
+
+/**
+ * Subset of LocationDbRow for /api/locations/print-enrichment.
+ */
+export type LocationPrintDbRow = Pick<LocationDbRow,
+  | "id"
+  | "name_japanese"
+  | "nearest_station"
+  | "cash_only"
+  | "reservation_info"
+>;
+
+/**
  * Database row type for sub_experiences table.
  * Schema lives in supabase/migrations/20260406100000_add_location_hierarchy.sql.
  */
