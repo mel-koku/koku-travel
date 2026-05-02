@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo } from "react";
 import { m, useReducedMotion } from "framer-motion";
 
@@ -32,9 +31,10 @@ const FEATURED_CITIES: Array<{ slug: string; label: string; region: string; imag
 type PlacesLanesProps = {
   locations: Location[];
   onSelect: (location: Location) => void;
+  onCitySelect: (citySlug: string) => void;
 };
 
-export function PlacesLanes({ locations, onSelect }: PlacesLanesProps) {
+export function PlacesLanes({ locations, onSelect, onCitySelect }: PlacesLanesProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const iconic = useMemo(() => {
@@ -88,7 +88,7 @@ export function PlacesLanes({ locations, onSelect }: PlacesLanesProps) {
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {FEATURED_CITIES.map((city) => (
-            <CityTile key={city.slug} city={city} />
+            <CityTile key={city.slug} city={city} onSelect={onCitySelect} />
           ))}
         </div>
       </Lane>
@@ -186,11 +186,18 @@ function PlaceTile({
   );
 }
 
-function CityTile({ city }: { city: { slug: string; label: string; region: string; image: string } }) {
+function CityTile({
+  city,
+  onSelect,
+}: {
+  city: { slug: string; label: string; region: string; image: string };
+  onSelect: (citySlug: string) => void;
+}) {
   return (
-    <Link
-      href={`/places?city=${city.slug}`}
-      className="group relative block aspect-[4/5] overflow-hidden rounded-lg bg-surface shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+    <button
+      type="button"
+      onClick={() => onSelect(city.slug)}
+      className="group relative block aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
     >
       <Image
         src={city.image}
@@ -204,6 +211,6 @@ function CityTile({ city }: { city: { slug: string; label: string; region: strin
         <p className="text-base font-medium text-white sm:text-lg">{city.label}</p>
         <p className="text-[11px] uppercase tracking-wide text-white/80">{city.region}</p>
       </div>
-    </Link>
+    </button>
   );
 }

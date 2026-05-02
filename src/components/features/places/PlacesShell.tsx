@@ -19,6 +19,7 @@ import { calculateDistance } from "@/lib/utils/geoUtils";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { PlacesSavedTripBar } from "./PlacesSavedTripBar";
 import { PlacesLanes } from "./PlacesLanes";
+import { PlacesSearchModal } from "./PlacesSearchModal";
 import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -138,6 +139,9 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  // Search modal: bare /places renders lanes only; modal opens on hero
+  // search click, Browse-all CTA, city tile click, or any filter URL param.
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   // ── Search input state ──
   const [inputValue, setInputValue] = useState("");
 
@@ -209,6 +213,18 @@ export function PlacesShell({ content }: PlacesShellProps) {
         setPage(parsed);
       }
     }
+    // Auto-open the search modal when the URL carries any filter intent —
+    // shared/bookmarked links land on the filtered grid, not the lanes page.
+    const FILTER_KEYS = [
+      "q", "city", "category", "jta", "sort", "prefectures", "vibes",
+      "price", "duration", "openNow", "wheelchair", "vegetarian",
+      "featured", "unesco", "saved", "yuku", "view",
+    ];
+    const hasDeepLinkFilter = FILTER_KEYS.some((k) => {
+      const v = searchParams.get(k);
+      return v !== null && v !== "" && v !== "false";
+    });
+    if (hasDeepLinkFilter) setIsSearchOpen(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
@@ -243,6 +259,23 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const handleCloseExpanded = useCallback(() => {
     setExpandedLocation(null);
   }, []);
+
+  const handleOpenSearch = useCallback(() => {
+    setIsSearchOpen(true);
+  }, []);
+
+  const handleCloseSearch = useCallback(() => {
+    setIsSearchOpen(false);
+    handleClearAll();
+  }, [handleClearAll]);
+
+  const handleCitySelect = useCallback(
+    (citySlug: string) => {
+      setSelectedCity(citySlug);
+      setIsSearchOpen(true);
+    },
+    [setSelectedCity],
+  );
 
   const activeCategory = useMemo(() => {
     // Map selected vibes to the closest editorial category for interstitial messages
@@ -418,20 +451,44 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-background">
-      {viewMode === "grid" && (
-        <>
-          <PlacesIntro totalCount={total} content={content}>
-            <SeasonalBanner
-              locations={locations}
-              onFilterSeasonal={handleFilterSeasonal}
-            />
-          </PlacesIntro>
-          {activeFilterCount === 0 && yukuIds.length === 0 && !query && (
-            <PlacesLanes locations={locations} onSelect={handleSelectLocation} />
-          )}
-        </>
-      )}
+      {/* Lanes view — the bare /places experience. Always rendered; the
+          search modal sits on top when active. */}
+      <PlacesIntro totalCount={total} content={content} onSearchClick={handleOpenSearch}>
+        <SeasonalBanner
+          locations={locations}
+          onFilterSeasonal={handleFilterSeasonal}
+        />
+      </PlacesIntro>
+      <PlacesLanes
+        locations={locations}
+        onSelect={handleSelectLocation}
+        onCitySelect={handleCitySelect}
+      />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <button
+          type="button"
+          onClick={handleOpenSearch}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-6 py-3 text-sm font-medium text-foreground transition hover:bg-canvas hover:shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          Browse all {total ? total.toLocaleString() : ""} places
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
+      {/* Search modal — wraps the existing CategoryBar + grid/map + FilterPanel. */}
+      <PlacesSearchModal isOpen={isSearchOpen} onClose={handleCloseSearch}>
       {/* Error state */}
       {error ? (
         <div className="flex-1 flex items-center justify-center py-20">
@@ -639,15 +696,16 @@ export function PlacesShell({ content }: PlacesShellProps) {
         seasonalHighlight={seasonalHighlight}
       />
 
-      {/* Location Detail Panel */}
+      </>
+      )}
+      </PlacesSearchModal>
+
+      {/* Location detail — mounts above both lanes and modal. */}
       {expandedLocation && (
         <LocationExpanded
           location={expandedLocation}
           onClose={handleCloseExpanded}
         />
-      )}
-
-      </>
       )}
 
       <PlacesSavedTripBar savedCount={savedIds.length} />
