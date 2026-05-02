@@ -61,6 +61,13 @@ type PlacesMapProps = {
   useCraftTypeColors?: boolean;
   /** When set, drops a "you are here" marker and re-centers on first activation. */
   userLocation?: { lat: number; lng: number } | null;
+  /**
+   * Stable identifier for the current spatial anchor (e.g. "city:kyoto",
+   * "near-me", "saved", "all"). When this string changes, the map re-fits
+   * its bounds to the current locations so a city filter zooms the user
+   * into Kyoto rather than leaving them at country zoom.
+   */
+  anchorKey?: string;
 };
 
 function ensureUserLocationPulseStyle() {
@@ -127,6 +134,7 @@ export function PlacesMap({
   flyToLocation,
   useCraftTypeColors,
   userLocation,
+  anchorKey,
 }: PlacesMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -522,6 +530,39 @@ export function PlacesMap({
     const { lat, lng } = flyToLocation.coordinates;
     map.flyTo({ center: [lng, lat], zoom: 14, duration: 1400 });
   }, [flyToLocation, mapReady]);
+
+  // Anchor re-fit: whenever the spatial anchor changes (e.g. user filters
+  // by city, clears filters, or toggles saved-only), re-fit bounds to the
+  // current point set so the map zooms with intent rather than sitting at
+  // country zoom while the listing has narrowed to one city.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const mapboxModule = mapboxModuleRef.current;
+    if (!map || !mapboxModule || !mapReady) return;
+    if (!anchorKey) return;
+    // First-load fit is handled by the data-load effect below; skip until
+    // that has run so we don't double-fit on initial mount.
+    if (!hasFittedBounds.current) return;
+
+    const fc = featureCollectionRef.current;
+    if (fc.features.length === 0) return;
+
+    const bounds = new mapboxModule.LngLatBounds();
+    for (const feature of fc.features) {
+      const geom = feature.geometry as GeoJSON.Point;
+      bounds.extend(geom.coordinates as [number, number]);
+    }
+    if (bounds.isEmpty()) return;
+
+    // Single point: fitBounds zooms in too far. Use flyTo at a sensible city zoom.
+    if (fc.features.length === 1) {
+      const geom = fc.features[0]!.geometry as GeoJSON.Point;
+      map.flyTo({ center: geom.coordinates as [number, number], zoom: 12, duration: 800 });
+      return;
+    }
+
+    map.fitBounds(bounds, { maxZoom: 13, minZoom: 4, duration: 800, padding: 60 });
+  }, [anchorKey, mapReady]);
 
   // "You are here" marker — drops a pulsing dot and re-centers on first activation.
   // When userLocation clears, removes the marker but does not move the map.

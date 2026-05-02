@@ -18,6 +18,7 @@ import { calculateDistance } from "@/lib/utils/geoUtils";
 
 import { SeasonalBanner } from "./SeasonalBanner";
 import { PlacesSavedTripBar } from "./PlacesSavedTripBar";
+import { PlacesLanes } from "./PlacesLanes";
 import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -312,6 +313,17 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
   const nearMeApplied = nearMeActive && userCoords !== null && viewMode === "map";
 
+  // Spatial anchor: drives the map's fitBounds re-fit so changing the city
+  // filter zooms the user to that city instead of leaving them at country zoom.
+  const anchorKey = useMemo(() => {
+    if (nearMeApplied) return "near-me";
+    if (selectedCity) return `city:${selectedCity}`;
+    if (savedOnly) return "saved";
+    if (selectedPrefectures.length > 0) return `pref:${selectedPrefectures.join("+")}`;
+    if (selectedCategory) return `category:${selectedCategory}`;
+    return "all";
+  }, [nearMeApplied, selectedCity, savedOnly, selectedPrefectures, selectedCategory]);
+
   const distanceById = useMemo(() => {
     if (!nearMeApplied || !userCoords) return null;
     const map = new Map<string, number>();
@@ -407,12 +419,17 @@ export function PlacesShell({ content }: PlacesShellProps) {
   return (
     <div className="min-h-[100dvh] bg-background">
       {viewMode === "grid" && (
-        <PlacesIntro totalCount={total} content={content}>
-          <SeasonalBanner
-            locations={locations}
-            onFilterSeasonal={handleFilterSeasonal}
-          />
-        </PlacesIntro>
+        <>
+          <PlacesIntro totalCount={total} content={content}>
+            <SeasonalBanner
+              locations={locations}
+              onFilterSeasonal={handleFilterSeasonal}
+            />
+          </PlacesIntro>
+          {activeFilterCount === 0 && yukuIds.length === 0 && !query && (
+            <PlacesLanes locations={locations} onSelect={handleSelectLocation} />
+          )}
+        </>
       )}
 
       {/* Error state */}
@@ -520,6 +537,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
           flyToLocation={flyToLocation}
           userLocation={nearMeApplied ? userCoords : null}
           locationDistanceKm={distanceById}
+          anchorKey={anchorKey}
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">

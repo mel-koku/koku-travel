@@ -30,6 +30,8 @@ type PlacesMapLayoutProps = {
   userLocation?: { lat: number; lng: number } | null;
   /** Distance in km, keyed by location id. Rendered on cards when present. */
   locationDistanceKm?: Map<string, number> | null;
+  /** Spatial anchor identifier; when it changes, the map re-fits its bounds. */
+  anchorKey?: string;
 };
 
 export function PlacesMapLayout({
@@ -42,6 +44,7 @@ export function PlacesMapLayout({
   useCraftTypeColors,
   userLocation,
   locationDistanceKm,
+  anchorKey,
 }: PlacesMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -189,6 +192,7 @@ export function PlacesMapLayout({
               flyToLocation={flyToLocation}
               useCraftTypeColors={useCraftTypeColors}
               userLocation={userLocation ?? null}
+              anchorKey={anchorKey}
             />
           </ErrorBoundary>
 
