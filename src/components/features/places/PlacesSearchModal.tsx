@@ -80,10 +80,13 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
         role="presentation"
       />
       {/* Panel — centered with viewport padding so it reads as a dialog,
-          not a full-page replacement. */}
+          not a full-page replacement. We re-scope --header-h to 0 inside the
+          panel so any descendant using sticky `top: var(--header-h)` (e.g.
+          CategoryBar) anchors to the panel's top, not the global page header. */}
       <div
         ref={panelRef}
         className="absolute inset-4 sm:inset-8 lg:inset-12 flex flex-col overflow-hidden rounded-lg bg-background shadow-[var(--shadow-elevated)]"
+        style={{ "--header-h": "0px" } as React.CSSProperties}
         role="dialog"
         aria-modal="true"
         aria-label="Search places"
