@@ -8,31 +8,11 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
 import { normalizeOperatingHours } from "@/lib/locations/normalizeHours";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
-import type { LocationListingDbRow } from "@/lib/supabase/projections";
-
-const NEARBY_COLUMNS = `
-  id,
-  name,
-  region,
-  city,
-  prefecture,
-  category,
-  image,
-  rating,
-  review_count,
-  estimated_duration,
-  primary_photo_url,
-  coordinates,
-  google_primary_type,
-  price_level,
-  is_hidden_gem,
-  name_japanese,
-  nearest_station,
-  cash_only,
-  reservation_info,
-  operating_hours,
-  short_description
-`.replace(/\s+/g, "");
+import {
+  LOCATION_NEARBY_COLUMNS,
+  type LocationListingDbRow,
+  type LocationNearbyDbRow,
+} from "@/lib/supabase/projections";
 
 const WEEKDAYS = [
   "sunday",
@@ -111,7 +91,7 @@ export const GET = withApiHandler(
     const lngDelta = radiusKm / (111.0 * Math.cos((lat * Math.PI) / 180));
 
     let query = applyActiveLocationFilters(
-      supabase.from("locations").select(NEARBY_COLUMNS)
+      supabase.from("locations").select(LOCATION_NEARBY_COLUMNS)
     ).is("parent_id", null) // Only top-level locations in nearby grid
       .gte("coordinates->lat", lat - latDelta)
       .lte("coordinates->lat", lat + latDelta)
@@ -142,31 +122,7 @@ export const GET = withApiHandler(
     const currentDay = WEEKDAYS[now.getDay()];
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    type NearbyRow = {
-      id: string;
-      name: string;
-      region: string;
-      city: string;
-      prefecture: string | null;
-      category: string;
-      image: string;
-      rating: number | null;
-      review_count: number | null;
-      estimated_duration: string | null;
-      primary_photo_url: string | null;
-      coordinates: { lat: number; lng: number } | null;
-      google_primary_type: string | null;
-      price_level: number | null;
-      is_hidden_gem: boolean | null;
-      name_japanese: string | null;
-      nearest_station: string | null;
-      cash_only: boolean | null;
-      reservation_info: "required" | "recommended" | null;
-      operating_hours: LocationOperatingHours | null;
-      short_description: string | null;
-    };
-
-    const rows = (data || []) as unknown as NearbyRow[];
+    const rows = (data || []) as unknown as LocationNearbyDbRow[];
 
     // Calculate distances + filter by actual haversine radius
     const withDistance = rows
@@ -181,7 +137,7 @@ export const GET = withApiHandler(
         if (dist > radiusKm) return null;
         return { row, distance: dist };
       })
-      .filter(Boolean) as { row: NearbyRow; distance: number }[];
+      .filter(Boolean) as { row: LocationNearbyDbRow; distance: number }[];
 
     // Filter by open now if requested. Normalize the raw DB shape first —
     // ~26% of rows use Google Places v1 (nested day/hour/minute objects)
