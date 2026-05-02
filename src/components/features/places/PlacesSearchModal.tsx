@@ -92,11 +92,11 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
           type="button"
           onClick={onClose}
           aria-label="Close search"
-          className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="absolute right-4 top-3 z-10 flex h-12 w-12 items-center justify-center rounded-full text-foreground transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="flex-1 overflow-y-auto pt-14 sm:pt-16 pb-4">{children}</div>
+        <div className="flex-1 overflow-y-auto pr-16 sm:pr-20 pb-4">{children}</div>
       </div>
     </div>,
     document.body,
