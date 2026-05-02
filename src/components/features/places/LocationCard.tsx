@@ -8,6 +8,7 @@ import { useSaved } from "@/context/SavedContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { resolveTimeEstimate } from "@/lib/locations/timeEstimates";
 import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
 
@@ -25,7 +26,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
   const prefersReducedMotion = useReducedMotion();
   const displayName = location.name;
   const summary = getShortOverview(location, null);
-  const estimatedDuration = location.estimatedDuration?.trim();
+  const estimatedDuration = resolveTimeEstimate(location.estimatedDuration, location.category);
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);
   const showFirstSaveToast = useFirstSaveToast();

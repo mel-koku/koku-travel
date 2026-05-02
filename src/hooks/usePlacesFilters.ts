@@ -9,6 +9,7 @@ import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
+import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import {
   DURATION_FILTERS,
   calculatePopularityScore,
@@ -43,13 +44,12 @@ export type { EnhancedLocation };
 
 
 // ── Category diversity interleaving ───────────────────────
-// Prevents dining-heavy clusters in the default "recommended" sort
-// by ensuring no more than 2 consecutive items share a diversity group.
-
-const DINING_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
+// Collapses the 32 DB categories into the 6 parent groups
+// (culture/food/nature/shopping/view/entertainment) so the round-robin
+// produces real variety — temple+shrine+museum no longer stack 6 deep.
 
 function getDiversityGroup(category: string): string {
-  return DINING_CATEGORIES.has(category) ? "dining" : category;
+  return getParentCategoryForDatabaseCategory(category) ?? category;
 }
 
 function interleaveForDiversity<T extends { category: string }>(

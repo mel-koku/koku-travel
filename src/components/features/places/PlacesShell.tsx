@@ -17,6 +17,7 @@ import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { calculateDistance } from "@/lib/utils/geoUtils";
 
 import { SeasonalBanner } from "./SeasonalBanner";
+import { PlacesSavedTripBar } from "./PlacesSavedTripBar";
 import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -87,7 +88,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     error,
   } = useAllLocationsSingle();
   const { data: filterMetadata } = useFilterMetadataQuery();
-  const { user } = useAppState();
+  const { user, saved: savedIds } = useAppState();
   const { saved } = useSavedPlaces(user?.email ? user.id : undefined);
   const savedLocationIdSet = useMemo(
     () =>
@@ -630,6 +631,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
       </>
       )}
+
+      <PlacesSavedTripBar savedCount={savedIds.length} />
     </div>
   );
 }

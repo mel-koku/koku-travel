@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
+import { resolveTimeEstimate } from "@/lib/locations/timeEstimates";
+import { useLocationPairs } from "@/hooks/useLocationPairs";
+import type { LocationPair } from "@/app/api/locations/pairs/route";
 import type { Location } from "@/types/location";
 
 const FALLBACK_IMAGE =
@@ -51,6 +54,9 @@ export function LocationEditorialGrid({
   activeCategory,
   onClearFilters,
 }: LocationEditorialGridProps) {
+  const visibleIds = useMemo(() => locations.map((l) => l.id), [locations]);
+  const pairs = useLocationPairs(visibleIds);
+
   if (locations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -101,6 +107,7 @@ export function LocationEditorialGrid({
             location={location}
             onSelect={onSelect}
             eager={i < 8}
+            pair={pairs[location.id] ?? null}
           />
         </m.div>
       ))}
@@ -113,10 +120,12 @@ const PlacesCard = memo(function PlacesCard({
   location,
   onSelect,
   eager = false,
+  pair,
 }: {
   location: Location;
   onSelect?: (location: Location) => void;
   eager?: boolean;
+  pair?: LocationPair | null;
 }) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
@@ -213,18 +222,30 @@ const PlacesCard = memo(function PlacesCard({
           {/* City + duration */}
           <p className="text-xs text-stone">
             {location.city}, {location.region}
-            {formatDuration(location.estimatedDuration) && (
-              <>
-                <span className="text-border"> &middot; </span>
-                <span>{formatDuration(location.estimatedDuration)}</span>
-              </>
-            )}
+            {(() => {
+              const dur = formatDuration(location.estimatedDuration)
+                ?? resolveTimeEstimate(location.estimatedDuration, location.category);
+              return dur ? (
+                <>
+                  <span className="text-border"> &middot; </span>
+                  <span>{dur}</span>
+                </>
+              ) : null;
+            })()}
           </p>
 
           {/* Summary */}
           <p className="text-xs text-foreground-secondary line-clamp-2 leading-relaxed">
             {summary}
           </p>
+
+          {/* Pairs with — only when a curated cluster relationship exists */}
+          {pair && (
+            <p className="text-xs text-foreground-secondary">
+              <span className="text-stone">Pairs with </span>
+              <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+            </p>
+          )}
 
           {/* Category + badges + duration */}
           <div className="flex items-center gap-2 pt-0.5 mt-auto flex-wrap">
