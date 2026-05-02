@@ -61,3 +61,22 @@ export function resolveTimeEstimate(
   if (trimmed) return trimmed;
   return getStaticTimeEstimate(category);
 }
+
+/**
+ * Humanizes a sub-experience minute aggregate into a card-ready string.
+ * Vocabulary intentionally matches the static fallback table above
+ * ("Half day", "1 hr", "1.5 hrs") so dynamic and static labels read
+ * consistently on the same grid.
+ */
+export function formatMinutesToFitLabel(minutes: number): string | undefined {
+  if (!Number.isFinite(minutes) || minutes <= 0) return undefined;
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  if (minutes >= 480) return "Full day";
+  if (minutes >= 240) return "Half day";
+
+  // Round to nearest 0.5 hour for 60–239 min range.
+  const halfHours = Math.round(minutes / 30);
+  const hours = halfHours / 2;
+  if (hours === 1) return "1 hr";
+  return `${hours} hrs`;
+}

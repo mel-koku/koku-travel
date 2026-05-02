@@ -8,8 +8,9 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { resolveTimeEstimate } from "@/lib/locations/timeEstimates";
+import { formatMinutesToFitLabel, resolveTimeEstimate } from "@/lib/locations/timeEstimates";
 import { useLocationPairs } from "@/hooks/useLocationPairs";
+import { useLocationDurations } from "@/hooks/useLocationDurations";
 import type { LocationPair } from "@/app/api/locations/pairs/route";
 import type { Location } from "@/types/location";
 
@@ -56,6 +57,7 @@ export function LocationEditorialGrid({
 }: LocationEditorialGridProps) {
   const visibleIds = useMemo(() => locations.map((l) => l.id), [locations]);
   const pairs = useLocationPairs(visibleIds);
+  const durations = useLocationDurations(visibleIds);
 
   if (locations.length === 0) {
     return (
@@ -108,6 +110,7 @@ export function LocationEditorialGrid({
             onSelect={onSelect}
             eager={i < 8}
             pair={pairs[location.id] ?? null}
+            durationMinutes={durations[location.id]}
           />
         </m.div>
       ))}
@@ -121,11 +124,14 @@ const PlacesCard = memo(function PlacesCard({
   onSelect,
   eager = false,
   pair,
+  durationMinutes,
 }: {
   location: Location;
   onSelect?: (location: Location) => void;
   eager?: boolean;
   pair?: LocationPair | null;
+  /** Summed sub-experience minutes for this location, when available. */
+  durationMinutes?: number;
 }) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
@@ -220,11 +226,15 @@ const PlacesCard = memo(function PlacesCard({
             )}
           </div>
 
-          {/* City + duration */}
+          {/* City + duration. Cascade: aggregated sub-experience minutes win
+              when present (concierge data — "this temple has 3 highlights
+              totalling 1.5 hrs"), then the curated estimatedDuration, then
+              the category-based static fallback. */}
           <p className="text-xs text-stone">
             {location.city}, {location.region}
             {(() => {
-              const dur = formatDuration(location.estimatedDuration)
+              const dur = (durationMinutes ? formatMinutesToFitLabel(durationMinutes) : null)
+                ?? formatDuration(location.estimatedDuration)
                 ?? resolveTimeEstimate(location.estimatedDuration, location.category);
               return dur ? (
                 <>
