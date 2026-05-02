@@ -40,7 +40,23 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
     };
     document.addEventListener("keydown", handleKey);
 
+    // Auto-focus the first text input inside the panel, but only after two
+    // animation frames so the modal has painted and (on iOS) the keyboard
+    // doesn't slide up at the same instant the overlay is animating in.
+    let raf1 = 0;
+    let raf2 = 0;
+    raf1 = window.requestAnimationFrame(() => {
+      raf2 = window.requestAnimationFrame(() => {
+        const input = panelRef.current?.querySelector<HTMLInputElement>(
+          'input[type="text"], input:not([type])',
+        );
+        input?.focus({ preventScroll: true });
+      });
+    });
+
     return () => {
+      window.cancelAnimationFrame(raf1);
+      window.cancelAnimationFrame(raf2);
       document.body.style.overflow = originalOverflow;
       if (mainEl) mainEl.removeAttribute("inert");
       document.removeEventListener("keydown", handleKey);

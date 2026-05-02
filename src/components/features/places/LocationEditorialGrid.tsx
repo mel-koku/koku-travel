@@ -239,11 +239,22 @@ const PlacesCard = memo(function PlacesCard({
             {summary}
           </p>
 
-          {/* Pairs with — only when a curated cluster relationship exists */}
-          {pair && (
+          {/* Pair line — curated cluster wins, spatial-proximity fallback fills the rest.
+              Suppressed when the card already carries a JTA or UNESCO badge to avoid
+              meta-line crowding. */}
+          {pair && !location.jtaApproved && !location.isUnescoSite && (
             <p className="text-xs text-foreground-secondary">
-              <span className="text-stone">Pairs with </span>
-              <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+              {pair.kind === "cluster" ? (
+                <>
+                  <span className="text-stone">Pairs with </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-stone">{pair.walkMinutes} min walk to </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              )}
             </p>
           )}
 

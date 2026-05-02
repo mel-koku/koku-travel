@@ -169,64 +169,91 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
 
-  // Read URL params once on mount
-  const didApplyParamsRef = useRef(false);
-  useEffect(() => {
-    if (didApplyParamsRef.current) return;
-    didApplyParamsRef.current = true;
-    const yukuParam = searchParams.get("yuku");
-    const cityParam = searchParams.get("city");
-    const categoryParam = searchParams.get("category");
-    const qParam = searchParams.get("q");
-    const jtaParam = searchParams.get("jta");
-    if (yukuParam) {
-      const ids = yukuParam.split(",").map((s) => s.trim()).filter(Boolean);
-      if (ids.length > 0) setYukuIds(ids);
-    }
-    if (cityParam) setSelectedCity(cityParam);
-    if (categoryParam) setSelectedCategory(categoryParam);
-    if (qParam) setInputValue(qParam);
-    if (jtaParam === "true") setJtaApprovedOnly(true);
-    // New filter params
-    const sortParam = searchParams.get("sort");
+  // Apply URL → state. Used both at mount and on browser back/forward
+  // (via the popstate listener below). Always overwrites — going from
+  // /places?city=tokyo back to /places must CLEAR the city filter, not
+  // just leave the prior value in place.
+  const applyParamsToState = useCallback((params: URLSearchParams) => {
+    const yukuParam = params.get("yuku");
+    setYukuIds(yukuParam ? yukuParam.split(",").map((s) => s.trim()).filter(Boolean) : []);
+
+    setSelectedCity(params.get("city"));
+    setSelectedCategory(params.get("category"));
+    setInputValue(params.get("q") ?? "");
+    setJtaApprovedOnly(params.get("jta") === "true");
+
+    const sortParam = params.get("sort");
     if (sortParam && ["recommended", "highest_rated", "most_reviews", "price_low", "duration_short"].includes(sortParam)) {
       setSelectedSort(sortParam as typeof selectedSort);
+    } else {
+      setSelectedSort("recommended");
     }
-    const prefParam = searchParams.get("prefectures");
-    if (prefParam) setSelectedPrefectures(prefParam.split(",").filter(Boolean));
-    const vibesParam = searchParams.get("vibes");
-    if (vibesParam) setSelectedVibes(vibesParam.split(",").filter(Boolean) as typeof selectedVibes);
-    const priceParam = searchParams.get("price");
-    if (priceParam !== null && priceParam !== "") setSelectedPriceLevel(Number(priceParam));
-    const durParam = searchParams.get("duration");
-    if (durParam) setSelectedDuration(durParam);
-    if (searchParams.get("openNow") === "true") setOpenNow(true);
-    if (searchParams.get("wheelchair") === "true") setWheelchairAccessible(true);
-    if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
-    if (searchParams.get("featured") === "true") setFeaturedOnly(true);
-    if (searchParams.get("unesco") === "true") setUnescoOnly(true);
-    if (searchParams.get("saved") === "1") setSavedOnly(true);
-    const pageParam = searchParams.get("page");
+
+    const prefParam = params.get("prefectures");
+    setSelectedPrefectures(prefParam ? prefParam.split(",").filter(Boolean) : []);
+
+    const vibesParam = params.get("vibes");
+    setSelectedVibes(vibesParam ? (vibesParam.split(",").filter(Boolean) as typeof selectedVibes) : []);
+
+    const priceParam = params.get("price");
+    setSelectedPriceLevel(priceParam !== null && priceParam !== "" ? Number(priceParam) : null);
+
+    setSelectedDuration(params.get("duration"));
+    setOpenNow(params.get("openNow") === "true");
+    setWheelchairAccessible(params.get("wheelchair") === "true");
+    setVegetarianFriendly(params.get("vegetarian") === "true");
+    setFeaturedOnly(params.get("featured") === "true");
+    setUnescoOnly(params.get("unesco") === "true");
+    setSavedOnly(params.get("saved") === "1");
+
+    const pageParam = params.get("page");
     if (pageParam) {
       const parsed = Number.parseInt(pageParam, 10);
-      if (Number.isFinite(parsed) && parsed > 0) {
-        setPage(parsed);
-      }
+      setPage(Number.isFinite(parsed) && parsed > 0 ? parsed : 1);
+    } else {
+      setPage(1);
     }
-    // Auto-open the search modal when the URL carries any filter intent —
-    // shared/bookmarked links land on the filtered grid, not the lanes page.
+
+    // Decide modal state from URL — open whenever any filter intent is present.
     const FILTER_KEYS = [
       "q", "city", "category", "jta", "sort", "prefectures", "vibes",
       "price", "duration", "openNow", "wheelchair", "vegetarian",
       "featured", "unesco", "saved", "yuku", "view",
     ];
-    const hasDeepLinkFilter = FILTER_KEYS.some((k) => {
-      const v = searchParams.get(k);
+    const hasFilter = FILTER_KEYS.some((k) => {
+      const v = params.get(k);
       return v !== null && v !== "" && v !== "false";
     });
-    if (hasDeepLinkFilter) setIsSearchOpen(true);
+    setIsSearchOpen(hasFilter);
+  }, [
+    setYukuIds, setSelectedCity, setSelectedCategory, setJtaApprovedOnly,
+    setSelectedSort, setSelectedPrefectures, setSelectedVibes,
+    setSelectedPriceLevel, setSelectedDuration, setOpenNow,
+    setWheelchairAccessible, setVegetarianFriendly, setFeaturedOnly,
+    setUnescoOnly, setSavedOnly, setPage,
+  ]);
+
+  // Mount-only: apply URL params on first render.
+  const didApplyParamsRef = useRef(false);
+  useEffect(() => {
+    if (didApplyParamsRef.current) return;
+    didApplyParamsRef.current = true;
+    const params = new URLSearchParams(searchParams.toString());
+    applyParamsToState(params);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Browser back/forward: re-apply URL → state. popstate fires only on user
+  // navigation, not on history.pushState/replaceState — so our own URL syncs
+  // (router.replace) don't trigger feedback loops.
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      applyParamsToState(params);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [applyParamsToState]);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
 
   useEffect(() => {
@@ -276,6 +303,22 @@ export function PlacesShell({ content }: PlacesShellProps) {
     },
     [setSelectedCity],
   );
+
+  // Desktop: `/` opens the search modal (skips when typing in an input).
+  // Cmd/Ctrl+K is intentionally not wired — reserved for a future global
+  // command palette to avoid muscle-memory collision.
+  useEffect(() => {
+    const handleSlash = (e: KeyboardEvent) => {
+      if (e.key !== "/") return;
+      if (isSearchOpen) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      e.preventDefault();
+      setIsSearchOpen(true);
+    };
+    window.addEventListener("keydown", handleSlash);
+    return () => window.removeEventListener("keydown", handleSlash);
+  }, [isSearchOpen]);
 
   const activeCategory = useMemo(() => {
     // Map selected vibes to the closest editorial category for interstitial messages
