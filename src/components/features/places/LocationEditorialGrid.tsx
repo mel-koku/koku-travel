@@ -152,6 +152,7 @@ const PlacesCard = memo(function PlacesCard({
     >
       <Link
         href={`/places/${location.id}`}
+        prefetch={false}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
         className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
