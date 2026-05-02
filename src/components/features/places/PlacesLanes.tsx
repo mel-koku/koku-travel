@@ -142,8 +142,11 @@ function Lane({
 }
 
 function HorizontalRail({ children }: { children: React.ReactNode }) {
+  // overscroll-x-contain (not the shorthand): horizontal wheel stays in the
+  // rail, vertical wheel chains up so the page can scroll while the cursor
+  // is over a tile.
   return (
-    <div className="-mx-4 overflow-x-auto overscroll-contain px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+    <div className="-mx-4 overflow-x-auto overscroll-x-contain px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
       <div className="flex snap-x snap-mandatory gap-3 sm:gap-4">{children}</div>
     </div>
   );
@@ -229,8 +232,8 @@ function CityTile({
         className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
       />
       <div className="absolute inset-0 scrim-60" />
-      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-        <p className="font-serif text-xl font-medium leading-tight text-white sm:text-2xl">{city.label}</p>
+      <div className="absolute inset-x-0 bottom-0 p-3">
+        <p className="line-clamp-2 font-serif text-base font-medium leading-tight text-white">{city.label}</p>
         <p className="mt-0.5 text-[11px] uppercase tracking-wide text-white/80">{city.region}</p>
       </div>
     </button>
