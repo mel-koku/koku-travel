@@ -69,13 +69,14 @@ export function PlacesSearchModal({ isOpen, onClose, children }: PlacesSearchMod
 
   return createPortal(
     <div
-      className="fixed inset-0 z-40 bg-background"
+      className="fixed left-0 right-0 bottom-0 z-40 bg-background"
+      style={{ top: "var(--header-h, 64px)" }}
       role="dialog"
       aria-modal="true"
       aria-label="Search places"
       data-lenis-prevent
     >
-      <div ref={panelRef} className="relative flex h-[100dvh] flex-col overflow-hidden">
+      <div ref={panelRef} className="relative flex h-full flex-col overflow-hidden">
         <button
           type="button"
           onClick={onClose}
