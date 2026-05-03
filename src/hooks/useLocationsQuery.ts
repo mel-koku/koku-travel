@@ -2,7 +2,6 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Location } from "@/types/location";
-import type { PaginatedResponse } from "@/lib/api/pagination";
 import type { FilterMetadata } from "@/types/filters";
 import { extractFetchErrorMessage } from "@/lib/api/fetchError";
 import { fetchWithTimeout } from "@/lib/utils/fetchWithTimeout";
@@ -138,25 +137,34 @@ export function useAllLocationsSingle() {
 }
 
 /**
- * React Query hook for server-side location search.
- * Used by the Explore page to find locations not yet loaded client-side.
- * Only fires when query is at least 2 characters.
+ * Server-side semantic-aware search for /places.
+ *
+ * Hits `/api/locations/search` which runs FTS first, then fuzzy + Vertex
+ * embedding fallback when keyword underperforms (<5 results). Returns a
+ * Set of matching location IDs so usePlacesFilters can treat semantic
+ * hits as server-side query matches without overwriting full Location
+ * data already loaded client-side.
+ *
+ * Intent-style queries like "quiet temple morning in Kyoto" surface
+ * places via the semantic fallback — what the rotating placeholders
+ * advertise. Empty query returns null (no server filter applied).
  */
 export function useLocationSearchQuery(query: string) {
   const trimmed = query.trim();
-  return useQuery({
-    queryKey: [...locationsKeys.all, "search", trimmed],
-    queryFn: async (): Promise<Location[]> => {
-      const res = await fetch(`/api/locations?search=${encodeURIComponent(trimmed)}&limit=50`);
-      if (!res.ok) throw new Error("Search failed");
-      const data = (await res.json()) as PaginatedResponse<Location>;
-      return data.data;
+  const { data } = useQuery({
+    queryKey: [...locationsKeys.all, "search-semantic", trimmed],
+    queryFn: async (): Promise<string[]> => {
+      const res = await fetch(`/api/locations/search?q=${encodeURIComponent(trimmed)}&limit=10`);
+      if (!res.ok) return [];
+      const rows = (await res.json()) as Array<{ id: string }>;
+      return rows.map((r) => r.id);
     },
     enabled: trimmed.length >= 2,
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,
   });
+  return { data };
 }
 
 /**

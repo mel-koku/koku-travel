@@ -389,6 +389,8 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "insider_tip"
   | "jta_approved"
   | "is_unesco_site"
+  | "parent_id"
+  | "parent_mode"
 >;
 
 /**

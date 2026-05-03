@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationFast, easeReveal } from "@/lib/motion";
 import { PlacesMap, type MapBounds } from "./PlacesMap";
 import { PlacesMapCard } from "./PlacesMapCard";
+import { MapAnchorStrip } from "./MapAnchorStrip";
 import { AskYukuChat } from "@/components/features/ask-yuku/AskYukuChat";
 import type { Location } from "@/types/location";
 
@@ -30,6 +31,8 @@ type PlacesMapLayoutProps = {
   userLocation?: { lat: number; lng: number } | null;
   /** Distance in km, keyed by location id. Rendered on cards when present. */
   locationDistanceKm?: Map<string, number> | null;
+  /** Spatial anchor identifier; when it changes, the map re-fits its bounds. */
+  anchorKey?: string;
 };
 
 export function PlacesMapLayout({
@@ -42,6 +45,7 @@ export function PlacesMapLayout({
   useCraftTypeColors,
   userLocation,
   locationDistanceKm,
+  anchorKey,
 }: PlacesMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -164,10 +168,13 @@ export function PlacesMapLayout({
 
   return (
     <>
-      {/* Full-viewport map with floating pills */}
+      {/* Map fills its positioned ancestor (the modal scroll container on
+          /places, the page on legacy callers — both work because absolute
+          falls back through the tree). top offset still tracks
+          --category-bar-h so the map starts below the sticky CategoryBar. */}
       <div
         data-lenis-prevent
-        className="fixed inset-x-0 bottom-0 z-20"
+        className="absolute inset-x-0 bottom-0 z-20"
         style={{ top: "calc(var(--header-h) + var(--category-bar-h, 56px))" }}
       >
         <div className="relative h-full">
@@ -189,8 +196,13 @@ export function PlacesMapLayout({
               flyToLocation={flyToLocation}
               useCraftTypeColors={useCraftTypeColors}
               userLocation={userLocation ?? null}
+              anchorKey={anchorKey}
             />
           </ErrorBoundary>
+
+          {/* Anchor strip: small uppercase pill that names the active spatial
+              filter (city / prefecture / near-me / saved). Hidden for "all". */}
+          <MapAnchorStrip anchorKey={anchorKey} />
 
           {/* Mobile: horizontal snap-scroll strip at bottom */}
           <div className="absolute bottom-3 left-0 right-0 z-10 md:hidden">

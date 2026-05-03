@@ -12,6 +12,7 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { resolveTimeEstimate } from "@/lib/locations/timeEstimates";
 import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
 import { isSafeUrl } from "@/lib/utils/urlSafety";
@@ -232,7 +233,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     <>
       {/* Backdrop */}
       <m.div
-        className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-charcoal/40 backdrop-blur-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -240,10 +241,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         onClick={onClose}
       />
 
-      {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay */}
+      {/* Right Panel — desktop: 560px from right, mobile: full-screen overlay.
+          Sits at z-[70] so it stacks above the /places search modal (z-[60]). */}
       <m.div
         data-lenis-prevent
-        className="fixed z-50 bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
+        className="fixed z-[70] bg-background shadow-[var(--shadow-elevated)] overflow-y-auto overscroll-contain
           inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[95vw] sm:border-l sm:border-border"
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
@@ -398,15 +400,18 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 ) : null}
               </span>
             ) : null}
-            {location.estimatedDuration && (
-              <span className="flex items-center gap-1 text-stone">
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <circle cx="12" cy="12" r="10" />
-                  <path strokeLinecap="round" d="M12 6v6l4 2" />
-                </svg>
-                Est. {location.estimatedDuration}
-              </span>
-            )}
+            {(() => {
+              const fit = resolveTimeEstimate(location.estimatedDuration, location.category);
+              return fit ? (
+                <span className="flex items-center gap-1 text-stone">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <circle cx="12" cy="12" r="10" />
+                    <path strokeLinecap="round" d="M12 6v6l4 2" />
+                  </svg>
+                  Est. {fit}
+                </span>
+              ) : null;
+            })()}
             {locationWithDetails.priceLevel !== undefined && locationWithDetails.priceLevel !== null && (
               <span className="text-stone font-mono text-xs">
                 {locationWithDetails.priceLevel === 0 ? "Free" : "¥".repeat(locationWithDetails.priceLevel)}

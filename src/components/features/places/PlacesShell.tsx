@@ -17,6 +17,9 @@ import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { calculateDistance } from "@/lib/utils/geoUtils";
 
 import { SeasonalBanner } from "./SeasonalBanner";
+import { PlacesSavedTripBar } from "./PlacesSavedTripBar";
+import { PlacesLanes } from "./PlacesLanes";
+import { PlacesSearchModal } from "./PlacesSearchModal";
 import { getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -87,7 +90,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     error,
   } = useAllLocationsSingle();
   const { data: filterMetadata } = useFilterMetadataQuery();
-  const { user } = useAppState();
+  const { user, saved: savedIds } = useAppState();
   const { saved } = useSavedPlaces(user?.email ? user.id : undefined);
   const savedLocationIdSet = useMemo(
     () =>
@@ -136,6 +139,9 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  // Search modal: bare /places renders lanes only; modal opens on hero
+  // search click, Browse-all CTA, city tile click, or any filter URL param.
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   // ── Search input state ──
   const [inputValue, setInputValue] = useState("");
 
@@ -163,52 +169,91 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
 
-  // Read URL params once on mount
+  // Apply URL → state. Used both at mount and on browser back/forward
+  // (via the popstate listener below). Always overwrites — going from
+  // /places?city=tokyo back to /places must CLEAR the city filter, not
+  // just leave the prior value in place.
+  const applyParamsToState = useCallback((params: URLSearchParams) => {
+    const yukuParam = params.get("yuku");
+    setYukuIds(yukuParam ? yukuParam.split(",").map((s) => s.trim()).filter(Boolean) : []);
+
+    setSelectedCity(params.get("city"));
+    setSelectedCategory(params.get("category"));
+    setInputValue(params.get("q") ?? "");
+    setJtaApprovedOnly(params.get("jta") === "true");
+
+    const sortParam = params.get("sort");
+    if (sortParam && ["recommended", "highest_rated", "most_reviews", "price_low", "duration_short"].includes(sortParam)) {
+      setSelectedSort(sortParam as typeof selectedSort);
+    } else {
+      setSelectedSort("recommended");
+    }
+
+    const prefParam = params.get("prefectures");
+    setSelectedPrefectures(prefParam ? prefParam.split(",").filter(Boolean) : []);
+
+    const vibesParam = params.get("vibes");
+    setSelectedVibes(vibesParam ? (vibesParam.split(",").filter(Boolean) as typeof selectedVibes) : []);
+
+    const priceParam = params.get("price");
+    setSelectedPriceLevel(priceParam !== null && priceParam !== "" ? Number(priceParam) : null);
+
+    setSelectedDuration(params.get("duration"));
+    setOpenNow(params.get("openNow") === "true");
+    setWheelchairAccessible(params.get("wheelchair") === "true");
+    setVegetarianFriendly(params.get("vegetarian") === "true");
+    setFeaturedOnly(params.get("featured") === "true");
+    setUnescoOnly(params.get("unesco") === "true");
+    setSavedOnly(params.get("saved") === "1");
+
+    const pageParam = params.get("page");
+    if (pageParam) {
+      const parsed = Number.parseInt(pageParam, 10);
+      setPage(Number.isFinite(parsed) && parsed > 0 ? parsed : 1);
+    } else {
+      setPage(1);
+    }
+
+    // Decide modal state from URL — open whenever any filter intent is present.
+    const FILTER_KEYS = [
+      "q", "city", "category", "jta", "sort", "prefectures", "vibes",
+      "price", "duration", "openNow", "wheelchair", "vegetarian",
+      "featured", "unesco", "saved", "yuku", "view",
+    ];
+    const hasFilter = FILTER_KEYS.some((k) => {
+      const v = params.get(k);
+      return v !== null && v !== "" && v !== "false";
+    });
+    setIsSearchOpen(hasFilter);
+  }, [
+    setYukuIds, setSelectedCity, setSelectedCategory, setJtaApprovedOnly,
+    setSelectedSort, setSelectedPrefectures, setSelectedVibes,
+    setSelectedPriceLevel, setSelectedDuration, setOpenNow,
+    setWheelchairAccessible, setVegetarianFriendly, setFeaturedOnly,
+    setUnescoOnly, setSavedOnly, setPage,
+  ]);
+
+  // Mount-only: apply URL params on first render.
   const didApplyParamsRef = useRef(false);
   useEffect(() => {
     if (didApplyParamsRef.current) return;
     didApplyParamsRef.current = true;
-    const yukuParam = searchParams.get("yuku");
-    const cityParam = searchParams.get("city");
-    const categoryParam = searchParams.get("category");
-    const qParam = searchParams.get("q");
-    const jtaParam = searchParams.get("jta");
-    if (yukuParam) {
-      const ids = yukuParam.split(",").map((s) => s.trim()).filter(Boolean);
-      if (ids.length > 0) setYukuIds(ids);
-    }
-    if (cityParam) setSelectedCity(cityParam);
-    if (categoryParam) setSelectedCategory(categoryParam);
-    if (qParam) setInputValue(qParam);
-    if (jtaParam === "true") setJtaApprovedOnly(true);
-    // New filter params
-    const sortParam = searchParams.get("sort");
-    if (sortParam && ["recommended", "highest_rated", "most_reviews", "price_low", "duration_short"].includes(sortParam)) {
-      setSelectedSort(sortParam as typeof selectedSort);
-    }
-    const prefParam = searchParams.get("prefectures");
-    if (prefParam) setSelectedPrefectures(prefParam.split(",").filter(Boolean));
-    const vibesParam = searchParams.get("vibes");
-    if (vibesParam) setSelectedVibes(vibesParam.split(",").filter(Boolean) as typeof selectedVibes);
-    const priceParam = searchParams.get("price");
-    if (priceParam !== null && priceParam !== "") setSelectedPriceLevel(Number(priceParam));
-    const durParam = searchParams.get("duration");
-    if (durParam) setSelectedDuration(durParam);
-    if (searchParams.get("openNow") === "true") setOpenNow(true);
-    if (searchParams.get("wheelchair") === "true") setWheelchairAccessible(true);
-    if (searchParams.get("vegetarian") === "true") setVegetarianFriendly(true);
-    if (searchParams.get("featured") === "true") setFeaturedOnly(true);
-    if (searchParams.get("unesco") === "true") setUnescoOnly(true);
-    if (searchParams.get("saved") === "1") setSavedOnly(true);
-    const pageParam = searchParams.get("page");
-    if (pageParam) {
-      const parsed = Number.parseInt(pageParam, 10);
-      if (Number.isFinite(parsed) && parsed > 0) {
-        setPage(parsed);
-      }
-    }
+    const params = new URLSearchParams(searchParams.toString());
+    applyParamsToState(params);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Browser back/forward: re-apply URL → state. popstate fires only on user
+  // navigation, not on history.pushState/replaceState — so our own URL syncs
+  // (router.replace) don't trigger feedback loops.
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      applyParamsToState(params);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [applyParamsToState]);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
 
   useEffect(() => {
@@ -241,6 +286,39 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const handleCloseExpanded = useCallback(() => {
     setExpandedLocation(null);
   }, []);
+
+  const handleOpenSearch = useCallback(() => {
+    setIsSearchOpen(true);
+  }, []);
+
+  const handleCloseSearch = useCallback(() => {
+    setIsSearchOpen(false);
+    handleClearAll();
+  }, [handleClearAll]);
+
+  const handleCitySelect = useCallback(
+    (citySlug: string) => {
+      setSelectedCity(citySlug);
+      setIsSearchOpen(true);
+    },
+    [setSelectedCity],
+  );
+
+  // Desktop: `/` opens the search modal (skips when typing in an input).
+  // Cmd/Ctrl+K is intentionally not wired — reserved for a future global
+  // command palette to avoid muscle-memory collision.
+  useEffect(() => {
+    const handleSlash = (e: KeyboardEvent) => {
+      if (e.key !== "/") return;
+      if (isSearchOpen) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      e.preventDefault();
+      setIsSearchOpen(true);
+    };
+    window.addEventListener("keydown", handleSlash);
+    return () => window.removeEventListener("keydown", handleSlash);
+  }, [isSearchOpen]);
 
   const activeCategory = useMemo(() => {
     // Map selected vibes to the closest editorial category for interstitial messages
@@ -310,6 +388,17 @@ export function PlacesShell({ content }: PlacesShellProps) {
   );
 
   const nearMeApplied = nearMeActive && userCoords !== null && viewMode === "map";
+
+  // Spatial anchor: drives the map's fitBounds re-fit so changing the city
+  // filter zooms the user to that city instead of leaving them at country zoom.
+  const anchorKey = useMemo(() => {
+    if (nearMeApplied) return "near-me";
+    if (selectedCity) return `city:${selectedCity}`;
+    if (savedOnly) return "saved";
+    if (selectedPrefectures.length > 0) return `pref:${selectedPrefectures.join("+")}`;
+    if (selectedCategory) return `category:${selectedCategory}`;
+    return "all";
+  }, [nearMeApplied, selectedCity, savedOnly, selectedPrefectures, selectedCategory]);
 
   const distanceById = useMemo(() => {
     if (!nearMeApplied || !userCoords) return null;
@@ -405,15 +494,45 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-background">
-      {viewMode === "grid" && (
-        <PlacesIntro totalCount={total} content={content}>
-          <SeasonalBanner
-            locations={locations}
-            onFilterSeasonal={handleFilterSeasonal}
-          />
-        </PlacesIntro>
-      )}
+      {/* Lanes view — the bare /places experience. Always rendered; the
+          search modal sits on top when active. */}
+      <PlacesIntro totalCount={total} content={content} onSearchClick={handleOpenSearch}>
+        <SeasonalBanner
+          locations={locations}
+          onFilterSeasonal={handleFilterSeasonal}
+        />
+      </PlacesIntro>
+      <PlacesLanes
+        locations={locations}
+        onSelect={handleSelectLocation}
+        onCitySelect={handleCitySelect}
+        onOpenSearch={handleOpenSearch}
+      />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <button
+          type="button"
+          onClick={handleOpenSearch}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-6 py-3 text-sm font-medium text-foreground transition hover:bg-canvas hover:shadow-[var(--shadow-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          Browse all {total ? total.toLocaleString() : ""} places
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
+      {/* Search modal — wraps the existing CategoryBar + grid/map + FilterPanel. */}
+      <PlacesSearchModal isOpen={isSearchOpen} onClose={handleCloseSearch}>
       {/* Error state */}
       {error ? (
         <div className="flex-1 flex items-center justify-center py-20">
@@ -519,9 +638,10 @@ export function PlacesShell({ content }: PlacesShellProps) {
           flyToLocation={flyToLocation}
           userLocation={nearMeApplied ? userCoords : null}
           locationDistanceKm={distanceById}
+          anchorKey={anchorKey}
         />
       ) : isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-16">
           {/*
            * Match PLACES_PAGE_SIZE (36) AND the real card's rendered height so the
            * grid doesn't change size when cards swap in. Measured real cards
@@ -552,7 +672,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       ) : (
         <main
           ref={gridSectionRef}
-          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20"
+          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 sm:pb-16"
         >
           <LocationEditorialGrid
             locations={visibleLocations}
@@ -620,7 +740,11 @@ export function PlacesShell({ content }: PlacesShellProps) {
         seasonalHighlight={seasonalHighlight}
       />
 
-      {/* Location Detail Panel */}
+      </>
+      )}
+      </PlacesSearchModal>
+
+      {/* Location detail — mounts above both lanes and modal. */}
       {expandedLocation && (
         <LocationExpanded
           location={expandedLocation}
@@ -628,8 +752,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         />
       )}
 
-      </>
-      )}
+      <PlacesSavedTripBar savedCount={savedIds.length} />
     </div>
   );
 }

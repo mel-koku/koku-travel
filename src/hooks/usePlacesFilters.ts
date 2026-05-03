@@ -7,8 +7,9 @@ import { locationMatchesVibes } from "@/data/vibeFilterMapping";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
-import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
+import { locationHasSeasonalTag, getCurrentMonth, getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
 import { parseSearchQuery } from "@/lib/search/queryParser";
+import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import {
   DURATION_FILTERS,
   calculatePopularityScore,
@@ -43,13 +44,12 @@ export type { EnhancedLocation };
 
 
 // ── Category diversity interleaving ───────────────────────
-// Prevents dining-heavy clusters in the default "recommended" sort
-// by ensuring no more than 2 consecutive items share a diversity group.
-
-const DINING_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
+// Collapses the 32 DB categories into the 6 parent groups
+// (culture/food/nature/shopping/view/entertainment) so the round-robin
+// produces real variety — temple+shrine+museum no longer stack 6 deep.
 
 function getDiversityGroup(category: string): string {
-  return DINING_CATEGORIES.has(category) ? "dining" : category;
+  return getParentCategoryForDatabaseCategory(category) ?? category;
 }
 
 function interleaveForDiversity<T extends { category: string }>(
@@ -102,7 +102,11 @@ export function usePlacesFilters(
 ) {
   // Filter state
   const [query, setQuery] = useState("");
-  const { data: searchResults } = useLocationSearchQuery(query);
+  const { data: searchResultIds } = useLocationSearchQuery(query);
+  const serverMatchIds = useMemo(
+    () => (searchResultIds && searchResultIds.length > 0 ? new Set(searchResultIds) : null),
+    [searchResultIds],
+  );
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
@@ -153,17 +157,12 @@ export function usePlacesFilters(
     selectedSort,
   ]);
 
-  // Merge loaded locations with search results
-  const mergedLocations = useMemo(() => {
-    if (!searchResults || searchResults.length === 0) return locations;
-    const loadedIds = new Set(locations.map((l) => l.id));
-    const newFromSearch = searchResults.filter((l) => !loadedIds.has(l.id));
-    return newFromSearch.length > 0 ? [...locations, ...newFromSearch] : locations;
-  }, [locations, searchResults]);
-
-  // Enhance with parsed duration and rating fallbacks
+  // Enhance with parsed duration and rating fallbacks. The server search
+  // endpoint is consulted via `serverMatchIds` (used in matchesQuery below)
+  // so semantic hits surface alongside local substring matches without
+  // injecting partial-shape rows into the listing.
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
-    return mergedLocations.map((location) => {
+    return locations.map((location) => {
       return {
         ...location,
         durationMinutes: parseDuration(location.estimatedDuration),
@@ -171,7 +170,7 @@ export function usePlacesFilters(
         reviewCount: location.reviewCount ?? 0,
       };
     });
-  }, [mergedLocations]);
+  }, [locations]);
 
   const prefectureOptions = useMemo(() => {
     return filterMetadata?.prefectures || [];
@@ -193,8 +192,17 @@ export function usePlacesFilters(
 
     const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
 
+    // When the in-season filter is active, the active SeasonalHighlight may
+    // narrow by region (e.g. cherry-blossom-late → Tohoku + Hokkaido).
+    // Looked up once per filter pass so the banner CTA + the listing agree.
+    const activeHighlight = selectedCategory === "in_season" ? getActiveSeasonalHighlight() : null;
+    const seasonalRegionSet = activeHighlight?.regions
+      ? new Set(activeHighlight.regions.map((r) => r.toLowerCase()))
+      : null;
+
     return enhancedLocations.filter((location) => {
       let matchesQuery: boolean;
+      const matchesServerSearch = serverMatchIds?.has(location.id) ?? false;
 
       if (parsed.hasStructuredIntent) {
         // Structured matching: geography AND category/cuisine AND free text
@@ -228,15 +236,19 @@ export function usePlacesFilters(
           !parsed.freeText ||
           location.name.toLowerCase().includes(parsed.freeText);
 
-        matchesQuery = matchesGeo && matchesWhat && matchesFreeText;
+        matchesQuery = (matchesGeo && matchesWhat && matchesFreeText) || matchesServerSearch;
       } else if (normalizedQuery) {
-        // Fallback: text search on structured fields only (no description/tips)
+        // Fallback: structured-field substring OR server-side match (FTS +
+        // fuzzy + Vertex semantic via /api/locations/search). This is what
+        // makes intent queries like "quiet temple morning Kyoto" surface
+        // results that don't literally contain the words.
         matchesQuery =
           location.name.toLowerCase().includes(normalizedQuery) ||
           location.city.toLowerCase().includes(normalizedQuery) ||
           location.region.toLowerCase().includes(normalizedQuery) ||
           location.category.toLowerCase().includes(normalizedQuery) ||
-          (location.cuisineType?.toLowerCase().includes(normalizedQuery) ?? false);
+          (location.cuisineType?.toLowerCase().includes(normalizedQuery) ?? false) ||
+          matchesServerSearch;
       } else {
         matchesQuery = true;
       }
@@ -282,7 +294,8 @@ export function usePlacesFilters(
       const matchesCategory = !selectedCategory
         ? true
         : selectedCategory === "in_season"
-          ? locationHasSeasonalTag(location.tags, getCurrentMonth())
+          ? locationHasSeasonalTag(location.tags, getCurrentMonth()) &&
+            (!seasonalRegionSet || seasonalRegionSet.has((location.region ?? "").toLowerCase()))
           : location.category === selectedCategory;
 
       const matchesJta = !jtaApprovedOnly
@@ -310,7 +323,7 @@ export function usePlacesFilters(
         matchesUnesco
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, savedOnly, savedPlaceIds, yukuIds, selectedCity, selectedCategory, jtaApprovedOnly, unescoOnly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, savedOnly, savedPlaceIds, yukuIds, selectedCity, selectedCategory, jtaApprovedOnly, unescoOnly, serverMatchIds]);
 
   // Sort
   const sortedLocations = useMemo(() => {

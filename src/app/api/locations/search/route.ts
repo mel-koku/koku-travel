@@ -212,7 +212,7 @@ export const GET = withApiHandler(
       parentName: row.parent_id ? parentNameMap.get(row.parent_id) : undefined,
     }));
 
-    // Smart-search fallback layers: when keyword (FTS) underperforms (< 3
+    // Smart-search fallback layers: when keyword (FTS) underperforms (< 5
     // results), fire trigram fuzzy match + semantic embedding search in
     // parallel to backfill. Both are gated on the result count so happy-path
     // queries don't pay extra latency.
@@ -224,7 +224,7 @@ export const GET = withApiHandler(
     //   catches conceptual queries and misremembered names. ~$0.0001 per
     //   query (one Vertex embedding call), ~250ms.
     const parsed = parseSearchQuery(query);
-    if (results.length < 3) {
+    if (results.length < 5) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const runFuzzy = async (): Promise<any[] | null> => {
         try {

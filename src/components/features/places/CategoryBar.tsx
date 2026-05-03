@@ -1,8 +1,19 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
+
+const INTENT_PLACEHOLDERS = [
+  "Search places...",
+  "Quiet temple morning in Kyoto",
+  "Rainy day cafes in Osaka",
+  "Sunrise viewpoint near Hakone",
+  "Late-night ramen Tokyo",
+];
+
+const PLACEHOLDER_ROTATION_MS = 4000;
 
 type CategoryBarProps = {
   onFiltersClick: () => void;
@@ -43,6 +54,19 @@ export function CategoryBar({
   const sentinelRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (inputValue.length > 0) return;
+    const id = setInterval(() => {
+      setPlaceholderIndex((i) => (i + 1) % INTENT_PLACEHOLDERS.length);
+    }, PLACEHOLDER_ROTATION_MS);
+    return () => clearInterval(id);
+  }, [prefersReducedMotion, inputValue]);
+
+  const activePlaceholder = INTENT_PLACEHOLDERS[placeholderIndex] ?? INTENT_PLACEHOLDERS[0]!;
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -93,7 +117,7 @@ export function CategoryBar({
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 py-5">
             {/* Count */}
             {totalCount != null && (
               <span className="hidden sm:inline shrink-0 text-sm text-stone">
@@ -123,7 +147,7 @@ export function CategoryBar({
                 type="text"
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
-                placeholder="Search places..."
+                placeholder={activePlaceholder}
                 className="w-full h-12 rounded-lg border border-border bg-background pl-9 pr-12 text-base text-foreground placeholder:text-stone shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
               />
               <button

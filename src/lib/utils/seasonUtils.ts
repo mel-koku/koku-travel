@@ -153,18 +153,42 @@ export type SeasonalHighlight = {
   startDay: number;
   endMonth: number;
   endDay: number;
+  /**
+   * Optional regional constraint (case-insensitive match against
+   * Location.region). When set, the banner count + the in-season filter
+   * narrow to locations in these regions — so a "Late-blooming sakura in
+   * Tohoku and Hokkaido" banner doesn't surface Kyoto temples.
+   */
+  regions?: string[];
 };
 
 export const SEASONAL_HIGHLIGHTS: SeasonalHighlight[] = [
   {
+    // Honshu peak: Kanto/Kansai/Kyushu bloom + fall within this window.
+    // After Apr 20 the petals are gone south of Tohoku, so the late highlight
+    // takes over with region-honest copy.
     id: "cherry-blossom",
     label: "Cherry Blossom Season",
-    description: "Sakura is blooming across Japan",
+    description: "Sakura is at peak across Honshu",
     matchTags: ["cherry-blossom"],
     startMonth: 3,
     startDay: 15,
+    endMonth: 4,
+    endDay: 20,
+  },
+  {
+    // Late-blooming northern window — Tohoku + Hokkaido peak when Kansai is
+    // already over. Tells the truth instead of claiming "blooming across
+    // Japan" three weeks after Kyoto's petals fell.
+    id: "cherry-blossom-late",
+    label: "Late-Blooming Sakura",
+    description: "Late-blooming sakura in Tohoku and Hokkaido",
+    matchTags: ["cherry-blossom"],
+    startMonth: 4,
+    startDay: 21,
     endMonth: 5,
-    endDay: 10,
+    endDay: 12,
+    regions: ["Tohoku", "Hokkaido"],
   },
   {
     id: "plum-blossom",

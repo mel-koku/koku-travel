@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
+import { formatMinutesToFitLabel, resolveTimeEstimate } from "@/lib/locations/timeEstimates";
+import { useLocationPairs } from "@/hooks/useLocationPairs";
+import { useLocationDurations } from "@/hooks/useLocationDurations";
+import type { LocationPair } from "@/app/api/locations/pairs/route";
 import type { Location } from "@/types/location";
 
 const FALLBACK_IMAGE =
@@ -51,6 +55,10 @@ export function LocationEditorialGrid({
   activeCategory,
   onClearFilters,
 }: LocationEditorialGridProps) {
+  const visibleIds = useMemo(() => locations.map((l) => l.id), [locations]);
+  const pairs = useLocationPairs(visibleIds);
+  const durations = useLocationDurations(visibleIds);
+
   if (locations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -101,6 +109,8 @@ export function LocationEditorialGrid({
             location={location}
             onSelect={onSelect}
             eager={i < 8}
+            pair={pairs[location.id] ?? null}
+            durationMinutes={durations[location.id]}
           />
         </m.div>
       ))}
@@ -113,10 +123,15 @@ const PlacesCard = memo(function PlacesCard({
   location,
   onSelect,
   eager = false,
+  pair,
+  durationMinutes,
 }: {
   location: Location;
   onSelect?: (location: Location) => void;
   eager?: boolean;
+  pair?: LocationPair | null;
+  /** Summed sub-experience minutes for this location, when available. */
+  durationMinutes?: number;
 }) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
@@ -143,6 +158,7 @@ const PlacesCard = memo(function PlacesCard({
     >
       <Link
         href={`/places/${location.id}`}
+        prefetch={false}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
         className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
@@ -210,21 +226,56 @@ const PlacesCard = memo(function PlacesCard({
             )}
           </div>
 
-          {/* City + duration */}
+          {/* City + duration. Cascade: aggregated sub-experience minutes win
+              when present (concierge data — "this temple has 3 highlights
+              totalling 1.5 hrs"), then the curated estimatedDuration, then
+              the category-based static fallback. */}
           <p className="text-xs text-stone">
             {location.city}, {location.region}
-            {formatDuration(location.estimatedDuration) && (
-              <>
-                <span className="text-border"> &middot; </span>
-                <span>{formatDuration(location.estimatedDuration)}</span>
-              </>
-            )}
+            {(() => {
+              const dur = (durationMinutes ? formatMinutesToFitLabel(durationMinutes) : null)
+                ?? formatDuration(location.estimatedDuration)
+                ?? resolveTimeEstimate(location.estimatedDuration, location.category);
+              return dur ? (
+                <>
+                  <span className="text-border"> &middot; </span>
+                  <span>{dur}</span>
+                </>
+              ) : null;
+            })()}
           </p>
 
           {/* Summary */}
           <p className="text-xs text-foreground-secondary line-clamp-2 leading-relaxed">
             {summary}
           </p>
+
+          {/* Pair line — curated cluster wins, then ≤1km spatial fallback,
+              then pgvector cosine similarity ("in the same spirit").
+              Suppressed when the card already carries a JTA or UNESCO badge to avoid
+              meta-line crowding. */}
+          {pair && !location.jtaApproved && !location.isUnescoSite && (
+            <p className="text-xs text-foreground-secondary">
+              {pair.kind === "cluster" && (
+                <>
+                  <span className="text-stone">Pairs with </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              )}
+              {pair.kind === "nearby" && (
+                <>
+                  <span className="text-stone">{pair.walkMinutes} min walk to </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              )}
+              {pair.kind === "similar" && (
+                <>
+                  <span className="text-stone">In the same spirit: </span>
+                  <span className="font-medium text-foreground">{pair.parentName ?? pair.name}</span>
+                </>
+              )}
+            </p>
+          )}
 
           {/* Category + badges + duration */}
           <div className="flex items-center gap-2 pt-0.5 mt-auto flex-wrap">

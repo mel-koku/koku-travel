@@ -12,6 +12,7 @@ import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { resolveTimeEstimate } from "@/lib/locations/timeEstimates";
 import { fetchLocationSpecificGuidance } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
 import { isSafeUrl } from "@/lib/utils/urlSafety";
@@ -402,15 +403,18 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               ) : null}
             </span>
           ) : null}
-          {location.estimatedDuration && (
-            <span className="flex items-center gap-1 text-stone">
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <circle cx="12" cy="12" r="10" />
-                <path strokeLinecap="round" d="M12 6v6l4 2" />
-              </svg>
-              Est. {location.estimatedDuration}
-            </span>
-          )}
+          {(() => {
+            const fit = resolveTimeEstimate(location.estimatedDuration, location.category);
+            return fit ? (
+              <span className="flex items-center gap-1 text-stone">
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="10" />
+                  <path strokeLinecap="round" d="M12 6v6l4 2" />
+                </svg>
+                Est. {fit}
+              </span>
+            ) : null;
+          })()}
           {location.priceLevel !== undefined && location.priceLevel !== null && (
             <span className="text-stone font-mono text-xs">
               {location.priceLevel === 0 ? "Free" : "¥".repeat(location.priceLevel)}
