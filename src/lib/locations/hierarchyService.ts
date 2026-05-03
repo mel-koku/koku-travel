@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   LOCATION_LISTING_COLUMNS,
+  LOCATION_RELATIONSHIPS_COLUMNS,
   SUB_EXPERIENCE_COLUMNS,
 } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "./locationService";
 import type { Location, SubExperience, LocationRelationship } from "@/types/location";
 import type {
   LocationListingDbRow,
+  LocationRelationshipDbRow,
   SubExperienceDbRow,
 } from "@/lib/supabase/projections";
 import { applyActiveLocationFilters } from "@/lib/supabase/filters";
@@ -93,12 +95,12 @@ export async function fetchLocationRelationships(
   // Fetch relationships where this location is either side
   let query1 = supabase
     .from("location_relationships")
-    .select("*")
+    .select(LOCATION_RELATIONSHIPS_COLUMNS)
     .eq("location_id", locationId);
 
   let query2 = supabase
     .from("location_relationships")
-    .select("*")
+    .select(LOCATION_RELATIONSHIPS_COLUMNS)
     .eq("related_id", locationId);
 
   if (types && types.length > 0) {
@@ -111,7 +113,10 @@ export async function fetchLocationRelationships(
   if (result1.error) logger.error("[fetchLocationRelationships] query1 failed", result1.error, { locationId });
   if (result2.error) logger.error("[fetchLocationRelationships] query2 failed", result2.error, { locationId });
 
-  const rows = [...(result1.data || []), ...(result2.data || [])];
+  const rows = [
+    ...((result1.data ?? []) as unknown as LocationRelationshipDbRow[]),
+    ...((result2.data ?? []) as unknown as LocationRelationshipDbRow[]),
+  ];
 
   // Deduplicate (same pair can appear from both directions)
   const seen = new Set<string>();

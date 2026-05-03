@@ -10,6 +10,7 @@ import type {
   LocationOperatingHours,
   LocationVisitRecommendation,
   LocationTransitMode,
+  LocationRelationshipType,
   SeasonalType,
   SubExperienceType,
 } from "@/types/location";
@@ -638,4 +639,40 @@ export const SUB_EXPERIENCE_COLUMNS = `
   sort_order,
   sub_type,
   time_context
+`.replace(/\s+/g, "");
+
+/**
+ * Database row type for location_relationships table.
+ * Schema lives in supabase/migrations/20260406100000_add_location_hierarchy.sql.
+ */
+export type LocationRelationshipDbRow = {
+  id: string;
+  location_id: string;
+  related_id: string;
+  relationship_type: LocationRelationshipType;
+  source: "algorithmic" | "curated";
+  editorial_note: string | null;
+  transit_line: string | null;
+  walk_minutes: number | null;
+  sort_order: number;
+};
+
+/**
+ * Columns needed to render bidirectional location relationships
+ * (cluster, gateway, alternative, transit_line) on detail surfaces.
+ * Mirrors every field consumed by the inline mapper in
+ * `fetchLocationRelationships`; adding a column to `location_relationships`
+ * requires updating this projection so callsites surface the new field
+ * instead of silently masking it via `select("*")`.
+ */
+export const LOCATION_RELATIONSHIPS_COLUMNS = `
+  id,
+  location_id,
+  related_id,
+  relationship_type,
+  source,
+  editorial_note,
+  transit_line,
+  walk_minutes,
+  sort_order
 `.replace(/\s+/g, "");
