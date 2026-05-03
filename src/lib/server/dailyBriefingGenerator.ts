@@ -14,7 +14,12 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { extractApiErrorDetails } from "@/lib/utils/apiErrorDetails";
 import { getSeason } from "@/lib/utils/seasonUtils";
 import { env } from "@/lib/env";
-import { callVertex, callVertexGroundedText, settleInOrder } from "./_llmBatchPrimitives";
+import {
+  callVertex,
+  callVertexGroundedText,
+  settleInOrder,
+  type LlmUsageCallback,
+} from "./_llmBatchPrimitives";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { GeneratedBriefings, DayBriefing } from "@/types/llmConstraints";
@@ -142,7 +147,7 @@ const GLOBAL_DEADLINE_MS = 18_000;
 export async function* runBriefingBatch(
   itinerary: Itinerary,
   builderData: TripBuilderData,
-  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  onUsage?: LlmUsageCallback,
 ): AsyncGenerator<BriefingBatchOutcome, void, void> {
   const days = itinerary.days ?? [];
   if (days.length === 0) return;
@@ -225,7 +230,7 @@ export async function* runBriefingBatch(
 export async function generateDailyBriefings(
   itinerary: Itinerary,
   builderData: TripBuilderData,
-  opts?: { onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void },
+  opts?: { onUsage?: LlmUsageCallback },
 ): Promise<GeneratedBriefings | null> {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;

@@ -35,3 +35,20 @@ export function estimateCostTenthsCent(
   const outputCost = (outputTokens * prices.output) / 1_000_000;
   return Math.ceil(inputCost + outputCost);
 }
+
+/**
+ * Vertex AI Search grounding fee, charged per request that actually invoked the
+ * grounding tool (≥1 web search). $35 per 1,000 grounded requests = 35
+ * tenths-of-a-cent (= $0.035) per request. Token cost is billed separately
+ * via {@link estimateCostTenthsCent}.
+ *
+ * Source: https://cloud.google.com/vertex-ai/generative-ai/pricing#grounding
+ */
+export const GROUNDED_REQUEST_FEE_TC = 35;
+
+/**
+ * Total grounding-fee cost for `count` grounded requests, in tenths-of-a-cent.
+ */
+export function groundingFeeTenthsCent(count: number): number {
+  return Math.max(0, count) * GROUNDED_REQUEST_FEE_TC;
+}

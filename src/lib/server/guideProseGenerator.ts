@@ -19,6 +19,7 @@ import { getSeason } from "@/lib/utils/seasonUtils";
 import {
   settleInOrder,
   callVertex,
+  type LlmUsageCallback,
 } from "./_llmBatchPrimitives";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -334,7 +335,7 @@ export async function* runGuideProseBatch(
   itinerary: Itinerary,
   builderData: TripBuilderData,
   intentResult: IntentExtractionResult | undefined,
-  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  onUsage?: LlmUsageCallback,
 ): AsyncGenerator<BatchOutcome, void, void> {
   const days = itinerary.days ?? [];
   if (days.length === 0) return;
@@ -484,7 +485,7 @@ export async function generateGuideProse(
   itinerary: Itinerary,
   builderData: TripBuilderData,
   intentResult?: IntentExtractionResult,
-  opts?: { onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void },
+  opts?: { onUsage?: LlmUsageCallback },
 ): Promise<GeneratedGuide | null> {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     return null;

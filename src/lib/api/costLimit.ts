@@ -5,7 +5,7 @@ import { Redis } from "@upstash/redis";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
-import { estimateCostTenthsCent } from "./costPrices";
+import { estimateCostTenthsCent, groundingFeeTenthsCent } from "./costPrices";
 
 /**
  * Cost-based rate limiting using Upstash Redis.
@@ -323,7 +323,18 @@ export async function reserveCost(opts: ReserveOpts): Promise<ReserveResult> {
 
 export async function reconcileCost(
   reservationId: string,
-  actualUsage: { promptTokens: number; completionTokens: number },
+  actualUsage: {
+    promptTokens: number;
+    completionTokens: number;
+    /**
+     * Number of LLM calls in this reservation that hit Vertex AI Search
+     * grounding (i.e. {@link callVertexGroundedText} where the model actually
+     * issued ≥1 search query). Each one bills $0.035 on top of token cost; see
+     * {@link groundingFeeTenthsCent}. Default 0 so non-grounded callers
+     * (chat, guide-prose-only flows) are unaffected.
+     */
+    groundedRequestCount?: number;
+  },
 ): Promise<void> {
   const client = getRedis();
   if (!client) return;
@@ -352,11 +363,13 @@ export async function reconcileCost(
     return;
   }
 
-  const actualTc = estimateCostTenthsCent(
+  const tokenTc = estimateCostTenthsCent(
     record.model,
     actualUsage.promptTokens,
     actualUsage.completionTokens,
   );
+  const groundingTc = groundingFeeTenthsCent(actualUsage.groundedRequestCount ?? 0);
+  const actualTc = tokenTc + groundingTc;
   const deltaTc = actualTc - record.reservedTc;
   const now = new Date(record.createdAt);
 

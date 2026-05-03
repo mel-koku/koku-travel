@@ -83,12 +83,21 @@ export const POST = withApiHandler(
       return costLimitResponse(reservation) as unknown as NextResponse;
     }
 
-    // Accumulate real token counts across all Vertex calls.
+    // Accumulate real token counts + grounded-request count across all Vertex
+    // calls. Grounded calls bill $0.035/request on top of tokens — only the
+    // briefings pass uses grounding (when ENABLE_BRIEFING_GROUNDING is on),
+    // and only when the model actually invokes the tool.
     let totalPromptTokens = 0;
     let totalCompletionTokens = 0;
-    const onUsage = (u: { promptTokens: number; completionTokens: number }): void => {
+    let groundedRequestCount = 0;
+    const onUsage = (u: {
+      promptTokens: number;
+      completionTokens: number;
+      grounded?: boolean;
+    }): void => {
       totalPromptTokens += u.promptTokens;
       totalCompletionTokens += u.completionTokens;
+      if (u.grounded) groundedRequestCount += 1;
     };
 
     // Run intent extraction first (needed by guide prose)
@@ -104,6 +113,7 @@ export const POST = withApiHandler(
     reconcileCost(reservation.reservationId, {
       promptTokens: totalPromptTokens,
       completionTokens: totalCompletionTokens,
+      groundedRequestCount,
     }).catch((err) => {
       logger.warn("complete-generation reconcileCost failed", {
         requestId: context.requestId,
