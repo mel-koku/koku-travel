@@ -19,6 +19,19 @@ export type SettledOutcome<T> =
   | { status: "deadline"; index: number };
 
 /**
+ * Per-call usage report. `grounded` is set to `true` only when the call went
+ * through {@link callVertexGroundedText} AND the model actually invoked the
+ * grounding tool (≥1 web search query). Routes accumulate these into a count
+ * and pass it to `reconcileCost` so the $35/1k grounding fee is reflected in
+ * the daily/global cost ceilings.
+ */
+export type LlmUsageCallback = (usage: {
+  promptTokens: number;
+  completionTokens: number;
+  grounded?: boolean;
+}) => void;
+
+/**
  * Yields each promise's settlement as it arrives, in completion order (not
  * input order). If `deadlineMs` elapses before all promises settle, yields
  * a synthetic `'deadline'` outcome for every unsettled input and ends
@@ -147,7 +160,7 @@ export async function callVertex<T>(
   schema: z.ZodType<T>,
   timeoutMs: number,
   batchSignal?: AbortSignal,
-  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  onUsage?: LlmUsageCallback,
   source: string = "batch-primitive",
 ): Promise<T> {
   const perCallTimeout = AbortSignal.timeout(timeoutMs);
@@ -205,7 +218,7 @@ export async function callVertexGroundedText(
   prompt: string,
   timeoutMs: number,
   batchSignal?: AbortSignal,
-  onUsage?: (usage: { promptTokens: number; completionTokens: number }) => void,
+  onUsage?: LlmUsageCallback,
   source: string = "batch-primitive-grounded",
 ): Promise<string> {
   const perCallTimeout = AbortSignal.timeout(timeoutMs);
@@ -230,14 +243,18 @@ export async function callVertexGroundedText(
         | { webSearchQueries?: unknown[] | null }
         | null
         | undefined;
+    const groundingQueryCount = groundingMeta?.webSearchQueries?.length ?? 0;
     logVertexUsage(source, result, {
       grounded: true,
-      groundingQueryCount: groundingMeta?.webSearchQueries?.length ?? 0,
+      groundingQueryCount,
     });
     if (onUsage) {
       onUsage({
         promptTokens: result.usage?.inputTokens ?? 0,
         completionTokens: result.usage?.outputTokens ?? 0,
+        // Vertex bills the $35/1k grounding fee per request that actually used
+        // the tool, not per sub-query. Tool offered + zero queries = no fee.
+        grounded: groundingQueryCount > 0,
       });
     }
     return result.text;

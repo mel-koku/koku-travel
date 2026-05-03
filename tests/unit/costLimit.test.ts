@@ -247,6 +247,58 @@ describe("reconcileCost", () => {
     await reconcileCost("unknown-id", { promptTokens: 100, completionTokens: 100 });
     expect(redis.store.size).toBe(0);
   });
+
+  it("adds the $0.035-per-request grounding fee when groundedRequestCount > 0", async () => {
+    const redis = createStubRedis();
+    __setRedisForTests(redis as never);
+
+    // Reserve at gemini-2.5-flash-lite: 100 input + 100 output tc/M tokens.
+    // 1M input × 1 + 500k output × 4 / 1M = 100 + 200 = 300 tc reserved.
+    const reservation = await reserveCost({
+      key: "user-1",
+      model: "gemini-2.5-flash-lite",
+      inputTokens: 1_000_000,
+      maxOutputTokens: 500_000,
+    });
+    if (!reservation.allowed) throw new Error("expected allowed");
+
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    expect(redis.store.get(`cost:daily:user-1:${today}`)).toBe(300);
+
+    // Actual: same token usage as reserved (token delta = 0) + 6 grounded
+    // requests = 6 × 35 = 210 tc grounding fee. Daily counter should land
+    // at 300 (initial reserve) + 210 (grounding delta) = 510 tc.
+    await reconcileCost(reservation.reservationId, {
+      promptTokens: 1_000_000,
+      completionTokens: 500_000,
+      groundedRequestCount: 6,
+    });
+
+    expect(redis.store.get(`cost:daily:user-1:${today}`)).toBe(510);
+  });
+
+  it("does not add a grounding fee when groundedRequestCount is 0 or omitted", async () => {
+    const redis = createStubRedis();
+    __setRedisForTests(redis as never);
+
+    const reservation = await reserveCost({
+      key: "user-1",
+      model: "gemini-2.5-flash-lite",
+      inputTokens: 1_000_000,
+      maxOutputTokens: 500_000,
+    });
+    if (!reservation.allowed) throw new Error("expected allowed");
+
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
+    // Omitted field — non-grounded reconcile path stays identical.
+    await reconcileCost(reservation.reservationId, {
+      promptTokens: 1_000_000,
+      completionTokens: 500_000,
+    });
+
+    expect(redis.store.get(`cost:daily:user-1:${today}`)).toBe(300);
+  });
 });
 
 describe("costLimitResponse", () => {
