@@ -28,6 +28,7 @@ import {
 } from "./HierarchySections";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { DataIcon } from "@/components/ui/DataIcon";
+import { LocationReportDialog } from "./LocationReportDialog";
 
 type LocationExpandedProps = {
   location: Location;
@@ -48,6 +49,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const isSaved = isInSaved(location.id);
   const wasSaved = useRef(isSaved);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [reportOpen, setReportOpen] = useState(false);
   const { data: hierarchy } = useLocationHierarchy(location.id);
   const subExperiencesRef = useRef<HTMLDivElement>(null);
 
@@ -745,9 +747,26 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               />
             </div>
           )}
+
+          {/* Report wrong info — quiet utility action at the very bottom */}
+          <div className="border-t border-border pt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setReportOpen(true)}
+              className="inline-flex min-h-11 items-center px-3 text-sm text-foreground-secondary hover:text-foreground transition link-reveal"
+            >
+              Spot something wrong? Let us know.
+            </button>
+          </div>
         </div>
       </m.div>
 
+      <LocationReportDialog
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+        locationId={location.id}
+        locationName={displayName}
+      />
     </>
   );
 }
