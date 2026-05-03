@@ -28,6 +28,7 @@ export const RATE_LIMITS = {
   CITIES: { maxRequests: 100, windowMs: 60_000 },
   INQUIRIES: { maxRequests: 10, windowMs: 60_000 },
   CONCIERGE_INQUIRIES: { maxRequests: 5, windowMs: 15 * 60_000 },
+  LOCATION_REPORTS: { maxRequests: 5, windowMs: 60 * 60_000 },
   DAY_TRIPS_SUGGEST: { maxRequests: 20, windowMs: 60_000 },
   DAY_TRIPS_PLAN: { maxRequests: 10, windowMs: 60_000 },
   BILLING_CHECKOUT: { maxRequests: 5, windowMs: 60_000 },

@@ -26,6 +26,7 @@ import {
   RelationshipsSection,
 } from "./HierarchySections";
 import { SimilarPlaces } from "./SimilarPlaces";
+import { LocationReportDialog } from "./LocationReportDialog";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Button } from "@/components/ui/Button";
 import { DataIcon } from "@/components/ui/DataIcon";
@@ -119,6 +120,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
   const [heartAnimating, setHeartAnimating] = useState(false);
   const wasSaved = useRef(isSaved);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [reportOpen, setReportOpen] = useState(false);
 
   // Nearby locations
   const lat = location.coordinates?.lat ?? null;
@@ -801,8 +803,19 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
       {/* Similar Places */}
       <SimilarPlaces locationId={location.id} />
 
+      {/* Report wrong info — quiet utility action, not a primary CTA */}
+      <div className="pt-6 pb-4 text-center">
+        <button
+          type="button"
+          onClick={() => setReportOpen(true)}
+          className="inline-flex min-h-11 items-center px-3 text-sm text-foreground-secondary hover:text-foreground transition link-reveal"
+        >
+          Spot something wrong? Let us know.
+        </button>
+      </div>
+
       {/* Back to all places */}
-      <div className="py-12 sm:py-16 text-center">
+      <div className="pb-12 sm:pb-16 text-center">
         <button
           type="button"
           onClick={handleBack}
@@ -814,6 +827,13 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           Back to all places
         </button>
       </div>
+
+      <LocationReportDialog
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+        locationId={location.id}
+        locationName={displayName}
+      />
     </div>
   );
 }
