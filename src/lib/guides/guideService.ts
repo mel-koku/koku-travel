@@ -291,9 +291,14 @@ export async function getGuidesByType(
 }
 
 /**
- * Fetches guides matching a season.
- * Matches guides with the given season in their `seasons` array,
- * OR guides with guide_type "seasonal" (legacy).
+ * Fetches guides whose `seasons` array contains the given season.
+ *
+ * Previously this OR'd in any `guide_type='seasonal'` row regardless of
+ * season tag, which silently leaked off-season guides into every season
+ * query (e.g. "Sapporo in Winter" appeared under spring queries when the
+ * season-tagged pool was thin). Removed 2026-05-04. Editorial truth-telling
+ * over filling slots — if a season has fewer guides than the caller asked
+ * for, the spotlight will render fewer cards rather than wrong ones.
  */
 export async function getGuidesBySeason(
   season: string,
@@ -305,7 +310,7 @@ export async function getGuidesBySeason(
     .from("guides")
     .select(GUIDE_SUMMARY_COLUMNS)
     .eq("status", "published")
-    .or(`seasons.cs.{${season}},guide_type.eq.seasonal`)
+    .contains("seasons", [season])
     .order("sort_order", { ascending: true })
     .limit(limit);
 
