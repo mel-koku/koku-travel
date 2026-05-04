@@ -1,7 +1,7 @@
 "use client";
 
 import { m, useReducedMotion } from "framer-motion";
-import { Check, Pin, Plane, PlaneTakeoff, Repeat, Sparkles } from "lucide-react";
+import { Check, Pin, Plane, PlaneTakeoff, Repeat, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut, durationBase } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -125,7 +125,7 @@ export function RegionRow({
             {isEntryPointRegion || isExitPointRegion ? (
               <Pin className="h-3 w-3 fill-current" />
             ) : (
-              <Sparkles className="h-3 w-3" />
+              <Star className="h-3 w-3 fill-current" />
             )}
             Recommended
           </span>

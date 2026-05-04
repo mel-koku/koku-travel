@@ -5,7 +5,7 @@ import TripBuilderClient from "./TripBuilderClient";
 import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 const TRIP_BUILDER_DESCRIPTION =
-  "Build your personalized Japan itinerary. Choose your dates, entry point, travel vibes, and regions to create the perfect trip.";
+  "Build a routed Japan itinerary in five minutes. Pick your dates, entry airport, vibes, and regions. We handle the day-to-day.";
 
 export const metadata: Metadata = {
   title: "Trip Builder | Yuku Japan",

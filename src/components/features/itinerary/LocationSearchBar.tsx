@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, X, Star, Check, Sparkles } from "lucide-react";
+import { Plus, Search, Loader2, X, Star, Check, SlidersHorizontal } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
@@ -285,7 +285,7 @@ export function LocationSearchBar({
                     smartSearch.response.results.length > 0 &&
                     meaningfulInterpretations.length > 0 && (
                       <div className="mb-2 flex items-start gap-2 rounded-md bg-canvas px-3 py-2 text-xs text-foreground-secondary">
-                        <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                        <Search className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-primary" />
                         <div>
                           Showing results for{" "}
                           <span className="font-medium text-foreground">
@@ -309,12 +309,12 @@ export function LocationSearchBar({
                           {smartSearch.state === "done" &&
                             smartSearch.response &&
                             smartSearch.response.results.length === 0 && (
-                              <span className="ml-1">— smart search came up empty too.</span>
+                              <span className="ml-1">No extra matches found either.</span>
                             )}
                         </div>
 
-                        {/* Smart-search button — hidden once smart search has
-                            completed (results or no results, the user has
+                        {/* Refined-search button — hidden once the refined search
+                            has completed (results or no results, the user has
                             already used their one shot). */}
                         {smartSearch.state === "idle" && (
                           <button
@@ -322,19 +322,19 @@ export function LocationSearchBar({
                             onClick={runSmartSearch}
                             className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-brand-primary/10 px-3 py-1.5 text-sm font-medium text-brand-primary hover:bg-brand-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                           >
-                            <Sparkles className="h-3.5 w-3.5" />
-                            Search smarter
+                            <SlidersHorizontal className="h-3.5 w-3.5" />
+                            Refine search
                           </button>
                         )}
                         {smartSearch.state === "loading" && (
                           <div className="mt-3 inline-flex items-center gap-2 text-sm text-foreground-secondary">
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            Searching smarter…
+                            Refining your search…
                           </div>
                         )}
                         {smartSearch.state === "error" && (
                           <div className="mt-3 text-sm text-warning">
-                            Smart search couldn&apos;t reach the server. Try again, or add your own below.
+                            Couldn&apos;t reach the server. Try again, or add your own below.
                           </div>
                         )}
 

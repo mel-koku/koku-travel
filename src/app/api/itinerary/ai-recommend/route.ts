@@ -33,8 +33,8 @@ interface AiRecommendation {
 /**
  * POST /api/itinerary/ai-recommend
  *
- * AI-powered place recommendations based on natural language queries.
- * Uses Gemini to extract intent, then queries + scores locations.
+ * Natural-language place recommendations via Gemini intent extraction +
+ * scoring. Server-only.
  */
 export const POST = withApiHandler(
   async (request, { context, user }) => {

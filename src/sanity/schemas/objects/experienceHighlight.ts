@@ -37,14 +37,14 @@ export const experienceHighlight = defineType({
       highlightType: "highlightType",
     },
     prepare({ title, highlightType }) {
-      const icons: Record<string, string> = {
-        key_moment: "✨",
-        sensory: "👁",
-        practical: "📋",
+      const labels: Record<string, string> = {
+        key_moment: "Key moment",
+        sensory: "Sensory",
+        practical: "Practical",
       };
       return {
         title: title || highlightType || "Highlight",
-        subtitle: icons[highlightType] || "",
+        subtitle: labels[highlightType] || "",
       };
     },
   },

@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Calendar, MapPin, Sparkles, Zap } from "lucide-react";
+import { Calendar, MapPin, Palette, Zap } from "lucide-react";
 import { setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY } from "@/lib/constants/storage";
 
@@ -128,7 +128,7 @@ export function AskYukuTripPlanCard({ data, onClose }: AskYukuTripPlanCardProps)
 
         {vibeNames.length > 0 && (
           <div className="flex items-center gap-2.5 text-sm text-foreground">
-            <Sparkles className="h-4 w-4 shrink-0 text-foreground-secondary" />
+            <Palette className="h-4 w-4 shrink-0 text-foreground-secondary" />
             <span>{vibeNames.join(", ")}</span>
           </div>
         )}

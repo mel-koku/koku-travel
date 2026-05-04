@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Sparkles, Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import {
@@ -109,8 +109,8 @@ export function FestivalIncludeCard() {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <Sparkles
-                  className="h-4 w-4 shrink-0 text-foreground-secondary"
+                <Star
+                  className="h-4 w-4 shrink-0 fill-current text-foreground-secondary"
                   aria-hidden
                 />
                 <div>

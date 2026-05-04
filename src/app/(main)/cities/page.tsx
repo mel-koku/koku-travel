@@ -7,7 +7,7 @@ import { CityIndex } from "@/components/features/cities/CityIndex";
 import { DEFAULT_OG_IMAGES, DEFAULT_TWITTER_IMAGES } from "@/lib/seo/defaults";
 
 const CITIES_DESCRIPTION =
-  "Explore 35 cities across 9 regions of Japan. From Tokyo's neon streets to Kyoto's temple gardens, find your perfect destination.";
+  "Thirty-five cities across nine regions, with editorial picks for each. Tokyo neon, Kyoto gardens, Kanazawa craft, Sapporo snow.";
 
 export const metadata: Metadata = {
   title: "Cities of Japan | Yuku Japan",
