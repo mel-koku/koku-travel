@@ -158,13 +158,13 @@ export default function PrivacyPolicyPage() {
           <BulletList
             delay={0.16}
             items={[
-              <><strong className="text-foreground">Supabase</strong> &mdash; authentication and database hosting</>,
-              <><strong className="text-foreground">Stripe</strong> &mdash; payment processing for Trip Pass purchases</>,
-              <><strong className="text-foreground">Google Gemini</strong> &mdash; AI-powered itinerary generation and chat</>,
-              <><strong className="text-foreground">Google Analytics</strong> &mdash; anonymized usage analytics (consent-gated)</>,
-              <><strong className="text-foreground">Google Places</strong> &mdash; location photos, reviews, and business hours</>,
-              <><strong className="text-foreground">Mapbox</strong> &mdash; interactive maps and geocoding</>,
-              <><strong className="text-foreground">NAVITIME</strong> &mdash; Japanese transit routing and schedule data</>,
+              <><strong className="text-foreground">Supabase</strong>: authentication and database hosting</>,
+              <><strong className="text-foreground">Stripe</strong>: payment processing for Trip Pass purchases</>,
+              <><strong className="text-foreground">Google Gemini</strong>: language model used for itinerary briefings and the Ask Yuku chat experience</>,
+              <><strong className="text-foreground">Google Analytics</strong>: anonymized usage analytics (consent-gated)</>,
+              <><strong className="text-foreground">Google Places</strong>: location photos, reviews, and business hours</>,
+              <><strong className="text-foreground">Mapbox</strong>: interactive maps and geocoding</>,
+              <><strong className="text-foreground">NAVITIME</strong>: Japanese transit routing and schedule data</>,
             ]}
           />
           <Paragraph delay={0.24}>

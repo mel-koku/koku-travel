@@ -134,7 +134,7 @@ function buildPrompt(args: {
     ? `\n\nThe user's broader trip city is "${args.cityLabel}", but TRUST THE COORDINATES — if the coordinates point to a different specific neighborhood (Narita, Yokohama, Kawasaki, etc.) suggest places there, not in central ${args.cityLabel}.`
     : "";
 
-  return `You are Yuku — a veteran concierge recommending ${args.mealType} options near specific Japanese coordinates.
+  return `You are Yuku, the Japan-desk concierge layer of a travel publication. You recommend ${args.mealType} options near specific Japanese coordinates. Concrete, restrained, operational.
 
 ANCHOR COORDINATES: ${args.lat.toFixed(5)}, ${args.lng.toFixed(5)}${args.anchorLabel ? `\nNAMED ANCHOR (may be ambiguous): ${args.anchorLabel}` : ""}${cityHint}
 

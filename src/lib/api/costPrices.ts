@@ -5,12 +5,17 @@
  * 100 tenths-cent = 10¢ = $0.10.
  *
  * Source: https://cloud.google.com/vertex-ai/generative-ai/pricing
- * Last verified: 2026-04-15. Update this file when Google changes prices.
+ * Last verified: 2026-05-04. Update this file when Google changes prices.
+ *
+ * Pro pricing assumes prompts ≤200k tokens (the >200k tier is $2.50/$15
+ * per million). All current and planned call shapes are well under that
+ * threshold; revisit if a future pipeline pushes past it.
  */
 
 export const MODEL_PRICES_PER_MILLION_TENTHS_CENT = {
   "gemini-2.5-flash-lite": { input: 100, output: 400 },
   "gemini-2.5-flash": { input: 300, output: 2500 },
+  "gemini-2.5-pro": { input: 1250, output: 10000 },
 } as const;
 
 type KnownModel = keyof typeof MODEL_PRICES_PER_MILLION_TENTHS_CENT;

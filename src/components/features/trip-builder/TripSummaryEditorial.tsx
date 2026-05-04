@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Calendar, Plane, Sparkles, MapPin, Search, X, Check } from "lucide-react";
+import { Calendar, Plane, Palette, MapPin, Search, X, Check } from "lucide-react";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
@@ -364,7 +364,7 @@ export function TripSummaryEditorial({
 
         {/* Vibes */}
         <SummaryItem
-          icon={<Sparkles className="h-4 w-4" />}
+          icon={<Palette className="h-4 w-4" />}
           label="Travel Style"
           value={
             vibeNames.length > 0 ? (

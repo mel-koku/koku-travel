@@ -87,6 +87,20 @@ const FAQS: { q: string; a: React.ReactNode; aText: string }[] = [
       "Our concierge service is built for that. Tell us about your trip and we'll reply with a tailored plan. Start at yukujapan.com/concierge.",
   },
   {
+    q: "Can you book restaurants or hotels for me?",
+    a: (
+      <>
+        No. Yuku routes trips and curates stops; each venue on your itinerary links out to its reservation surface where one exists. If you want hands-on bookings and an in-Japan coordinator, our{" "}
+        <Link href="/concierge" className={linkClass}>
+          concierge service
+        </Link>{" "}
+        handles that end-to-end.
+      </>
+    ),
+    aText:
+      "No. Yuku routes trips and curates stops; each venue on your itinerary links out to its reservation surface where one exists. If you want hands-on bookings and an in-Japan coordinator, our concierge service handles that end-to-end. See yukujapan.com/concierge.",
+  },
+  {
     q: "How do I delete my account or data?",
     a: (
       <>

@@ -10,7 +10,7 @@ import { getAboutPageContent } from "@/lib/sanity/contentService";
 export const metadata: Metadata = {
   title: "About | Yuku Japan",
   description:
-    "Yuku is a Japan trip planning tool built by a solo founder for curious travelers. Local knowledge, smart planning, and a deep love for Japan.",
+    "Yuku is a Japan travel publication and trip planner, built by a solo founder. Sourced from official tourism boards. Routed for the way you actually travel.",
   alternates: {
     canonical: "/about",
   },

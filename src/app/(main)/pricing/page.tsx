@@ -12,7 +12,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Pricing | Yuku Japan",
   description:
-    "Trip Pass pricing for Yuku Japan. Full multi-day itineraries with transit routing, daily briefings, and insider tips.",
+    "Trip Pass pricing. Full multi-day itineraries with routed transit, daily briefings, and editorial picks for each stop.",
   alternates: {
     canonical: "/pricing",
   },
@@ -28,7 +28,7 @@ const features = [
   "Multi-day routing",
   "Transit directions with lines and platforms",
   "Daily briefings",
-  "Insider tips",
+  "Editorial picks for each stop",
   "Unlimited refinements",
   "Shareable itinerary link",
 ];
@@ -195,6 +195,43 @@ export default async function PricingPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </ScrollReveal>
+
+          {/* Honest scope */}
+          <ScrollReveal delay={0.4}>
+            <div className="mx-auto mt-16 max-w-2xl border-t border-border pt-12">
+              <p
+                className={cn(
+                  typography({ intent: "utility-label" }),
+                  "mb-3 text-center",
+                )}
+              >
+                Honest scope
+              </p>
+              <h3
+                className={cn(
+                  typography({ intent: "editorial-h3" }),
+                  "mb-4 text-center",
+                )}
+              >
+                What Trip Pass is and isn&apos;t
+              </h3>
+              <p
+                className={cn(
+                  typography({ intent: "utility-body" }),
+                  "text-foreground-secondary",
+                )}
+              >
+                Trip Pass routes the trip and curates the stops. Restaurants, hotels, and flights link out to each venue&apos;s reservation surface; we don&apos;t book them for you. Onsen tattoo policies are hand-verified quarterly, so check the source date before you go. Trip Pass is a one-time purchase per trip, not a subscription. If you want hands-on bookings and an in-Japan coordinator, our{" "}
+                <Link
+                  href="/concierge"
+                  className="text-foreground underline decoration-brand-primary/40 underline-offset-4 transition-colors hover:text-brand-primary"
+                >
+                  concierge service
+                </Link>{" "}
+                handles that end-to-end.
+              </p>
             </div>
           </ScrollReveal>
         </div>

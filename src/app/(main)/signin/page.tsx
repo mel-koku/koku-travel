@@ -7,12 +7,12 @@ import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Sign In | Yuku Japan",
-  description: "Sign in to Yuku Japan to save your trips, favorite locations, and get personalized Japan travel recommendations.",
+  description: "Sign in to save trips, sync favorites across devices, and pick up where you left off.",
   alternates: { canonical: "/signin" },
   openGraph: {
     images: DEFAULT_OG_IMAGES,
     title: "Sign In | Yuku Japan",
-    description: "Sign in to Yuku Japan to save your trips, favorite locations, and get personalized Japan travel recommendations.",
+    description: "Sign in to save trips, sync favorites across devices, and pick up where you left off.",
     url: "/signin",
     siteName: "Yuku Japan",
     type: "website",

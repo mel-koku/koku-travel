@@ -316,10 +316,10 @@ export const GET = withApiHandler(
 );
 
 /**
- * Smart-search response: results re-fetched from the catalog using LLM-rewritten
+ * Refined-search response: results re-fetched from the catalog using LLM-rewritten
  * candidate place names. Used when keyword + fuzzy + semantic all came up empty
  * and the user explicitly opts into the slower / more expensive path via the
- * "Search smarter ✨" button.
+ * "Refine search" button.
  */
 export type SmartSearchResponse = {
   results: LocationSearchResult[];
@@ -339,8 +339,8 @@ type SmartSearchRequest = {
 /**
  * POST /api/locations/search
  *
- * Smart search via Gemini Flash query rewriting. NOT the keystroke path —
- * triggered explicitly by the "Search smarter ✨" button in the empty state of
+ * Refined search via Gemini Flash query rewriting. NOT the keystroke path —
+ * triggered explicitly by the "Refine search" button in the empty state of
  * LocationSearchBar so per-call Vertex cost (~$0.001-0.005) scales with user
  * intent, not typing.
  *

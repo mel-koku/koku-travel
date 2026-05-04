@@ -14,6 +14,11 @@ import { conciergePage } from "./conciergePage";
 import { commerceDisclosure } from "./commerceDisclosure";
 import { culturalPillar } from "./culturalPillar";
 import { person } from "./person";
+import { cityPage } from "./cityPage";
+import { regionPage } from "./regionPage";
+import { neighborhoodPage } from "./neighborhoodPage";
+import { editorNote } from "./editorNote";
+import { voiceAnchors } from "./voiceAnchors";
 export const schemaTypes = [
   guide,
   experience,
@@ -31,4 +36,10 @@ export const schemaTypes = [
   conciergePage,
   commerceDisclosure,
   culturalPillar,
+  // Smart Guidebook content layer (2026-05-04)
+  cityPage,
+  regionPage,
+  neighborhoodPage,
+  editorNote,
+  voiceAnchors,
 ];

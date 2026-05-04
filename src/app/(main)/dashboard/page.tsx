@@ -7,12 +7,12 @@ import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Dashboard | Yuku Japan",
-  description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
+  description: "Your saved Japan trips, favorites, and editorial picks in one place.",
   alternates: { canonical: "/dashboard" },
   openGraph: {
     images: DEFAULT_OG_IMAGES,
     title: "Dashboard | Yuku Japan",
-    description: "Your Japan travel hub. Access your saved trips, favorite locations, and personalized recommendations.",
+    description: "Your saved Japan trips, favorites, and editorial picks in one place.",
     url: "/dashboard",
     siteName: "Yuku Japan",
     type: "website",

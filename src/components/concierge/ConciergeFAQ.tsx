@@ -28,12 +28,22 @@ const DEFAULT_ITEMS = [
   {
     question: "When should I reach out?",
     answer:
-      "Ideally 3+ months before you travel, especially for peak seasons (cherry blossom, autumn foliage, Golden Week). We can work with shorter timelines, but early reach-outs unlock more of the places worth going.",
+      "Ideally 3+ months before you travel, especially for peak seasons (cherry blossom, autumn foliage, Golden Week). We can work with shorter timelines, but the places that need lead time fill first: top kaiseki rooms, well-loved ryokans, summer matsuri seats.",
   },
   {
     question: "What does it cost?",
     answer:
       "It depends on the trip: length, party size, pace, and what you want us to arrange. We’ll share pricing once we understand what you’re looking for.",
+  },
+  {
+    question: "Can you guarantee bookings at famous restaurants and ryokans?",
+    answer:
+      "No service in Japan can. Top-tier restaurants and traditional ryokans are competitive, and many require an introduction or repeat-customer status. We apply early, work through local relationships, and tell you upfront when something we tried for didn't land. That way you can plan around the gap, not against it.",
+  },
+  {
+    question: "What's not included?",
+    answer:
+      "Concierge handles itinerary design, reservations within the trip, and on-call support during travel. We don't sell flights or hotel rooms (you book those, we recommend), and we're not travel insurance or emergency assistance. If something goes wrong on the ground, we help you escalate; the resolution is with the airline, hotel, or local provider.",
   },
 ];
 

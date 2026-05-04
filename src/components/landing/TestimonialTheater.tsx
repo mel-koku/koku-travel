@@ -14,7 +14,7 @@ const FEATURES = [
   { title: "Routed Days", description: "Activities ordered by geography and transit. No backtracking." },
   { title: "Transit Directions", description: "Station names, line numbers, transfer points. Step by step." },
   { title: "Seasonal Fit", description: "Cherry blossom timing, rainy season, festival crowds. Your dates shape what we suggest." },
-  { title: "Smart Tips", description: "IC card reminders on Day 1. Luggage forwarding before long rides." },
+  { title: "Practical Tips", description: "IC card reminders on Day 1. Luggage forwarding before long rides." },
   { title: "Day Trip Ideas", description: "Locations outside your route, scored and ready to swap in." },
   { title: "Shareable Link", description: "One link. Full itinerary. No account needed." },
 ];

@@ -6,12 +6,12 @@ import { DEFAULT_OG_IMAGES } from "@/lib/seo/defaults";
 
 export const metadata: Metadata = {
   title: "Saved Places | Yuku Japan",
-  description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
+  description: "Your saved Japan places and experiences. The shortlist you'll come back to.",
   alternates: { canonical: "/saved" },
   openGraph: {
     images: DEFAULT_OG_IMAGES,
     title: "Saved Places | Yuku Japan",
-    description: "Your saved locations and experiences in Japan. Build your personal collection of must-visit places.",
+    description: "Your saved Japan places and experiences. The shortlist you'll come back to.",
     url: "/saved",
     siteName: "Yuku Japan",
     type: "website",
