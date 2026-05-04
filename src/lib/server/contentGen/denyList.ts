@@ -71,6 +71,17 @@ export const VOICE_DENY_LIST: RegExp[] = [
   /\babsolutely\b/i,
   /\btruly\b/i,
   /\breally\b/i, // intensifier
+  // Soft sensory adjectives — replace with concrete nouns per brand voice.
+  // Empirically observed slipping past Pass 3 in 2026-05-04 smoke tests.
+  /\batmospheric\b/i,
+  /\btranquil\b/i,
+  /\bserene\b/i,
+  /\bscenic\b/i,
+  /\bcharming\b/i,
+  // Food-blog clichés that aren't factual claims (so Pass 3's
+  // factual-claim-only check misses them) but read as AI-default.
+  /\bfall(s|ing)?[- ]off[- ]the[- ]bone\b/i,
+  /\bmelt(s|ing)?[- ]in[- ]your[- ]mouth\b/i,
 ];
 
 /**

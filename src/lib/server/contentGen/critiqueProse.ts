@@ -59,7 +59,15 @@ function buildEditorNoteCritiqueTaskContent(
   lines.push(prose);
   lines.push("");
   lines.push(
-    "Return every substring in PROSE that makes a factual claim not present in INPUT. Quote substrings exactly so the Studio marker can render them. Be conservative: if a phrase makes no factual claim (purely sensory/atmospheric), do not flag it. If it asserts a year, ranking, age, identity, or 'the only/oldest/first' status that isn't sourced — flag it.",
+    "Flag two distinct kinds of substring in PROSE. Quote each substring exactly so the Studio marker can render it.",
+  );
+  lines.push("");
+  lines.push(
+    "1. UNSOURCED FACTUAL CLAIMS — anything in PROSE that asserts a quantity or status not present in INPUT. Specifically: years, ages, distances (e.g. '350-meter path'), prices, queue durations (e.g. 'two-hour wait'), counts, rankings, identities, named alternative branches or dishes, 'the only/oldest/first/most-X' assertions. Be strict: if INPUT does not contain the specific number or named identity, flag it even if it 'sounds right'.",
+  );
+  lines.push("");
+  lines.push(
+    "2. GENERIC EDITORIAL FILLER — soft sensory or evaluative adjectives used in place of the concrete nouns the brand voice requires. Examples: 'beautiful', 'atmospheric', 'tranquil', 'serene', 'scenic', 'picturesque', 'charming', 'lovely', 'stunning', 'breathtaking'. Also food-blog clichés like 'fall-off-the-bone tender' and 'melt-in-your-mouth'. Skip flags on adjectives clearly grounded in INPUT (e.g. 'cold-water shellfish' if INPUT mentions cold-water; 'dawn light' if INPUT mentions early opening). The bar: a Yuku editor would replace this with something more specific.",
   );
   return lines.join("\n");
 }
@@ -87,6 +95,9 @@ export async function critiqueEditorNoteProse(opts: {
     schema: critiqueOutputSchema,
     source: "editorNote-pass3",
     budget: opts.budget,
+    // Pass 3 prompt is longer (asks for both unsourced-fact + filler-adjective
+    // flags); Pro needs more thinking time than the default 30s allows.
+    timeoutMs: 60_000,
     abortSignal: opts.abortSignal,
   });
 
