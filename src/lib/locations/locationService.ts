@@ -653,7 +653,8 @@ export async function fetchAllLocations(
  */
 export async function fetchSeasonalLocations(
   month: number,
-  limit: number = 12
+  limit: number = 12,
+  options?: { regions?: string[] }
 ): Promise<Location[]> {
   const { getSeasonalTags } = await import("@/lib/utils/seasonUtils");
   const tags = getSeasonalTags(month);
@@ -661,12 +662,22 @@ export async function fetchSeasonalLocations(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("locations")
     .select(LOCATION_LISTING_COLUMNS)
     .eq("is_active", true)
     .overlaps("tags", tags)
-    .gte("rating", 4.0)
+    .gte("rating", 4.0);
+
+  // Region narrowing must run as a SQL filter (not post-fetch) so the
+  // limited card pool isn't starved when most matches are out-of-region —
+  // e.g. the late-bloom window narrows to Tohoku/Hokkaido while most
+  // cherry-blossom rows are in Kansai/Kanto.
+  if (options?.regions && options.regions.length > 0) {
+    query = query.in("region", options.regions);
+  }
+
+  const { data, error } = await query
     .order("rating", { ascending: false })
     .limit(limit);
 

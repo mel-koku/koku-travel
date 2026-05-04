@@ -19,7 +19,8 @@ import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService"
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { urlFor } from "@/sanity/image";
-import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
+import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason, getActiveSeasonalHighlight } from "@/lib/utils/seasonUtils";
+import { getActiveMicroseason } from "@/lib/utils/microseasonCalendar";
 
 async function getIsFreePromo(): Promise<boolean> {
   if (process.env.NEXT_PUBLIC_FREE_FULL_ACCESS !== "true") return false;
@@ -58,6 +59,8 @@ export default async function Home() {
   const currentSeason = getCurrentSeason();
   const currentMonth = getCurrentMonth();
   const sanitySeason = seasonToSanityBestSeason(currentSeason);
+  const activeHighlight = getActiveSeasonalHighlight();
+  const activeMicroseason = getActiveMicroseason();
 
   const [featuredLocations, locationCount, prefectureCount, tipCount, featuredGuides, landingContent, seasonalGuides, seasonalLocations, isFreePromo] =
     await Promise.all([
@@ -68,7 +71,7 @@ export default async function Home() {
       getFeaturedGuides(3),
       getLandingPageContent(),
       getGuidesBySeason(sanitySeason, 3),
-      fetchSeasonalLocations(currentMonth, 6),
+      fetchSeasonalLocations(currentMonth, 6, { regions: activeHighlight?.regions }),
       getIsFreePromo(),
     ]);
 
@@ -112,6 +115,8 @@ export default async function Home() {
           <ErrorBoundary fallback={null}>
             <SeasonalSpotlight
               season={currentSeason}
+              highlight={activeHighlight}
+              microseason={activeMicroseason}
               guides={seasonalGuides}
               experiences={[]}
               locations={seasonalLocations}

@@ -6,39 +6,28 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
-import type { Season } from "@/lib/utils/seasonUtils";
+import type { Season, SeasonalHighlight } from "@/lib/utils/seasonUtils";
+import type { Microseason } from "@/lib/utils/microseasonCalendar";
 import type { GuideSummary } from "@/types/guide";
 import type { ExperienceSummary } from "@/types/experience";
 import type { Location } from "@/types/location";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
+import { resolveSpotlightCopy } from "./seasonalSpotlightCopy";
 
 type SeasonalSpotlightProps = {
   season: Season;
+  highlight?: SeasonalHighlight | null;
+  microseason?: Microseason | null;
   guides: GuideSummary[];
   experiences: ExperienceSummary[];
   locations: Location[];
   content?: LandingPageContent;
 };
 
-const SEASON_HEADINGS: Record<Season, string> = {
-  spring: "Cherry blossoms and fresh starts",
-  summer: "Festivals, fireworks, and cool escapes",
-  fall: "Koyo colors at their peak",
-  winter: "Hot springs and illuminations",
-};
-
-function getSeasonHeading(season: Season, content?: LandingPageContent): string {
-  const key = `seasonalSpotlight${season.charAt(0).toUpperCase() + season.slice(1)}Heading` as keyof LandingPageContent;
-  // "fall" maps to "Autumn" in Sanity field names
-  const autumnKey = "seasonalSpotlightAutumnHeading" as keyof LandingPageContent;
-  const sanityValue = season === "fall"
-    ? (content?.[autumnKey] as string | undefined)
-    : (content?.[key] as string | undefined);
-  return sanityValue ?? SEASON_HEADINGS[season];
-}
-
 export function SeasonalSpotlight({
   season,
+  highlight,
+  microseason,
   guides,
   experiences,
   locations,
@@ -64,7 +53,11 @@ export function SeasonalSpotlight({
 
   if (cards.length === 0) return null;
 
-  const heading = getSeasonHeading(season, content);
+  const { heading, description, ctaText } = resolveSpotlightCopy(
+    highlight ?? null,
+    season,
+    content,
+  );
 
   return (
     <section className="bg-background py-12 sm:py-20 lg:py-28">
@@ -80,8 +73,15 @@ export function SeasonalSpotlight({
                 {heading}
               </h2>
               <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
-                {content?.seasonalSpotlightDescription ?? "Places and guides at their best right now."}
+                {description}
               </p>
+              {microseason ? (
+                <p className="mt-3 text-xs text-foreground-secondary">
+                  From Japan&rsquo;s 72 microseasons:{" "}
+                  <em lang="ja-Latn">{microseason.romaji}</em>
+                  {" "}({microseason.english.toLowerCase()}).
+                </p>
+              ) : null}
             </div>
           </div>
         </ScrollReveal>
@@ -104,7 +104,7 @@ export function SeasonalSpotlight({
             href="/places?category=in_season"
             className="link-reveal group inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-foreground transition-colors hover:text-brand-primary"
           >
-            {content?.seasonalSpotlightCtaText ?? "See all seasonal picks"}
+            {ctaText}
             <svg
               className="h-4 w-4 transition-transform group-hover:translate-x-1"
               fill="none"

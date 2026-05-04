@@ -407,6 +407,12 @@ export const landingPage = defineType({
     }),
 
     // ── Seasonal Spotlight ─────────────────────────
+    // Per-season heading fields below are only rendered when no
+    // SeasonalHighlight is active (see src/lib/utils/seasonUtils.ts).
+    // When a highlight is firing — e.g. "Late-Blooming Sakura" from Apr 21
+    // through May 12 — the catalog label wins so the homepage stays
+    // date-honest. Treat these fields as the off-window fallback / kill
+    // switch, not the always-on copy.
     defineField({
       name: "seasonalSpotlightEyebrow",
       title: "Eyebrow",
