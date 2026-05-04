@@ -8,6 +8,7 @@ const SINGLETON_IDS: Record<string, string> = {
   aboutPage: "aboutPage",
   conciergePage: "conciergePage",
   commerceDisclosure: "commerceDisclosure",
+  voiceAnchors: "voiceAnchors",
 };
 
 function singletonEditor(S: StructureBuilder, typeName: string, title: string) {
@@ -39,6 +40,7 @@ export const deskStructure = (S: StructureBuilder) =>
               singletonEditor(S, "aboutPage", "About Page"),
               singletonEditor(S, "conciergePage", "Concierge Page"),
               singletonEditor(S, "commerceDisclosure", "Commerce Disclosure"),
+              singletonEditor(S, "voiceAnchors", "Voice Anchors"),
             ])
         ),
 
