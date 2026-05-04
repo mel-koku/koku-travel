@@ -76,7 +76,7 @@ function RequestChangesAction(
   };
 }
 
-const SINGLETON_TYPES = new Set(["siteSettings", "landingPage", "tripBuilderConfig", "pagesContent", "aboutPage", "conciergePage", "commerceDisclosure"]);
+const SINGLETON_TYPES = new Set(["siteSettings", "landingPage", "tripBuilderConfig", "pagesContent", "aboutPage", "conciergePage", "commerceDisclosure", "voiceAnchors"]);
 
 export function resolveDocumentActions(
   prev: DocumentActionComponent[],
