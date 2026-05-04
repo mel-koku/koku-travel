@@ -62,7 +62,7 @@ export function ExperiencePlanCTA({
           onClick={handleClick}
           className="mt-6 inline-flex items-center rounded-lg bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
         >
-          Build My Itinerary
+          Build my itinerary
         </button>
       </div>
     </section>

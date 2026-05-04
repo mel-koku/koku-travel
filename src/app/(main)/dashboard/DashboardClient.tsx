@@ -451,7 +451,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                         size="lg"
                         className="mt-6"
                       >
-                        {content?.dashboardPlanButton ?? "Build My First Trip"}
+                        {content?.dashboardPlanButton ?? "Build my first trip"}
                       </Button>
                     </ScrollReveal>
 

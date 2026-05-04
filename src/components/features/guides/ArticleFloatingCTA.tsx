@@ -154,7 +154,7 @@ export function ArticleFloatingCTA({
               )}
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-foreground">
-                  Build My Itinerary
+                  Build my itinerary
                 </p>
                 {locationCount > 0 && (
                   <p className="text-xs text-foreground-secondary">

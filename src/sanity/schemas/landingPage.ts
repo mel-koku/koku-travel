@@ -387,7 +387,7 @@ export const landingPage = defineType({
       title: "Secondary CTA Text",
       type: "string",
       fieldset: "finalCta",
-      initialValue: "See What\u2019s Out There",
+      initialValue: "See what\u2019s out there",
     }),
     defineField({
       name: "finalCtaSubtext",

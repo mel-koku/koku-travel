@@ -173,7 +173,7 @@ export const tripBuilderConfig = defineType({
       title: "CTA Button Text",
       type: "string",
       fieldset: "introStep",
-      initialValue: "Start Planning",
+      initialValue: "Start planning",
     }),
     defineField({
       name: "introEyebrow",
@@ -478,14 +478,14 @@ export const tripBuilderConfig = defineType({
       title: "Start Planning Button Label",
       type: "string",
       fieldset: "navigation",
-      initialValue: "Start Planning",
+      initialValue: "Start planning",
     }),
     defineField({
       name: "navGenerateLabel",
       title: "Generate Button Label",
       type: "string",
       fieldset: "navigation",
-      initialValue: "Build My Itinerary",
+      initialValue: "Build my itinerary",
     }),
     defineField({
       name: "navStartOverConfirmation",

@@ -188,9 +188,9 @@ export function useTripBuilderNavigation({
   })();
 
   const getNextLabel = () => {
-    if (currentStep === 0) return sanityConfig?.navStartPlanningLabel ?? "Start Planning";
+    if (currentStep === 0) return sanityConfig?.navStartPlanningLabel ?? "Start planning";
     if (currentStep === 2) return data.entryPoint ? (sanityConfig?.navContinueLabel ?? "Continue") : (sanityConfig?.navSkipLabel ?? "Skip");
-    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Build My Itinerary";
+    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Build my itinerary";
     return sanityConfig?.navContinueLabel ?? "Continue";
   };
 
