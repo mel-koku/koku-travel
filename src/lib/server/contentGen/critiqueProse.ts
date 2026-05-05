@@ -13,11 +13,17 @@ import type { AuthoringBudget } from "./authoringBudget";
 /**
  * Pass 3 — self-critique against the fact bundle.
  *
- * Critical mandate (cost-model gate, 2026-05-04): flag claims that **sound
- * true but don't appear in INPUT**, not just claims that read as uncertain.
- * Pro's polished prose camouflages plausible-but-wrong facts that Flash's
- * stiffer output would expose; this pass is the load-bearing backstop
- * before the prose lands in mel's review queue as a Sanity draft.
+ * Single mandate (re-calibrated 2026-05-05 after the 400-batch experience):
+ * flag substrings that assert a specific factual claim — number, named
+ * feature, founding date, identity attribution, "the only/oldest/first/most-X"
+ * status — not present in INPUT. Pro's polished prose camouflages
+ * plausible-but-wrong specifics; Pass 3 is the backstop before mel's review.
+ *
+ * Voice / soft-adjective concerns are explicitly OUT of scope here — those
+ * are handled at Pass 2 by the deny-list regen path (see denyList.ts). The
+ * earlier two-flag-types prompt produced ~85% false positives on the
+ * 400-batch (~63% of notes flagged, mostly stylistic noise); collapsing
+ * Pass 3 to hallucination-only restores it as a useful gate.
  *
  * Output: the prose passes through verbatim (Pass 3 does NOT rewrite — it
  * flags), plus an array of substrings the editor should examine. Yellow-
@@ -59,15 +65,19 @@ function buildEditorNoteCritiqueTaskContent(
   lines.push(prose);
   lines.push("");
   lines.push(
-    "Flag two distinct kinds of substring in PROSE. Quote each substring exactly so the Studio marker can render it.",
+    "Flag substrings in PROSE that assert a specific factual claim not present in INPUT. Quote each substring exactly so the Studio marker can render it.",
   );
   lines.push("");
   lines.push(
-    "1. UNSOURCED FACTUAL CLAIMS — anything in PROSE that asserts a quantity or status not present in INPUT. Specifically: years, ages, distances (e.g. '350-meter path'), prices, queue durations (e.g. 'two-hour wait'), counts, rankings, identities, named alternative branches or dishes, 'the only/oldest/first/most-X' assertions. Be strict: if INPUT does not contain the specific number or named identity, flag it even if it 'sounds right'.",
+    "FLAG: substrings that assert a specific quantity (year, age, distance, duration, count, price, queue length, wait time), a specific identity (named feature, alternative branch, named dish, statue, ritual, festival, person), a specific status ('the only/oldest/first/most-X'), or a specific attribute (founding date, architect, material, dimension). Quantities and identities must literally appear in INPUT — different numbers, durations, or names are different claims, not paraphrases. Be strict: if the specific value is not in INPUT, flag it even if a generic version ('queues are common', 'the dish is famous') is.",
   );
   lines.push("");
   lines.push(
-    "2. GENERIC EDITORIAL FILLER — soft sensory or evaluative adjectives used in place of the concrete nouns the brand voice requires. Examples: 'beautiful', 'atmospheric', 'tranquil', 'serene', 'scenic', 'picturesque', 'charming', 'lovely', 'stunning', 'breathtaking'. Also food-blog clichés like 'fall-off-the-bone tender' and 'melt-in-your-mouth'. Skip flags on adjectives clearly grounded in INPUT (e.g. 'cold-water shellfish' if INPUT mentions cold-water; 'dawn light' if INPUT mentions early opening). The bar: a Yuku editor would replace this with something more specific.",
+    "DO NOT FLAG: voice or stylistic concerns (soft adjectives like 'atmospheric', generic phrasing like 'main draw is') — those are handled separately. Do not flag operational guidance whose specifics literally appear in INPUT — e.g., 'arrive before 9 AM' is fine if INPUT's hours mention 9 AM; 'closed Mondays' is fine if INPUT's hours mention Monday closure.",
+  );
+  lines.push("");
+  lines.push(
+    "If PROSE is fully grounded in INPUT, return an empty flaggedClaims array.",
   );
   return lines.join("\n");
 }
@@ -95,8 +105,11 @@ export async function critiqueEditorNoteProse(opts: {
     schema: critiqueOutputSchema,
     source: "editorNote-pass3",
     budget: opts.budget,
-    // Pass 3 prompt is longer (asks for both unsourced-fact + filler-adjective
-    // flags); Pro needs more thinking time than the default 30s allows.
+    // 60s upper bound (default is 30s). Pro reasoning under the
+    // hallucination-detection prompt occasionally exceeds the default, and
+    // the cost is just a wait-cap on hangs. Keep at 60s after the 2026-05-05
+    // re-calibration too — prompt is shorter, but Pro time isn't strictly
+    // bounded by prompt size.
     timeoutMs: 60_000,
     abortSignal: opts.abortSignal,
   });
