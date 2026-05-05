@@ -95,6 +95,11 @@ export async function generateEditorNoteProse(opts: {
     schema: editorNoteOutputSchema,
     source: opts.isRetry ? "editorNote-pass2-retry" : "editorNote-pass2",
     budget: opts.budget,
+    // Pro response time on a tight 30-60-word prose generation occasionally
+    // exceeds the default 30s; ~6 of 400 in the 2026-05-04 batch timed out
+    // here. 60s matches the Pass 3 timeout and is well within the budget
+    // ledger's hard-kill window.
+    timeoutMs: 60_000,
     abortSignal: opts.abortSignal,
   });
 

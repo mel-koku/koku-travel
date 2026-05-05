@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHash } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sanityWriteClient } from "@/sanity/client";
 import { logger } from "@/lib/logger";
@@ -237,6 +238,26 @@ async function authorOneEditorNote(
 }
 
 /**
+ * Builds the deterministic Sanity doc ID for a location's editor note.
+ * Sanity caps doc IDs at 128 chars; the prefix "drafts.editorNote-" eats 18,
+ * leaving 110 for the slug. Long slugs (e.g. multi-word Japanese transliterations)
+ * exceed that — we truncate and append an 8-char SHA-1 to preserve idempotency.
+ */
+function buildEditorNoteDocId(locationId: string): string {
+  const PREFIX = "drafts.editorNote-";
+  const MAX_LEN = 128;
+  const naive = `${PREFIX}${locationId}`;
+  if (naive.length <= MAX_LEN) return naive;
+
+  // 8 hex chars = 32 bits collision space; with a "-" separator that's 9 chars.
+  // Available slug budget = MAX_LEN - PREFIX.length - 9 = 101 chars.
+  const HASH_LEN = 8;
+  const slugBudget = MAX_LEN - PREFIX.length - 1 - HASH_LEN;
+  const hash = createHash("sha1").update(locationId).digest("hex").slice(0, HASH_LEN);
+  return `${PREFIX}${locationId.slice(0, slugBudget)}-${hash}`;
+}
+
+/**
  * Writes an `editorNote` draft to Sanity. The doc ID is deterministic from
  * the location slug so re-running the pipeline against the same locations
  * updates the existing draft instead of creating duplicates.
@@ -248,7 +269,7 @@ async function writeEditorNoteDraft(opts: {
 }): Promise<string> {
   // Sanity doc IDs prefixed with `drafts.` are draft-only and won't appear
   // in published queries. The editor publishes from Studio.
-  const docId = `drafts.editorNote-${opts.locationId}`;
+  const docId = buildEditorNoteDocId(opts.locationId);
 
   const noteAsPortableText = [
     {
