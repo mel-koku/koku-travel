@@ -36,16 +36,34 @@ export const GET = withApiHandler(
     const validatedPhotoName = photoNameValidation.data;
 
     const maxWidthParam = searchParams.get("maxWidthPx") ?? searchParams.get("maxwidth");
-    const maxHeightParam = searchParams.get("maxHeightPx") ?? searchParams.get("maxheight");
 
-    const maxWidthPx = maxWidthParam ? parsePositiveInt(maxWidthParam, MAX_DIMENSION) ?? 800 : 800;
-    const maxHeightPx = maxHeightParam ? parsePositiveInt(maxHeightParam, MAX_DIMENSION) ?? undefined : undefined;
+    // Canonicalize to {640, 1200, 1920} via 308 so a scraper spraying unique
+    // widths or height params can't fragment the CDN cache and bill Google
+    // once per variant. imageLoader already buckets first-party callers.
+    const requestedWidth = maxWidthParam ? parsePositiveInt(maxWidthParam, MAX_DIMENSION) ?? 1200 : 1200;
+    const bucketedWidth = requestedWidth <= 640 ? 640 : requestedWidth <= 1200 ? 1200 : 1920;
+
+    const isCanonical =
+      requestedWidth === bucketedWidth &&
+      !searchParams.has("maxwidth") &&
+      !searchParams.has("maxHeightPx") &&
+      !searchParams.has("maxheight");
+
+    if (!isCanonical) {
+      const canonical = new URL(request.url);
+      canonical.searchParams.delete("maxwidth");
+      canonical.searchParams.delete("maxHeightPx");
+      canonical.searchParams.delete("maxheight");
+      canonical.searchParams.set("maxWidthPx", String(bucketedWidth));
+      const redirect = NextResponse.redirect(canonical, 308);
+      redirect.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+      return redirect;
+    }
+
+    const maxWidthPx = bucketedWidth;
 
     try {
-      const response = await fetchPhotoStream(validatedPhotoName, {
-        maxWidthPx,
-        maxHeightPx,
-      });
+      const response = await fetchPhotoStream(validatedPhotoName, { maxWidthPx });
 
       const headers = new Headers(response.headers);
       // Google's photo endpoint sends `Expires: Fri, 01 Jan 1990` + `Vary: Origin`
