@@ -36,7 +36,11 @@ export default function imageLoader({
     const queryStart = src.indexOf("?");
     const path = queryStart >= 0 ? src.slice(0, queryStart) : src;
     const params = new URLSearchParams(queryStart >= 0 ? src.slice(queryStart + 1) : "");
-    params.set("maxWidthPx", String(width));
+    // Bucket responsive widths into 3 fixed sizes so srcset doesn't fragment
+    // the CDN cache 6+ ways per photo. Each unique (photoName, maxWidthPx)
+    // pair is a separate billable Google call on first miss.
+    const bucketed = width <= 640 ? 640 : width <= 1200 ? 1200 : 1920;
+    params.set("maxWidthPx", String(bucketed));
     return `${path}?${params.toString()}`;
   }
 

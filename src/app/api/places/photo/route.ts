@@ -48,6 +48,12 @@ export const GET = withApiHandler(
       });
 
       const headers = new Headers(response.headers);
+      // Google's photo endpoint sends `Expires: Fri, 01 Jan 1990` + `Vary: Origin`
+      // to discourage caching. Strip them so Vercel's CDN honors our s-maxage
+      // and serves repeat hits from the edge instead of re-billing Google.
+      headers.delete("expires");
+      headers.delete("etag");
+      headers.delete("vary");
       headers.set("Cache-Control", "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800");
 
       return new NextResponse(response.body, {
