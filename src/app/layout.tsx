@@ -65,7 +65,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: "Yuku Japan",
   url: BASE_URL,
-  logo: `${BASE_URL}/icon.png`,
+  logo: `${BASE_URL}/icon`,
   description:
     "Curated travel guides, itineraries, and inspiration for planning trips to Japan, built with local experts.",
 };
