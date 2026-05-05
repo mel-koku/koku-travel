@@ -29,6 +29,8 @@ import {
 import { Tooltip } from "@/components/ui/Tooltip";
 import { DataIcon } from "@/components/ui/DataIcon";
 import { LocationReportDialog } from "./LocationReportDialog";
+import { EditorNoteBody } from "./EditorNoteBody";
+import { useEditorNoteByLocationSlug } from "@/sanity/useEditorNote";
 
 type LocationExpandedProps = {
   location: Location;
@@ -48,6 +50,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
 
   const isSaved = isInSaved(location.id);
   const wasSaved = useRef(isSaved);
+
+  // Smart Guidebook editor note (Option B unlabeled — replaces description
+  // when present). Returns undefined while loading, null when no note exists.
+  const editorNote = useEditorNoteByLocationSlug(location.id);
+  const hasEditorNote = !!editorNote && editorNote.length > 0;
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [reportOpen, setReportOpen] = useState(false);
   const { data: hierarchy } = useLocationHierarchy(location.id);
@@ -431,19 +438,25 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             />
           )}
 
-          {/* Description */}
-          {(summary || description) && (
-            <section className="space-y-2">
-              <h3 className="eyebrow-editorial">
-                Overview
-              </h3>
-              {summary && (
-                <p className="text-sm font-medium leading-relaxed text-foreground">{summary}</p>
-              )}
-              {description && (
-                <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
-              )}
+          {/* Description (replaced by editor note when one exists for this location) */}
+          {hasEditorNote ? (
+            <section>
+              <EditorNoteBody blocks={editorNote!} />
             </section>
+          ) : (
+            (summary || description) && (
+              <section className="space-y-2">
+                <h3 className="eyebrow-editorial">
+                  Overview
+                </h3>
+                {summary && (
+                  <p className="text-sm font-medium leading-relaxed text-foreground">{summary}</p>
+                )}
+                {description && (
+                  <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
+                )}
+              </section>
+            )
           )}
 
 

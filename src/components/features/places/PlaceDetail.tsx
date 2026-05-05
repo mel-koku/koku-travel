@@ -27,6 +27,8 @@ import {
 } from "./HierarchySections";
 import { SimilarPlaces } from "./SimilarPlaces";
 import { LocationReportDialog } from "./LocationReportDialog";
+import { EditorNoteBody } from "./EditorNoteBody";
+import type { PortableTextBlock } from "@portabletext/react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Button } from "@/components/ui/Button";
 import { DataIcon } from "@/components/ui/DataIcon";
@@ -59,10 +61,12 @@ const sectionReveal = {
 const DESC_CLAMP_THRESHOLD = 120; // words — only clamp if over this
 
 function OverviewSection({
+  editorNote,
   summary,
   description,
   sectionReveal,
 }: {
+  editorNote?: PortableTextBlock[] | null;
   summary?: string;
   description?: string;
   sectionReveal: Record<string, unknown>;
@@ -70,6 +74,18 @@ function OverviewSection({
   const [expanded, setExpanded] = useState(false);
   const needsClamp =
     !!description && description.trim().split(/\s+/).length > DESC_CLAMP_THRESHOLD;
+
+  // Smart Guidebook: when an editor note exists, it replaces the description
+  // section entirely (Option B unlabeled — see 2026-05-05 frontend-wiring
+  // handoff). Curated takes are the better surface for covered locations;
+  // the description still shows for the ~5,060 uncovered locations.
+  if (editorNote && editorNote.length > 0) {
+    return (
+      <m.section {...sectionReveal}>
+        <EditorNoteBody blocks={editorNote} />
+      </m.section>
+    );
+  }
 
   return (
     <m.section {...sectionReveal} className="space-y-2">
@@ -107,9 +123,10 @@ function OverviewSection({
 
 type PlaceDetailProps = {
   initialLocation: Location;
+  initialEditorNote?: PortableTextBlock[] | null;
 };
 
-export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
+export function PlaceDetail({ initialLocation, initialEditorNote }: PlaceDetailProps) {
   const router = useRouter();
   const { status, details, fetchedLocation } = useLocationDetailsQuery(initialLocation.id);
   const location = fetchedLocation ?? initialLocation;
@@ -493,9 +510,10 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
       {/* Content sections */}
       <div className="mx-auto max-w-3xl px-6 space-y-8 pb-8">
-        {/* Description */}
-        {(summary || description) && (
+        {/* Description (replaced by editor note when one exists for this location) */}
+        {(initialEditorNote?.length || summary || description) && (
           <OverviewSection
+            editorNote={initialEditorNote}
             summary={summary}
             description={description}
             sectionReveal={sectionReveal}

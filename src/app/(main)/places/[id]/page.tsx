@@ -8,6 +8,7 @@ import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import type { Location } from "@/types/location";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 import { LOCATION_DETAIL_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
+import { fetchEditorNoteByLocationSlug } from "@/sanity/editorNote";
 
 export const revalidate = 3600;
 
@@ -67,7 +68,10 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
 
 export default async function PlaceDetailPage({ params }: RouteProps) {
   const { id } = await params;
-  const location = await fetchLocation(id);
+  const [location, editorNote] = await Promise.all([
+    fetchLocation(id),
+    fetchEditorNoteByLocationSlug(id),
+  ]);
 
   if (!location) notFound();
 
@@ -85,7 +89,7 @@ export default async function PlaceDetailPage({ params }: RouteProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
-      <PlaceDetail initialLocation={location} />
+      <PlaceDetail initialLocation={location} initialEditorNote={editorNote} />
     </>
   );
 }
